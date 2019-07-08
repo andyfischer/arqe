@@ -1,6 +1,6 @@
 
 import Express from 'express'
-import ExpressOperationLayer from '@everything/express-operation-layer'
+import ExpressPromisedApp from '../express-promised-app'
 import setupEndpoints from '../web/setupEndpoints'
 import { print } from '../utils'
 
@@ -16,7 +16,7 @@ export default async function setupExpressApp() {
         res.sendStatus(200);
     });
     
-    const layer = new ExpressOperationLayer({
+    const layer = new ExpressPromisedApp({
         expressApp: app
     });
 

@@ -18,7 +18,7 @@ async function main() {
 
     const snapshot = await getMainSnapshot();
 
-    if (args['--']) {
+    if (args['--'].length > 0) {
         await applyQuery(snapshot, args['--'].join(' '));
         return;
     }
@@ -26,6 +26,7 @@ async function main() {
     //if (args.repl)
     //    await startLocalTerminal(snapshot)
 
+    console.log('starting prompt..');
     await promptRepl(snapshot);
 }
 

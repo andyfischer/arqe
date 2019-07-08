@@ -1,10 +1,10 @@
 
-import ExpressOperationLayer from '@everything/express-operation-layer'
+import ExpressPromisedApp from '../express-promised-app'
 import { print, randomHex } from '../utils'
 // import { submitQuery } from '../query'
 // import { saveEvent } from '../snapshot'
 
-export default function setupEndpoints(app: ExpressOperationLayer) {
+export default function setupEndpoints(app: ExpressPromisedApp) {
     app.get('/hi', async (req) => {
         return {
             response: 'hello',
