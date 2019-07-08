@@ -1,0 +1,17 @@
+
+
+# Ideas 6/28 #
+
+### Code sharing ###
+
+Be able to remotely send a piece of javascript and have it execute on the other side.
+
+Don't worry about package.json right now.
+
+Worry about a sane transmission system that will work for other use cases too.
+
+# Big goal: HSX trader bot #
+
+Work on an HSX trader bot
+
+Framework for scraping data

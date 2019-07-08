@@ -1,0 +1,30 @@
+
+# High Level Principles #
+
+ - Incremental knowledge
+   - Can always add/refine facts in the system
+   - The system gets *better* with more facts
+
+ - Microcosms
+   - Create domain-specific micro environments.
+   - Look at whatever subset of the world you want.
+   - Look at the world in the way you want.
+   - Ubiquitous branching.
+   - Powerful *views*.
+
+# Mid-Level Principles #
+
+ - Relations/facts should be as order-independent as possible.
+
+ - Commands are very order-dependent.
+
+# Lower-level Principles #
+
+Automated generic testing/fuzzing
+
+ - Order scrambling test
+   - Run queries in a different order and observe that the documents are the same.
+ - Unexpected input test
+   - Run queries with a variety of non-expected input, for error checking & robustness.
+ - Lots of self-testing
+   - Assemble queries in different ways and verify that the effect is the same.

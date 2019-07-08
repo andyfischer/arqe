@@ -1,0 +1,20 @@
+
+import { Query } from '../query'
+import DocumentMount from '../snapshot/DocumentMount'
+
+export default function autocompleteInfoDoc(): DocumentMount {
+    return {
+        name: 'autocompleteInfo',
+        value: {
+            everyWord: {}
+        },
+        spamsChangeLog: true,
+        reducer(query: Query, value) {
+            for (const clause of query.syntax.clauses) {
+                value.everyWord[clause.key] = true;
+            }
+
+            return value;
+        }
+    }
+}
