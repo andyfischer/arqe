@@ -1,0 +1,9 @@
+
+Implementation plan sept 12:
+
+X Introduce 'scope'
+Set up tool that runs tsc -p and looks at errors
+Parse error output and find the locations of errors
+Tool runs callback to apply a fix 
+Codebase replace Snapshot -> Scope
+

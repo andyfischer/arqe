@@ -1,0 +1,63 @@
+
+- pattern-test-example:
+  - pattern(x/1 y/1)
+  - pattern(x/1)
+  - pattern(x/1 y/*)
+  - pattern(x/* y/1)
+  - pattern(x/* y/*)
+  - pattern(x/1 **)
+  - pattern(x **)
+  - pattern(y **)
+  - pattern(x/2 y/1)
+  - pattern(x/2 y/*)
+  - pattern(x/1 y/1 *)
+  - pattern(x y *)
+  - pattern(x y y)
+  - pattern(x y z)
+  - pattern(x/1 x/2)
+  - pattern(x/1 x/1)
+  - pattern(y/1 y/1)
+  - pattern(x/2 y/2)
+  - pattern(x y **)
+  - pattern(x/$xvar)
+  - pattern(x/$xvar **)
+  - pattern(x/$xvar y/$yvar)
+  - pattern(x((set 1)))
+  - pattern(x/(set 1))
+  - pattern(x/(increment))
+  - pattern(x?)
+  - pattern(x? y)
+  - pattern(y x?)
+  - pattern(x? y? z?)
+
+  - pattern(x/* y/1) is-superset-of(x/1 y/1)
+  - pattern(x/1 y/*) is-superset-of(x/1 y/1)
+  - pattern(x/1 **) is-superset-of(x/1)
+  - pattern(x/1 **) is-superset-of(x/1 y/1)
+  - pattern(x/1 **) is-superset-of(x/1 y/1 z/1)
+  - pattern(x/1 **) is-superset-of(x/1 **)
+  - pattern(x/1 **) is-superset-of(x/1 y/1 **)
+  - pattern(working-file((new)) filename/$filename) is-superset-of(working-file((new)) filename(a))
+  - pattern(x/(set)) is-superset-of(x/(set))
+
+  - pattern(x y?) is-superset-of(x)
+  - pattern(x y?) is-superset-of(x y)
+  - pattern(x y?) not-superset-of(x y z)
+  - pattern(x y?) not-superset-of(y)
+  - pattern(x y?) not-superset-of(x z)
+
+  - pattern(x/1) not-superset-of(y/1)
+  - pattern(x/1) not-superset-of(x/2)
+  - pattern(x/(set)) not-superset-of(x/(match))
+  - pattern(x/1 **) not-superset-of()
+  - pattern(x/1 **) not-superset-of(z/1)
+  - pattern(x/1 **) not-superset-of(z/1 **)
+  - pattern(x/1 y/1) not-superset-of(x/1 z/1)
+  - pattern(x/* y/1) not-superset-of(x/1 z/1)
+  - pattern(working-file((new)) filename/$filename) not-superset-of(working-file((set)) filename(a))
+
+  - 'pattern(x/1) equals-from-json({"x":"1"})'
+  - 'pattern(x/*) equals-from-json({"x":{"match":"*"}})'
+  - 'pattern(**) equals-from-json({"**":true})'
+  - 'pattern(x) equals-from-json({"x":true})'
+  - 'pattern(x/$xvar) equals-from-json({"$xvar":{"attr":"x"}})'

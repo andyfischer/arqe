@@ -1,0 +1,59 @@
+
+
+- code-generation/minecraft-server-provider:
+  - destination-filename(src/providers/generated/MinecraftServerAPI.ts)
+  - ik-import(../..)
+  - strategy/provider-api
+  - handles-pattern(mc **)
+  - handler/readBlock
+  - handler/setBlock
+  - handler/setBlockWithData
+  - handler/setPredef
+  - handler/mcundo
+
+- handler/readBlock:
+  - function-name/readBlock
+  - input var/x type/string
+  - input var/y type/string
+  - input var/z type/string
+  - output var/contents from(block/*)
+  - output expectOne
+  - handles-query(get mc x/$x y/$y z/$z block/*)
+  - async
+
+- handler/setBlock:
+  - function-name/setBlock
+  - input var/x type/string
+  - input var/y type/string
+  - input var/z type/string
+  - input var/block type/string
+  - output expectOne
+  - handles-query(set mc x/$x y/$y z/$z block/$block)
+  - async
+
+- handler/setBlockWithData:
+  - function-name/setBlockWithData
+  - input var/x type/string
+  - input var/y type/string
+  - input var/z type/string
+  - input var/block type/string
+  - input var/data type/string
+  - output expectOne
+  - handles-query(set mc x/$x y/$y z/$z block/$block data/$data)
+  - async
+
+- handler/setPredef:
+  - function-name/setPredef
+  - input var/x type/string
+  - input var/y type/string
+  - input var/z type/string
+  - input var/predef type/string
+  - output expectOne
+  - handles-query(set mc x/$x y/$y z/$z predef/$predef)
+  - async
+
+- handler/mcundo:
+  - function-name/undo
+  - output expectOne
+  - handles-query(set mc undo)
+  - async

@@ -1,0 +1,33 @@
+
+ X Set up process-associated data
+
+ X Database dump
+   X Set up CommandContext
+   X Set up streaming output
+
+ - Database restore
+
+ X Define tag ordering
+
+----
+
+Process-associated data..
+
+ X Add a function to get the process's unique identifier.
+ X Clean up process tag on close.
+ X Watch process with PID, if it's gone (or re-registered) then cleanup.
+ X Central coordinator will manage
+
+ - Fetch listening port per process
+ - Fetch listening port per capability
+
+----
+
+ X Add pub/sub style listener
+ - Add sync-to-dir tool
+
+---
+
+ X 'filename' tag saves to file
+ X Set up a plugin-style processing list for special tags like FS-based
+ - Set up Git-based saving

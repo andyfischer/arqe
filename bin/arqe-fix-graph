@@ -1,0 +1,27 @@
+#! /usr/bin/env node
+
+const { runStandardProcess, runAsync, rewriteDumpFile } = require('..')
+
+runStandardProcess('fs-fix-graph', async (graph) => {
+
+    rewriteDumpFile('src/source.graph', (command) => {
+        const input = command.pattern.findTagWithType('output-object');
+        if (input && input.tagValue)
+            return null;
+
+        return command;
+    });
+
+    /*
+    const rels = await runAsync(graph, 'get touchpoint input');
+
+    for (const rel of rels) {
+        const input = rel.getTag('input');
+
+        const name = (await runAsync(graph, `get ${input} name`))[0].getTagValue('name');
+        const type = (await runAsync(graph, `get ${input} type`))[0].getTagValue('type');
+
+        console.log('set ' + rel.removeType('input').addTagStr('input').addTagStr(`var/${name}`).addTagStr(`type/${type}`).stringify());
+    }
+    */
+});

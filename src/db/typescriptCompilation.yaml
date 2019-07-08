@@ -1,0 +1,21 @@
+
+- code-generation/tsc-compile:
+  - destination-filename(src/providers/generated/TypescriptCompilationAPI.ts)
+  - ik-import(../..)
+  - strategy/provider-api
+  - handler/runTsc
+
+- handler/runTsc:
+  - handles-query(get tsc-compile dir/$dir filename message lineno colno)
+  - function-name(runTsc)
+  - input var/dir type/string
+  - output var/filename from(filename/*)
+  - output var/message from(message/*)
+  - output var/lineno from(lineno/*)
+  - output var/colno from(colno/*)
+  - async
+
+- schema tableName/tsc-compile
+
+- schema tableName/tsc-compile:
+  - pattern(tsc-compile dir? filename? message? lineno? colno?)

@@ -1,0 +1,19 @@
+
+Goals:
+ - Set up a 'tool version' repository that tracks the current desired version of
+   all tools.
+   - Versions can be 'latest'
+ - Store this repository data somewhere
+   - Ideally take advantage of the graph api
+   - Backed by files
+ - Data structure:
+   - Each tool has:
+     - binary name
+     - yarn.lock file contents
+     - version specifier
+
+ - Support background updating / push
+
+ - Easy API for updating
+   - Add new tool
+   - Update version of tool

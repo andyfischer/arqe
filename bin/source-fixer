@@ -1,0 +1,44 @@
+#! /usr/bin/env node
+
+const { loadGraphFromLocalDatabase, printConsoleResult } = require('..');
+
+//const dir = '.'
+const dir = '../fd-refactor'
+const replaceFrom = 'relation'
+const replaceTo = 'next'
+
+async function main() {
+
+    const graph = loadGraphFromLocalDatabase();
+
+    const compileErrs = (await graph.runAsync(`get tsc-compile dir(${dir}) filename message lineno colno`))
+        .filter(tup => !tup.hasAttr('command-meta'));
+
+    console.log('Ran TSC, compile error count = ' + compileErrs.length);
+    printConsoleResult(compileErrs);
+
+    for (const err of compileErrs) {
+        console.log('looking at error: ', err.stringify());
+
+        const filename = err.getVal('filename');
+        const lineno = err.getVal('lineno');
+
+        const workingFileId = (await graph.runAsync(`get working-file((new)) filename(${filename})`))
+            .filter(tup => !tup.hasAttr('command-meta'))
+            [0]
+            .getVal('working-file');
+
+        const existingLine = (await graph.runAsync(`get working-file(${workingFileId}) line(${lineno}) text`))
+            .filter(tup => !tup.hasAttr('command-meta'))
+            [0]
+            .getVal('text');
+
+        const newLine = existingLine.replace(replaceFrom, replaceTo);
+
+        await graph.setAsync({ 'working-file': workingFileId, line: lineno, text: newLine });
+        await graph.setAsync({ 'working-file': workingFileId, commit: true });
+    }
+}
+
+main()
+.catch(console.error);

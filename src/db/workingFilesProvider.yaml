@@ -1,0 +1,40 @@
+
+- code-generation/working-files-provider:
+   - destination-filename(src/providers/generated/WorkingFilesProviderAPI.ts)
+   - ik-import(../..)
+   - strategy/provider-api
+   - handler/loadFile
+   - handler/getLine
+   - handler/setLine
+   - handler/commitFile
+
+- handler/loadFile:
+   - handles-query(get working-file((new)) filename/$filename)
+   - function-name/loadFile
+   - input var/filename type/string
+   - output var/id from(working-file)
+   - output var/filename from(filename)
+   - output expectOne
+   - async
+
+- handler/getLine:
+   - handles-query(get working-file/$id line/$lineno text)
+   - function-name/getLine
+   - input var/id type/string
+   - input var/lineno type/string
+   - output var/text from(text)
+   - output expectOne
+
+- handler/setLine:
+   - handles-query(set working-file/$id line/$lineno text/$text)
+   - function-name/setLine
+   - input var/id type/string
+   - input var/lineno type/string
+   - input var/text type/string
+   - output expectOne
+ 
+- handler/commitFile:
+   - handles-query(set working-file/$id commit)
+   - function-name/commitFile
+   - input var/id type/string
+   - async

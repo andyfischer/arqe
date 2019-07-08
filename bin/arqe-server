@@ -1,0 +1,10 @@
+#! /usr/bin/env node
+
+const { main } = require('../dist/startServer');
+
+main()
+.catch(e => {
+    process.exitCode = -1;
+    console.error(e);
+});
+

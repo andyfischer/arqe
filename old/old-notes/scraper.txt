@@ -1,0 +1,19 @@
+
+goals:
+  list target urls for scraping
+  list html elements to capture during scraping
+  define transformations to do on the captured elements
+  define schedule to run the operations
+    cron?  timer?
+
+---
+
+thoughts:
+
+ - need to be able to define a one-time function in the system
+ - this will be triggered by cron
+
+--
+
+cron system
+  define commands & time triggers

@@ -1,0 +1,22 @@
+#! /usr/bin/env node
+
+const { runStandardProcess, runAsync } = require('..')
+
+const Util = require('util');
+
+runStandardProcess(async (graph) => {
+
+    const rels = await runAsync(graph, 'get code-generation destination-filename/*');
+
+    for (const rel of rels) {
+        const filename = rel.getTagValue('destination-filename');
+
+        console.log('resetting: ' + filename);
+
+        console.log(rel
+                    .addTag('from(' + rel.getTagValue('tagValue') + '/*)')
+                    .removeType('tagValue')
+                    .addTag('var')
+                    .stringify())
+    }
+});

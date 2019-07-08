@@ -1,0 +1,13 @@
+
+- code-generation/javascript-ast:
+  - destination-filename(src/providers/generated/TypescriptTreeAPI.ts)
+  - ik-import(../..)
+  - strategy/provider-api
+  - handler/createAstFromText
+
+- handler/createAstFromText:
+  - function-name(createAstFromText)
+  - input var/text type/string
+  - output var/filename from(typescript-tree/*)
+  - handles-query(get typescript-tree/* text/$text)
+  - output expectOne

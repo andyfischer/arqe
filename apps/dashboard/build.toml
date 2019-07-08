@@ -1,0 +1,4 @@
+
+[static_web_deployment]
+url_root='fs-dashboard'
+cauldron_directory="build"

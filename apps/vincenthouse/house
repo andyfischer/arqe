@@ -1,0 +1,1 @@
+bin/fs -c "set remote/42940 mc predef/vincentHouse x/144 y/64 z/42"
