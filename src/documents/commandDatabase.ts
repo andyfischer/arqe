@@ -66,7 +66,8 @@ function update(query: Query, db: CommandDatabase) {
     
     if (query.relation === 'has-no-implementation') {
 
-        const commandName = query.relationSubject;
+        const commandName = query.relationSubject
+            .replace(/^command\//, '');
         const command = db.byName[commandName];
 
         if (!command) {

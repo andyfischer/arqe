@@ -7,7 +7,6 @@ def-command def-language
 def-command def-filetype
 def-command def-alias
 def-command def-relation
-def-command relate
 def-command name
 def-command load-file
 def-command add-context
@@ -25,9 +24,9 @@ def-relation requires-arg
 def-relation has-main-arg
 def-relation has-no-implementation
 
-relate def-command has-no-implementation
-relate def-relation has-no-implementation
-relate eof has-no-implementation
+command/def-command has-no-implementation
+command/def-relation has-no-implementation
+command/eof has-no-implementation
 
 .. is type
   integer
