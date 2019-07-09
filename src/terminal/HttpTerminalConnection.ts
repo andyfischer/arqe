@@ -15,10 +15,10 @@ export default class HttpTerminalConnection {
             .catch(() => { error: true });
 
         if (!ok || ok.error)
-            throw new Error("[external] Couldn't connect to wish host at: " + host);
+            throw new Error("[external] Couldn't connect to host at: " + host);
 
-        if (ok.server !== 'wish') 
-            throw new Error("[external] Host doesn't seem to be an wish server: " + host);
+        if (ok.server !== 'papert') 
+            throw new Error("[external] Host doesn't seem to be a compatible server: " + host);
 
         const startSession = await post('/start-terminal', {});
 

@@ -17,7 +17,7 @@ export default class FileStore  {
 
     async initializeFiles() {
         await Fs.mkdir(this.dir);
-        await Fs.writeFile(Path.join(this.dir, 'wish-store-v1'), ' ');
+        await Fs.writeFile(Path.join(this.dir, 'objectspace-store-v1'), ' ');
         await Fs.writeFile(Path.join(this.eventLogPath), '');
     }
 
@@ -33,7 +33,7 @@ export default class FileStore  {
         if (!await Fs.exists(this.dir))
             return false;
 
-        if (!await Fs.exists(Path.join(this.dir, 'wish-store-v1')))
+        if (!await Fs.exists(Path.join(this.dir, 'objectspace-store-v1')))
             return false;
 
         return true;

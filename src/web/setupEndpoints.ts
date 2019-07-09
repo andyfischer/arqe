@@ -8,7 +8,7 @@ export default function setupEndpoints(app: ExpressPromisedApp) {
     app.get('/hi', async (req) => {
         return {
             response: 'hello',
-            server: 'wish'
+            server: 'papert'
         }
     });
 
