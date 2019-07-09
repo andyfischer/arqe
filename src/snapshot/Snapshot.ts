@@ -2,8 +2,8 @@
 import DocumentMount from './DocumentMount'
 import { print } from '../utils'
 import applyQuery from './applyQuery'
-import everyDocument from '../documents/_everyDocument'
-import { CommandDatabase } from '../documents/commandDatabase'
+import everyDocument from '../reducers/_everyDocument'
+import { CommandDatabase } from '../reducers/commandDatabase'
 
 export default class Snapshot {
 

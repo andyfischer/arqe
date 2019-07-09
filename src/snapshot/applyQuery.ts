@@ -5,7 +5,7 @@ import DocumentMount, { applyQueryToDocument } from './DocumentMount'
 import { runCommand } from '../framework'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
-import { CommandDefinition } from '../documents/commandDatabase'
+import { CommandDefinition } from '../reducers/commandDatabase'
 
 const verbose = !!process.env.verbose;
 
