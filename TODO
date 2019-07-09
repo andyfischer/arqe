@@ -1,4 +1,10 @@
 
+# Current todo #
+
+Deploy an app from a template..
+ - Create a directory
+ - Write a package.json file
+ - Run yarn install
 
 # Ideas 6/28 #
 

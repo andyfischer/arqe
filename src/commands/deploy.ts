@@ -10,8 +10,8 @@ async function run(context: CommandContext) {
     // Create the package.json
     // Run yarn --pnp
 
-    // await name = context.get('deployment-name');
-    // await context.query(`provision-working-dir dir-name=${name}`);
+    const name = context.get('deployment-name');
+    await context.subQuery(`provision-working-dir dir-name=${name}`);
 
     //const packageJson = await context.get('deploy.packageJson');
 

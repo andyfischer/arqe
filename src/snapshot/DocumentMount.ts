@@ -1,5 +1,5 @@
 
-import { Query, QueryContext } from '../query'
+import { Query } from '../query'
 import { print } from '../utils'
 import { Snapshot } from '.'
 
@@ -8,11 +8,11 @@ const logChanges = !!process.env.log_document_changes;
 export default interface DocumentMount<T = any> {
     name: string
     value: T
-    reducer: (query: Query, currentValue: T, cxt?: QueryContext) => T
+    reducer: (query: Query, currentValue: T, snapshot?: Snapshot) => T
     spamsChangeLog?: boolean
 }
 
-export function applyQueryToDocument(context: QueryContext, mount: DocumentMount, query: Query) {
+export function applyQueryToDocument(snapshot: Snapshot, mount: DocumentMount, query: Query) {
 
     let previousValue;
 
@@ -21,7 +21,7 @@ export function applyQueryToDocument(context: QueryContext, mount: DocumentMount
     if (log)
         previousValue = JSON.stringify(mount.value);
     
-    mount.value = mount.reducer(query, mount.value, context);
+    mount.value = mount.reducer(query, mount.value, snapshot);
 
     if (log) {
         const newValue = JSON.stringify(mount.value);

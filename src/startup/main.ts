@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 
 import 'source-map-support/register'
 import os from 'os'
@@ -26,7 +27,6 @@ async function main() {
     //if (args.repl)
     //    await startLocalTerminal(snapshot)
 
-    console.log('starting prompt..');
     await promptRepl(snapshot);
 }
 

@@ -1,6 +1,6 @@
 
 import { Snapshot } from '.'
-import { parseQuery, Query, QueryContext } from '../query'
+import { parseQuery, Query } from '../query'
 import DocumentMount, { applyQueryToDocument } from './DocumentMount'
 import { runCommand } from '../framework'
 import { everyCommand } from '../framework/declareCommand'
@@ -16,13 +16,10 @@ export default async function applyQuery(snapshot: Snapshot, queryString: string
     if (verbose)
         print('running query: ' + queryString);
 
-    const context = new QueryContext();
-    context.snapshot = snapshot;
-
     const query = parseQuery(queryString, snapshot);
 
     for (const doc of snapshot.liveDocuments) {
-        applyQueryToDocument(context, doc, query);
+        applyQueryToDocument(snapshot, doc, query);
     }
 
     if (query.command) {
