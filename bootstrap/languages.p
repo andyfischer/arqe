@@ -1,30 +1,30 @@
 
 
-is-alias-for
+.. is-alias-for ..
   bool boolean
   int integer
   nil null
 
-javascript
+javascript ..
   has-supported-type number
   has-supported-type boolean
   has-supported-type null
   has-supported-type object
 
-typescript
+typescript ..
   is language
   is-based-on javascript
 
-is filetype
+.. is filetype
   js
   jsx
   ts
   tsx
 
-is relation
+.. is relation
   supports-jsx
 
-supports-jsx
+.. supports-jsx ..
   js no
   ts no
   jsx yes
@@ -34,7 +34,7 @@ supports-jsx
 file-context project=react-test
 load-file xxx
 
-def-link
+def-link ..
   includes 
 
 # linker should autodetect required props

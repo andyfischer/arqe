@@ -1,9 +1,11 @@
 
-import { Snapshot, loadBootstrapFile } from '.'
+import os from 'os'
+import path from 'path'
+import { Snapshot, loadBootstrapFile } from '../snapshot'
 
 let _mainSnapshot: Snapshot;
 
-export default async function getMainSnapshot() {
+export default async function loadMainSnapshot() {
     if (!_mainSnapshot) {
         const snapshot = new Snapshot();
 
@@ -12,7 +14,8 @@ export default async function getMainSnapshot() {
         for (const script in snapshot.getValue('bootstrapScripts').scripts)
             await loadBootstrapFile(snapshot, `${__dirname}/../../bootstrap/${script}`);
 
-        await loadBootstrapFile(snapshot, `${__dirname}/../../bootstrap/my-local-env.p`);
+        const userEnv = path.join(os.homedir(), '.papert/env.p');
+        await loadBootstrapFile(snapshot, userEnv);
 
         _mainSnapshot = snapshot;
     }

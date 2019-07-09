@@ -7,31 +7,19 @@ import Path from 'path'
 import { fileStoreExists, setupFileStore } from '../store'
 import serveExpressApp from './serveExpressApp'
 import { print, readTextLinesSync } from '../utils'
-import { getMainSnapshot, loadBootstrapFile, applyQuery } from '../snapshot'
+import { loadBootstrapFile, applyQuery } from '../snapshot'
+import setupUserDir from './setupUserDir'
+import loadMainSnapshot from './loadMainSnapshot'
 import nodeRepl from './nodeRepl'
-
-function start() {
-    const evaluate = (line) => {
-        console.log('evaluate: ', line);
-    }
-
-    const completer = (line) => {
-        console.log('complete: ', line);
-        return []
-    }
-
-    const repl = require('repl').start( {
-        prompt: '> ',
-        eval: evaluate,
-        completer
-    });
-}
 
 async function main() {
 
-    const snapshot = await getMainSnapshot();
+    await setupUserDir();
+    const snapshot = await loadMainSnapshot();
     const args = process.argv.slice(2);
+    
     if (args.length > 0) {
+        // Run args as a query.
         await applyQuery(snapshot, args.join(' '));
         return;
     }

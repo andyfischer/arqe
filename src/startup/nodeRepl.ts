@@ -29,8 +29,6 @@ export default async function nodeRepl(snapshot: Snapshot) {
                     matches.push(w);
             }
 
-            // console.log('matches = ', matches);
-
             return [matches, line];
         } catch (err) {
             console.error(err);
@@ -39,7 +37,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
     }
 
     const repl = require('repl').start({
-        prompt: ' > ',
+        prompt: ' $$ ',
         eval: evaluate,
         completer
     });

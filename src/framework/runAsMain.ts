@@ -1,11 +1,11 @@
 
 import { CommandDefinition, CommandContext } from '.'
-import { getMainSnapshot } from '../snapshot'
+import loadMainSnapshot from '../startup/loadMainSnapshot'
 
 export default async function runAsMain(def: CommandDefinition) {
 
     const context = new CommandContext();
-    context.snapshot = await getMainSnapshot();
+    context.snapshot = await loadMainSnapshot();
 
     try {
         await def.run(context);
