@@ -8,7 +8,24 @@ import { fileStoreExists, setupFileStore } from '../store'
 import serveExpressApp from './serveExpressApp'
 import { print, readTextLinesSync } from '../utils'
 import { getMainSnapshot, loadBootstrapFile, applyQuery } from '../snapshot'
-import promptRepl from './promptRepl'
+import nodeRepl from './nodeRepl'
+
+function start() {
+    const evaluate = (line) => {
+        console.log('evaluate: ', line);
+    }
+
+    const completer = (line) => {
+        console.log('complete: ', line);
+        return []
+    }
+
+    const repl = require('repl').start( {
+        prompt: '> ',
+        eval: evaluate,
+        completer
+    });
+}
 
 async function main() {
 
@@ -19,10 +36,7 @@ async function main() {
         return;
     }
 
-    //if (args.repl)
-    //    await startLocalTerminal(snapshot)
-
-    await promptRepl(snapshot);
+    nodeRepl(snapshot);
 }
 
 main()

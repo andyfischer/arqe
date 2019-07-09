@@ -17,7 +17,6 @@
     "ink-spinner": "^3.0.1",
     "ink-text-input": "^3.2.0",
     "minimist": "^1.2.0",
-    "prompt": "^1.0.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "source-map-support": "^0.5.12"
@@ -43,7 +42,7 @@
     ]
   },
   "bin": {
-    "ws": "dist/terminal/main.js",
+    "p": "dist/terminal/main.js",
     "encode-file": "dist/tools/encode-file.js"
   }
 }
