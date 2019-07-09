@@ -8,7 +8,10 @@ export default async function getMainSnapshot() {
         const snapshot = new Snapshot();
 
         await loadBootstrapFile(snapshot, `${__dirname}/../../bootstrap/_prelude.p`);
-        await loadBootstrapFile(snapshot, `${__dirname}/../../bootstrap/workingdir.p`);
+
+        for (const script in snapshot.getValue('bootstrapScripts').scripts)
+            await loadBootstrapFile(snapshot, `${__dirname}/../../bootstrap/${script}`);
+
         await loadBootstrapFile(snapshot, `${__dirname}/../../bootstrap/my-local-env.p`);
 
         _mainSnapshot = snapshot;

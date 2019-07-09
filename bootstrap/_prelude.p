@@ -16,9 +16,10 @@ def-command dump
 def-command file-contents
 def-command deploy
 def-command set
-def-command show-commands
+def-command help
 
 def-relation is
+def-relation includes
 def-relation has
 def-relation requires-arg
 def-relation has-main-arg
@@ -36,3 +37,6 @@ command/eof has-no-implementation
   null
   object
 
+bootstrap-scripts includes ..
+  edit.p
+  workingdir.p

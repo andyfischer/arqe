@@ -1,4 +1,6 @@
 
+import { Snapshot } from '../snapshot'
+
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
         return str.slice(0, str.length-1);
@@ -14,9 +16,26 @@ export default async function nodeRepl(snapshot: Snapshot) {
         repl.displayPrompt();
     }
 
-    async function completer(line) {
-        // todo
-        return []
+    function completer(line) {
+        try {
+            const autocompleteInfo = snapshot.getValueOpt('autocompleteInfo')
+            if (!autocompleteInfo)
+                return;
+
+            const matches = [];
+
+            for (const w in autocompleteInfo.found.everyWord) {
+                if (w.startsWith(line))
+                    matches.push(w);
+            }
+
+            // console.log('matches = ', matches);
+
+            return [matches, line];
+        } catch (err) {
+            console.error(err);
+            return []
+        }
     }
 
     const repl = require('repl').start({
