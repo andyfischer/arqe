@@ -17,6 +17,7 @@ def-command file-contents
 def-command deploy
 def-command set
 def-command help
+def-command http-post
 
 def-relation is
 def-relation includes

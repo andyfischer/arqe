@@ -75,7 +75,6 @@ export default async function runCommand(snapshot: Snapshot, query: Query) {
     context.query = query;
     context.incoming = incoming;
 
-
     await commandImpl.run(context);
 
     for (const k in context.results) {
