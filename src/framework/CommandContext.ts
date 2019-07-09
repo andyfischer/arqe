@@ -6,9 +6,13 @@ import { runCommand } from '.'
 export default class CommandContext {
     query: Query
     snapshot: Snapshot
+    incoming: { [key: string]: string } = {}
     results: { [key: string]: string } = {}
 
     async get(valueName: string) {
+
+        if (this.incoming[valueName])
+            return this.incoming[valueName];
 
         if (this.query) {
             const options = this.query.options;

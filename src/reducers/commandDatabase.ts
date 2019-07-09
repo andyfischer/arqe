@@ -78,6 +78,20 @@ function update(query: Query, db: CommandDatabase) {
         command.hasNoImplementation = true;
         return;
     }
+
+    if (query.relation === 'has-main-arg') {
+        const commandName = query.relationSubject
+            .replace(/^command\//, '');
+        const command = db.byName[commandName];
+
+        if (!command) {
+            print('command not found: ' + commandName);
+            return;
+        }
+
+        command.mainArg = query.relationObject;
+        return;
+    }
 }
 
 export default function commandDatabase(): DocumentMount<CommandDatabase> {
