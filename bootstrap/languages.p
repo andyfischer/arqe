@@ -1,9 +1,13 @@
 
+def-relation is-alias-for
+def-relation supports-jsx
+def-relation doesnt-support-jsx
+def-relation has-supported-type
+def-relation is-based-on
 
-.. is-alias-for ..
-  bool boolean
-  int integer
-  nil null
+bool is-alias-for boolean
+int is-alias-for integer
+nil is-alias-for null
 
 javascript ..
   has-supported-type number
@@ -24,22 +28,21 @@ typescript ..
 .. is relation
   supports-jsx
 
-.. supports-jsx ..
-  js no
-  ts no
-  jsx yes
-  tsx yes
+js doesnt-support-jsx
+ts doesnt-support-jsx
+jsx supports-jsx
+tsx supports-jsx
 
 # be able to enter a JSX snippet into the system
-file-context project=react-test
-load-file xxx
+# file-context project=react-test
+# load-file xxx
 
 def-link ..
   includes 
 
 # linker should autodetect required props
 # linker should be able to attach it to a web application
-link forall-current-project
+# link forall-current-project
 
 # serve the linked application as a web app
 # have it all work!

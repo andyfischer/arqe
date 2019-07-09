@@ -40,3 +40,6 @@ command/eof has-no-implementation
 bootstrap-scripts includes ..
   edit.p
   workingdir.p
+  languages.p
+  jenkins.p
+
