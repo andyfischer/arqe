@@ -11,7 +11,7 @@ async function run(context: CommandContext) {
     }
 }
 
-const command = declareCommand({
+declareCommand({
     name: 'help',
     run
 });
