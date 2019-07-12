@@ -3,6 +3,7 @@ import { Clause, ParseContext, Query } from '.'
 import { print, freeze } from '../utils'
 import QuerySyntax from './QuerySyntax'
 
+// this is not used yet:
 const clauseExpansionFormats = [
     'omitted relation something',
     'omitted relation omitted',
@@ -20,59 +21,6 @@ function checkKnownWordTypes(clause: Clause, context: ParseContext) {
     if (context.isCommand(clause.key))
         clause.isCommand = true;
 }
-
-
-
-/*
-function expandForOmitted(query: Query) {
-    if (query.clauses[0].isRelation) {
-        query.isIncomplete = true;
-        query.clauses = [{isOmitted:true} as Clause].concat(query.clauses);
-        return;
-    }
-
-    if (query.clauses.length === 2 && query.clauses[1].isRelation) {
-        query.isIncomplete = true;
-        query.clauses.push({isOmitted: true});
-        return;
-    }
-
-    if (query.clauses.length === 1) {
-        query.isIncomplete = true;
-        query.clauses.push({isOmitted: true});
-        query.clauses.push({isOmitted: true});
-        return;
-    }
-}
-
-function fillIncomplete(toFill: Query, clauses: Clause[]): Query {
-    delete toFill.isIncomplete;
-
-    let nextToTake = 0;
-
-    for (let i = 0; i < toFill.clauses.length; i++) {
-        if (toFill.clauses[i].isOmitted) {
-            if (nextToTake >= clauses.length) {
-                return {
-                    clauses,
-                    parseError: 'not enough clauses to fill last incomplete'
-                }
-            }
-
-            toFill.clauses[i] = clauses[nextToTake];
-            nextToTake++;
-        }
-    }
-
-    while (nextToTake < clauses.length) {
-        toFill.clauses.push(clauses[nextToTake]);
-        nextToTake++;
-    }
-
-    toFill.filledFromIncomplete = true;
-    return toFill;
-}
-*/
 
 function getOptions(syntax: QuerySyntax) {
     const obj: {[key:string]: any} = {};
@@ -142,21 +90,6 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
                 .concat(lastIncompleteClause.syntax.clauses.slice(dotsLocation + 1));
 
             clauses = combined;
-        }
-    }
-
-    if (clauses[0].key === 'relate') {
-        const relationSubject = clauses[1].key;
-        const relation = clauses[2].key;
-        const relationObject = clauses[3] && clauses[3].key;
-
-        return {
-            syntax,
-            type: 'relation',
-            relationSubject,
-            relation,
-            relationObject,
-            options
         }
     }
 

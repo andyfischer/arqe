@@ -24,7 +24,6 @@ export default class Snapshot {
         if (this.liveDocumentsByName[reducer.name])
             throw new Error('already have a reducer with name: ' + reducer.name);
 
-        console.log('mounted: ' + reducer.name);
         this.liveDocuments.push(reducer);
         this.liveDocumentsByName[reducer.name] = reducer;
 
