@@ -1,33 +1,34 @@
 
-import DocumentMount from './DocumentMount'
+import { Reducer, everyReducer } from '../framework'
 import { print } from '../utils'
 import applyQuery from './applyQuery'
-import everyDocument from '../reducers/_everyDocument'
 import { CommandDatabase } from '../reducers/commandDatabase'
+import '../reducers'
 
 export default class Snapshot {
 
     liveValues: { [name: string]: any } = {}
-    liveDocuments: DocumentMount[] = []
-    liveDocumentsByName: { [name: string]: DocumentMount } = {}
+    liveDocuments: Reducer[] = []
+    liveDocumentsByName: { [name: string]: Reducer } = {}
 
     constructor() {
         // Builtin documents
-        for (const doc of everyDocument)
-            this.mountDocument(doc());
+        for (const reducerDef of everyReducer)
+            this.mountDocument(reducerDef());
     }
 
-    mountDocument(mount: DocumentMount) {
-        if (!mount.name)
+    mountDocument(reducer: Reducer) {
+        if (!reducer.name)
             throw new Error('missing name');
 
-        if (this.liveDocumentsByName[mount.name])
-            throw new Error('already have a mount with name: ' + mount.name);
+        if (this.liveDocumentsByName[reducer.name])
+            throw new Error('already have a reducer with name: ' + reducer.name);
 
-        this.liveDocuments.push(mount);
-        this.liveDocumentsByName[mount.name] = mount;
+        console.log('mounted: ' + reducer.name);
+        this.liveDocuments.push(reducer);
+        this.liveDocumentsByName[reducer.name] = reducer;
 
-        return mount;
+        return reducer;
     }
 
     // ParseContext

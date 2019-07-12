@@ -1,5 +1,5 @@
 
-import { Snapshot, DocumentMount } from '../snapshot'
+import { Snapshot } from '../snapshot'
 import { Store, Event } from '.'
 import { parseQuery } from '../query'
 

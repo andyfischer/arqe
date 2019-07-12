@@ -1,9 +1,9 @@
 
 import { Query } from '../query'
-import DocumentMount from '../snapshot/DocumentMount'
+import { declareReducer } from '../framework'
 import { freeze } from '../utils'
 
-export default function commandsDoc(): DocumentMount {
+declareReducer(() => {
     return {
         name: 'lastIncompleteClause',
         value: null,
@@ -21,5 +21,4 @@ export default function commandsDoc(): DocumentMount {
             return null;
         }
     }
-}
-
+});

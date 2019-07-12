@@ -1,8 +1,8 @@
 
 import { Snapshot } from '.'
 import { parseQuery, Query } from '../query'
-import DocumentMount, { applyQueryToDocument } from './DocumentMount'
-import { runCommand } from '../framework'
+import applyQueryToReducer from './applyQueryToReducer'
+import { runCommand, Reducer } from '../framework'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
 import { CommandDefinition } from '../reducers/commandDatabase'
@@ -19,7 +19,7 @@ export default async function applyQuery(snapshot: Snapshot, queryString: string
     const query = parseQuery(queryString, snapshot);
 
     for (const doc of snapshot.liveDocuments) {
-        applyQueryToDocument(snapshot, doc, query);
+        applyQueryToReducer(snapshot, doc, query);
     }
 
     if (query.command) {

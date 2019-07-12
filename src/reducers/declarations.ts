@@ -7,16 +7,16 @@ const verbose = !!process.env.verbose;
 
 declareReducer(() => {
     return {
-        name: 'relations',
+        name: 'declarations',
         value: { },
         reducer(query: Query, set) {
-            if (query.command === 'def-relation') {
+            if (query.command === 'def-declaration') {
                 const rel = query.commandArgs[0];
                 if (!set[rel]) {
                     set[rel] = true;
 
                     if (verbose)
-                        print('defined relation: ' + rel);
+                        print('defined declaration: ' + rel);
                 }
             }
 

@@ -1,9 +1,9 @@
 
 import { Query } from '../query'
-import DocumentMount from '../snapshot/DocumentMount'
+import { declareReducer } from '../framework'
 import { print } from '../utils'
 
-export default function invalidQueryCheck(): DocumentMount {
+declareReducer(() => {
     return {
         name: 'invalidQueryCheck',
         value: null,
@@ -12,5 +12,5 @@ export default function invalidQueryCheck(): DocumentMount {
                 print('warning: unrecogized query: ' + query.syntax.originalStr);
         }
     }
-}
+})
 

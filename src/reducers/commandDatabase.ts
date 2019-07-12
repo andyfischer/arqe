@@ -1,6 +1,6 @@
 
 import { Query } from '../query'
-import DocumentMount from '../snapshot/DocumentMount'
+import { declareReducer } from '../framework'
 import { print } from '../utils'
 
 const verbose = !!process.env.verbose;
@@ -94,7 +94,7 @@ function update(query: Query, db: CommandDatabase) {
     }
 }
 
-export default function commandDatabase(): DocumentMount<CommandDatabase> {
+declareReducer(() => {
     return {
         name: 'commandDB',
         value: {
@@ -116,4 +116,4 @@ export default function commandDatabase(): DocumentMount<CommandDatabase> {
             return db;
         }
     }
-}
+});

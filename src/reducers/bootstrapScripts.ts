@@ -1,8 +1,8 @@
 
 import { Query } from '../query'
-import DocumentMount from '../snapshot/DocumentMount'
+import { declareReducer } from '../framework'
 
-export default function autocompleteInfoDoc(): DocumentMount {
+declareReducer(() => {
     return {
         name: 'bootstrapScripts',
         value: {
@@ -17,4 +17,4 @@ export default function autocompleteInfoDoc(): DocumentMount {
             return value;
         }
     }
-}
+});
