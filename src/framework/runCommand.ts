@@ -66,11 +66,8 @@ export default async function runCommand(snapshot: Snapshot, query: Query) {
 
     const commandImpl = everyCommand[query.command];
 
-    if (!commandImpl) {
-        print('warning: no impl found for command: ' + query.command);
+    if (!commandImpl)
         return;
-    }
-
 
     const context = new CommandContext()
     context.snapshot = snapshot;
@@ -80,6 +77,6 @@ export default async function runCommand(snapshot: Snapshot, query: Query) {
     await commandImpl.run(context);
 
     for (const k in context.results) {
-        print(`  ${k} = ${context.results[k]}`);
+        print(`note:  ${k} = ${context.results[k]}`);
     }
 }

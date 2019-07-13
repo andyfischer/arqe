@@ -7,15 +7,12 @@ def-relation includes
 def-relation has
 def-relation requires-arg
 def-relation has-main-arg
-def-relation has-no-implementation
 
 command/def-command ..
-  has-no-implementation
   requires-arg command-name
   has-main-arg command-name
 
 command/def-relation ..
-  has-no-implementation
   requires-arg relation-name
   has-main-arg relation-name
 
@@ -39,11 +36,8 @@ def-command help
 def-command http-post
 
 command/def-declaration ..
-  has-no-implementation
   requires-arg declaration-name
   has-main-arg declaration-name
-
-command/eof has-no-implementation
 
 .. is type
   integer
@@ -52,6 +46,8 @@ command/eof has-no-implementation
   boolean
   null
   object
+
+def-command set-in-current-file
 
 bootstrap-scripts includes ..
   edit.p

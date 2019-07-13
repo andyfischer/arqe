@@ -7,7 +7,9 @@ import '../reducers'
 
 export default class Snapshot {
 
-    liveValues: { [name: string]: any } = {}
+    globalValues: { [name: string]: any } = {}
+    fileScopedValues: { [name: string]: any } = {}
+
     liveDocuments: Reducer[] = []
     liveDocumentsByName: { [name: string]: Reducer } = {}
 
@@ -30,7 +32,6 @@ export default class Snapshot {
         return reducer;
     }
 
-    // ParseContext
     isRelation(s: string) {
         const relations = this.getValue('relations');
         return !!relations[s];
@@ -44,7 +45,6 @@ export default class Snapshot {
     getLastIncompleteClause() {
         return this.getValueOpt('lastIncompleteClause').found;
     }
-    // end ParseContext
 
     hasDocument(documentName: string) {
         const doc = this.liveDocumentsByName[documentName];
@@ -52,8 +52,11 @@ export default class Snapshot {
     }
 
     getValueOpt(name: string) {
-        if (this.liveValues[name])
-            return { found: this.liveValues[name] }
+        if (this.fileScopedValues[name])
+            return { found: this.fileScopedValues[name] }
+
+        if (this.globalValues[name])
+            return { found: this.globalValues[name] }
 
         const doc = this.liveDocumentsByName[name];
         if (doc)
