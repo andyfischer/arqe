@@ -15,7 +15,7 @@ export default function applyQueryToDocument(snapshot: Snapshot, reducer: Reduce
     if (log)
         previousValue = JSON.stringify(reducer.value);
     
-    reducer.value = reducer.reducer(query, reducer.value, snapshot);
+    reducer.value = reducer.reducer(query, reducer.value);
 
     if (log) {
         const newValue = JSON.stringify(reducer.value);

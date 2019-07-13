@@ -1,4 +1,5 @@
 
+import { Snapshot } from '../snapshot'
 import QuerySyntax from './QuerySyntax'
 
 type QueryType = 'command' | 'relation' | 'unknown' | 'empty'
@@ -10,7 +11,6 @@ export default interface Query {
     options: { [key: string]: string }
 
     isIncomplete?: boolean
-    isComment?: boolean
 
     command?: string
     commandArgs?: string[]
@@ -18,4 +18,6 @@ export default interface Query {
     relationSubject?: string
     relation?: string
     relationObject?: string
+
+    snapshot?: Snapshot
 }

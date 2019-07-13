@@ -73,7 +73,6 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
         return {
             syntax,
             type: 'empty',
-            isComment: true,
             options: {}
         }
     }
