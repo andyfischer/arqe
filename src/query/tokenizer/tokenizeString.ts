@@ -82,8 +82,7 @@ function consumeNext(input: StringReader) {
     return input.consume(t_unrecognized, 1);
 }
 
-
-export function tokenizeString(str) {
+export function tokenizeString(str:string ): TokenizeResult {
     const reader = new StringReader(str);
 
     const tokens = [];

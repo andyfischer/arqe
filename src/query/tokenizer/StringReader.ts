@@ -58,9 +58,7 @@ export default class StringReader {
             this.charNumber += len;
         }
 
-        this.index += len;
-
-        this.charNumber += len;
+        this.index = result.endPos;
 
         return result;
     }

@@ -44,6 +44,11 @@ export const t_semicolon = {
     "str": ";"
 }
 
+export const t_colon = {
+    "name": "colon",
+    "str": ":"
+}
+
 export const t_plus = {
     name: "plus",
     str: "+"
@@ -122,6 +127,7 @@ export const everyToken: TokenDef[] = [
     t_dot,
     t_double_dot,
     t_semicolon,
+    t_colon,
     t_plus,
     t_dash,
     t_star,

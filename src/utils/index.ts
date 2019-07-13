@@ -1,9 +1,11 @@
 
 import ChildProcess from 'child_process'
 import Util from 'util'
+import { consoleColorizeOutput } from './console'
 
 export function print(...args: string[]) {
-    console.log.apply(null, args);
+    const str = consoleColorizeOutput(args.join(' '));
+    console.log(str);
 }
 
 export function printError(err) {
