@@ -25,4 +25,6 @@ export default async function applyQuery(snapshot: Snapshot, queryString: string
     if (query.command) {
         await runCommand(snapshot, query);
     }
+
+    print('note: parsed as ' + JSON.stringify(query));
 }

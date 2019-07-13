@@ -6,6 +6,7 @@ function csi(code) {
 export const ansi_red = 31;
 export const ansi_green = 32;
 export const ansi_yellow = 33;
+export const ansi_bright_black = 90;
 
 export default class AnsiColorWriter {
 

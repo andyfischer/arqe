@@ -1,6 +1,17 @@
 
-import AnsiColorWriter, { ansi_yellow, ansi_red } from './AnsiColorWriter'
-import { tokenizeString, t_ident, t_colon } from '../query/tokenizer'
+import AnsiColorWriter, { ansi_yellow, ansi_red, ansi_bright_black } from './AnsiColorWriter'
+import { tokenizeString, t_ident, t_colon, t_space } from '../query/tokenizer'
+
+function matchPrefix(reader, text: string) {
+    if (reader.nextIs(t_ident)
+            && reader.nextText() === text
+            && reader.nextIs(t_colon, 1)) {
+
+        reader.consume();
+        reader.consume();
+        return true;
+    }
+}
 
 export function consoleColorizeOutput(str) {
     const { reader } = tokenizeString(str);
@@ -8,27 +19,22 @@ export function consoleColorizeOutput(str) {
 
     while (!reader.finished()) {
 
-        if (reader.nextIs(t_ident)
-                && reader.nextText() === 'warning'
-                && reader.nextIs(t_colon, 1)) {
-
-            reader.consume();
-            reader.consume();
+        if (matchPrefix(reader, 'warning')) {
             writer.setFG(ansi_yellow);
             writer.write('warning:');
-            writer.reset();
             continue;
         }
 
-        if (reader.nextIs(t_ident)
-                && reader.nextText() === 'error'
-                && reader.nextIs(t_colon, 1)) {
-
-            reader.consume();
-            reader.consume();
+        if (matchPrefix(reader, 'error')) {
             writer.setFG(ansi_red);
             writer.write('error:');
-            writer.reset();
+            continue;
+        }
+
+        if (matchPrefix(reader, 'note')) {
+            if (reader.nextIs(t_space))
+                reader.consume();
+            writer.setFG(ansi_bright_black);
             continue;
         }
 
