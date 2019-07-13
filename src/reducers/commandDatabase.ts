@@ -6,7 +6,6 @@ import { print } from '../utils'
 const verbose = !!process.env.verbose;
 
 interface Arg {
-    key: string
     isMain?: boolean
     isRequired?: boolean
 }
@@ -22,26 +21,30 @@ export interface CommandDatabase {
     byName: { [name: string]: CommandDefinition }
 }
 
+function initCommand(db: CommandDatabase, name) {
+    if (!db.byName[name]) {
+        db.byName[name] = {
+            name,
+            args: {}
+        }
+
+        if (verbose)
+            print('defined command: ' + name);
+    }
+}
+
 function update(query: Query, db: CommandDatabase) {
 
     if (query.command === 'def-command') {
-        const command = query.commandArgs && query.commandArgs[0];
+        const name = query.commandArgs && query.commandArgs[0];
+        initCommand(db, name);
+        return;
+    }
 
-        if (!command) {
-            print('error: missing args for def-command');
-            return;
-        }
-
-        if (!db.byName[command]) {
-            db.byName[command] = {
-                name: command,
-                args: {}
-            }
-
-            if (verbose)
-                print('defined command: ' + command);
-        }
-
+    if (query.command === 'def-declaration') {
+        const name = query.commandArgs && query.commandArgs[0];
+        initCommand(db, name);
+        db.byName[name].hasNoImplementation = true;
         return;
     }
     
@@ -57,7 +60,7 @@ function update(query: Query, db: CommandDatabase) {
             return;
         }
 
-        command.args[argName] = command.args[argName] || { key: argName }
+        command.args[argName] = command.args[argName] || { }
         const arg = command.args[argName];
 
         arg.isRequired = true;
@@ -101,12 +104,22 @@ declareReducer(() => {
             byName: {
                 'def-command': {
                     name: 'def-command',
-                    args: {},
+                    args: {
+                        'command-name': {
+                            isRequired: true
+                        }
+                    },
+                    mainArg: 'command-name',
                     hasNoImplementation: true
                 },
                 'def-relation': {
                     name: 'def-relation',
-                    args: {},
+                    args: {
+                        'relation-name': {
+                            isRequired: true
+                        }
+                    },
+                    mainArg: 'relation-name',
                     hasNoImplementation: true
                 }
             }

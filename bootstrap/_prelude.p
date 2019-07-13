@@ -1,6 +1,25 @@
 
 def-command def-command
 def-command def-relation
+
+def-relation is
+def-relation includes
+def-relation has
+def-relation requires-arg
+def-relation has-main-arg
+def-relation has-no-implementation
+
+command/def-command ..
+  has-no-implementation
+  requires-arg command-name
+  has-main-arg command-name
+
+command/def-relation ..
+  has-no-implementation
+  requires-arg relation-name
+  has-main-arg relation-name
+
+def-command def-declaration
 def-command def-type
 def-command def-collection
 def-command def-language
@@ -19,15 +38,11 @@ def-command set
 def-command help
 def-command http-post
 
-def-relation is
-def-relation includes
-def-relation has
-def-relation requires-arg
-def-relation has-main-arg
-def-relation has-no-implementation
+command/def-declaration ..
+  has-no-implementation
+  requires-arg declaration-name
+  has-main-arg declaration-name
 
-command/def-command has-no-implementation
-command/def-relation has-no-implementation
 command/eof has-no-implementation
 
 .. is type

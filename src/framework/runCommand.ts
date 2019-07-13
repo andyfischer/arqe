@@ -20,16 +20,6 @@ export default async function runCommand(snapshot: Snapshot, query: Query) {
         return;
     }
 
-    if (command.hasNoImplementation)
-        return;
-
-    const commandImpl = everyCommand[query.command];
-
-    if (!commandImpl) {
-        print('warning: no impl found for command: ' + query.command);
-        return;
-    }
-
     function findValue(name: string) {
 
         if (query.options[name])
@@ -47,28 +37,40 @@ export default async function runCommand(snapshot: Snapshot, query: Query) {
     let cantRunCommand = false;
 
     // Resolve incoming values
-    for (const arg of values(command.args)) {
-
-        const value = findValue(arg.key);
+    for (const argName in command.args) {
+        const arg = command.args[argName];
+        const value = findValue(argName);
 
         if (value === undefined) {
             if (arg.isRequired) {
-                print('error: missing required argument: ' + arg.key);
+                print('error: missing required argument: ' + argName);
+                print('  query was: ' + query.syntax.originalStr);
                 cantRunCommand = true;
             }
         } else {
-            incoming[arg.key] = value;
+            incoming[argName] = value;
         }
     }
 
     if (!command.mainArg && query.commandArgs.length > 0) {
-        print("warning: command doesn't expect any main args");
+        print(`warning: command ${command.name} doesn't expect any main args`);
     } else if (query.commandArgs.length > 1) {
         print("warning: too many main args");
     }
 
     if (cantRunCommand)
         return;
+
+    if (command.hasNoImplementation)
+        return;
+
+    const commandImpl = everyCommand[query.command];
+
+    if (!commandImpl) {
+        print('warning: no impl found for command: ' + query.command);
+        return;
+    }
+
 
     const context = new CommandContext()
     context.snapshot = snapshot;

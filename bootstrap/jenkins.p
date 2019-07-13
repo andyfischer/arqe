@@ -1,7 +1,7 @@
 
-def-command url-pattern
-def-command template-param
-def-command jenkins-job
+def-declaration url-pattern
+def-declaration template-param
+def-declaration jenkins-job
 
 url-pattern name=jenkins-build url=https://build.stage.shutterfly.com/job/JOB_NAME/build?delay=0sec
 
