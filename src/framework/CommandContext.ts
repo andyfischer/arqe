@@ -1,6 +1,6 @@
 
 import { Query } from '../query'
-import { Snapshot } from '../snapshot'
+import { Snapshot } from '../framework'
 import { runCommand } from '.'
 
 export default class CommandContext {

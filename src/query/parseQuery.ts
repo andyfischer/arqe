@@ -1,5 +1,5 @@
 
-import { Snapshot } from '../snapshot'
+import { Snapshot } from '../framework'
 import { ParseContext, Query } from '.'
 import { print } from '../utils'
 import parseSyntax from './parseSyntax'

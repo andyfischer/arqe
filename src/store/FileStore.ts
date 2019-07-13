@@ -2,7 +2,7 @@
 import Fs from 'fs-extra'
 import Path from 'path'
 import Store from './Store'
-import { Snapshot } from '../snapshot'
+import { Snapshot } from '../framework'
 
 export default class FileStore  {
     dir: string

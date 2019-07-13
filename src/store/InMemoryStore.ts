@@ -1,4 +1,5 @@
 
+/*
 import { Snapshot } from '../snapshot'
 import { Store, Event } from '.'
 import { parseQuery } from '../query'
@@ -8,7 +9,6 @@ export default class InMemoryStore {
     latestEventId: number = 1
     listeningSnapshots: Snapshot[] = []
 
-    /*
     async saveQuery(str: string) {
 
         this.everyQuery.push(str);
@@ -44,5 +44,5 @@ export default class InMemoryStore {
         snapshot.store = this;
         return snapshot;
     }
-    */
 }
+*/

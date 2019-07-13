@@ -1,5 +1,5 @@
 
-import { Snapshot } from '../snapshot'
+import { Snapshot } from '../framework'
 import TerminalConnection from './TerminalConnection'
 
 export default class LocalTerminalConnection implements TerminalConnection {

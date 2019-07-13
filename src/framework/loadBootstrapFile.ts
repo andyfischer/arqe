@@ -1,5 +1,5 @@
 
-import { Snapshot } from '../snapshot'
+import { Snapshot } from '.'
 import { readTextLinesSync } from '../utils'
 
 export default async function loadBootstrapFile(snapshot: Snapshot, filename: string) {

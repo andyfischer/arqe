@@ -1,7 +1,6 @@
 
-import { CommandContext } from '.'
+import { Snapshot, CommandContext } from '.'
 import { Query } from '../query'
-import { Snapshot } from '../snapshot'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
 import { CommandDatabase } from '../reducers/commandDatabase'

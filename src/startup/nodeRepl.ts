@@ -1,5 +1,5 @@
 
-import { Snapshot } from '../snapshot'
+import { Snapshot } from '../framework'
 
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
