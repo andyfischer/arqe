@@ -1,13 +1,15 @@
 #! /usr/bin/env node
 
 import 'source-map-support/register'
+
 import os from 'os'
 import Fs from 'fs-extra'
 import Path from 'path'
 import { fileStoreExists, setupFileStore } from '../store'
 import serveExpressApp from './serveExpressApp'
 import { print, readTextLinesSync } from '../utils'
-import { loadBootstrapFile, applyQuery } from '../snapshot'
+import { applyQuery } from '../snapshot'
+import { loadBootstrapFile } from '../framework'
 import setupUserDir from './setupUserDir'
 import loadMainSnapshot from './loadMainSnapshot'
 import nodeRepl from './nodeRepl'

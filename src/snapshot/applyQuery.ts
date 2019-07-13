@@ -9,20 +9,25 @@ import { CommandDefinition } from '../reducers/commandDatabase'
 
 const verbose = !!process.env.verbose;
 
-export default async function applyQuery(snapshot: Snapshot, queryString: string) {
-    if (typeof queryString !== 'string')
-        throw new Error("queryString must be a string, got: " + queryString);
+export interface QueryOptions {
+    isNoninteractive?: boolean
+}
+
+export default async function applyQuery(snapshot: Snapshot, input: string, opts?: QueryOptions) {
+    if (typeof input !== 'string')
+        throw new Error("query must be a string, got: " + input);
 
     if (verbose)
-        print('running query: ' + queryString);
+        print('running query: ' + input);
 
-    const query = parseQuery(queryString, snapshot);
+    const query = parseQuery(input, snapshot);
 
-    for (const doc of snapshot.liveDocuments) {
+    if (opts && opts.isNoninteractive)
+        query.isNoninteractive = opts.isNoninteractive;
+
+    for (const doc of snapshot.liveDocuments)
         applyQueryToReducer(snapshot, doc, query);
-    }
 
-    if (query.command) {
+    if (query.command)
         await runCommand(snapshot, query);
-    }
 }

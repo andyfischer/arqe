@@ -1,7 +1,8 @@
 
 import os from 'os'
 import path from 'path'
-import { Snapshot, loadBootstrapFile } from '../snapshot'
+import { Snapshot } from '../snapshot'
+import { loadBootstrapFile } from '../framework'
 
 let _mainSnapshot: Snapshot;
 

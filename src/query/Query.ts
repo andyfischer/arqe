@@ -19,5 +19,10 @@ export default interface Query {
     relation?: string
     relationObject?: string
 
+    // Context
     snapshot?: Snapshot
+    isNoninteractive?: boolean
+
+    // Response
+    respond?: (s: string) => void
 }

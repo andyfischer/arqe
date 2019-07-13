@@ -5,6 +5,5 @@ import Snapshot from './Snapshot'
 import { print } from '../utils'
 
 export { default as Snapshot } from './Snapshot'
-export { default as loadBootstrapFile } from './loadBootstrapFile'
 export { default as applyQuery } from './applyQuery'
 

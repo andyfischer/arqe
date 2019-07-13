@@ -1,7 +1,7 @@
 
 import { Reducer, everyReducer } from '../framework'
 import { print } from '../utils'
-import applyQuery from './applyQuery'
+import applyQuery, { QueryOptions } from './applyQuery'
 import { CommandDatabase } from '../reducers/commandDatabase'
 import '../reducers'
 
@@ -74,7 +74,7 @@ export default class Snapshot {
         return get.found;
     }
 
-    async applyQuery(queryString: string) {
-        return await applyQuery(this, queryString);
+    async applyQuery(queryString: string, options?: QueryOptions) {
+        return await applyQuery(this, queryString, options);
     }
 }
