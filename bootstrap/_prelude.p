@@ -18,6 +18,7 @@ command/def-relation ..
 
 def-command def-declaration
 def-command def-type
+def-command def-function
 def-command def-collection
 def-command def-language
 def-command def-filetype
@@ -38,6 +39,14 @@ def-command http-post
 command/def-declaration ..
   requires-arg declaration-name
   has-main-arg declaration-name
+
+command/def-type ..
+  requires-arg type-name
+  has-main-arg type-name
+
+command/def-function ..
+  requires-arg function-name
+  has-main-arg function-name
 
 .. is type
   integer
