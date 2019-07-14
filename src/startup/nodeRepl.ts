@@ -12,7 +12,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
     
     async function evaluate(line) {
         line = trimEndline(line);
-        await snapshot.applyQuery(line);
+        await snapshot.applyQuery(line, { isInteractive: true } );
         repl.displayPrompt();
     }
 

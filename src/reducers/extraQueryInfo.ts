@@ -9,11 +9,12 @@ declareReducer(() => {
         value: { },
         reducer(query: Query, value) {
 
-            if (!query.isNoninteractive) {
+            if (query.isInteractive) {
                 const q = Object.assign({}, query);
                 delete q.syntax;
                 delete q.snapshot;
-                print('note: parsed as ' + JSON.stringify(q));
+                delete q.isInteractive;
+                // print('note: parsed as ' + JSON.stringify(q));
             }
         }
     }

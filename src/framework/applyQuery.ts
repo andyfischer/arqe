@@ -10,7 +10,7 @@ import { CommandDefinition } from '../reducers/commandDatabase'
 const verbose = !!process.env.verbose;
 
 export interface QueryOptions {
-    isNoninteractive?: boolean
+    isInteractive?: boolean
 }
 
 export default async function applyQuery(snapshot: Snapshot, input: string, opts?: QueryOptions) {
@@ -22,8 +22,8 @@ export default async function applyQuery(snapshot: Snapshot, input: string, opts
 
     const query = parseQuery(input, snapshot);
 
-    if (opts && opts.isNoninteractive)
-        query.isNoninteractive = opts.isNoninteractive;
+    if (opts && opts.isInteractive)
+        query.isInteractive = true;
 
     for (const doc of snapshot.liveDocuments)
         applyQueryToReducer(snapshot, doc, query);

@@ -21,8 +21,5 @@ export default interface Query {
 
     // Context
     snapshot?: Snapshot
-    isNoninteractive?: boolean
-
-    // Response
-    respond?: (s: string) => void
+    isInteractive?: boolean
 }
