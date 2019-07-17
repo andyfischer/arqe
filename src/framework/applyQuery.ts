@@ -28,5 +28,5 @@ export default async function applyQuery(snapshot: Snapshot, input: string, opts
         applyQueryToReducer(snapshot, doc, query);
 
     if (query.command)
-        await runCommand(snapshot, query);
+        await runCommand(query);
 }

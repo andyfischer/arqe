@@ -8,10 +8,11 @@ import '../commands/_everyCommand'
 
 const verbose = !!process.env.verbose;
 
-export default async function runCommand(snapshot: Snapshot, query: Query) {
+export default async function runCommand(query: Query) {
 
     // Look up command definition.
-    const commandDB: CommandDatabase = getCommandDatabase(snapshot);
+    const snapshot = query.snapshot;
+    const commandDB: CommandDatabase = getCommandDatabase(query);
     const command = commandDB.byName[query.command];
 
     if (!command) {
