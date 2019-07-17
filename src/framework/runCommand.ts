@@ -3,7 +3,7 @@ import { Snapshot, CommandContext } from '.'
 import { Query } from '../query'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
-import { CommandDatabase } from '../reducers/commandDatabase'
+import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../commands/_everyCommand'
 
 const verbose = !!process.env.verbose;
@@ -11,7 +11,7 @@ const verbose = !!process.env.verbose;
 export default async function runCommand(snapshot: Snapshot, query: Query) {
 
     // Look up command definition.
-    const commandDB: CommandDatabase = snapshot.getValue('commandDB');
+    const commandDB: CommandDatabase = getCommandDatabase(snapshot);
     const command = commandDB.byName[query.command];
 
     if (!command) {
@@ -43,7 +43,6 @@ export default async function runCommand(snapshot: Snapshot, query: Query) {
         if (value === undefined) {
             if (arg.isRequired) {
                 print('error: missing required argument: ' + argName);
-                print('  query was: ' + query.syntax.originalStr);
                 cantRunCommand = true;
             }
         } else {
@@ -57,8 +56,9 @@ export default async function runCommand(snapshot: Snapshot, query: Query) {
         print("warning: too many main args");
     }
 
-    if (cantRunCommand)
+    if (cantRunCommand) {
         return;
+    }
 
     if (command.hasNoImplementation)
         return;

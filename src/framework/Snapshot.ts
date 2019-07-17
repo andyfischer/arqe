@@ -2,7 +2,7 @@
 import { Reducer, everyReducer } from '../framework'
 import { print } from '../utils'
 import applyQuery, { QueryOptions } from './applyQuery'
-import { CommandDatabase } from '../reducers/commandDatabase'
+import { getInitialCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../reducers'
 
 export default class Snapshot {
@@ -14,6 +14,9 @@ export default class Snapshot {
     liveDocumentsByName: { [name: string]: Reducer } = {}
 
     constructor() {
+        // Bootstrap values
+        this.globalValues['commandDatabase'] = getInitialCommandDatabase();
+
         // Builtin documents
         for (const reducerDef of everyReducer)
             this.mountDocument(reducerDef());
@@ -38,7 +41,7 @@ export default class Snapshot {
     }
 
     isCommand(s: string) {
-        const db: CommandDatabase = this.getValue('commandDB');
+        const db: CommandDatabase = getCommandDatabase(this);
         return !!db.byName[s];
     }
 

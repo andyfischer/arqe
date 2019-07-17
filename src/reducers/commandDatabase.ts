@@ -2,24 +2,9 @@
 import { Query } from '../query'
 import { declareReducer } from '../framework'
 import { print } from '../utils'
+import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 
 const verbose = !!process.env.verbose;
-
-interface Arg {
-    isMain?: boolean
-    isRequired?: boolean
-}
-
-export interface CommandDefinition {
-    name: string
-    mainArg?: string
-    args: { [key: string]: Arg }
-    hasNoImplementation?: boolean
-}
-
-export interface CommandDatabase {
-    byName: { [name: string]: CommandDefinition }
-}
 
 function initCommand(db: CommandDatabase, name) {
     if (!db.byName[name]) {
@@ -100,32 +85,9 @@ function update(query: Query, db: CommandDatabase) {
 declareReducer(() => {
     return {
         name: 'commandDB',
-        value: {
-            byName: {
-                'def-command': {
-                    name: 'def-command',
-                    args: {
-                        'command-name': {
-                            isRequired: true
-                        }
-                    },
-                    mainArg: 'command-name',
-                    hasNoImplementation: true
-                },
-                'def-relation': {
-                    name: 'def-relation',
-                    args: {
-                        'relation-name': {
-                            isRequired: true
-                        }
-                    },
-                    mainArg: 'relation-name',
-                    hasNoImplementation: true
-                }
-            }
-        },
+        value: {},
         reducer(query: Query, db: CommandDatabase) {
-            update(query, db);
+            update(query, getCommandDatabase(query));
             return db;
         }
     }

@@ -5,7 +5,6 @@ import applyQueryToReducer from './applyQueryToReducer'
 import { runCommand, Reducer } from '../framework'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
-import { CommandDefinition } from '../reducers/commandDatabase'
 
 const verbose = !!process.env.verbose;
 
