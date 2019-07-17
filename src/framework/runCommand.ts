@@ -4,7 +4,7 @@ import { Query } from '../query'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
-import '../commands/_everyCommand'
+import '../commands'
 
 const verbose = !!process.env.verbose;
 
@@ -61,22 +61,35 @@ export default async function runCommand(query: Query) {
         return;
     }
 
-    if (command.hasNoImplementation)
+    if (command.hasNoImplementation) {
         return;
+    }
+
+    if (command.run) {
+        const context = new CommandContext()
+        context.snapshot = snapshot;
+        context.query = query;
+        context.incoming = incoming;
+
+        await command.run(context);
+
+        for (const k in context.results) {
+            print(`note:  ${k} = ${context.results[k]}`);
+        }
+    }
 
     const commandImpl = everyCommand[query.command];
 
-    if (!commandImpl)
-        return;
+    if (commandImpl) {
+        const context = new CommandContext()
+        context.snapshot = snapshot;
+        context.query = query;
+        context.incoming = incoming;
 
-    const context = new CommandContext()
-    context.snapshot = snapshot;
-    context.query = query;
-    context.incoming = incoming;
+        await commandImpl.run(context);
 
-    await commandImpl.run(context);
-
-    for (const k in context.results) {
-        print(`note:  ${k} = ${context.results[k]}`);
+        for (const k in context.results) {
+            print(`note:  ${k} = ${context.results[k]}`);
+        }
     }
 }

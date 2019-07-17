@@ -67,6 +67,7 @@ def-command set-in-current-file
 
 bootstrap-scripts includes ..
   history.p
+  cron.p
   edit.p
   workingdir.p
   languages.p

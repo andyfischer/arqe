@@ -9,7 +9,7 @@ export default class CommandContext {
     incoming: { [key: string]: string } = {}
     results: { [key: string]: string } = {}
 
-    async get(valueName: string) {
+    get(valueName: string) {
 
         if (this.incoming[valueName])
             return this.incoming[valueName];
@@ -26,6 +26,10 @@ export default class CommandContext {
             return get.found;
 
         throw new Error("CommandContext.get missing value for: " + valueName);
+    }
+
+    set(valueName: string, value: any) {
+        this.snapshot[valueName] = value;
     }
 
     async subQuery(queryStr: string) {
