@@ -43,6 +43,7 @@
   },
   "bin": {
     "p": "dist/terminal/main.js",
+    "p-discovery-agent": "dist/agents/discovery",
     "encode-file": "dist/tools/encode-file.js"
   }
 }

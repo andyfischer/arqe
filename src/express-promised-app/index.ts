@@ -4,6 +4,7 @@ import sendResponse from './sendResponse'
 
 export { default as Response, CacheOption, CookieData } from './Response'
 export { Request } from 'express'
+export { default as createExpressApp } from './createExpressApp'
 
 /**
  * Callback function for an endpoint handler. This receives an Express Request
