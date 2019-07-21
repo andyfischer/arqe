@@ -7,11 +7,25 @@ import { print } from '../../utils'
 
 interface Service {
     name: string
-    url: string
+    port: number
     tags: string[]
 }
 
 const registeredServices: { [id: string]: Service } = {}
+const registeredPorts: { [port: string]: Service } = {}
+let nextPort = 3500;
+
+function assignPort(service: Service) {
+    const port = nextPort;
+
+    if (registeredPorts[port]) {
+        throw new Error(`internal error: port ${port} already has a service`);
+    }
+
+    nextPort += 1;
+    service.port = port;
+    registeredPorts[port] = service;
+}
 
 function setupEndpoints(app: ExpressPromisedApp) {
     app.put('/service/:id', async (req) => {
@@ -24,27 +38,22 @@ function setupEndpoints(app: ExpressPromisedApp) {
             }
         }
 
-        const info = req.body;
+        const service = req.body;
 
-        if (!info.name) {
+        if (!service.name) {
             return {
                 statusCode: 400,
-                error: "service info is missing: name"
+                error: "request data is missing: name"
             }
         }
 
-        if (!info.url) {
-            return {
-                statusCode: 400,
-                error: "service info is missing: url"
-            }
-        }
+        assignPort(service);
+        registeredServices[id] = service;
 
-        registeredServices[id] = info;
-
-        print(`registered service ${id}: ${JSON.stringify(info)}`);
+        print(`registered service ${id}: ${JSON.stringify(service)}`);
 
         return {
+            service,
             message: 'okay, registered service with id: ' + id
         }
     });

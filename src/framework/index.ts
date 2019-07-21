@@ -1,6 +1,6 @@
 
 export { default as CommandContext } from './CommandContext'
-export { default as CommandDefinition } from './CommandDefinition'
+export { default as CommandDefinition, CommandHandler } from './CommandDefinition'
 export { default as declareCommand } from './declareCommand'
 export { default as declareReducer, everyReducer } from './declareReducer'
 export { default as runAsMain } from './runAsMain'

@@ -40,7 +40,10 @@ export default class ExpressWrapper {
     listen(port: string | number) {
         const portNum = typeof port === 'string' ? parseInt(port, 10) : port;
         return new Promise((resolve, reject) => {
-            this.expressApp.listen(port, '0.0.0.0', resolve);
+            const onReady = () => {
+                resolve(httpServer);
+            }
+            const httpServer = this.expressApp.listen(port, '0.0.0.0', onReady);
         });
     }
     
