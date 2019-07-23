@@ -10,6 +10,7 @@ function initCommand(db: CommandDatabase, name) {
     if (!db.byName[name]) {
         db.byName[name] = {
             name,
+            mainArgs: [],
             args: {}
         }
 
@@ -77,7 +78,27 @@ function update(query: Query, db: CommandDatabase) {
             return;
         }
 
-        command.mainArg = query.relationObject;
+        if (command.mainArgs.length === 0)
+            command.mainArgs.push(null);
+
+        command.mainArgs[0] = query.relationObject;
+        return;
+    }
+
+    if (query.relation === 'has-second-main-arg') {
+        const commandName = query.relationSubject
+            .replace(/^command\//, '');
+        const command = db.byName[commandName];
+
+        if (!command) {
+            print('command not found: ' + commandName);
+            return;
+        }
+
+        while (command.mainArgs.length < 2)
+            command.mainArgs.push(null);
+
+        command.mainArgs[1] = query.relationObject;
         return;
     }
 }

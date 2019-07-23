@@ -17,6 +17,9 @@ export default function applyQueryToDocument(snapshot: Snapshot, reducer: Reduce
     
     reducer.value = reducer.reducer(query, reducer.value);
 
+    // Catch any async errors (if needed)
+    Promise.resolve(reducer.value).catch(err => print('error: ' + err));
+
     if (log) {
         const newValue = JSON.stringify(reducer.value);
         if (previousValue != newValue) {

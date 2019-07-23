@@ -22,4 +22,7 @@ export default interface Query {
     // Context
     snapshot?: Snapshot
     isInteractive?: boolean
+
+    // Response
+    respond?: (data: any) => void
 }

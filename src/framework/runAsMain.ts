@@ -1,6 +1,6 @@
 
 import { CommandDefinition, CommandContext } from '.'
-import loadMainSnapshot from '../startup/loadMainSnapshot'
+import { loadMainSnapshot } from '.'
 
 export default async function runAsMain(def: CommandDefinition) {
 

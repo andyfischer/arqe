@@ -9,7 +9,7 @@ interface Arg {
 
 export interface CommandDefinition {
     name: string
-    mainArg?: string
+    mainArgs: string[]
     args: { [key: string]: Arg }
     hasNoImplementation?: boolean
     run?: (context: CommandContext) => Promise<void>
@@ -29,7 +29,7 @@ export function getInitialCommandDatabase(): CommandDatabase {
                         isRequired: true
                     }
                 },
-                mainArg: 'command-name',
+                mainArgs: ['command-name'],
                 hasNoImplementation: true
             },
             'def-relation': {
@@ -39,7 +39,7 @@ export function getInitialCommandDatabase(): CommandDatabase {
                         isRequired: true
                     }
                 },
-                mainArg: 'relation-name',
+                mainArgs: ['relation-name'],
                 hasNoImplementation: true
             }
         }

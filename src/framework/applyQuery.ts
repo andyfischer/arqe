@@ -5,6 +5,7 @@ import applyQueryToReducer from './applyQueryToReducer'
 import { runCommand, Reducer } from '../framework'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
+import printResponseToTerminal from './printResponseToTerminal'
 
 const verbose = !!process.env.verbose;
 
@@ -21,8 +22,12 @@ export default async function applyQuery(snapshot: Snapshot, input: string, opts
 
     const query = parseQuery(input, snapshot);
 
-    if (opts && opts.isInteractive)
+    if (opts && opts.isInteractive) {
         query.isInteractive = true;
+        query.respond = data => printResponseToTerminal(query, data)
+    } else {
+        query.respond = () => null
+    }
 
     for (const doc of snapshot.liveDocuments)
         applyQueryToReducer(snapshot, doc, query);

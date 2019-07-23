@@ -10,7 +10,7 @@ import serveExpressApp from './serveExpressApp'
 import { print, readTextLinesSync } from '../utils'
 import { applyQuery, loadBootstrapFile } from '../framework'
 import setupUserDir from './setupUserDir'
-import loadMainSnapshot from './loadMainSnapshot'
+import { loadMainSnapshot } from '../framework'
 import nodeRepl from './nodeRepl'
 
 async function main() {

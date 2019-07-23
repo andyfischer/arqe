@@ -9,5 +9,6 @@ export { default as Reducer, ReducerDefinition } from './Reducer'
 export { default as loadBootstrapFile } from './loadBootstrapFile'
 export { default as Snapshot } from './Snapshot'
 export { default as applyQuery } from './applyQuery'
+export { default as loadMainSnapshot } from './loadMainSnapshot'
 
 

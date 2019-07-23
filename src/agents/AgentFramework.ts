@@ -6,10 +6,11 @@ import { print, randomHex } from '..'
 
 interface SetupArgs {
     name: string
-    discoveryServiceUrl?: string
+    snapshot: Snapshot
 }
 
-const defaultDiscoveryServiceUrl = 'http://localhost:9141/'
+// future: find discoveryServiceUrl in the snapshot
+const discoveryServiceUrl = 'http://localhost:9141/'
 
 export default class AgentFramework {
 
@@ -18,7 +19,6 @@ export default class AgentFramework {
     webApp: ExpressPromisedApp
     httpServer: any
     snapshot: Snapshot
-    discoveryServiceUrl: string
 
     constructor(args: SetupArgs) {
         this.setupArgs = args;
@@ -26,7 +26,6 @@ export default class AgentFramework {
         this.webApp = createExpressApp({
             setupEndpoints: app => this.setupEndpoints(app)
         });
-        this.discoveryServiceUrl = args.discoveryServiceUrl || defaultDiscoveryServiceUrl;
     }
 
     private setupEndpoints(app: ExpressPromisedApp) {
@@ -40,17 +39,19 @@ export default class AgentFramework {
         let registeredService;
 
         try {
-            const put = Bent(this.discoveryServiceUrl, 'json', 'PUT', 200);
+            const put = Bent(discoveryServiceUrl, 'json', 'PUT', 200);
             registeredService = await put(`service/${this.serviceId}`, {
-                name: this.setupArgs.name
+                name: this.setupArgs.name,
+                tags: ['agent']
             });
 
         } catch (err) {
-            const msg = 'error: Failed to connect to discovery service at ' + this.discoveryServiceUrl;
+            const msg = 'error: Failed to connect to discovery service at ' + discoveryServiceUrl;
             print(msg);
             if (err.responseBody) {
                 print(await err.responseBody);
             }
+
             throw new Error(msg);
         }
 
@@ -66,8 +67,13 @@ export default class AgentFramework {
     }
     
     async stop() {
-        const del = Bent(this.discoveryServiceUrl, 'json', 'DELETE', 200);
-        await del(`service/${this.serviceId}`);
+        try {
+            const del = Bent(discoveryServiceUrl, 'json', 'DELETE', 200);
+            await del(`service/${this.serviceId}`);
+        } catch (err) {
+            print(err);
+        }
+
         this.httpServer.close();
     }
 }

@@ -25,8 +25,12 @@ export default async function runCommand(query: Query) {
         if (query.options[name])
             return query.options[name];
 
-        if (command.mainArg === name && query.commandArgs.length > 0)
-            return query.commandArgs[0];
+        for (let i=0; i < command.mainArgs.length; i++) {
+            const mainArg = command.mainArgs[i];
+            if (mainArg === name && query.commandArgs.length >= i) {
+                return query.commandArgs[i];
+            }
+        }
 
         const value = snapshot.getValueOpt(name);
         if (value.found)
@@ -51,9 +55,9 @@ export default async function runCommand(query: Query) {
         }
     }
 
-    if (!command.mainArg && query.commandArgs.length > 0) {
+    if (command.mainArgs.length === 0 && query.commandArgs.length > 0) {
         print(`warning: command ${command.name} doesn't expect any main args`);
-    } else if (query.commandArgs.length > 1) {
+    } else if (query.commandArgs.length > command.mainArgs.length) {
         print("warning: too many main args");
     }
 

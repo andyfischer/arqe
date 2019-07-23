@@ -7,6 +7,7 @@ def-relation includes
 def-relation has
 def-relation requires-arg
 def-relation has-main-arg
+def-relation has-second-main-arg
 
 command/def-command ..
   requires-arg command-name
@@ -54,7 +55,6 @@ command/define-toggle ..
   requires-arg name
   has-main-arg name
 
-
 .. is type
   integer
   number
@@ -66,6 +66,7 @@ command/define-toggle ..
 def-command set-in-current-file
 
 bootstrap-scripts includes ..
+  agents.p
   history.p
   cron.p
   edit.p
@@ -73,3 +74,9 @@ bootstrap-scripts includes ..
   languages.p
   jenkins.p
 
+command/set ..
+  requires-arg name
+  has-main-arg name
+  requires-arg value
+  has-second-main-arg value
+  

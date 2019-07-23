@@ -20,11 +20,13 @@ declareCommand({
         db.byName[enableCommand] = {
             name: enableCommand,
             args: {},
+            mainArgs: [],
             run: async (context: CommandContext) => context.set(enableCommand, true)
         }
         
         db.byName[disableCommand] = {
             name: disableCommand,
+            mainArgs: [],
             args: {},
             run: async (context: CommandContext) => context.set(enableCommand, false)
         }

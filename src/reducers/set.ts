@@ -10,22 +10,17 @@ declareReducer(() => {
         name: 'set',
         value: { },
         reducer(query: Query, value) {
-            for (const clause of query.syntax.clauses) {
-                value.everyWord[clause.key] = true;
+            if (query.command === 'set') {
+                const name = query.commandArgs[0];
+                const value = query.commandArgs[1];
 
                 const options = query.options;
 
-                for (const k in options) {
-                    const v = options[k];
+                if (verbose)
+                    print(`setting '${name}' to: '${value}'`);
 
-                    if (verbose)
-                        print(`setting '${k}' to '${v}'`);
-
-                    query.snapshot.globalValues[k] = options[k];
-                }
+                query.snapshot.globalValues[name] = value;
             }
-
-            return value;
         }
     }
 });

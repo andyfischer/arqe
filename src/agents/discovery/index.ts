@@ -1,15 +1,10 @@
 
 import ExpressPromisedApp, { createExpressApp } from '../../express-promised-app'
 import { print } from '../../utils'
+import Service from '../../types/ServiceInfo'
 
 // listen for register commands
 // keep a table of registered services
-
-interface Service {
-    name: string
-    port: number
-    tags: string[]
-}
 
 const registeredServices: { [id: string]: Service } = {}
 const registeredPorts: { [port: string]: Service } = {}
