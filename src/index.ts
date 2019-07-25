@@ -6,3 +6,4 @@ export { loadMainSnapshot } from './framework'
 if (require.main === module) {
     require('./startup/main');
 }
+

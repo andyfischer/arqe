@@ -13,7 +13,9 @@ declareReducer(() => {
                 const data = await getAgents(query.snapshot);
 
                 query.respond({
-                    body: data
+                    type: 'agent[]',
+                    terminalFormat: 'table',
+                    items: data
                 })
             }
 
