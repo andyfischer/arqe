@@ -1,7 +1,5 @@
 
-import { AgentFramework } from '.'
-import { loadMainSnapshot } from '../framework'
-import { print } from '..'
+import { AgentFramework, loadMainSnapshot, print } from '..'
 
 async function main() {
     const snapshot = await loadMainSnapshot();
