@@ -63,6 +63,9 @@ export default function formatToTable(value: any): string {
 
     const rowValues = getRowValues(value);
 
+    if (rowValues.length === 0)
+        return '[]'
+
     const keys = Object.keys(rowValues[0]);
 
     // init columns

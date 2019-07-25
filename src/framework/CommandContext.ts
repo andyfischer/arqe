@@ -31,7 +31,7 @@ export default class CommandContext {
     }
 
     set(valueName: string, value: any) {
-        this.snapshot[valueName] = value;
+        this.snapshot.globalValues[valueName] = value;
     }
 
     async subQuery(queryStr: string) {

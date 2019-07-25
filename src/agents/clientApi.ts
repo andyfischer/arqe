@@ -10,7 +10,7 @@ export async function getAgents(snapshot: Snapshot) {
 
     const resp: { services: ServiceInfo[] } = await get('find?tag=agent');
 
-    return resp.services;
+    return resp.services || [];
 }
 
 export async function getServices(snapshot: Snapshot) {
@@ -20,5 +20,5 @@ export async function getServices(snapshot: Snapshot) {
 
     const resp: { services: ServiceInfo[] } = await get('find');
 
-    return resp.services;
+    return resp.services || [];
 }

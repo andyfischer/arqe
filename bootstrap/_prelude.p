@@ -39,6 +39,7 @@ def-command def-filetype
 def-command def-alias
 def-command def-relation
 def-command name
+def-command env
 def-command load-file
 def-command add-context
 def-command remove-context

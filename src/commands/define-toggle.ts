@@ -21,14 +21,20 @@ declareCommand({
             name: enableCommand,
             args: {},
             mainArgs: [],
-            run: async (context: CommandContext) => context.set(enableCommand, true)
+            run: async (context: CommandContext) => {
+                context.set(enableCommand, true)
+                context.query.respond(`set ${enableCommand} to true`);
+            }
         }
         
         db.byName[disableCommand] = {
             name: disableCommand,
             mainArgs: [],
             args: {},
-            run: async (context: CommandContext) => context.set(enableCommand, false)
+            run: async (context: CommandContext) => {
+                context.set(enableCommand, false)
+                context.query.respond(`set ${enableCommand} to false`);
+            }
         }
     }
 });

@@ -20,8 +20,9 @@ export default function applyQueryToDocument(snapshot: Snapshot, reducer: Reduce
     // Catch any async errors (if needed)
     Promise.resolve(reducer.value).catch(err => {
         print('error: ' + err);
-        //if (err.stack && snapshot.getValueOpt('enable-stack-traces', false))
-            //console.log(err.stack);
+
+        if (err.stack && snapshot.getValueOpt('enable-stack-traces', false))
+            console.log(err.stack);
     });
 
     if (log) {

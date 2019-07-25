@@ -24,7 +24,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
 
             const matches = [];
 
-            for (const w in autocompleteInfo.found.everyWord) {
+            for (const w in autocompleteInfo.everyWord) {
                 if (w.startsWith(line))
                     matches.push(w);
             }
