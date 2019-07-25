@@ -3,6 +3,8 @@ import { Query } from '../query'
 import { Snapshot } from '../framework'
 import { runCommand } from '.'
 
+const MissingValue = Symbol('missing');
+
 export default class CommandContext {
     query: Query
     snapshot: Snapshot
@@ -21,9 +23,9 @@ export default class CommandContext {
                 return options[valueName];
         }
 
-        const get = this.snapshot.getValueOpt(valueName);
-        if (get.found)
-            return get.found;
+        const value = this.snapshot.getValueOpt(valueName, MissingValue);
+        if (value !== MissingValue)
+            return value;
 
         throw new Error("CommandContext.get missing value for: " + valueName);
     }

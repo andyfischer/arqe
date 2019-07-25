@@ -7,6 +7,7 @@ import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../commands'
 
 const verbose = !!process.env.verbose;
+const MissingValue = Symbol('missing');
 
 export default async function runCommand(query: Query) {
 
@@ -32,9 +33,9 @@ export default async function runCommand(query: Query) {
             }
         }
 
-        const value = snapshot.getValueOpt(name);
-        if (value.found)
-            return value.found;
+        const value = snapshot.getValueOpt(name, MissingValue);
+        if (value !== MissingValue)
+            return value;
     }
 
     const incoming = {}

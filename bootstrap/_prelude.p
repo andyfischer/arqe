@@ -65,18 +65,20 @@ command/define-toggle ..
 
 def-command set-in-current-file
 
-bootstrap-scripts includes ..
-  agents.p
-  history.p
-  cron.p
-  edit.p
-  workingdir.p
-  languages.p
-  jenkins.p
-
 command/set ..
   requires-arg name
   has-main-arg name
   requires-arg value
   has-second-main-arg value
   
+
+bootstrap-scripts includes ..
+  agents.p
+  cron.p
+  debugging.p
+  history.p
+  edit.p
+  workingdir.p
+  languages.p
+  jenkins.p
+

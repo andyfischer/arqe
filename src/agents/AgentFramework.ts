@@ -63,6 +63,10 @@ export default class AgentFramework {
             throw new Error(msg);
         }
 
+        process.on('beforeExit', code => {
+            this.stop();
+        });
+
         this.httpServer = await this.webApp.listen(port);
     }
     
@@ -71,7 +75,6 @@ export default class AgentFramework {
             const del = Bent(discoveryServiceUrl, 'json', 'DELETE', 200);
             await del(`service/${this.serviceId}`);
         } catch (err) {
-            print(err);
         }
 
         this.httpServer.close();

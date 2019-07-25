@@ -5,6 +5,8 @@ import applyQuery, { QueryOptions } from './applyQuery'
 import { getInitialCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../reducers'
 
+const MissingValue = Symbol('missing');
+
 export default class Snapshot {
 
     globalValues: { [name: string]: any } = {}
@@ -46,7 +48,7 @@ export default class Snapshot {
     }
 
     getLastIncompleteClause() {
-        return this.getValueOpt('lastIncompleteClause').found;
+        return this.getValueOpt('lastIncompleteClause', null);
     }
 
     hasDocument(documentName: string) {
@@ -54,27 +56,27 @@ export default class Snapshot {
         return !!doc;
     }
 
-    getValueOpt(name: string) {
+    getValueOpt(name: string, defaultValue: any) {
         if (this.fileScopedValues[name])
-            return { found: this.fileScopedValues[name] }
+            return this.fileScopedValues[name];
 
         if (this.globalValues[name])
-            return { found: this.globalValues[name] }
+            return this.globalValues[name];
 
         const doc = this.liveDocumentsByName[name];
         if (doc)
-            return { found: doc.value }
+            return doc.value;
 
-        return {};
+        return defaultValue;
     }
 
     getValue(name: string) {
-        const get = this.getValueOpt(name);
+        const get = this.getValueOpt(name, MissingValue);
 
-        if (!get.found)
+        if (get === MissingValue)
             throw new Error('value not found for: ' + name);
 
-        return get.found;
+        return get;
     }
 
     async applyQuery(queryString: string, options?: QueryOptions) {

@@ -18,7 +18,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
 
     function completer(line) {
         try {
-            const autocompleteInfo = snapshot.getValueOpt('autocompleteInfo')
+            const autocompleteInfo = snapshot.getValueOpt('autocompleteInfo', null)
             if (!autocompleteInfo)
                 return;
 
