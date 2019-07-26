@@ -11,7 +11,7 @@ import { print, readTextLinesSync } from '../utils'
 import { applyQuery, loadBootstrapFile } from '../framework'
 import setupUserDir from './setupUserDir'
 import { loadMainSnapshot } from '../framework'
-import nodeRepl from './nodeRepl'
+import nodeRepl from '../terminal/nodeRepl'
 
 async function main() {
 

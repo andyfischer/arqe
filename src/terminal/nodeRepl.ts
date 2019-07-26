@@ -1,6 +1,8 @@
 
 import { Snapshot } from '../framework'
 
+const prompt = ' ~ '
+
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
         return str.slice(0, str.length-1);
@@ -37,7 +39,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
     }
 
     const repl = require('repl').start({
-        prompt: ' $$ ',
+        prompt,
         eval: evaluate,
         completer
     });

@@ -1,12 +1,13 @@
 
 import { CommandContext, declareCommand, runAsMain } from '../framework'
 import { print } from '../utils'
+import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 
 async function run(context: CommandContext) {
-    const commandDB = await context.get('commandDB');
+    const db = getCommandDatabase(context);
 
     print("Available commands: ")
-    for (const command in commandDB.byName) {
+    for (const command in db.byName) {
         print("  " + command);
     }
 }
