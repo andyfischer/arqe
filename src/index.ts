@@ -1,7 +1,7 @@
 
 export { createExpressApp } from './express-promised-app'
-export { print, randomHex } from './utils'
-export { loadMainSnapshot } from './framework'
+export { print, printError, randomHex } from './utils'
+export { loadMainSnapshot, Snapshot } from './framework'
 export { AgentFramework } from './agents'
 
 if (require.main === module) {

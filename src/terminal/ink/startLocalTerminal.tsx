@@ -4,7 +4,7 @@ import TerminalState from './TerminalState'
 import { render } from 'ink'
 import React from 'react'
 import InkConsole from './InkConsole'
-import { Snapshot } from '../framework'
+import { Snapshot } from '../..'
 
 export default async function startLocalTerminal(snapshot: Snapshot) {
     const connection = new LocalTerminalConnection(snapshot)

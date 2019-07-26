@@ -1,6 +1,6 @@
 
 import Bent from 'bent'
-import { print } from '../utils'
+import { print } from '../..'
 
 const host = 'http://localhost:9140'
 const get = Bent(host, 'json')

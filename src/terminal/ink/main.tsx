@@ -6,7 +6,7 @@ import { render } from 'ink'
 import InkConsole from './InkConsole'
 import HttpTerminalConnection from './HttpTerminalConnection'
 import TerminalState from './TerminalState'
-import { printError } from '../utils'
+import { printError } from '../..'
 
 async function main() {
 

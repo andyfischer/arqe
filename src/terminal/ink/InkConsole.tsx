@@ -4,7 +4,7 @@ import React, { useState, useReducer, useEffect, useContext } from 'react'
 import TextInput from 'ink-text-input'
 import Spinner from 'ink-spinner'
 import { StdinContext } from 'ink'
-import { printError } from '../utils'
+import { printError } from '../..'
 import chalk from 'chalk'
 import TerminalState from './TerminalState'
 
