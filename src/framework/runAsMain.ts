@@ -7,8 +7,9 @@ export default async function runAsMain(def: CommandDefinition) {
     const context = new CommandContext();
     context.snapshot = await loadMainSnapshot();
 
+    throw new Error('runAsMain not working right now');
+
     try {
-        await def.run(context);
     } catch (err) {
         console.error(err.stack || err);
     }

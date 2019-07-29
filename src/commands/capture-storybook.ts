@@ -1,7 +1,8 @@
 
 import { CommandContext, declareCommand, runAsMain } from '../framework'
+import { Query } from '..'
 
-async function run(context: CommandContext) {
+async function run(query: Query) {
 }
 
 const command = declareCommand({

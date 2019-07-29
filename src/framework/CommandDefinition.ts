@@ -1,9 +1,10 @@
 
 import { CommandContext } from '.'
+import { Query } from '../query'
 
-export type CommandHandler = (context: CommandContext) => Promise<void>
+export type CommandImplementation = (query: Query) => void
 
 export default interface CommandDefinition {
     name: string
-    run: CommandHandler
+    run: CommandImplementation
 }

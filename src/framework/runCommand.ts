@@ -71,47 +71,29 @@ export default async function runCommand(query: Query) {
         return;
     }
 
-    if (command.run) {
-        const context = new CommandContext()
-        context.snapshot = snapshot;
-        context.query = query;
-        context.incoming = incoming;
+    function queryGet(name: string) {
+        if (incoming[name])
+            return incoming[name];
 
-        await command.run(context);
+        if (query.options[name])
+            return query.options[name];
 
-        for (const k in context.results) {
-            print(`note:  ${k} = ${context.results[k]}`);
-        }
+        const value = this.snapshot.getValueOpt(name, MissingValue);
+        if (value !== MissingValue)
+            return value;
+
+        throw new Error("CommandContext.get missing value for: " + name);
     }
 
+    query.get = queryGet;
+
+    if (command.run) {
+        await command.run(query);
+    }
+
+    // old style
     const commandImpl = everyCommand[query.command];
-
     if (commandImpl) {
-        function queryGet(name: string) {
-            if (incoming[name])
-                return incoming[name];
-
-            if (query.options[name])
-                return query.options[name];
-
-            const value = this.snapshot.getValueOpt(name, MissingValue);
-            if (value !== MissingValue)
-                return value;
-
-            throw new Error("CommandContext.get missing value for: " + name);
-        }
-
-        query.get = queryGet;
-
-        const context = new CommandContext()
-        context.snapshot = snapshot;
-        context.query = query;
-        context.incoming = incoming;
-
-        await commandImpl.run(context);
-
-        for (const k in context.results) {
-            print(`note:  ${k} = ${context.results[k]}`);
-        }
+        await commandImpl.run(query);
     }
 }

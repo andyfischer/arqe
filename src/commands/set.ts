@@ -6,8 +6,7 @@ import { print } from '../utils'
 
 declareCommand({
     name: 'set',
-    async run(context: CommandContext) {
-        const query = context.query;
+    async run(query: Query) {
         const name = query.commandArgs[0];
         const value = query.commandArgs[1];
 

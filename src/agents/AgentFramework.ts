@@ -1,6 +1,6 @@
 
 import ExpressPromisedApp, { createExpressApp } from '../express-promised-app'
-import { Snapshot, CommandHandler } from '../framework'
+import { Snapshot } from '../framework'
 import Bent from 'bent'
 import { print, randomHex } from '..'
 

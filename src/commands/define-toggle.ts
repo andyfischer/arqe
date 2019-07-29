@@ -6,9 +6,8 @@ import { print } from '../utils'
 
 declareCommand({
     name: 'define-toggle',
-    async run(context: CommandContext) {
-        const query = context.query;
-        const enableCommand = context.get('name');
+    async run(query: Query) {
+        const enableCommand = query.get('name');
         const db = getCommandDatabase(query);
 
         if (!enableCommand.startsWith('enable-')) {
@@ -24,9 +23,11 @@ declareCommand({
             name: enableCommand,
             args: {},
             mainArgs: [],
-            run: async (context: CommandContext) => {
-                context.set(enableCommand, true)
-                context.query.respond(`set ${enableCommand} to true`);
+            run: (query: Query) => {
+                query.respond({
+                    effects: [{type: 'assign-global', name: enableCommand, value: true}],
+                    message: `set ${enableCommand} to true`
+                })
             }
         }
         
@@ -34,12 +35,14 @@ declareCommand({
             name: disableCommand,
             mainArgs: [],
             args: {},
-            run: async (context: CommandContext) => {
-                context.set(enableCommand, false)
-                context.query.respond(`set ${enableCommand} to false`);
+            run: (query: Query) => {
+                query.respond({
+                    effects: [{type: 'assign-global', name: enableCommand, value: false}],
+                    message: `set ${enableCommand} to false`
+                })
             }
         }
 
-        context.query.respond(null);
+        query.respond(null);
     }
 });

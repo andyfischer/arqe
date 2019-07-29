@@ -6,10 +6,7 @@ import { print } from '../utils'
 
 declareCommand({
     name: 'env',
-    async run(context: CommandContext) {
-
-        const query = context.query;
-
+    async run(query: Query) {
         const env = Object.assign({}, query.snapshot.globalValues, {
             commandDatabase: undefined
         });

@@ -3,6 +3,7 @@
 import Fs from 'fs-extra'
 import Path from 'path'
 import Crypto from 'crypto'
+import { Query } from '..'
 import { parseQuery } from '../query'
 import { print, values, allTrue } from '../utils'
 import { CommandContext, declareCommand, runAsMain } from '../framework'
@@ -29,7 +30,7 @@ function getFiletype(filename: string, contents: Buffer) {
     return 'unknown'
 }
 
-async function run(context: CommandContext) {
+async function run(query: Query) {
     const files = process.argv.slice(2);
 
     if (files.length === 0) {
@@ -47,8 +48,8 @@ async function run(context: CommandContext) {
         print(cmd);
 
         if (selfCheck) {
-            const query = parseQuery(cmd, context.snapshot);
-            const options = query.options;
+            const parsed = parseQuery(cmd, query.snapshot);
+            const options = parsed.options;
 
             const matches = {
                 filename: basename === options.filename,

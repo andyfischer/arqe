@@ -1,6 +1,6 @@
 
 import { Query } from '../query'
-import { Snapshot, CommandContext } from '../framework'
+import { Snapshot, CommandImplementation } from '../framework'
 
 interface Arg {
     isMain?: boolean
@@ -12,7 +12,7 @@ export interface CommandDefinition {
     mainArgs: string[]
     args: { [key: string]: Arg }
     hasNoImplementation?: boolean
-    run?: (context: CommandContext) => Promise<void>
+    run?: CommandImplementation
 }
 
 export interface CommandDatabase {
@@ -46,7 +46,7 @@ export function getInitialCommandDatabase(): CommandDatabase {
     }
 }
 
-export function getCommandDatabase(key: Snapshot | Query | CommandContext): CommandDatabase {
+export function getCommandDatabase(key: Snapshot | Query): CommandDatabase {
 
     const snapshot = (key as any).snapshot || key;
 

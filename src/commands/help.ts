@@ -1,10 +1,11 @@
 
+import { Query } from '../query'
 import { CommandContext, declareCommand, runAsMain } from '../framework'
 import { print } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 
-async function run(context: CommandContext) {
-    const db = getCommandDatabase(context);
+async function run(query: Query) {
+    const db = getCommandDatabase(query);
 
     const lines = ["Available commands: "];
     
@@ -12,7 +13,7 @@ async function run(context: CommandContext) {
         lines.push("  " + command);
     }
 
-    context.query.respond(lines.join('\n'));
+    query.respond(lines.join('\n'));
 }
 
 declareCommand({

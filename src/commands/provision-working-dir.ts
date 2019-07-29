@@ -1,19 +1,20 @@
 #! /usr/bin/env node
 
+import { Query } from '..'
 import { CommandContext, declareCommand, runAsMain } from '../framework'
 import { mkdirp } from 'fs-extra'
 import { print } from '../utils'
 import path from 'path'
 
-async function run(context: CommandContext) {
-    const rootWorkingDir = await context.get('filesystem.workingdir');
-    const dirName = await context.get('dir-name');
+async function run(query: Query) {
+    const rootWorkingDir = await query.get('filesystem.workingdir');
+    const dirName = await query.get('dir-name');
 
     const fullDir = path.join(rootWorkingDir, dirName);
 
     await mkdirp(fullDir);
 
-    context.results['created-dir'] = fullDir;
+    query.respond({createdDir: fullDir});
 }
 
 const command = declareCommand({

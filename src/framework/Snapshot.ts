@@ -5,10 +5,9 @@ import { Query } from '..'
 import applyQuery, { QueryOptions } from './applyQuery'
 import { getInitialCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../reducers'
+import { CommandImplementation } from './CommandDefinition'
 
 const MissingValue = Symbol('missing');
-
-type CommandImplementation = (query: Query) => void
 
 export default class Snapshot {
 
