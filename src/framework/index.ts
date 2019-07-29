@@ -1,5 +1,4 @@
 
-export { default as CommandContext } from './CommandContext'
 export { default as CommandDefinition, CommandImplementation } from './CommandDefinition'
 export { default as declareCommand } from './declareCommand'
 export { default as declareReducer, everyReducer } from './declareReducer'

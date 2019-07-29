@@ -1,5 +1,5 @@
 
-import { CommandContext, declareCommand, runAsMain } from '../framework'
+import { declareCommand, runAsMain } from '../framework'
 import { print } from '../utils'
 import { Query } from '..'
 import { mkdirp } from 'fs-extra'

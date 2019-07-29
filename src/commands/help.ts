@@ -1,6 +1,6 @@
 
 import { Query } from '../query'
-import { CommandContext, declareCommand, runAsMain } from '../framework'
+import { declareCommand, runAsMain } from '../framework'
 import { print } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 

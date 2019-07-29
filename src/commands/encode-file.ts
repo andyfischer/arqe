@@ -6,7 +6,7 @@ import Crypto from 'crypto'
 import { Query } from '..'
 import { parseQuery } from '../query'
 import { print, values, allTrue } from '../utils'
-import { CommandContext, declareCommand, runAsMain } from '../framework'
+import { declareCommand, runAsMain } from '../framework'
 
 const selfCheck = true;
 

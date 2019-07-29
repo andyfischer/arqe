@@ -120,8 +120,7 @@ export default function formatToTable(value: any): string {
         }
     }
 
-    const output = '\n' +
-        (columns.map(col => col.labelFormatted).join(' | '))
+    const output = (columns.map(col => col.labelFormatted).join(' | '))
         + '\n'
         + (columns.map(col => col.linesFormatted).join(' | '))
         + '\n'

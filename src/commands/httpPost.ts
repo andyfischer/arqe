@@ -1,6 +1,5 @@
 
-
-import { CommandContext, declareCommand } from '../framework'
+import { declareCommand } from '../framework'
 import { Query } from '..'
 
 async function run(query: Query) {

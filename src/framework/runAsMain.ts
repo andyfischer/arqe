@@ -1,11 +1,8 @@
 
-import { CommandDefinition, CommandContext } from '.'
+import { CommandDefinition } from '.'
 import { loadMainSnapshot } from '.'
 
 export default async function runAsMain(def: CommandDefinition) {
-
-    const context = new CommandContext();
-    context.snapshot = await loadMainSnapshot();
 
     throw new Error('runAsMain not working right now');
 

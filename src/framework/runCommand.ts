@@ -1,5 +1,5 @@
 
-import { Snapshot, CommandContext } from '.'
+import { Snapshot } from '.'
 import { Query } from '../query'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values } from '../utils'
@@ -82,7 +82,7 @@ export default async function runCommand(query: Query) {
         if (value !== MissingValue)
             return value;
 
-        throw new Error("CommandContext.get missing value for: " + name);
+        throw new Error("command get() missing value for: " + name);
     }
 
     query.get = queryGet;

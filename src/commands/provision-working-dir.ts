@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 import { Query } from '..'
-import { CommandContext, declareCommand, runAsMain } from '../framework'
+import { declareCommand, runAsMain } from '../framework'
 import { mkdirp } from 'fs-extra'
 import { print } from '../utils'
 import path from 'path'
