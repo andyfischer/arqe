@@ -4,13 +4,39 @@ import { parseQuery, Query } from '../query'
 import applyQueryToReducer from './applyQueryToReducer'
 import { runCommand, Reducer } from '../framework'
 import { everyCommand } from '../framework/declareCommand'
-import { print, values } from '../utils'
+import { print, values, timedOut } from '../utils'
 import printResponseToTerminal from './printResponseToTerminal'
 
 const verbose = !!process.env.verbose;
 
 export interface QueryOptions {
     isInteractive?: boolean
+}
+
+function queryRespond(query: Query) {
+
+    let hasResponded = false;
+    const startTime = Date.now();
+    let promiseResolve = null;
+    query.promise = new Promise((resolve, reject) => {
+        promiseResolve = resolve;
+    });
+    
+    return (data) => {
+        const elapsed = Date.now() - startTime;
+
+        if (hasResponded)
+            print('warning: double response for query: ' + query.syntax.originalStr);
+
+        if (elapsed > 500)
+            print('warning: slow response for query: ' + query.syntax.originalStr);
+
+        if (query.isInteractive)
+            printResponseToTerminal(query, data);
+
+        hasResponded = true;
+        promiseResolve();
+    }
 }
 
 export default async function applyQuery(snapshot: Snapshot, input: string, opts?: QueryOptions) {
@@ -24,14 +50,18 @@ export default async function applyQuery(snapshot: Snapshot, input: string, opts
 
     if (opts && opts.isInteractive) {
         query.isInteractive = true;
-        query.respond = data => printResponseToTerminal(query, data)
-    } else {
-        query.respond = () => null
     }
+
+    query.respond = queryRespond(query);
 
     for (const doc of snapshot.liveDocuments)
         applyQueryToReducer(snapshot, doc, query);
 
-    if (query.command)
-        await runCommand(query);
+    if (query.command) {
+        runCommand(query);
+
+        if (await timedOut(query.promise, 500)) {
+            print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
+        }
+    }
 }

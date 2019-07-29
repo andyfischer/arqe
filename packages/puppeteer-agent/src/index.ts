@@ -4,10 +4,15 @@ import { AgentFramework, loadMainSnapshot, print } from '../../..'
 async function main() {
     const snapshot = await loadMainSnapshot();
 
+    snapshot.implementCommand('capture-page', () => {
+    });
+
     const framework = new AgentFramework({
         name: 'Puppeteer',
         snapshot
-    })
+    });
+
+
 
     await framework.start();
 

@@ -2,10 +2,19 @@
 import ChildProcess from 'child_process'
 import Util from 'util'
 import { consoleColorizeOutput } from './console'
+import { EventEmitter } from 'events'
+
+export const printEvents = new EventEmitter();
 
 export function print(...args: string[]) {
+
     const str = consoleColorizeOutput(args.join(' '));
+
+    printEvents.emit('beforeLog', {});
+
     console.log(str);
+
+    printEvents.emit('afterLog', {});
 }
 
 export function printError(err) {
@@ -66,3 +75,10 @@ export function values(obj: any) {
 }
 
 export const exec = Util.promisify(ChildProcess.exec);
+
+export async function timedOut(p: Promise<any>, ms: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        setTimeout((() => resolve(true)), ms);
+        p.then(() => resolve(false));
+    }) as Promise<any>;
+}

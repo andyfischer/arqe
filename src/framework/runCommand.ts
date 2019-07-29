@@ -67,6 +67,7 @@ export default async function runCommand(query: Query) {
     }
 
     if (command.hasNoImplementation) {
+        query.respond(null);
         return;
     }
 

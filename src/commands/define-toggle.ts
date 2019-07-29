@@ -36,5 +36,7 @@ declareCommand({
                 context.query.respond(`set ${enableCommand} to false`);
             }
         }
+
+        context.query.respond(null);
     }
 });

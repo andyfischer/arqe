@@ -25,4 +25,5 @@ export default interface Query {
 
     // Response
     respond?: (data: any) => void
+    promise?: Promise<any>
 }

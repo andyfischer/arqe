@@ -8,6 +8,7 @@ def-relation has
 def-relation requires-arg
 def-relation has-main-arg
 def-relation has-second-main-arg
+def-relation has-no-implementation
 
 command/def-command ..
   requires-arg command-name
@@ -18,6 +19,9 @@ command/def-relation ..
   has-main-arg relation-name
 
 def-command def-declaration
+command/def-declaration ..
+  has-no-implementation
+
 def-command def-type
 def-command def-function
 
@@ -33,6 +37,10 @@ command/def-function ..
   requires-arg function-name
   has-main-arg function-name
 
+def-command eof
+command/eof ..
+  has-no-implementation
+
 def-command def-collection
 def-command def-language
 def-command def-filetype
@@ -43,7 +51,6 @@ def-command env
 def-command load-file
 def-command add-context
 def-command remove-context
-def-command eof
 def-command dump
 def-command file-contents
 def-command deploy
@@ -71,7 +78,6 @@ command/set ..
   has-main-arg name
   requires-arg value
   has-second-main-arg value
-  
 
 bootstrap-scripts includes ..
   agents.p

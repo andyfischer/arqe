@@ -1,11 +1,14 @@
 
 import { Reducer, everyReducer } from '../framework'
 import { print } from '../utils'
+import { Query } from '..'
 import applyQuery, { QueryOptions } from './applyQuery'
 import { getInitialCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../reducers'
 
 const MissingValue = Symbol('missing');
+
+type CommandImplementation = (query: Query) => void
 
 export default class Snapshot {
 
@@ -14,6 +17,8 @@ export default class Snapshot {
 
     liveDocuments: Reducer[] = []
     liveDocumentsByName: { [name: string]: Reducer } = {}
+
+    commandImplementations: { [name: string]: CommandImplementation } = {}
 
     constructor() {
         // Bootstrap values
@@ -81,5 +86,9 @@ export default class Snapshot {
 
     async applyQuery(queryString: string, options?: QueryOptions) {
         return await applyQuery(this, queryString, options);
+    }
+
+    implementCommand(name, impl: CommandImplementation) {
+        this.commandImplementations[name] = impl;
     }
 }

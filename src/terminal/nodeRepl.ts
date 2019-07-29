@@ -1,7 +1,10 @@
 
 import { Snapshot } from '../framework'
+import { printEvents } from '../utils'
 
 const prompt = ' ~ '
+let promptIsLive = false;
+let promptIsRecentlyPrinted = false;
 
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
@@ -10,12 +13,44 @@ function trimEndline(str) {
     return str;
 }
 
+printEvents.on('beforeLog', () => {
+    if (promptIsRecentlyPrinted) {
+        process.stdout.write('\n');
+        promptIsRecentlyPrinted = false;
+
+        setTimeout(() => {
+            if (promptIsLive && !promptIsRecentlyPrinted) {
+                promptIsRecentlyPrinted = true;
+                process.stdout.write(prompt);
+            }
+        }, 200);
+    }
+});
+
+printEvents.on('afterLog', () => {
+});
+
+function onStartedPrompt() {
+    promptIsLive = true;
+    promptIsRecentlyPrinted = true;
+}
+
+function onFinishedPrompt() {
+    promptIsLive = false;
+    promptIsRecentlyPrinted = false;
+}
+
 export default async function nodeRepl(snapshot: Snapshot) {
     
     async function evaluate(line) {
+        onFinishedPrompt();
+
         line = trimEndline(line);
         await snapshot.applyQuery(line, { isInteractive: true } );
+
         repl.displayPrompt();
+
+        onStartedPrompt();
     }
 
     function completer(line) {
@@ -37,6 +72,8 @@ export default async function nodeRepl(snapshot: Snapshot) {
             return []
         }
     }
+
+    onStartedPrompt();
 
     const repl = require('repl').start({
         prompt,
