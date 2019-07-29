@@ -7,9 +7,12 @@ import { print } from '../utils'
 declareCommand({
     name: 'env',
     async run(context: CommandContext) {
-        const env = Object.assign({}, context.snapshot.globalValues, {
+
+        const query = context.query;
+
+        const env = Object.assign({}, query.snapshot.globalValues, {
             commandDatabase: undefined
         });
-        context.query.respond(JSON.stringify(context.snapshot.globalValues, null, 2));
+        query.respond(JSON.stringify(query.snapshot.globalValues, null, 2));
     }
 });

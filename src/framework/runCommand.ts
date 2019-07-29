@@ -87,6 +87,22 @@ export default async function runCommand(query: Query) {
     const commandImpl = everyCommand[query.command];
 
     if (commandImpl) {
+        function queryGet(name: string) {
+            if (incoming[name])
+                return incoming[name];
+
+            if (query.options[name])
+                return query.options[name];
+
+            const value = this.snapshot.getValueOpt(name, MissingValue);
+            if (value !== MissingValue)
+                return value;
+
+            throw new Error("CommandContext.get missing value for: " + name);
+        }
+
+        query.get = queryGet;
+
         const context = new CommandContext()
         context.snapshot = snapshot;
         context.query = query;

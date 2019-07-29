@@ -7,11 +7,14 @@ import { print } from '../utils'
 declareCommand({
     name: 'define-toggle',
     async run(context: CommandContext) {
+        const query = context.query;
         const enableCommand = context.get('name');
-        const db = getCommandDatabase(context);
+        const db = getCommandDatabase(query);
 
         if (!enableCommand.startsWith('enable-')) {
-            print("error: define-toggle command should start with 'enable-'");
+            query.respond({
+                error: "define-toggle command should start with 'enable-'"
+            });
             return;
         }
 

@@ -11,5 +11,9 @@ export default function formatForTerminal(value: any): string {
     if (typeof value === 'string')
         return value;
 
+    if (value.error) {
+        return 'error: ' + value.error;
+    }
+
     return JSON.stringify(value);
 }
