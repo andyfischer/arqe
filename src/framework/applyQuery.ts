@@ -59,9 +59,5 @@ export default async function applyQuery(snapshot: Snapshot, input: string, opts
 
     if (query.command) {
         runCommand(query);
-
-        if (await timedOut(query.promise, 500)) {
-            print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
-        }
     }
 }

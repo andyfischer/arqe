@@ -2,7 +2,7 @@
 import { Snapshot } from '.'
 import { Query } from '../query'
 import { everyCommand } from '../framework/declareCommand'
-import { print, values } from '../utils'
+import { print, values, timedOut } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../commands'
 
@@ -59,7 +59,7 @@ export default async function runCommand(query: Query) {
     if (command.mainArgs.length === 0 && query.commandArgs.length > 0) {
         print(`warning: command ${command.name} doesn't expect any main args`);
     } else if (query.commandArgs.length > command.mainArgs.length) {
-        print("warning: too many main args");
+        print(`warning: too many main args (command = ${command.name}): ${query.syntax.originalStr}`);
     }
 
     if (cantRunCommand) {
@@ -89,11 +89,19 @@ export default async function runCommand(query: Query) {
 
     if (command.run) {
         await command.run(query);
+
+        if (await timedOut(query.promise, 500)) {
+            print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
+        }
     }
 
     // old style
     const commandImpl = everyCommand[query.command];
     if (commandImpl) {
         await commandImpl.run(query);
+
+        if (await timedOut(query.promise, 500)) {
+            print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
+        }
     }
 }

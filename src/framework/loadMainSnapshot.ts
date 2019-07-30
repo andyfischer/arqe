@@ -14,7 +14,7 @@ export default async function loadMainSnapshot() {
         for (const script in snapshot.getValue('bootstrapScripts').scripts)
             await loadBootstrapFile(snapshot, `${__dirname}/../../bootstrap/${script}`);
 
-        const userEnv = path.join(os.homedir(), '.papert/env.p');
+        const userEnv = path.join(os.homedir(), '.futureshell/env.p');
         await loadBootstrapFile(snapshot, userEnv);
 
         _mainSnapshot = snapshot;

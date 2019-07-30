@@ -44,12 +44,18 @@ export default function stringToClauses(str: string): QuerySyntax {
         indent: 0
     }
 
+    // Consume first spaces as indentation
     if (reader.nextIs(t_space)) {
         out.indent = reader.nextLength();
         reader.consume();
     }
 
+    let activeQuote = null;
+
     while (!reader.finished()) {
+
+        if (activeQuote) {
+        }
 
         skipSpaces(reader);
 

@@ -1,7 +1,7 @@
 
 export { createExpressApp } from './express-promised-app'
 export { print, printError, randomHex } from './utils'
-export { loadMainSnapshot, Snapshot } from './framework'
+export { declareCommand, loadMainSnapshot, Snapshot } from './framework'
 export { AgentFramework } from './agents'
 export { Query } from './query'
 

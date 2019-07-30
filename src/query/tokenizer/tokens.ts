@@ -110,8 +110,14 @@ export const t_newline = {
     name: "newline"
 }
 
-export const t_quoted_str = {
-    name: "quoted_str"
+export const t_single_quote = {
+    name: "single_quote",
+    str: "'"
+}
+
+export const t_double_quote = {
+    name: "double_quote",
+    str: '"'
 }
 
 export const t_unrecognized = {
@@ -140,7 +146,8 @@ export const everyToken: TokenDef[] = [
     t_integer,
     t_space,
     t_newline,
-    t_quoted_str,
+    t_single_quote,
+    t_double_quote,
     t_unrecognized
 ];
 
