@@ -83,6 +83,7 @@ bootstrap-scripts includes ..
   agents.p
   cron.p
   debugging.p
+  fix-js-project.p
   history.p
   edit.p
   workingdir.p
