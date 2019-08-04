@@ -1,0 +1,7 @@
+
+
+Be able to load a javascript file and then do stuff with it.
+
+Live-watch the file.
+
+Annotate the code. Write test cases and expected inputs/outputs.

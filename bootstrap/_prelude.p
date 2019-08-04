@@ -85,6 +85,7 @@ bootstrap-scripts includes ..
   debugging.p
   fix-js-project.p
   history.p
+  load.p
   edit.p
   workingdir.p
   languages.p
