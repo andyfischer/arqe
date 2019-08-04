@@ -8,4 +8,3 @@ export { Query } from './query'
 if (require.main === module) {
     require('./startup/main');
 }
-

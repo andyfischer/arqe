@@ -1,5 +1,5 @@
 
-import { declareCommand } from '../framework'
+import { declareCommand, Query } from '..'
 
 async function load(query: Query) {
 }
