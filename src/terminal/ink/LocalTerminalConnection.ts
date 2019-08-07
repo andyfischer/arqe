@@ -13,6 +13,6 @@ export default class LocalTerminalConnection implements TerminalConnection {
     }
 
     async submitQuery(cmd: string) {
-        await this.snapshot.applyQuery(cmd);
+        await this.snapshot.submitQuery(cmd);
     }
 }

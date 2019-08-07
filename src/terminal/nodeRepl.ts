@@ -46,7 +46,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
         onFinishedPrompt();
 
         line = trimEndline(line);
-        await snapshot.applyQuery(line, { isInteractive: true } );
+        await snapshot.submitQuery(line, { isInteractive: true } );
 
         repl.displayPrompt();
 

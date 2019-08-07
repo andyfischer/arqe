@@ -7,7 +7,7 @@ import Fs from 'fs-extra'
 import Path from 'path'
 import serveExpressApp from './serveExpressApp'
 import { print, readTextLinesSync } from '../utils'
-import { applyQuery, loadBootstrapFile } from '../framework'
+import { submitQuery, loadBootstrapFile } from '../framework'
 import { setupUserDir } from '../storage'
 import { loadMainSnapshot } from '../framework'
 import nodeRepl from '../terminal/nodeRepl'
@@ -20,7 +20,7 @@ async function main() {
     
     if (args.length > 0) {
         // Run args as a query.
-        await applyQuery(snapshot, args.join(' '));
+        await submitQuery(snapshot, args.join(' '));
         return;
     }
 

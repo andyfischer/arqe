@@ -2,6 +2,9 @@
 import formatToTable from './formatToTable'
 
 export default function formatForTerminal(value: any): string {
+    if (!value)
+        return '';
+
     if (value.terminalFormat === 'table')
         return formatToTable(value);
 

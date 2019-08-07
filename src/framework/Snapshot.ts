@@ -2,7 +2,7 @@
 import { Reducer, everyReducer } from '../framework'
 import { print } from '../utils'
 import { Query } from '..'
-import applyQuery, { QueryOptions } from './applyQuery'
+import submitQuery, { QueryOptions } from './submitQuery'
 import { getInitialCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import '../reducers'
 import { CommandImplementation } from './CommandDefinition'
@@ -83,8 +83,8 @@ export default class Snapshot {
         return get;
     }
 
-    async applyQuery(queryString: string, options?: QueryOptions) {
-        return await applyQuery(this, queryString, options);
+    async submitQuery(queryString: string, options?: QueryOptions) {
+        return await submitQuery(this, queryString, options);
     }
 
     implementCommand(name, impl: CommandImplementation) {

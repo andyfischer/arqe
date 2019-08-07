@@ -39,7 +39,7 @@ function queryRespond(query: Query) {
     }
 }
 
-export default async function applyQuery(snapshot: Snapshot, input: string, opts?: QueryOptions) {
+export default async function submitQuery(snapshot: Snapshot, input: string, opts?: QueryOptions) {
     if (typeof input !== 'string')
         throw new Error("query must be a string, got: " + input);
 
