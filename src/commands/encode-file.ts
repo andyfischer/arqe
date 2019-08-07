@@ -3,8 +3,7 @@
 import Fs from 'fs-extra'
 import Path from 'path'
 import Crypto from 'crypto'
-import { Query } from '..'
-import { parseQuery } from '../query'
+import { Query, parseQuery } from '..'
 import { print, values, allTrue } from '../utils'
 import { declareCommand, runAsMain } from '../framework'
 

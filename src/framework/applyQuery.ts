@@ -1,6 +1,6 @@
 
 import { Snapshot } from '.'
-import { parseQuery, Query } from '../query'
+import { parseQuery, Query } from '..'
 import applyQueryToReducer from './applyQueryToReducer'
 import { runCommand, Reducer } from '../framework'
 import { everyCommand } from '../framework/declareCommand'

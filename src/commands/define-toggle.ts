@@ -1,5 +1,5 @@
 
-import { Query } from '../query'
+import { Query } from '..'
 import { declareCommand } from '../framework'
 import { getCommandDatabase } from '../types/CommandDatabase'
 import { print } from '../utils'

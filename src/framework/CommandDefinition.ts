@@ -1,5 +1,5 @@
 
-import { Query } from '../query'
+import { Query } from '..'
 
 export type CommandImplementation = (query: Query) => void
 

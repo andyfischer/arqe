@@ -1,5 +1,5 @@
 
-import { Query } from '../query'
+import { Query } from '..'
 import { Snapshot, CommandImplementation } from '../framework'
 
 interface Arg {

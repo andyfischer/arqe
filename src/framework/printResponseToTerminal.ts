@@ -1,5 +1,5 @@
 
-import { Query } from '../query'
+import { Query } from '..'
 import { print } from '../utils'
 import formatForTerminal from '../respond/formatForTerminal' 
 

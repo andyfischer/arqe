@@ -3,7 +3,7 @@ export { createExpressApp } from './express-promised-app'
 export { print, printError, randomHex } from './utils'
 export { declareCommand, loadMainSnapshot, Snapshot } from './framework'
 export { AgentFramework } from './agents'
-export { Query } from './query'
+export { Query, parseQuery } from './parse-query'
 
 if (require.main === module) {
     require('./startup/main');

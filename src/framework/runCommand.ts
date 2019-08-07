@@ -1,6 +1,6 @@
 
 import { Snapshot } from '.'
-import { Query } from '../query'
+import { Query } from '..'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values, timedOut } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'

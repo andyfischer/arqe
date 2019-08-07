@@ -1,5 +1,5 @@
 
-import { Query } from '../query'
+import { Query } from '..'
 import { declareReducer } from '../framework'
 import { freeze } from '../utils'
 
