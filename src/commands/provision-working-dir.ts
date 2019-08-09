@@ -1,12 +1,12 @@
 #! /usr/bin/env node
 
-import { Query } from '..'
-import { declareCommand, runAsMain } from '../framework'
+import { implement, Query } from '..'
+import { runAsMain } from '../framework'
 import { mkdirp } from 'fs-extra'
 import { print } from '../utils'
 import path from 'path'
 
-async function run(query: Query) {
+implement('provision-working-dir', async (query: Query) => {
     const rootWorkingDir = await query.get('filesystem.workingdir');
     const dirName = await query.get('dir-name');
 
@@ -15,14 +15,4 @@ async function run(query: Query) {
     await mkdirp(fullDir);
 
     query.respond({createdDir: fullDir});
-}
-
-const command = declareCommand({
-    name: 'provision-working-dir',
-    run
 });
-
-if (require.main === module) {
-    runAsMain(command);
-}
-

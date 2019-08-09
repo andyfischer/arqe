@@ -1,10 +1,9 @@
 
-import { declareCommand, runAsMain } from '../framework'
 import { print } from '../utils'
-import { Query } from '..'
+import { implement, Query } from '..'
 import { mkdirp } from 'fs-extra'
 
-async function run(query: Query) {
+implement('deploy', async (query: Query) => {
     // Check if there is a designated deployment location
     // Look at the deployment targret
     // Create the directory
@@ -20,14 +19,4 @@ async function run(query: Query) {
 
     // Create the directory
     // await mkdirp(path.join(dir, deployName));
-}
-
-const command = declareCommand({
-    name: 'deploy',
-    run
 });
-
-if (require.main === module) {
-    runAsMain(command);
-}
-

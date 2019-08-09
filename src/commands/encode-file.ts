@@ -3,9 +3,8 @@
 import Fs from 'fs-extra'
 import Path from 'path'
 import Crypto from 'crypto'
-import { Query, parseQuery } from '..'
+import { implement, Query, parseQuery } from '..'
 import { print, values, allTrue } from '../utils'
-import { declareCommand, runAsMain } from '../framework'
 
 const selfCheck = true;
 
@@ -29,7 +28,7 @@ function getFiletype(filename: string, contents: Buffer) {
     return 'unknown'
 }
 
-async function run(query: Query) {
+implement('encode-file', async (query: Query) => {
     const files = process.argv.slice(2);
 
     if (files.length === 0) {
@@ -63,13 +62,4 @@ async function run(query: Query) {
             }
         }
     }
-}
-
-const command = declareCommand({
-    name: 'encode-file',
-    run
 });
-
-if (require.main === module) {
-    runAsMain(command);
-}

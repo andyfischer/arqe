@@ -1,10 +1,9 @@
 
-import { Query } from '..'
-import { declareCommand, runAsMain } from '../framework'
+import { implement, Query } from '..'
 import { print } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 
-async function run(query: Query) {
+implement('help', async (query: Query) => {
     const db = getCommandDatabase(query);
 
     const lines = [];
@@ -22,11 +21,5 @@ async function run(query: Query) {
 
     commands.sort();
 
-    query.respond("Available commands: \n"
-                  + commands.join(', '));
-}
-
-declareCommand({
-    name: 'help',
-    run
+    query.respond("Available commands: \n" + commands.join(', '));
 });

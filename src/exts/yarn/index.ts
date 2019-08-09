@@ -1,12 +1,11 @@
 
-const ChildProcess = require('child_process');
-const Util = require('util');
-
-const fslib = global['fslib'];
+import ChildProcess from 'child_process'
+import Util from 'util'
+import { implement } from '../..'
 
 const exec = Util.promisify(ChildProcess.exec);
 
-fslib.implementCommand('yarn-workspace-list', async (query) => {
+implement('yarn-workspace-list', async (query) => {
 
     try {
         const { stdout } = await exec('yarn workspaces info -s')

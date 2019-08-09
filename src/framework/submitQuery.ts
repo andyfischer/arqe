@@ -3,7 +3,6 @@ import { Snapshot } from '.'
 import { parseQuery, Query } from '..'
 import applyQueryToReducer from './applyQueryToReducer'
 import { runCommand, Reducer } from '../framework'
-import { everyCommand } from '../framework/declareCommand'
 import { print, values, timedOut } from '../utils'
 import printResponseToTerminal from './printResponseToTerminal'
 

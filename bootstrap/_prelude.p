@@ -75,6 +75,8 @@ command/define-toggle ..
   object
 
 def-command set-in-current-file
+command/set-in-current-file ..
+  not-for-humans
 
 command/set ..
   requires-arg name
@@ -93,6 +95,7 @@ bootstrap-scripts includes ..
   jenkins.p
   languages.p
   load.p
+  should-work.p
   timedate.p
   workingdir.p
   yarn.p

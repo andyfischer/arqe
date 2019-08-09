@@ -1,6 +1,5 @@
 
 export { default as CommandDefinition, CommandImplementation } from './CommandDefinition'
-export { default as declareCommand } from './declareCommand'
 export { default as declareReducer, everyReducer } from './declareReducer'
 export { default as runAsMain } from './runAsMain'
 export { default as runCommand } from './runCommand'

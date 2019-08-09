@@ -1,7 +1,7 @@
 
 import { Snapshot } from '.'
 import { Query } from '..'
-import { everyCommand } from '../framework/declareCommand'
+import { everyImplementation } from '../framework/declareImplementation'
 import { print, values, timedOut } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import { ensureModuleLoaded } from '../lazymodules'
@@ -101,10 +101,10 @@ export default async function runCommand(query: Query) {
     }
 
     // old style
-    const commandImpl = everyCommand[query.command];
+    const commandImpl = everyImplementation[query.command];
     if (commandImpl) {
         try {
-            await commandImpl.run(query);
+            await commandImpl(query);
         } catch (err) {
             print(err.stack || err);
             return;
