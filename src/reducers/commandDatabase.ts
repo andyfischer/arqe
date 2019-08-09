@@ -101,6 +101,20 @@ function update(query: Query, db: CommandDatabase) {
         command.mainArgs[1] = query.relationObject;
         return;
     }
+
+    if (query.relation === 'from-lazy-module') {
+        const commandName = query.relationSubject
+            .replace(/^command\//, '');
+        const command = db.byName[commandName];
+
+        if (!command) {
+            print('command not found: ' + commandName);
+            return;
+        }
+
+        command.fromLazyModule = query.relationObject;
+        return;
+    }
 }
 
 declareReducer(() => {

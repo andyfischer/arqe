@@ -13,6 +13,7 @@ export interface CommandDefinition {
     args: { [key: string]: Arg }
     hasNoImplementation?: boolean
     run?: CommandImplementation
+    fromLazyModule?: string
 }
 
 export interface CommandDatabase {

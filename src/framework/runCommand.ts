@@ -4,6 +4,7 @@ import { Query } from '..'
 import { everyCommand } from '../framework/declareCommand'
 import { print, values, timedOut } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
+import { ensureModuleLoaded } from '../lazymodules'
 import '../commands'
 
 const verbose = !!process.env.verbose;
@@ -64,6 +65,10 @@ export default async function runCommand(query: Query) {
 
     if (cantRunCommand) {
         return;
+    }
+
+    if (command.fromLazyModule) {
+        ensureModuleLoaded(command.fromLazyModule);
     }
 
     if (command.hasNoImplementation) {

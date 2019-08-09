@@ -9,6 +9,7 @@ def-relation requires-arg
 def-relation has-main-arg
 def-relation has-second-main-arg
 def-relation has-no-implementation
+def-relation from-lazy-module
 
 command/def-command ..
   requires-arg command-name
@@ -91,4 +92,5 @@ bootstrap-scripts includes ..
   load.p
   timedate.p
   workingdir.p
+  yarn.p
 
