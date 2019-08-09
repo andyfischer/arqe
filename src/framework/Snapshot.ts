@@ -4,8 +4,8 @@ import { print } from '../utils'
 import { Query } from '..'
 import submitQuery, { QueryOptions } from './submitQuery'
 import { getInitialCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
+import CommandImplementation from '../types/CommandImplementation'
 import '../reducers'
-import { CommandImplementation } from './CommandDefinition'
 
 const MissingValue = Symbol('missing');
 

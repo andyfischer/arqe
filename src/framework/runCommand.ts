@@ -4,6 +4,7 @@ import { Query } from '..'
 import { everyImplementation } from '../framework/declareImplementation'
 import { print, values, timedOut } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
+import CommandImplementation from '../types/CommandImplementation'
 import { ensureModuleLoaded } from '../lazymodules'
 import '../commands'
 
@@ -92,26 +93,23 @@ export default async function runCommand(query: Query) {
 
     query.get = queryGet;
 
-    if (command.run) {
-        await command.run(query);
+    const func: CommandImplementation = command.run || everyImplementation[query.command];
 
-        if (await timedOut(query.promise, 500)) {
-            print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
-        }
+    if (!func) {
+        if (query.isInteractive)
+            print(`warning: no implementation found for command: ${query.command}`);
+
+        return;
     }
 
-    // old style
-    const commandImpl = everyImplementation[query.command];
-    if (commandImpl) {
-        try {
-            await commandImpl(query);
-        } catch (err) {
-            print(err.stack || err);
-            return;
-        }
+    try {
+        await func(query);
+    } catch (err) {
+        print(err.stack || err);
+        return;
+    }
 
-        if (await timedOut(query.promise, 500)) {
-            print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
-        }
+    if (await timedOut(query.promise, 500)) {
+        print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
     }
 }
