@@ -1,5 +1,6 @@
 
 import '../timedate'
+import './cd'
 import './deploy'
 import './define-toggle'
 import './env'

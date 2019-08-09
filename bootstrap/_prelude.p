@@ -82,6 +82,7 @@ command/set ..
 
 bootstrap-scripts includes ..
   agents.p
+  cd.p
   cron.p
   debugging.p
   edit.p

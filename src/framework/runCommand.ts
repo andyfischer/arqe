@@ -103,7 +103,12 @@ export default async function runCommand(query: Query) {
     // old style
     const commandImpl = everyCommand[query.command];
     if (commandImpl) {
-        await commandImpl.run(query);
+        try {
+            await commandImpl.run(query);
+        } catch (err) {
+            print(err.stack || err);
+            return;
+        }
 
         if (await timedOut(query.promise, 500)) {
             print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
