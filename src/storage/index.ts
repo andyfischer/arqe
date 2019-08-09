@@ -19,8 +19,8 @@ export async function setupUserDir() {
         await fs.writeFile(env, '');
 }
 
-export async function appendToCommandLog(str: string) {
-    const file = path.join(userDir(), 'log', getDateStamp());
+export async function appendToLog(logName: string, str: string) {
+    const file = path.join(userDir(), 'logs', logName, getDateStamp());
 
     fs.outputFile(file, str + "\n", { flag: 'a' });
 }

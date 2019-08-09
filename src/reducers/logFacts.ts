@@ -1,14 +1,14 @@
 
 import { declareReducer, Query } from '..'
-import { appendToCommandLog } from '../storage'
+import { appendToLog } from '../storage'
 
 declareReducer(() => {
     return {
-        name: 'saveToLog',
+        name: 'logFacts',
         value: { },
         async reducer(query: Query, value) {
             if (query.type === 'relation' && query.isInteractive) {
-                appendToCommandLog(query.syntax.originalStr);
+                appendToLog('facts', query.syntax.originalStr);
             }
         }
     }
