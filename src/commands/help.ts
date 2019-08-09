@@ -7,13 +7,23 @@ import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 async function run(query: Query) {
     const db = getCommandDatabase(query);
 
-    const lines = ["Available commands: "];
+    const lines = [];
+
+    const commands = []
     
-    for (const command in db.byName) {
-        lines.push("  " + command);
+    for (const commandName in db.byName) {
+        const command = db.byName[commandName];
+
+        if (command.notForHumans)
+            continue;
+
+        commands.push(commandName);
     }
 
-    query.respond(lines.join('\n'));
+    commands.sort();
+
+    query.respond("Available commands: \n"
+                  + commands.join(', '));
 }
 
 declareCommand({

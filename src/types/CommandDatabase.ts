@@ -14,6 +14,7 @@ export interface CommandDefinition {
     hasNoImplementation?: boolean
     run?: CommandImplementation
     fromLazyModule?: string
+    notForHumans?: boolean
 }
 
 export interface CommandDatabase {

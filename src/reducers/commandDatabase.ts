@@ -115,6 +115,20 @@ function update(query: Query, db: CommandDatabase) {
         command.fromLazyModule = query.relationObject;
         return;
     }
+
+    if (query.relation === 'not-for-humans') {
+        const commandName = query.relationSubject
+            .replace(/^command\//, '');
+        const command = db.byName[commandName];
+
+        if (!command) {
+            print('command not found: ' + commandName);
+            return;
+        }
+
+        command.notForHumans = true;
+        return;
+    }
 }
 
 declareReducer(() => {

@@ -10,6 +10,7 @@ def-relation has-main-arg
 def-relation has-second-main-arg
 def-relation has-no-implementation
 def-relation from-lazy-module
+def-relation not-for-humans
 
 command/def-command ..
   requires-arg command-name
@@ -41,6 +42,7 @@ command/def-function ..
 def-command eof
 command/eof ..
   has-no-implementation
+  not-for-humans
 
 def-command def-collection
 def-command def-language
