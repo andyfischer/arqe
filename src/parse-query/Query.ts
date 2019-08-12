@@ -17,7 +17,7 @@ export default interface Query {
 
     relationSubject?: string
     relation?: string
-    relationObject?: string
+    relationArgs?: string[]
 
     // Context
     snapshot?: Snapshot

@@ -39,7 +39,7 @@ function update(query: Query, db: CommandDatabase) {
             .replace(/^command\//, '');
 
         const command = db.byName[commandName];
-        const argName = query.relationObject
+        const argName = query.relationArgs[0];
 
         if (!command) {
             print('command not found: ' + commandName);
@@ -81,7 +81,7 @@ function update(query: Query, db: CommandDatabase) {
         if (command.mainArgs.length === 0)
             command.mainArgs.push(null);
 
-        command.mainArgs[0] = query.relationObject;
+        command.mainArgs[0] = query.relationArgs[0];
         return;
     }
 
@@ -98,7 +98,7 @@ function update(query: Query, db: CommandDatabase) {
         while (command.mainArgs.length < 2)
             command.mainArgs.push(null);
 
-        command.mainArgs[1] = query.relationObject;
+        command.mainArgs[1] = query.relationArgs[0];
         return;
     }
 
@@ -112,7 +112,7 @@ function update(query: Query, db: CommandDatabase) {
             return;
         }
 
-        command.fromLazyModule = query.relationObject;
+        command.fromLazyModule = query.relationArgs[0];
         return;
     }
 

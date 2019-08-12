@@ -67,7 +67,6 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
     }
 
     let clauses = syntax.clauses;
-    const options = getOptions(syntax);
 
     if (clauses.length === 0) {
         return {
@@ -92,7 +91,21 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
         }
     }
 
-    if (context.isCommand(clauses[0].key)) {
+    let positionalKeys = clauses
+        .filter(clause => !clause.assignVal)
+        .map(clause => clause.key);
+
+    const options = getOptions(syntax);
+
+    if (positionalKeys.length === 0) {
+        return {
+            syntax,
+            type: 'empty',
+            options: {}
+        }
+    }
+
+    if (context.isCommand(positionalKeys[0])) {
         return {
             syntax,
             type: 'command',
@@ -102,18 +115,28 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
         }
     }
 
-    if (clauses[1] && context.isRelation(clauses[1].key)) {
+    if (context.isRelation(positionalKeys[0])) {
+        return {
+            syntax,
+            type: 'relation',
+            relation: positionalKeys[0],
+            relationSubject: positionalKeys[1] || null,
+            relationArgs: positionalKeys.slice(2),
+            options
+        }
+    }
 
-        const relationSubject = clauses[0].key;
-        const relation = clauses[1].key;
-        const relationObject = clauses[2] && clauses[2].key;
+    if (positionalKeys[1] && context.isRelation(positionalKeys[1])) {
+
+        const relationSubject = positionalKeys[0];
+        const relation = positionalKeys[1];
 
         return {
             syntax,
             type: 'relation',
             relationSubject,
             relation,
-            relationObject,
+            relationArgs: positionalKeys.slice(2),
             options
         }
     }
