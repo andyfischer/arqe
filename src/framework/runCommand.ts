@@ -59,10 +59,12 @@ export default async function runCommand(query: Query) {
         }
     }
 
-    if (command.mainArgs.length === 0 && query.commandArgs.length > 0) {
-        print(`warning: command ${command.name} doesn't expect any main args`);
-    } else if (query.commandArgs.length > command.mainArgs.length) {
-        print(`warning: too many main args (command = ${command.name}): ${query.syntax.originalStr}`);
+    if (!command.takesAnyArgs) {
+        if (command.mainArgs.length === 0 && query.commandArgs.length > 0) {
+            print(`warning: command ${command.name} doesn't expect any main args`);
+        } else if (query.commandArgs.length > command.mainArgs.length) {
+            print(`warning: too many main args (command = ${command.name}): ${query.syntax.originalStr}`);
+        }
     }
 
     if (cantRunCommand) {

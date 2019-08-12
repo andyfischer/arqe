@@ -129,6 +129,20 @@ function update(query: Query, db: CommandDatabase) {
         command.notForHumans = true;
         return;
     }
+
+    if (query.relation === 'takes-any-args') {
+        const commandName = query.relationSubject
+            .replace(/^command\//, '');
+        const command = db.byName[commandName];
+
+        if (!command) {
+            print('command not found: ' + commandName);
+            return;
+        }
+
+        command.takesAnyArgs = true;
+        return;
+    }
 }
 
 declareReducer(() => {

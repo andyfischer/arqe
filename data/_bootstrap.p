@@ -12,6 +12,7 @@ def-relation has-second-main-arg
 def-relation has-no-implementation
 def-relation from-lazy-module
 def-relation not-for-humans
+def-relation takes-any-args
 
 command/def-command ..
   requires-arg command-name
@@ -86,6 +87,8 @@ command/set ..
   has-second-main-arg value
 
 def-function find-relations
+command/find-relations ..
+  takes-any-args
 
 bootstrap-scripts includes ..
   agents.p

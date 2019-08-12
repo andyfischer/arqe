@@ -10,9 +10,8 @@ implement('find-relations', (query: Query) => {
 
     const filterCallbacks = [];
     for (const item of filterArgs) {
-        if (item === '*') {
+        if (item === '*')
             continue;
-        }
 
         return query.respond("didn't understand filter: " + item);
     }

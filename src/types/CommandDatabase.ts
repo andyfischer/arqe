@@ -11,6 +11,7 @@ export interface CommandDefinition {
     name: string
     mainArgs: string[]
     args: { [key: string]: Arg }
+    takesAnyArgs?: boolean
     hasNoImplementation?: boolean
     run?: CommandImplementation
     fromLazyModule?: string
