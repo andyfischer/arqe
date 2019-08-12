@@ -31,8 +31,8 @@ export default async function runCommand(query: Query) {
 
         for (let i=0; i < command.mainArgs.length; i++) {
             const mainArg = command.mainArgs[i];
-            if (mainArg === name && query.commandArgs.length >= i) {
-                return query.commandArgs[i];
+            if (mainArg === name && query.args.length >= i) {
+                return query.args[i];
             }
         }
 
@@ -60,9 +60,9 @@ export default async function runCommand(query: Query) {
     }
 
     if (!command.takesAnyArgs) {
-        if (command.mainArgs.length === 0 && query.commandArgs.length > 0) {
+        if (command.mainArgs.length === 0 && query.args.length > 0) {
             print(`warning: command ${command.name} doesn't expect any main args`);
-        } else if (query.commandArgs.length > command.mainArgs.length) {
+        } else if (query.args.length > command.mainArgs.length) {
             print(`warning: too many main args (command = ${command.name}): ${query.syntax.originalStr}`);
         }
     }

@@ -4,8 +4,8 @@ import { declareReducer } from '../framework'
 
 function update(query: Query, value) {
     if (query.command === 'set-in-current-file') {
-        const key = query.commandArgs[1];
-        const value = query.commandArgs[2];
+        const key = query.args[1];
+        const value = query.args[2];
 
         query.snapshot.fileScopedValues[key] = value;
         return;

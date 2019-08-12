@@ -13,7 +13,7 @@ interface Function {
 
 function update(query: Query, db: Database) {
     if (query.command === 'def-function') {
-        const name = query.commandArgs[0];
+        const name = query.args[0];
         if (db.byName[name]) {
             print('warning: function already defined: ' + name);
             return;

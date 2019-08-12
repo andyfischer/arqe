@@ -22,13 +22,13 @@ function initCommand(db: CommandDatabase, name) {
 function update(query: Query, db: CommandDatabase) {
 
     if (query.command === 'def-command' || query.command === 'def-function') {
-        const name = query.commandArgs && query.commandArgs[0];
+        const name = query.args && query.args[0];
         initCommand(db, name);
         return;
     }
 
     if (query.command === 'def-declaration') {
-        const name = query.commandArgs && query.commandArgs[0];
+        const name = query.args && query.args[0];
         initCommand(db, name);
         db.byName[name].hasNoImplementation = true;
         return;
@@ -39,7 +39,7 @@ function update(query: Query, db: CommandDatabase) {
             .replace(/^command\//, '');
 
         const command = db.byName[commandName];
-        const argName = query.relationArgs[0];
+        const argName = query.args[0];
 
         if (!command) {
             print('command not found: ' + commandName);
@@ -81,7 +81,7 @@ function update(query: Query, db: CommandDatabase) {
         if (command.mainArgs.length === 0)
             command.mainArgs.push(null);
 
-        command.mainArgs[0] = query.relationArgs[0];
+        command.mainArgs[0] = query.args[0];
         return;
     }
 
@@ -98,7 +98,7 @@ function update(query: Query, db: CommandDatabase) {
         while (command.mainArgs.length < 2)
             command.mainArgs.push(null);
 
-        command.mainArgs[1] = query.relationArgs[0];
+        command.mainArgs[1] = query.args[0];
         return;
     }
 
@@ -112,7 +112,7 @@ function update(query: Query, db: CommandDatabase) {
             return;
         }
 
-        command.fromLazyModule = query.relationArgs[0];
+        command.fromLazyModule = query.args[0];
         return;
     }
 

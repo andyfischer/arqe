@@ -16,7 +16,7 @@ it('parses commands as commands', () => {
 
     expect(query.command).toEqual('command');
     expect(query.type).toEqual('command');
-    expect(query.commandArgs).toEqual([]);
+    expect(query.args).toEqual([]);
 });
 
 it('parses command args', () => {
@@ -24,7 +24,7 @@ it('parses command args', () => {
 
     expect(query.command).toEqual('command');
     expect(query.type).toEqual('command');
-    expect(query.commandArgs).toEqual(['1', '2', '3']);
+    expect(query.args).toEqual(['1', '2', '3']);
 });
 
 it('parses <thing> <relation>', () => {
@@ -33,7 +33,7 @@ it('parses <thing> <relation>', () => {
     expect(query.type).toEqual('relation');
     expect(query.relation).toEqual('relation');
     expect(query.relationSubject).toEqual('thing');
-    expect(query.relationArgs).toEqual([]);
+    expect(query.args).toEqual([]);
 });
 
 it('parses <thing> <relation> <thing2>', () => {
@@ -42,7 +42,7 @@ it('parses <thing> <relation> <thing2>', () => {
     expect(query.type).toEqual('relation');
     expect(query.relation).toEqual('relation');
     expect(query.relationSubject).toEqual('thing');
-    expect(query.relationArgs).toEqual(['thing2']);
+    expect(query.args).toEqual(['thing2']);
 });
 
 it('parses <relation> <thing1> <thing2> <thing3>', () => {
@@ -51,5 +51,5 @@ it('parses <relation> <thing1> <thing2> <thing3>', () => {
     expect(query.type).toEqual('relation');
     expect(query.relation).toEqual('relation');
     expect(query.relationSubject).toEqual('thing1');
-    expect(query.relationArgs).toEqual(['thing2', 'thing3']);
+    expect(query.args).toEqual(['thing2', 'thing3']);
 });

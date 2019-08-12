@@ -110,7 +110,7 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
             syntax,
             type: 'command',
             command: clauses[0].key,
-            commandArgs: getCommandArgs(syntax),
+            args: getCommandArgs(syntax),
             options
         }
     }
@@ -121,7 +121,7 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
             type: 'relation',
             relation: positionalKeys[0],
             relationSubject: positionalKeys[1] || null,
-            relationArgs: positionalKeys.slice(2),
+            args: positionalKeys.slice(2),
             options
         }
     }
@@ -136,7 +136,7 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
             type: 'relation',
             relationSubject,
             relation,
-            relationArgs: positionalKeys.slice(2),
+            args: positionalKeys.slice(2),
             options
         }
     }

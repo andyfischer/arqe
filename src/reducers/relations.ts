@@ -11,7 +11,7 @@ declareReducer(() => {
         value: { },
         reducer(query: Query, set) {
             if (query.command === 'def-relation') {
-                const rel = query.commandArgs[0];
+                const rel = query.args[0];
                 if (!set[rel]) {
                     set[rel] = true;
 

@@ -9,15 +9,16 @@ export default interface Query {
 
     type: QueryType
     options: { [key: string]: string }
+    args?: string[]
 
     isIncomplete?: boolean
 
+    // Command
     command?: string
-    commandArgs?: string[]
 
+    // Relation
     relationSubject?: string
     relation?: string
-    relationArgs?: string[]
 
     // Context
     snapshot?: Snapshot

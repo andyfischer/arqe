@@ -11,7 +11,7 @@ declareReducer(() => {
         reducer(query: Query, value) {
             if (query.relationSubject === 'bootstrap-scripts') {
                 if (query.relation === 'includes') {
-                    for (const arg of query.relationArgs)
+                    for (const arg of query.args)
                         value.scripts[arg] = true;
                 }
             }

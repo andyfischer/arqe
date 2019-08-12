@@ -3,7 +3,7 @@ import { implement, Query } from '..'
 import { getRelationDatabase } from '../types/RelationDatabase'
 
 implement('find-relations', (query: Query) => {
-    const filterArgs = query.commandArgs;
+    const filterArgs = query.args;
 
     if (filterArgs.length === 0)
         return query.respond([]);

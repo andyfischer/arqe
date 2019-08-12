@@ -4,8 +4,8 @@ import { getCommandDatabase } from '../types/CommandDatabase'
 import { print } from '../utils'
 
 implement('set', async (query: Query) => {
-    const name = query.commandArgs[0];
-    const value = query.commandArgs[1];
+    const name = query.args[0];
+    const value = query.args[1];
 
     const options = query.options;
 

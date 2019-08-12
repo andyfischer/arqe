@@ -2,7 +2,7 @@
 import { implement, print } from '..'
 
 implement('cd', (query) => {
-    const dir = query.commandArgs[0];
+    const dir = query.args[0];
 
     try {
         process.chdir(dir);
