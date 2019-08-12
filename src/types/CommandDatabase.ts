@@ -21,7 +21,7 @@ export interface CommandDatabase {
     byName: { [name: string]: CommandDefinition }
 }
 
-export function getInitialCommandDatabase(): CommandDatabase {
+export function getZeroCommandDatabase(): CommandDatabase {
     return {
         byName: {
             'def-command': {

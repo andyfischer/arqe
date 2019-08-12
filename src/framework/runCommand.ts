@@ -7,6 +7,7 @@ import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import CommandImplementation from '../types/CommandImplementation'
 import { ensureModuleLoaded } from '../lazymodules'
 import '../commands'
+import '../functions'
 
 const verbose = !!process.env.verbose;
 const MissingValue = Symbol('missing');

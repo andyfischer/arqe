@@ -21,7 +21,7 @@ function initCommand(db: CommandDatabase, name) {
 
 function update(query: Query, db: CommandDatabase) {
 
-    if (query.command === 'def-command') {
+    if (query.command === 'def-command' || query.command === 'def-function') {
         const name = query.commandArgs && query.commandArgs[0];
         initCommand(db, name);
         return;
@@ -135,9 +135,8 @@ declareReducer(() => {
     return {
         name: 'commandDB',
         value: {},
-        reducer(query: Query, db: CommandDatabase) {
+        reducer(query: Query) {
             update(query, getCommandDatabase(query));
-            return db;
         }
     }
 });

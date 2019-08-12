@@ -3,7 +3,8 @@ import { Reducer, everyReducer } from '../framework'
 import { print } from '../utils'
 import { Query } from '..'
 import submitQuery, { QueryOptions } from './submitQuery'
-import { getInitialCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
+import { getZeroCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
+import { getZeroRelationDatabase } from '../types/RelationDatabase'
 import CommandImplementation from '../types/CommandImplementation'
 import '../reducers'
 
@@ -21,7 +22,8 @@ export default class Snapshot {
 
     constructor() {
         // Bootstrap values
-        this.globalValues['commandDatabase'] = getInitialCommandDatabase();
+        this.globalValues['commandDatabase'] = getZeroCommandDatabase();
+        this.globalValues['relationDatabase'] = getZeroRelationDatabase();
 
         // Builtin documents
         for (const reducerDef of everyReducer)

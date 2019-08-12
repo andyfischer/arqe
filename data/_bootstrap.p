@@ -1,6 +1,7 @@
 
 def-command def-command
 def-command def-relation
+def-command def-function
 
 def-relation is
 def-relation includes
@@ -83,6 +84,8 @@ command/set ..
   has-main-arg name
   requires-arg value
   has-second-main-arg value
+
+def-function find-relations
 
 bootstrap-scripts includes ..
   agents.p
