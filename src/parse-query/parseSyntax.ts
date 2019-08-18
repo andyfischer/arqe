@@ -70,6 +70,7 @@ export default function stringToClauses(str: string): QuerySyntax {
         if (reader.nextIs(t_double_dot)) {
             reader.consume(t_double_dot);
             out.clauses.push({ isDots: true });
+            out.incomplete = true;
             continue;
         }
 

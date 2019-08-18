@@ -9,6 +9,7 @@ export default interface QuerySyntax {
     originalStr: string
     clauses: Arg[]
     indent: number
+    incomplete?: boolean
 }
 
 export interface PipedQueriesSyntax {
