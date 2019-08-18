@@ -80,14 +80,19 @@ export default async function runCommand(query: Query) {
         return;
     }
 
-    function queryGet(name: string) {
+
+    function queryGetOptional(name: string, defaultValue: any) {
         if (incoming[name])
             return incoming[name];
 
         if (query.options[name])
             return query.options[name];
 
-        const value = this.snapshot.getValueOpt(name, MissingValue);
+        return this.snapshot.getValueOpt(name, defaultValue);
+    }
+
+    function queryGet(name: string) {
+        const value = queryGetOptional(name, MissingValue);
         if (value !== MissingValue)
             return value;
 
@@ -95,6 +100,7 @@ export default async function runCommand(query: Query) {
     }
 
     query.get = queryGet;
+    query.getOptional = queryGetOptional;
 
     const func: CommandImplementation = command.run || everyImplementation[query.command];
 

@@ -57,15 +57,6 @@ function findIndex(items: any[], matcher: (el: any) => boolean) {
 
 export default function parseQueryStructure(context: ParseContext, syntax: QuerySyntax): Query {
 
-    if (syntax.incomplete) {
-        return {
-            syntax,
-            type: 'empty',
-            isIncomplete: true,
-            options: {}
-        }
-    }
-
     let clauses = syntax.clauses;
 
     if (clauses.length === 0) {

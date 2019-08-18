@@ -19,7 +19,17 @@ function initCommand(db: CommandDatabase, name) {
     }
 }
 
+function getCommandSubject(query) {
+    if (query.relationSubject) {
+        return query.relationSubject.replace(/^command\//, '');
+    }
+
+    return null;
+}
+
 function update(query: Query, db: CommandDatabase) {
+
+    const commandSubject = getCommandSubject(query);
 
     if (query.command === 'def-command' || query.command === 'def-function') {
         const name = query.args && query.args[0];
@@ -34,15 +44,12 @@ function update(query: Query, db: CommandDatabase) {
         return;
     }
     
-    if (query.relation === 'requires-arg') {
-        const commandName = query.relationSubject
-            .replace(/^command\//, '');
-
-        const command = db.byName[commandName];
+    if (commandSubject && query.relation === 'requires-arg') {
+        const command = db.byName[commandSubject];
         const argName = query.args[0];
 
         if (!command) {
-            print('command not found: ' + commandName);
+            print('command not found: ' + commandSubject);
             return;
         }
 
@@ -53,14 +60,11 @@ function update(query: Query, db: CommandDatabase) {
         return;
     }
     
-    if (query.relation === 'has-no-implementation') {
-
-        const commandName = query.relationSubject
-            .replace(/^command\//, '');
-        const command = db.byName[commandName];
+    if (commandSubject && query.relation === 'has-no-implementation') {
+        const command = db.byName[commandSubject];
 
         if (!command) {
-            print('command not found: ' + commandName);
+            print('command not found: ' + commandSubject);
             return;
         }
 
@@ -68,13 +72,11 @@ function update(query: Query, db: CommandDatabase) {
         return;
     }
 
-    if (query.relation === 'has-main-arg') {
-        const commandName = query.relationSubject
-            .replace(/^command\//, '');
-        const command = db.byName[commandName];
+    if (commandSubject && query.relation === 'has-main-arg') {
+        const command = db.byName[commandSubject];
 
         if (!command) {
-            print('command not found: ' + commandName);
+            print('command not found: ' + commandSubject);
             return;
         }
 
@@ -85,13 +87,11 @@ function update(query: Query, db: CommandDatabase) {
         return;
     }
 
-    if (query.relation === 'has-second-main-arg') {
-        const commandName = query.relationSubject
-            .replace(/^command\//, '');
-        const command = db.byName[commandName];
+    if (commandSubject === 'has-second-main-arg') {
+        const command = db.byName[commandSubject];
 
         if (!command) {
-            print('command not found: ' + commandName);
+            print('command not found: ' + commandSubject);
             return;
         }
 
@@ -102,13 +102,11 @@ function update(query: Query, db: CommandDatabase) {
         return;
     }
 
-    if (query.relation === 'from-lazy-module') {
-        const commandName = query.relationSubject
-            .replace(/^command\//, '');
-        const command = db.byName[commandName];
+    if (commandSubject && query.relation === 'from-lazy-module') {
+        const command = db.byName[commandSubject];
 
         if (!command) {
-            print('command not found: ' + commandName);
+            print('command not found: ' + commandSubject);
             return;
         }
 
@@ -116,13 +114,11 @@ function update(query: Query, db: CommandDatabase) {
         return;
     }
 
-    if (query.relation === 'not-for-humans') {
-        const commandName = query.relationSubject
-            .replace(/^command\//, '');
-        const command = db.byName[commandName];
+    if (commandSubject && query.relation === 'not-for-humans') {
+        const command = db.byName[commandSubject];
 
         if (!command) {
-            print('command not found: ' + commandName);
+            print('command not found: ' + commandSubject);
             return;
         }
 
@@ -130,13 +126,11 @@ function update(query: Query, db: CommandDatabase) {
         return;
     }
 
-    if (query.relation === 'takes-any-args') {
-        const commandName = query.relationSubject
-            .replace(/^command\//, '');
-        const command = db.byName[commandName];
+    if (commandSubject && query.relation === 'takes-any-args') {
+        const command = db.byName[commandSubject];
 
         if (!command) {
-            print('command not found: ' + commandName);
+            print('command not found: ' + commandSubject);
             return;
         }
 

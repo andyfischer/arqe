@@ -126,7 +126,7 @@ describe("tokenizeString", () => {
     `);
   });
 
-  it("handles quoted strings", () => {
+  xit("handles quoted strings", () => {
     expect(consise(tokenizeString('hello "there" '))).toMatchInlineSnapshot(`
       Array [
         Object {

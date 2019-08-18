@@ -1,10 +1,9 @@
 
-def-command provision-working-dir
+def-command create-working-dir
 
-command/provision-working-dir ..
+command/create-working-dir ..
   requires-arg filesystem.workingdir
-  requires-arg dir-name
-  has-main-arg dir-name
+  has-main-arg name
 
 command/deploy ..
   requires-arg deployment-name

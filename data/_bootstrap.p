@@ -97,6 +97,7 @@ bootstrap-scripts includes ..
   debugging.p
   edit.p
   fix-js-project.p
+  fs-bootstrap.p
   history.p
   jenkins.p
   languages.p

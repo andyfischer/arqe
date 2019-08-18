@@ -23,6 +23,7 @@ export default interface Query {
     // Context
     snapshot?: Snapshot
     get?: (name: string) => any
+    getOptional?: (name: string, defaultValue: any) => any
     isInteractive?: boolean
 
     // Response

@@ -1,5 +1,5 @@
 
-interface Clause {
+interface Arg {
     key?: string
     assignVal?: string
     isDots?: boolean
@@ -7,7 +7,11 @@ interface Clause {
 
 export default interface QuerySyntax {
     originalStr: string
-    clauses: Clause[]
+    clauses: Arg[]
     indent: number
-    incomplete?: boolean
+}
+
+export interface PipedQueriesSyntax {
+    originalStr: string
+    queries: QuerySyntax[]
 }

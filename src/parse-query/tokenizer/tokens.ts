@@ -94,6 +94,11 @@ export const t_bang = {
     str: "~"
 }
 
+export const t_bar = {
+    name: "bar",
+    str: "|"
+}
+
 export const t_ident = {
     name: "ident"
 }
@@ -142,6 +147,7 @@ export const everyToken: TokenDef[] = [
     t_percent,
     t_dollar,
     t_bang,
+    t_bar,
     t_ident,
     t_integer,
     t_space,
