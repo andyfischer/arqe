@@ -1,7 +1,8 @@
 
-import { Clause, ParseContext, Query } from '.'
+import { Query } from '.'
 import { print, freeze } from '../utils'
-import QuerySyntax from './QuerySyntax'
+import { Snapshot } from '../framework'
+import QuerySyntax from '../parse-query/QuerySyntax'
 
 // this is not used yet:
 const clauseExpansionFormats = [
@@ -10,17 +11,6 @@ const clauseExpansionFormats = [
     'something relation omitted',
     'command ...'
 ];
-
-function checkKnownWordTypes(clause: Clause, context: ParseContext) {
-    if (clause.assignVal)
-        return;
-
-    if (context.isRelation(clause.key))
-        clause.isRelation = true;
-
-    if (context.isCommand(clause.key))
-        clause.isCommand = true;
-}
 
 function getOptions(syntax: QuerySyntax) {
     const obj: {[key:string]: any} = {};
@@ -55,7 +45,7 @@ function findIndex(items: any[], matcher: (el: any) => boolean) {
     return -1;
 }
 
-export default function parseQueryStructure(context: ParseContext, syntax: QuerySyntax): Query {
+export default function parseQueryStructure(snapshot: Snapshot, syntax: QuerySyntax): Query {
 
     if (syntax.incomplete) {
         return {
@@ -79,7 +69,7 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
     // Check if this query is indented. If so then try to fill in with the
     // last incomplete clause.
     if (syntax.indent > 0) {
-        const lastIncompleteClause = context.getLastIncompleteClause();
+        const lastIncompleteClause = snapshot.getLastIncompleteClause();
 
         if (lastIncompleteClause) {
             const dotsLocation = findIndex(lastIncompleteClause.syntax.clauses, x => x.isDots);
@@ -105,7 +95,7 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
         }
     }
 
-    if (context.isCommand(positionalKeys[0])) {
+    if (snapshot.isCommand(positionalKeys[0])) {
         return {
             syntax,
             type: 'command',
@@ -115,7 +105,7 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
         }
     }
 
-    if (context.isRelation(positionalKeys[0])) {
+    if (snapshot.isRelation(positionalKeys[0])) {
         return {
             syntax,
             type: 'relation',
@@ -126,7 +116,7 @@ export default function parseQueryStructure(context: ParseContext, syntax: Query
         }
     }
 
-    if (positionalKeys[1] && context.isRelation(positionalKeys[1])) {
+    if (positionalKeys[1] && snapshot.isRelation(positionalKeys[1])) {
 
         const relationSubject = positionalKeys[0];
         const relation = positionalKeys[1];

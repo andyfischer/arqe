@@ -1,13 +1,12 @@
 
+import Fs from 'fs-extra'
 import { Snapshot } from '.'
-import { readTextLinesSync } from '../utils'
+import { runQueryInput } from '../query'
 
 export default async function loadBootstrapFile(snapshot: Snapshot, filename: string) {
-    const lines = readTextLinesSync(filename);
+    const contents = await Fs.readFile(filename, 'utf8');
 
-    for (const line of lines) {
-        await snapshot.submitQuery(line, { isInteractive: false } );
-    }
+    await runQueryInput(snapshot, contents, { sourceFilename: filename });
 
-    await snapshot.submitQuery('eof', { isInteractive: false });
+    await runQueryInput(snapshot, 'eof', { isInteractive: false });
 }

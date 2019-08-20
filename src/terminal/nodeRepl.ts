@@ -1,5 +1,6 @@
 
 import { Snapshot } from '../framework'
+import { runQueryInput } from '../query'
 import { printEvents } from '../utils'
 
 const prompt = ' ~ '
@@ -46,7 +47,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
         onFinishedPrompt();
 
         line = trimEndline(line);
-        await snapshot.submitQuery(line, { isInteractive: true } );
+        await runQueryInput(snapshot, line, { isInteractive: true } );
 
         repl.displayPrompt();
 

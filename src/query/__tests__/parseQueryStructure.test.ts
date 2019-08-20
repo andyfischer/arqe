@@ -1,4 +1,5 @@
 
+/*
 import { parseQuery } from '..'
 import { Snapshot } from '../..'
 
@@ -53,3 +54,4 @@ it('parses <relation> <thing1> <thing2> <thing3>', () => {
     expect(query.relationSubject).toEqual('thing1');
     expect(query.args).toEqual(['thing2', 'thing3']);
 });
+*/

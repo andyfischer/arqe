@@ -2,7 +2,7 @@
 import { Reducer, everyReducer } from '../framework'
 import { print } from '../utils'
 import { Query } from '..'
-import submitQuery, { QueryOptions } from './submitQuery'
+import { QueryOptions } from '../query'
 import { getZeroCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import { getZeroRelationDatabase } from '../types/RelationDatabase'
 import CommandImplementation from '../types/CommandImplementation'
@@ -11,6 +11,8 @@ import '../reducers'
 const MissingValue = Symbol('missing');
 
 export default class Snapshot {
+
+    typeSnapshot = true
 
     globalValues: { [name: string]: any } = {}
     fileScopedValues: { [name: string]: any } = {}
@@ -83,10 +85,6 @@ export default class Snapshot {
             throw new Error('value not found for: ' + name);
 
         return get;
-    }
-
-    async submitQuery(queryString: string, options?: QueryOptions) {
-        return await submitQuery(this, queryString, options);
     }
 
     implementCommand(name, impl: CommandImplementation) {

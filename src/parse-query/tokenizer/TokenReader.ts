@@ -1,5 +1,5 @@
 
-import { Token, TokenDef, TokenizeResult, t_space } from '.'
+import { Token, TokenDef, TokenizeResult, t_space, t_newline } from '.'
 
 export default class TokenReader {
 
@@ -13,6 +13,10 @@ export default class TokenReader {
 
     discardSpaces() {
         this.tokens = this.tokens.filter(token => token.match !== t_space);
+    }
+
+    getPosition() {
+        return this.position;
     }
 
     next(lookahead: number = 0): Token {
@@ -73,5 +77,16 @@ export default class TokenReader {
             throw new Error(`consume expected match: ${match}, found match: ${this.next().match}`);
 
         this.position += 1;
+    }
+
+    skipWhile(condition: (next: Token) => boolean) {
+        while (condition(this.next()) && !this.finished())
+            this.consume();
+    }
+
+    skipUntilNewline() {
+        this.skipWhile(token => token.match !== t_newline);
+        if (this.nextIs(t_newline))
+            this.consume();
     }
 }

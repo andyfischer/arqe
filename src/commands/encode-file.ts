@@ -3,7 +3,7 @@
 import Fs from 'fs-extra'
 import Path from 'path'
 import Crypto from 'crypto'
-import { implement, Query, parseQuery } from '..'
+import { implement, Query } from '..'
 import { print, values, allTrue } from '../utils'
 
 const selfCheck = true;
@@ -45,9 +45,10 @@ implement('encode-file', async (query: Query) => {
         const cmd = `file-contents filename=${basename} filetype=${filetype} sha1=${sha1} base64=${base64}`
         print(cmd);
 
+        /*
         if (selfCheck) {
-            const parsed = parseQuery(cmd, query.snapshot);
-            const options = parsed.options;
+            const parsed = parseQueries(cmd);
+            const options = parsed[0].options;
 
             const matches = {
                 filename: basename === options.filename,
@@ -60,6 +61,6 @@ implement('encode-file', async (query: Query) => {
                 print(`error: self check failed\n  operation: encode-file\n`
                       +`  command: ${cmd}\n  matches: ${JSON.stringify(matches)}`);
             }
-        }
+        }*/
     }
 });

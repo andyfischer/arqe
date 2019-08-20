@@ -50,8 +50,11 @@ export function getZeroCommandDatabase(): CommandDatabase {
 }
 
 export function getCommandDatabase(key: Snapshot | Query): CommandDatabase {
-
     const snapshot = (key as any).snapshot || key;
+    
+    if (!snapshot.typeSnapshot) {
+        throw new Error("expected Snapshot");
+    }
 
     return snapshot.getValue('commandDatabase');
 }

@@ -1,5 +1,5 @@
 
-import parseSyntax from '../parseSyntax'
+import parseSyntax from '../parseSyntaxLine'
 
 it('parses a list of identifiers', () => {
     const syntax = parseSyntax('def-command mycommand');

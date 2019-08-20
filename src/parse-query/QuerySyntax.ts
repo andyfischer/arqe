@@ -1,16 +1,10 @@
 
+import SourcePos from '../types/SourcePos'
+
 interface Arg {
     key?: string
     assignVal?: string
     isDots?: boolean
-}
-
-interface SourcePos { 
-    filename?: string
-    lineStart: number
-    lineEnd: number
-    columnStart: number
-    columnEnd: number
 }
 
 export default interface QuerySyntax {

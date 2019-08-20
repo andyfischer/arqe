@@ -1,7 +1,8 @@
 
-import { Clause, ParseContext, Query } from '.'
+import { Clause } from '.'
 import QuerySyntax from './QuerySyntax'
 import { tokenizeString, TokenReader, t_equals, t_space, t_hash, t_double_dot } from './tokenizer'
+import { print } from '../utils'
 
 function skipSpaces(reader: TokenReader) {
     while (reader.nextIs(t_space))
@@ -34,12 +35,12 @@ function consumeOptionValue(reader: TokenReader) {
     return text;
 }
 
-export default function parseSyntaxLine(reader: TokenReader): QuerySyntax {
+export function parseSyntaxLineFromTokens(reader: TokenReader): QuerySyntax {
     const nextToken = reader.next();
 
     const out: QuerySyntax = {
         clauses: [],
-        originalStr: str,
+        originalStr: '',
         indent: 0,
         sourcePos: {
             lineStart: nextToken.lineStart,
@@ -69,7 +70,8 @@ export default function parseSyntaxLine(reader: TokenReader): QuerySyntax {
             break;
 
         if (reader.nextIs(t_hash)) {
-            // comment, don't consume any more.
+            // comment
+            reader.skipUntilNewline();
             break;
         }
 
@@ -104,4 +106,11 @@ export default function parseSyntaxLine(reader: TokenReader): QuerySyntax {
     out.sourcePos.columnEnd = lastToken.columnStart + lastToken.length;
 
     return out;
+}
+
+export default function parseSyntaxLine(str: string) {
+    const tokens = tokenizeString(str);
+    const reader = tokens.reader;
+
+    return parseSyntaxLineFromTokens(reader);
 }

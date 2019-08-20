@@ -1,6 +1,6 @@
 
 import { Snapshot } from '../framework'
-import QuerySyntax from './QuerySyntax'
+import QuerySyntax from '../parse-query/QuerySyntax'
 
 type QueryType = 'command' | 'relation' | 'unknown' | 'empty'
 
