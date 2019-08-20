@@ -45,10 +45,11 @@ export default class StringReader {
 
         const result:Token = {
             match: match,
+            length: len,
             startPos: this.index,
             endPos: this.index + len,
-            lineNumber: this.lineNumber,
-            charNumber: this.charNumber
+            lineStart: this.lineNumber,
+            columnStart: this.charNumber
         };
 
         if (this.next(0) === c_newline) {

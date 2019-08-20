@@ -21,13 +21,29 @@ export default class TokenReader {
             return {
                 startPos: this.tokens.length,
                 endPos: this.tokens.length,
-                lineNumber: 0,
-                charNumber: 0,
+                length: 0,
+                lineStart: 0,
+                columnStart: 0,
                 match: null
             }
         }
 
         return this.tokens[pos];
+    }
+
+    last(): Token {
+        const pos = this.position;
+        if (pos == 0) {
+            return {
+                startPos: 0,
+                endPos: 0,
+                length: 0,
+                lineStart: 0,
+                columnStart: 0,
+                match: null
+            }
+        }
+        return this.tokens[pos - 1];
     }
 
     nextIs(match: TokenDef, lookahead: number = 0): boolean {

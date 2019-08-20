@@ -34,14 +34,19 @@ function consumeOptionValue(reader: TokenReader) {
     return text;
 }
 
-export default function stringToClauses(str: string): QuerySyntax {
-    const tokens = tokenizeString(str);
-    const reader = tokens.reader;
+export default function parseSyntaxLine(reader: TokenReader): QuerySyntax {
+    const nextToken = reader.next();
 
     const out: QuerySyntax = {
         clauses: [],
         originalStr: str,
-        indent: 0
+        indent: 0,
+        sourcePos: {
+            lineStart: nextToken.lineStart,
+            columnStart: nextToken.columnStart,
+            lineEnd: nextToken.lineStart,
+            columnEnd: nextToken.columnStart
+        }
     }
 
     // Consume first spaces as indentation
@@ -55,12 +60,13 @@ export default function stringToClauses(str: string): QuerySyntax {
     while (!reader.finished()) {
 
         if (activeQuote) {
+            // todo, handle quotes
         }
 
         skipSpaces(reader);
 
         if (reader.finished())
-            return;
+            break;
 
         if (reader.nextIs(t_hash)) {
             // comment, don't consume any more.
@@ -92,6 +98,10 @@ export default function stringToClauses(str: string): QuerySyntax {
 
         out.clauses.push({ key, assignVal });
     }
+
+    const lastToken = reader.last();
+    out.sourcePos.lineEnd = lastToken.lineStart;
+    out.sourcePos.columnEnd = lastToken.columnStart + lastToken.length;
 
     return out;
 }
