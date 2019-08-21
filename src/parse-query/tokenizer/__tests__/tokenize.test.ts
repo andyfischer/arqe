@@ -16,9 +16,10 @@ describe("tokenizeString", () => {
     expect(consise(tokenizeString("hello-there"))).toMatchInlineSnapshot(`
       Array [
         Object {
-          "charNumber": 1,
+          "columnStart": 1,
           "endPos": 11,
-          "lineNumber": 0,
+          "length": 11,
+          "lineStart": 1,
           "matchName": "ident",
           "startPos": 0,
         },
@@ -27,23 +28,26 @@ describe("tokenizeString", () => {
     expect(consise(tokenizeString("hello there"))).toMatchInlineSnapshot(`
       Array [
         Object {
-          "charNumber": 1,
+          "columnStart": 1,
           "endPos": 5,
-          "lineNumber": 0,
+          "length": 5,
+          "lineStart": 1,
           "matchName": "ident",
           "startPos": 0,
         },
         Object {
-          "charNumber": 6,
+          "columnStart": 6,
           "endPos": 6,
-          "lineNumber": 0,
+          "length": 1,
+          "lineStart": 1,
           "matchName": "space",
           "startPos": 5,
         },
         Object {
-          "charNumber": 7,
+          "columnStart": 7,
           "endPos": 11,
-          "lineNumber": 0,
+          "length": 5,
+          "lineStart": 1,
           "matchName": "ident",
           "startPos": 6,
         },
@@ -53,9 +57,10 @@ describe("tokenizeString", () => {
     expect(consise(tokenizeString("_abc123"))).toMatchInlineSnapshot(`
       Array [
         Object {
-          "charNumber": 1,
+          "columnStart": 1,
           "endPos": 7,
-          "lineNumber": 0,
+          "length": 7,
+          "lineStart": 1,
           "matchName": "ident",
           "startPos": 0,
         },
@@ -67,23 +72,26 @@ describe("tokenizeString", () => {
     expect(consise(tokenizeString("  -    "))).toMatchInlineSnapshot(`
       Array [
         Object {
-          "charNumber": 1,
+          "columnStart": 1,
           "endPos": 2,
-          "lineNumber": 0,
+          "length": 2,
+          "lineStart": 1,
           "matchName": "space",
           "startPos": 0,
         },
         Object {
-          "charNumber": 3,
+          "columnStart": 3,
           "endPos": 3,
-          "lineNumber": 0,
+          "length": 1,
+          "lineStart": 1,
           "matchName": "dash",
           "startPos": 2,
         },
         Object {
-          "charNumber": 4,
+          "columnStart": 4,
           "endPos": 7,
-          "lineNumber": 0,
+          "length": 4,
+          "lineStart": 1,
           "matchName": "space",
           "startPos": 3,
         },
@@ -95,30 +103,34 @@ describe("tokenizeString", () => {
     expect(consise(tokenizeString("%$!/"))).toMatchInlineSnapshot(`
       Array [
         Object {
-          "charNumber": 1,
+          "columnStart": 1,
           "endPos": 1,
-          "lineNumber": 0,
+          "length": 1,
+          "lineStart": 1,
           "matchName": "percent",
           "startPos": 0,
         },
         Object {
-          "charNumber": 2,
+          "columnStart": 2,
           "endPos": 2,
-          "lineNumber": 0,
+          "length": 1,
+          "lineStart": 1,
           "matchName": "dollar",
           "startPos": 1,
         },
         Object {
-          "charNumber": 3,
+          "columnStart": 3,
           "endPos": 3,
-          "lineNumber": 0,
+          "length": 1,
+          "lineStart": 1,
           "matchName": "unrecognized",
           "startPos": 2,
         },
         Object {
-          "charNumber": 4,
+          "columnStart": 4,
           "endPos": 4,
-          "lineNumber": 0,
+          "length": 1,
+          "lineStart": 1,
           "matchName": "slash",
           "startPos": 3,
         },
@@ -128,51 +140,51 @@ describe("tokenizeString", () => {
 
   xit("handles quoted strings", () => {
     expect(consise(tokenizeString('hello "there" '))).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "charNumber": 1,
-          "endPos": 5,
-          "lineNumber": 0,
-          "matchName": "ident",
-          "startPos": 0,
-        },
-        Object {
-          "charNumber": 6,
-          "endPos": 6,
-          "lineNumber": 0,
-          "matchName": "space",
-          "startPos": 5,
-        },
-        Object {
-          "charNumber": 7,
-          "endPos": 7,
-          "lineNumber": 0,
-          "matchName": "unrecognized",
-          "startPos": 6,
-        },
-        Object {
-          "charNumber": 8,
-          "endPos": 12,
-          "lineNumber": 0,
-          "matchName": "ident",
-          "startPos": 7,
-        },
-        Object {
-          "charNumber": 13,
-          "endPos": 13,
-          "lineNumber": 0,
-          "matchName": "unrecognized",
-          "startPos": 12,
-        },
-        Object {
-          "charNumber": 14,
-          "endPos": 14,
-          "lineNumber": 0,
-          "matchName": "space",
-          "startPos": 13,
-        },
-      ]
-    `);
+            Array [
+              Object {
+                "charNumber": 1,
+                "endPos": 5,
+                "lineNumber": 0,
+                "matchName": "ident",
+                "startPos": 0,
+              },
+              Object {
+                "charNumber": 6,
+                "endPos": 6,
+                "lineNumber": 0,
+                "matchName": "space",
+                "startPos": 5,
+              },
+              Object {
+                "charNumber": 7,
+                "endPos": 7,
+                "lineNumber": 0,
+                "matchName": "unrecognized",
+                "startPos": 6,
+              },
+              Object {
+                "charNumber": 8,
+                "endPos": 12,
+                "lineNumber": 0,
+                "matchName": "ident",
+                "startPos": 7,
+              },
+              Object {
+                "charNumber": 13,
+                "endPos": 13,
+                "lineNumber": 0,
+                "matchName": "unrecognized",
+                "startPos": 12,
+              },
+              Object {
+                "charNumber": 14,
+                "endPos": 14,
+                "lineNumber": 0,
+                "matchName": "space",
+                "startPos": 13,
+              },
+            ]
+        `);
   });
 
   it("provides identifier text", () => {

@@ -98,6 +98,7 @@ bootstrap-scripts includes ..
   edit.p
   fix-js-project.p
   fs-bootstrap.p
+  git-clone.p
   history.p
   jenkins.p
   languages.p
@@ -107,3 +108,4 @@ bootstrap-scripts includes ..
   workingdir.p
   yarn.p
 
+# (relation bootstrap-scripts includes *) save-to _bootstrap.p

@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 import { implement, Query } from '..'
 import { runAsMain } from '../framework'
 import { mkdirp } from 'fs-extra'
@@ -8,12 +6,12 @@ import path from 'path'
 
 implement('create-working-dir', async (query: Query) => {
     const rootWorkingDir = query.get('filesystem.workingdir');
-    const dirName = query.getOptional('name', 'anon');
-    const hash = randomHex(4);
+    const dirName = query.getOptional('dir-name', 'anon');
+    const hash = randomHex(6);
 
     const fullDir = path.join(rootWorkingDir, `${dirName}-${hash}`);
 
     await mkdirp(fullDir);
 
-    query.respond({createdDir: fullDir});
+    query.respond({dir: fullDir});
 });

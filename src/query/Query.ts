@@ -1,6 +1,7 @@
 
 import { Snapshot } from '../framework'
 import QuerySyntax from '../parse-query/QuerySyntax'
+import QueryResult from './QueryResult'
 
 type QueryType = 'command' | 'relation' | 'unknown' | 'empty'
 
@@ -20,11 +21,12 @@ export default interface Query {
     relationSubject?: string
     relation?: string
 
-    // Context
+    // Context / Execution
     snapshot?: Snapshot
+    isInteractive?: boolean
     get?: (name: string) => any
     getOptional?: (name: string, defaultValue: any) => any
-    isInteractive?: boolean
+    subQuery?: (str: string) => Promise<QueryResult>
 
     // Response
     respond?: (data: any) => void
