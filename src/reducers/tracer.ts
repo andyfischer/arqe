@@ -10,8 +10,10 @@ declareReducer(() => {
         name: 'tracer',
         value: {},
         reducer(query: Query, value) {
+            /*
             print(`saw query: '${query.syntax.originalStr}'`)
             print(`from: ${sourcePosToString(query.syntax.sourcePos)}`)
+            */
         }
     }
 });
