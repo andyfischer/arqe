@@ -32,7 +32,7 @@ function queryRespond(query: Query) {
 }
 
 export default async function runOneQuery(snapshot: Snapshot, query: Query) {
-    query.respond = queryRespond;
+    query.respond = queryRespond(query);
 
     for (const doc of snapshot.liveDocuments)
         applyQueryToReducer(snapshot, doc, query);

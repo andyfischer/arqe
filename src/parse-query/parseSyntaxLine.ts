@@ -1,7 +1,7 @@
 
 import { Clause } from '.'
 import QuerySyntax from './QuerySyntax'
-import { tokenizeString, TokenReader, t_equals, t_space, t_hash, t_double_dot } from './tokenizer'
+import { tokenizeString, TokenReader, t_equals, t_space, t_hash, t_double_dot, t_newline } from './tokenizer'
 import { print } from '../utils'
 
 function skipSpaces(reader: TokenReader) {
@@ -14,6 +14,7 @@ function consumeKey(reader: TokenReader) {
 
     while (!reader.finished()
             && !reader.nextIs(t_space)
+            && !reader.nextIs(t_newline)
             && !reader.nextIs(t_equals)) {
 
         text += reader.nextText();
@@ -27,7 +28,9 @@ function consumeOptionValue(reader: TokenReader) {
     let text = '';
 
     while (!reader.finished()
-            && !reader.nextIs(t_space)) {
+            && !reader.nextIs(t_space)
+            && !reader.nextIs(t_newline)
+          ) {
         text += reader.nextText();
         reader.consume();
     }
@@ -43,6 +46,8 @@ export function parseSyntaxLineFromTokens(reader: TokenReader): QuerySyntax {
         originalStr: '',
         indent: 0,
         sourcePos: {
+            posStart: nextToken.startPos,
+            posEnd: nextToken.startPos,
             lineStart: nextToken.lineStart,
             columnStart: nextToken.columnStart,
             lineEnd: nextToken.lineStart,
@@ -66,7 +71,7 @@ export function parseSyntaxLineFromTokens(reader: TokenReader): QuerySyntax {
 
         skipSpaces(reader);
 
-        if (reader.finished())
+        if (reader.finished() || reader.nextIs(t_newline))
             break;
 
         if (reader.nextIs(t_hash)) {
@@ -102,6 +107,7 @@ export function parseSyntaxLineFromTokens(reader: TokenReader): QuerySyntax {
     }
 
     const lastToken = reader.last();
+    out.sourcePos.posEnd = lastToken.endPos;
     out.sourcePos.lineEnd = lastToken.lineStart;
     out.sourcePos.columnEnd = lastToken.columnStart + lastToken.length;
 

@@ -112,7 +112,8 @@ export const t_space = {
 }
 
 export const t_newline = {
-    name: "newline"
+    name: "newline",
+    str: '\n'
 }
 
 export const t_single_quote = {

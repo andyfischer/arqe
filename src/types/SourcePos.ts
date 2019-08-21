@@ -5,6 +5,8 @@ export default interface SourcePos {
     lineEnd: number
     columnStart: number
     columnEnd: number
+    posStart: number
+    posEnd: number
 }
 
 export function sourcePosToString(pos: SourcePos) {

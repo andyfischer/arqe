@@ -1,5 +1,5 @@
 
-import { tokenizeString } from './tokenizer'
+import { tokenizeString, t_newline } from './tokenizer'
 import { QuerySyntax } from '.'
 import { parseSyntaxLineFromTokens } from './parseSyntaxLine'
 
@@ -15,6 +15,11 @@ export default function parseQueryInput(str: string, opts?: Options): QuerySynta
 
     while (!reader.finished()) {
 
+        reader.skipWhile(token => token.match === t_newline);
+
+        if (reader.finished())
+            break;
+
         const pos = reader.getPosition();
         const syntax = parseSyntaxLineFromTokens(reader);
 
@@ -23,6 +28,8 @@ export default function parseQueryInput(str: string, opts?: Options): QuerySynta
 
         if (syntax.clauses.length === 0)
             continue;
+
+        syntax.originalStr = str.slice(syntax.sourcePos.posStart, syntax.sourcePos.posEnd);
 
         queries.push(syntax);
     }

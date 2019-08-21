@@ -29,6 +29,7 @@ const c_dash = '-'.charCodeAt(0);
 const c_under = '_'.charCodeAt(0);
 const c_space = ' '.charCodeAt(0);
 const c_dot = '.'.charCodeAt(0);
+const c_newline = '\n'.charCodeAt(0);
 
 function isLowerCase(c) {
     return c >= c_a && c <= c_z;
