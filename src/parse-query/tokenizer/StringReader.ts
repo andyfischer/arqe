@@ -8,7 +8,7 @@ export default class StringReader {
     str: string
     index = 0
     isIterator = true
-    lineNumber = 0
+    lineNumber = 1
     charNumber = 1
 
     constructor(str: string) {
