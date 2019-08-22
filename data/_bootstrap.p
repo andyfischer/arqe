@@ -95,6 +95,7 @@ bootstrap-scripts includes ..
   cd.p
   cron.p
   debugging.p
+  dir-snapshots.p
   edit.p
   fix-js-project.p
   fs-bootstrap.p
@@ -103,6 +104,7 @@ bootstrap-scripts includes ..
   jenkins.p
   languages.p
   load.p
+  os.p
   should-work.p
   timedate.p
   workingdir.p

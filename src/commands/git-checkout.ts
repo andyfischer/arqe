@@ -5,14 +5,12 @@ import { mkdirp } from 'fs-extra'
 import path from 'path'
 import { print, exec } from '../utils'
 
-
 implement('git-clone', async (query: Query) => {
     const repoUrl = query.get('repo-url');
     let dir = query.getOptional('dir', null);
 
-    if (!dir) {
+    if (!dir)
         dir = (await query.subQuery('create-working-dir')).frame['dir'];
-    }
 
     if (!dir)
         return query.respond({error: "couldn't find a working directory"})
