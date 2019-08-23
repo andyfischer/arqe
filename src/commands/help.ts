@@ -21,5 +21,5 @@ implement('help', async (query: Query) => {
 
     commands.sort();
 
-    query.respond("Available commands: \n" + commands.join(', '));
+    query.respond({ title: "Available commands:", items: commands });
 });

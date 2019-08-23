@@ -1,5 +1,5 @@
 
-import { implement, Query, print, error } from '..'
+import { implement, Query, print, error, performedAction, done } from '..'
 import { getCommandDatabase } from '../types/CommandDatabase'
 
 implement('define-toggle', async (query: Query) => {
@@ -37,5 +37,5 @@ implement('define-toggle', async (query: Query) => {
         }
     }
 
-    query.respond(null);
+    query.respond(done());
 });

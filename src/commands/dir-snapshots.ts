@@ -1,5 +1,5 @@
 
-import { implement, Query } from '..'
+import { implement, Query, performedAction } from '..'
 import path from 'path'
 import { exec, print } from '../utils'
 
@@ -12,9 +12,7 @@ implement('save-dir-snapshot', async (query: Query) => {
     print('saving snapshot to: ' + filename);
     await exec(`tar -zcvf ${filename} .`);
 
-    query.respond({
-        message: `saved snapshot to: ${filename}`
-    });
+    query.respond(performedAction(`saved snapshot to: ${filename}`));
 });
 
 implement('restore-dir-snapshot', async (query: Query) => {
@@ -26,7 +24,5 @@ implement('restore-dir-snapshot', async (query: Query) => {
     print('reading snapshot: ' + filename);
     await exec(`tar -xjvf ${filename}`);
 
-    query.respond({
-        message: `extracted snapshot from: ${filename}`
-    });
+    query.respond(performedAction(`extracted snapshot from: ${filename}`));
 });

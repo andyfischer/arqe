@@ -7,7 +7,7 @@ export { parseQueryInput } from './parse-query'
 export { Query } from './query'
 export { default as implement } from './framework/declareImplementation'
 export { appendToLog } from './storage'
-export { error } from './rich-values'
+export { error, performedAction, done } from './rich-values'
 
 if (require.main === module) {
     require('./startup/main');

@@ -1,5 +1,5 @@
 
-import { implement, print, error } from '..'
+import { implement, print, error, performedAction } from '..'
 
 implement('cd', (query) => {
     const dir = query.args[0];
@@ -17,7 +17,7 @@ implement('cd', (query) => {
         return;
     }
 
-    query.respond('changed directory to: ' + dir);
+    query.respond(performedAction('changed directory to: ' + dir));
 });
 
 implement('cwd', (query) => {

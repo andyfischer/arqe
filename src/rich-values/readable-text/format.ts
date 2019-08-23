@@ -1,13 +1,17 @@
 
 import formatTable from './formatTable'
+import formatList from './formatList'
 import { Snapshot } from '../..'
-import { RichValue, assertValue } from '..'
+import { RichValue, assertValue, isList } from '..'
 
 export default function format(snapshot: Snapshot, value: RichValue): string {
     assertValue(value);
 
     if (value.terminalFormat === 'table')
         return formatTable(value);
+
+    if (isList(value))
+        return formatList(value);
 
     if (value.type === 'string[]') {
         return JSON.stringify(value.value, null, 2);

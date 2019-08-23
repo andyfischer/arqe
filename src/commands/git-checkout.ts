@@ -1,9 +1,9 @@
 
-import { implement, Query } from '..'
+import { implement, Query, print, error } from '..'
 import { runAsMain } from '../framework'
 import { mkdirp } from 'fs-extra'
 import path from 'path'
-import { print, exec } from '../utils'
+import { exec } from '../utils'
 
 implement('git-clone', async (query: Query) => {
     const repoUrl = query.get('repo-url');
@@ -13,7 +13,7 @@ implement('git-clone', async (query: Query) => {
         dir = (await query.subQuery('create-working-dir')).frame['dir'];
 
     if (!dir)
-        return query.respond({error: "couldn't find a working directory"})
+        return query.respond(error("couldn't find a working directory"))
 
     print(`running 'git clone' in ${dir}`);
 
@@ -23,3 +23,4 @@ implement('git-clone', async (query: Query) => {
 
     query.respond({ dir });
 });
+
