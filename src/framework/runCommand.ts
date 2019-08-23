@@ -118,7 +118,12 @@ export default async function runCommand(query: Query) {
         return;
     }
 
-    if (await timedOut(query.promise, 500)) {
-        print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
+    const timeoutMs = snapshot.getValueOpt('query-handler/timeoutms', 0);
+
+    if (timeoutMs) {
+        if (await timedOut(query.promise, timeoutMs)) {
+            print(`warning: timed out waiting for response (command = ${query.command}): ${query.syntax.originalStr}`);
+        }
     }
 }
+

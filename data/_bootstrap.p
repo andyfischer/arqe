@@ -104,6 +104,7 @@ bootstrap-scripts includes ..
   jenkins.p
   languages.p
   load.p
+  npm-helpers.p
   os.p
   should-work.p
   timedate.p

@@ -21,7 +21,7 @@ async function main() {
     
     if (args.length > 0) {
         // Run args as a query.
-        await runQueryInput(snapshot, args.join(' '));
+        await runQueryInput(snapshot, args.join(' '), { isInteractive: true });
         return;
     }
 
