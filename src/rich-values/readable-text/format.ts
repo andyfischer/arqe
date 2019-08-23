@@ -1,12 +1,13 @@
 
-import formatToTable from './formatToTable'
+import formatTable from './formatTable'
+import { Snapshot } from '../..'
+import { RichValue, assertValue } from '..'
 
-export default function formatForTerminal(value: any): string {
-    if (!value)
-        return '';
+export default function format(snapshot: Snapshot, value: RichValue): string {
+    assertValue(value);
 
     if (value.terminalFormat === 'table')
-        return formatToTable(value);
+        return formatTable(value);
 
     if (value.type === 'string[]') {
         return JSON.stringify(value.value, null, 2);

@@ -9,4 +9,3 @@ export { default as Snapshot } from './Snapshot'
 export { default as submitQuery } from './submitQuery'
 export { default as loadMainSnapshot } from './loadMainSnapshot'
 
-

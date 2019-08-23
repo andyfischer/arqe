@@ -1,5 +1,5 @@
 
-import { implement, print } from '..'
+import { implement, print, error } from '..'
 
 implement('cd', (query) => {
     const dir = query.args[0];
@@ -9,9 +9,7 @@ implement('cd', (query) => {
     } catch (err) {
 
         if (err.code === 'ENOENT') {
-            query.respond({
-                error: 'no such directory: ' + dir
-            });
+            query.respond(error('no such directory: ' + dir));
             return;
         }
 

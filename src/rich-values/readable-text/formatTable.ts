@@ -1,4 +1,6 @@
 
+import { RichValue } from '..'
+
 interface Column {
     length: number
     label: string
@@ -59,7 +61,7 @@ function centerPad(s: string, length: number) {
     return spaces(leftSpaces) + s + spaces(rightSpaces);
 }
 
-export default function formatToTable(value: any): string {
+export default function formatTable(value: RichValue): string {
 
     const rowValues = getRowValues(value);
 

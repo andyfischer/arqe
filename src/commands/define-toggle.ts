@@ -1,16 +1,13 @@
 
-import { implement, Query } from '..'
+import { implement, Query, print, error } from '..'
 import { getCommandDatabase } from '../types/CommandDatabase'
-import { print } from '../utils'
 
 implement('define-toggle', async (query: Query) => {
     const enableCommand = query.get('name');
     const db = getCommandDatabase(query);
 
     if (!enableCommand.startsWith('enable-')) {
-        query.respond({
-            error: "define-toggle command should start with 'enable-'"
-        });
+        query.respond(error("define-toggle command should start with 'enable-'"));
         return;
     }
 
