@@ -1,7 +1,7 @@
 
 import ChildProcess from 'child_process'
 import Util from 'util'
-import { consoleColorizeOutput } from './console'
+import { consoleColorizeOutput } from '../terminal/colorizeConsoleOutput'
 import { EventEmitter } from 'events'
 
 export const printEvents = new EventEmitter();

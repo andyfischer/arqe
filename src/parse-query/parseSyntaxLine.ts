@@ -2,7 +2,6 @@
 import { Clause } from '.'
 import QuerySyntax from './QuerySyntax'
 import { tokenizeString, TokenIterator, t_equals, t_space, t_hash, t_double_dot, t_newline } from './tokenizer'
-import { print } from '../utils'
 
 function skipSpaces(it: TokenIterator) {
     while (it.nextIs(t_space))

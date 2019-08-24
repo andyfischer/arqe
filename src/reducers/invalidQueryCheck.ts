@@ -10,10 +10,12 @@ declareReducer(() => {
         value: null,
         reducer(query: Query, value) {
             if (query.type === 'unknown') {
-                print(JSON.stringify(query.syntax))
-                print(`warning: unrecognized query: '${query.syntax.originalStr}'`
-                      + (query.syntax.sourcePos ?
-                          ` (from ${sourcePosToString(query.syntax.sourcePos)})` : ''))
+                let msg = `warning: unrecognized query: '${query.syntax.originalStr}'`;
+
+                if (query.syntax.sourcePos && query.syntax.sourcePos.filename)
+                    msg += ` (from ${sourcePosToString(query.syntax.sourcePos)})`;
+
+                print(msg);
             }
         }
     }
