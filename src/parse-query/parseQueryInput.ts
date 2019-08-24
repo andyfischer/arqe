@@ -10,20 +10,20 @@ interface Options {
 export default function parseQueryInput(str: string, opts?: Options): QuerySyntax[] {
 
     const tokens = tokenizeString(str);
-    const reader = tokens.reader;
+    const it = tokens.iterator;
     const queries = []
 
-    while (!reader.finished()) {
+    while (!it.finished()) {
 
-        reader.skipWhile(token => token.match === t_newline);
+        it.skipWhile(token => token.match === t_newline);
 
-        if (reader.finished())
+        if (it.finished())
             break;
 
-        const pos = reader.getPosition();
-        const syntax = parseSyntaxLineFromTokens(reader);
+        const pos = it.getPosition();
+        const syntax = parseSyntaxLineFromTokens(it);
 
-        if (pos === reader.getPosition())
+        if (pos === it.getPosition())
             throw new Error("parser is stalled")
 
         if (syntax.clauses.length === 0)

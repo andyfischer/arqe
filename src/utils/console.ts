@@ -2,44 +2,44 @@
 import AnsiColorWriter, { ansi_yellow, ansi_red, ansi_bright_black } from './AnsiColorWriter'
 import { tokenizeString, t_ident, t_colon, t_space } from '../parse-query/tokenizer'
 
-function matchPrefix(reader, text: string) {
-    if (reader.nextIs(t_ident)
-            && reader.nextText() === text
-            && reader.nextIs(t_colon, 1)) {
+function matchPrefix(it, text: string) {
+    if (it.nextIs(t_ident)
+            && it.nextText() === text
+            && it.nextIs(t_colon, 1)) {
 
-        reader.consume();
-        reader.consume();
+        it.consume();
+        it.consume();
         return true;
     }
 }
 
 export function consoleColorizeOutput(str) {
-    const { reader } = tokenizeString(str);
+    const { iterator } = tokenizeString(str);
     const writer = new AnsiColorWriter();
 
-    while (!reader.finished()) {
+    while (!iterator.finished()) {
 
-        if (matchPrefix(reader, 'warning')) {
+        if (matchPrefix(iterator, 'warning')) {
             writer.setFG(ansi_yellow);
             writer.write('warning:');
             continue;
         }
 
-        if (matchPrefix(reader, 'error')) {
+        if (matchPrefix(iterator, 'error')) {
             writer.setFG(ansi_red);
             writer.write('error:');
             continue;
         }
 
-        if (matchPrefix(reader, 'note')) {
-            if (reader.nextIs(t_space))
-                reader.consume();
+        if (matchPrefix(iterator, 'note')) {
+            if (iterator.nextIs(t_space))
+                iterator.consume();
             writer.setFG(ansi_bright_black);
             continue;
         }
 
-        writer.write(reader.nextText());
-        reader.consume();
+        writer.write(iterator.nextText());
+        iterator.consume();
     }
 
     return writer.finish()

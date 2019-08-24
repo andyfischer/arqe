@@ -34,7 +34,7 @@ implement('npm-list-installed', async (query) => {
 
     const byName = by(everyPackage, p => p.name);
 
-    query.respond({items: byName.filter(items => items.length > 1).map(item => item[0].name)});
+    // query.respond({items: byName.filter(items => items.length > 1).map(item => item[0].name)});
 
     //query.respond({list: dupes});
 });

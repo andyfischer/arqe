@@ -90,4 +90,8 @@ export default class Snapshot {
     implementCommand(name, impl: CommandImplementation) {
         this.commandImplementations[name] = impl;
     }
+
+    implement(name, impl: CommandImplementation) {
+        this.commandImplementations[name] = impl;
+    }
 }

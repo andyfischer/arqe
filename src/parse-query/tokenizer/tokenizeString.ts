@@ -1,23 +1,10 @@
 
 import StringReader from './StringReader'
-import TokenReader from './TokenReader'
+import TokenIterator from './TokenIterator'
 import Token from './Token'
+import TokenizeResult from './TokenizeResult'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
     t_double_dot, tokenFromSingleCharCode, TokenDef } from './tokens'
-
-export class TokenizeResult {
-    tokens: Token[]
-    originalStr: string
-    reader: TokenReader
-
-    constructor(originalStr: string) {
-        this.originalStr = originalStr;
-    }
-
-    getTokenText(token: Token) {
-        return this.originalStr.slice(token.startPos, token.endPos);
-    }
-}
 
 const c_0 = '0'.charCodeAt(0);
 const c_9 = '9'.charCodeAt(0);
@@ -102,7 +89,7 @@ export function tokenizeString(str:string ): TokenizeResult {
 
     const result = new TokenizeResult(str);
     result.tokens = tokens;
-    result.reader = new TokenReader(tokens);
-    result.reader.result = result;
+    result.iterator = new TokenIterator(tokens);
+    result.iterator.result = result;
     return result;
 }
