@@ -1,5 +1,5 @@
 
-import { tokenizeString, t_newline } from './tokenizer'
+import { tokenizeString, t_newline } from '../lexer'
 import { QuerySyntax } from '.'
 import { parseSyntaxLineFromTokens } from './parseSyntaxLine'
 

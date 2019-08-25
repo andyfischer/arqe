@@ -1,6 +1,6 @@
 
 import AnsiColorWriter, { ansi_yellow, ansi_red, ansi_bright_black } from './AnsiColorWriter'
-import { tokenizeString, t_ident, t_colon, t_space } from '../parse-query/tokenizer'
+import { tokenizeString, t_ident, t_colon, t_space } from '../lexer'
 
 function matchPrefix(it, text: string) {
     if (it.nextIs(t_ident)

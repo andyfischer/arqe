@@ -126,6 +126,10 @@ export const t_double_quote = {
     str: '"'
 }
 
+export const t_line_comment = {
+    name: 'line_comment'
+}
+
 export const t_unrecognized = {
     name: "unrecognized"
 }
@@ -155,6 +159,7 @@ export const everyToken: TokenDef[] = [
     t_newline,
     t_single_quote,
     t_double_quote,
+    t_line_comment,
     t_unrecognized
 ];
 

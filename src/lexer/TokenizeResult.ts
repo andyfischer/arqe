@@ -4,7 +4,7 @@ import TokenIterator from './TokenIterator'
 
 export default class TokenizeResult {
     tokens: Token[]
-    originalStr: string
+    originalStr?: string
     iterator: TokenIterator
 
     constructor(originalStr: string) {

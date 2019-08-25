@@ -4,7 +4,7 @@ import TokenIterator from './TokenIterator'
 import Token from './Token'
 import TokenizeResult from './TokenizeResult'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
-    t_double_dot, tokenFromSingleCharCode, TokenDef } from './tokens'
+    t_double_dot, t_line_comment, tokenFromSingleCharCode, TokenDef } from './tokens'
 
 const c_0 = '0'.charCodeAt(0);
 const c_9 = '9'.charCodeAt(0);
@@ -17,6 +17,7 @@ const c_under = '_'.charCodeAt(0);
 const c_space = ' '.charCodeAt(0);
 const c_dot = '.'.charCodeAt(0);
 const c_newline = '\n'.charCodeAt(0);
+const c_hash = '#'.charCodeAt(0);
 
 function isLowerCase(c) {
     return c >= c_a && c <= c_z;
@@ -51,6 +52,9 @@ function consumeNext(input: StringReader) {
 
     if (canStartIdentifier(c))
         return input.consumeWhile(t_ident, canContinueIdentifier);
+
+    if (c === c_hash)
+        return input.consumeWhile(t_line_comment, c => c !== c_newline);
 
     if (c === c_space)
         return input.consumeWhile(t_space, c => c === c_space);

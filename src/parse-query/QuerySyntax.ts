@@ -14,8 +14,3 @@ export default interface QuerySyntax {
     incomplete?: boolean
     sourcePos?: SourcePos
 }
-
-export interface PipedQueriesSyntax {
-    originalStr: string
-    queries: QuerySyntax[]
-}

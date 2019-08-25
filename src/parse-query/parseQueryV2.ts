@@ -3,6 +3,38 @@ import { Clause } from '.'
 import QuerySyntax from './QuerySyntax'
 import { tokenizeString, TokenIterator, t_equals, t_space, t_hash, t_double_dot, t_newline } from '../lexer'
 
+interface PipesExpr {
+    itemIds: number[]
+}
+
+interface ArgExpr {
+    field?: string
+    rhsValue?: string
+}
+
+interface QueryExpr {
+    args: ArgExpr[]
+
+}
+
+interface ParsedQueryItem {
+    id: number
+    nestLevel: 'statement' | 'subexpr'
+    type: 'query' | 'pipes'
+    pipesExpr?: PipesExpr
+    queryExpr?: QueryExpr
+}
+
+interface ParsedQuery {
+    items: ParsedQueryItem[]
+}
+
+class Context {
+    originalStr: string
+    result: ParsedQuery
+    nextId: number = 1
+}
+
 function skipSpaces(it: TokenIterator) {
     while (it.nextIs(t_space))
         it.consume(t_space);
@@ -37,7 +69,7 @@ function consumeOptionValue(it: TokenIterator) {
     return text;
 }
 
-export function parseSyntaxLineFromTokens(it: TokenIterator): QuerySyntax {
+export function statement(cxt: Context, it: TokenIterator): QuerySyntax {
     const nextToken = it.next();
 
     const out: QuerySyntax = {
@@ -79,13 +111,6 @@ export function parseSyntaxLineFromTokens(it: TokenIterator): QuerySyntax {
             break;
         }
 
-        if (it.nextIs(t_double_dot)) {
-            it.consume(t_double_dot);
-            out.clauses.push({ isDots: true });
-            out.incomplete = true;
-            continue;
-        }
-
         const key = consumeKey(it);
         let assignVal;
 
@@ -113,9 +138,46 @@ export function parseSyntaxLineFromTokens(it: TokenIterator): QuerySyntax {
     return out;
 }
 
-export default function parseSyntaxLine(str: string) {
-    const tokens = tokenizeString(str);
-    const it = tokens.iterator;
+function statementsFile(cxt: Context, it: TokenIterator) {
+    while (!it.finished()) {
+        it.skipWhile(token => token.match === t_newline);
 
-    return parseSyntaxLineFromTokens(it);
+        if (it.finished())
+            break;
+
+        const pos = it.getPosition();
+        statement(cxt, it);
+
+        if (pos === it.getPosition())
+            throw new Error("parser is stalled")
+    }
 }
+
+function runRule(cxt: Context, it: TokenIterator, rule: string) {
+    if (rule === 'statement') {
+        statement(cxt, it)
+    } else if (rule === 'statements-file') {
+        statementsFile(cxt, it);
+    }
+}
+
+export function parseTokens(it: TokenIterator, firstRule: string) {
+    const cxt = new Context();
+    cxt.result = {
+        items: []
+    }
+
+    runRule(cxt, it, firstRule);
+}
+
+export function parseString(input: string, firstRule: string) {
+    const cxt = new Context();
+    const { iterator } = tokenizeString(input);
+    cxt.originalStr = input;
+    cxt.result = {
+        items: []
+    }
+
+    runRule(cxt, iterator, firstRule);
+}
+
