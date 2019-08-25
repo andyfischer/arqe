@@ -1,38 +1,54 @@
 
 import { Clause } from '.'
 import QuerySyntax from './QuerySyntax'
-import { tokenizeString, TokenIterator, t_equals, t_space, t_hash, t_double_dot, t_newline } from '../lexer'
+import { tokenizeString, TokenIterator, Token,
+    t_equals, t_space, t_hash, t_double_dot, t_newline, t_bar } from '../lexer'
+import SourcePos from '../types/SourcePos'
 
-interface PipesExpr {
+interface PipedExpr extends Expr {
+    id: number
+    type: 'piped'
     itemIds: number[]
+    sourcePos?: SourcePos
+    statementIndent?: number
 }
 
 interface ArgExpr {
-    field?: string
+    keyword?: string
+    lhsName?: string
     rhsValue?: string
 }
 
-interface QueryExpr {
+interface QueryExpr extends Expr {
+    id: number
+    type: 'query'
     args: ArgExpr[]
-
+    sourcePos?: SourcePos
+    statementIndent?: number
 }
 
-interface ParsedQueryItem {
+interface Expr {
     id: number
-    nestLevel: 'statement' | 'subexpr'
-    type: 'query' | 'pipes'
-    pipesExpr?: PipesExpr
-    queryExpr?: QueryExpr
+    type: 'piped' | 'query'
+    sourcePos?: SourcePos
+    isStatement?: boolean
+    statementIndent?: number
 }
 
 interface ParsedQuery {
-    items: ParsedQueryItem[]
+    exprs: Expr[]
 }
 
 class Context {
     originalStr: string
     result: ParsedQuery
     nextId: number = 1
+
+    takeNextId() {
+        const result = this.nextId;
+        this.nextId += 1;
+        return result;
+    }
 }
 
 function skipSpaces(it: TokenIterator) {
@@ -46,6 +62,7 @@ function consumeKey(it: TokenIterator) {
     while (!it.finished()
             && !it.nextIs(t_space)
             && !it.nextIs(t_newline)
+            && !it.nextIs(t_bar)
             && !it.nextIs(t_equals)) {
 
         text += it.nextText();
@@ -60,6 +77,7 @@ function consumeOptionValue(it: TokenIterator) {
 
     while (!it.finished()
             && !it.nextIs(t_space)
+            && !it.nextIs(t_bar)
             && !it.nextIs(t_newline)
           ) {
         text += it.nextText();
@@ -69,40 +87,33 @@ function consumeOptionValue(it: TokenIterator) {
     return text;
 }
 
-export function statement(cxt: Context, it: TokenIterator): QuerySyntax {
-    const nextToken = it.next();
-
-    const out: QuerySyntax = {
-        clauses: [],
-        originalStr: '',
-        indent: 0,
-        sourcePos: {
-            posStart: nextToken.startPos,
-            posEnd: nextToken.startPos,
-            lineStart: nextToken.lineStart,
-            columnStart: nextToken.columnStart,
-            lineEnd: nextToken.lineStart,
-            columnEnd: nextToken.columnStart
-        }
+function toSourcePos(firstToken: Token, lastToken: Token): SourcePos {
+    return {
+        posStart: firstToken.startPos,
+        posEnd: lastToken.startPos,
+        lineStart: firstToken.lineStart,
+        columnStart: lastToken.columnStart,
+        lineEnd: firstToken.lineStart,
+        columnEnd: lastToken.columnStart + lastToken.length
     }
+}
 
-    // Consume first spaces as indentation
-    if (it.nextIs(t_space)) {
-        out.indent = it.nextLength();
-        it.consume();
+function queryExpression(cxt: Context, it: TokenIterator): QueryExpr {
+    const firstToken = it.next();
+
+    const out: QueryExpr = {
+        id: cxt.takeNextId(),
+        type: 'query',
+        args: []
     }
-
-    let activeQuote = null;
 
     while (!it.finished()) {
 
-        if (activeQuote) {
-            // todo, handle quotes
-        }
-
         skipSpaces(it);
 
-        if (it.finished() || it.nextIs(t_newline))
+        if (it.finished()
+                || it.nextIs(t_newline)
+                || it.nextIs(t_bar))
             break;
 
         if (it.nextIs(t_hash)) {
@@ -111,8 +122,9 @@ export function statement(cxt: Context, it: TokenIterator): QuerySyntax {
             break;
         }
 
-        const key = consumeKey(it);
-        let assignVal;
+        let keyword = null;
+        let lhsName = consumeKey(it);
+        let rhsValue = null;
 
         skipSpaces(it);
 
@@ -121,19 +133,66 @@ export function statement(cxt: Context, it: TokenIterator): QuerySyntax {
             skipSpaces(it);
 
             if (!it.finished()) {
-                assignVal = consumeOptionValue(it)
+                rhsValue = consumeOptionValue(it)
             }
 
             skipSpaces(it);
+        } else {
+            keyword = lhsName;
+            lhsName = null;
         }
 
-        out.clauses.push({ key, assignVal });
+        out.args.push({ keyword, lhsName, rhsValue });
     }
 
     const lastToken = it.last();
-    out.sourcePos.posEnd = lastToken.endPos;
-    out.sourcePos.lineEnd = lastToken.lineStart;
-    out.sourcePos.columnEnd = lastToken.columnStart + lastToken.length;
+    out.sourcePos = toSourcePos(firstToken, lastToken);
+    cxt.result.exprs.push(out);
+    return out;
+}
+
+function barInfixedExpression(cxt, it): Expr {
+    const firstToken = it.next();
+
+    let exprs: QueryExpr[] = [queryExpression(cxt, it)];
+
+    while (it.nextIs(t_bar)) {
+        it.consume(t_bar);
+        exprs.push(queryExpression(cxt, it));
+    }
+
+    let out: QueryExpr | PipedExpr;
+
+    if (exprs.length === 1) {
+        out = exprs[0];
+    } else {
+        out = {
+            id: cxt.takeNextId(),
+            type: 'piped',
+            itemIds: exprs.map(expr => expr.id)
+        }
+        cxt.result.exprs.push(out);
+    }
+
+    const lastToken = it.last();
+    out.sourcePos = toSourcePos(firstToken, lastToken);
+    return out;
+}
+
+function statement(cxt: Context, it: TokenIterator): Expr {
+    const firstToken = it.next();
+
+    // Consume first spaces as indentation
+    let statementIndent = 0;
+    if (it.nextIs(t_space)) {
+        statementIndent = it.nextLength();
+        it.consume();
+    }
+
+    const out = barInfixedExpression(cxt, it);
+
+    out.isStatement = true;
+    out.statementIndent = statementIndent;
 
     return out;
 }
@@ -158,16 +217,20 @@ function runRule(cxt: Context, it: TokenIterator, rule: string) {
         statement(cxt, it)
     } else if (rule === 'statements-file') {
         statementsFile(cxt, it);
+    } else {
+        throw new Error('unrecgonized rule: ' + rule);
     }
 }
 
 export function parseTokens(it: TokenIterator, firstRule: string) {
     const cxt = new Context();
     cxt.result = {
-        items: []
+        exprs: []
     }
 
     runRule(cxt, it, firstRule);
+
+    return cxt.result;
 }
 
 export function parseString(input: string, firstRule: string) {
@@ -175,9 +238,11 @@ export function parseString(input: string, firstRule: string) {
     const { iterator } = tokenizeString(input);
     cxt.originalStr = input;
     cxt.result = {
-        items: []
+        exprs: []
     }
 
     runRule(cxt, iterator, firstRule);
+
+    return cxt.result;
 }
 

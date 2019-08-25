@@ -1,5 +1,5 @@
 
-import { tokenizeString, t_newline } from '../lexer'
+import { tokenizeString, t_newline, t_line_comment } from '../lexer'
 import { QuerySyntax } from '.'
 import { parseSyntaxLineFromTokens } from './parseSyntaxLine'
 
@@ -15,7 +15,7 @@ export default function parseQueryInput(str: string, opts?: Options): QuerySynta
 
     while (!it.finished()) {
 
-        it.skipWhile(token => token.match === t_newline);
+        it.skipWhile(token => (token.match === t_newline || token.match === t_line_comment));
 
         if (it.finished())
             break;
