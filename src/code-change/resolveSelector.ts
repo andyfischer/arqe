@@ -1,5 +1,5 @@
 
-import { Token, t_ident } from '../lexer'
+import { Token, t_ident, t_lbrace, t_rbrace } from '../lexer'
 import { parseString, Expr, PipedExpr, QueryExpr } from '../parse-query'
 import CodeFile from './CodeFile'
 import Cursor, { TokenRange } from './Cursor'
@@ -44,22 +44,38 @@ function findIdent(query: QueryExpr, cursor: Cursor) {
     cursor.ranges = ranges;
 }
 
-/*
-function advanceToNextBlock(file: CodeFile, range: TokenRange): TokenRange? {
-    for (const i = range.start) {
-        const t = file.tokens.tokens[i];
-        if (t.match === t_lbracket) {
-            
+function advanceToNextBlock(file: CodeFile, range: TokenRange): TokenRange {
+    for (let i = range.start; i < file.lexed.tokens.length; i++) {
+        const t = file.lexed.tokens[i];
+
+        if (t.match === t_lbrace) {
+            return {
+                start: i,
+                end: t.pairsWithIndex
+            }
         }
+
+        if (t.match === t_rbrace)
+            return null;
     }
 }
-*/
 
 function enterBlock(query: QueryExpr, cursor: Cursor) {
     if (cursor.ranges.length === 0)
         throw new Error("cursor is currently empty");
 
+    const out: TokenRange[] = []
 
+    for (const range of cursor.ranges) {
+        const next = advanceToNextBlock(cursor.file, range);
+        if (next)
+            out.push(next);
+    }
+
+    if (out.length === 0)
+        throw new Error("no block found");
+
+    cursor.ranges = out;
 }
 
 function handleCommand(query: QueryExpr, cursor: Cursor) {

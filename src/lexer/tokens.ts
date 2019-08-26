@@ -39,7 +39,7 @@ export const t_lbrace = {
     name: "lbrace",
     str: "{",
     bracketPairsWith: 'rbrace',
-    bracketSide: 'let'
+    bracketSide: 'left'
 }
 
 export const t_rbrace = {

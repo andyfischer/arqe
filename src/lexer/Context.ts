@@ -93,7 +93,6 @@ export default class Context {
             }
         }
 
-
         // update lineNumber & charNumber
         if (this.next(0) === c_newline) {
             this.lineNumber += 1;
