@@ -1,18 +1,18 @@
 
 import fs from 'fs-extra'
-import { tokenizeString, TokenizeResult } from '../lexer'
+import { tokenizeString, LexedText } from '../lexer'
 
 export default class CodeFile {
     textContents: string
-    tokens?: TokenizeResult
+    lexed?: LexedText
 
     async readFile(filename: string) {
         this.textContents = await fs.readFile(filename, 'utf8')
-        this.tokens = tokenizeString(this.textContents)
+        this.lexed = tokenizeString(this.textContents)
     }
 
     readString(text: string) {
         this.textContents = text;
-        this.tokens = tokenizeString(this.textContents);
+        this.lexed = tokenizeString(this.textContents);
     }
 }

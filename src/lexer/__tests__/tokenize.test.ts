@@ -1,6 +1,6 @@
-import { tokenizeString, Token, TokenizeResult, t_line_comment } from "..";
+import { tokenizeString, Token, LexedText, t_line_comment } from "..";
 
-function consise(result: TokenizeResult) {
+function consise(result: LexedText) {
   return result.tokens.map((token: any) => {
     token = {
       matchName: token.match && token.match.name,

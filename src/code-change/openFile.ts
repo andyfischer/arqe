@@ -1,5 +1,5 @@
 
-import { tokenizeString, TokenizeResult } from '../lexer'
+import { tokenizeString } from '../lexer'
 import CodeFile from './CodeFile'
 
 type Operation = 'insert'

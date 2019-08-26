@@ -1,11 +1,11 @@
 
-import { Token, TokenDef, TokenizeResult, t_space, t_newline } from '.'
+import { Token, TokenDef, LexedText, t_space, t_newline } from '.'
 
 export default class TokenReader {
 
     position: number = 0
     tokens: Token[]
-    result?: TokenizeResult
+    result?: LexedText
 
     constructor(tokens: Token[]) {
         this.tokens = tokens;

@@ -2,7 +2,7 @@
 import StringReader from './StringReader'
 import TokenIterator from './TokenIterator'
 import Token from './Token'
-import TokenizeResult from './TokenizeResult'
+import LexedText from './LexedText'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
     t_double_dot, t_line_comment, tokenFromSingleCharCode, TokenDef } from './tokens'
 
@@ -74,7 +74,7 @@ function consumeNext(input: StringReader) {
     return input.consume(t_unrecognized, 1);
 }
 
-export function tokenizeString(str:string ): TokenizeResult {
+export function tokenizeString(str:string ): LexedText {
     const reader = new StringReader(str);
 
     const tokens = [];
@@ -91,7 +91,7 @@ export function tokenizeString(str:string ): TokenizeResult {
         }
     }
 
-    const result = new TokenizeResult(str);
+    const result = new LexedText(str);
     result.tokens = tokens;
     result.iterator = new TokenIterator(tokens);
     result.iterator.result = result;

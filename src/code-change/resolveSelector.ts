@@ -1,5 +1,5 @@
 
-import { TokenizeResult, Token, t_ident } from '../lexer'
+import { Token, t_ident } from '../lexer'
 import { parseString, Expr, PipedExpr, QueryExpr } from '../parse-query'
 import CodeFile from './CodeFile'
 import Cursor, { TokenRange } from './Cursor'
@@ -31,7 +31,7 @@ function findIdent(query: QueryExpr, cursor: Cursor) {
     for (const token of cursor.eachTokenInRange()) {
 
         if (token.match === t_ident
-                && file.tokens.getTokenText(token) === identText
+                && file.lexed.getTokenText(token) === identText
                 && forAll(token, filterConditions)) {
 
             ranges.push({
