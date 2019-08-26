@@ -4,40 +4,8 @@ import QuerySyntax from './QuerySyntax'
 import { tokenizeString, TokenIterator, Token,
     t_equals, t_space, t_hash, t_double_dot, t_newline, t_bar } from '../lexer'
 import SourcePos from '../types/SourcePos'
-
-interface PipedExpr extends Expr {
-    id: number
-    type: 'piped'
-    itemIds: number[]
-    sourcePos?: SourcePos
-    statementIndent?: number
-}
-
-interface ArgExpr {
-    keyword?: string
-    lhsName?: string
-    rhsValue?: string
-}
-
-interface QueryExpr extends Expr {
-    id: number
-    type: 'query'
-    args: ArgExpr[]
-    sourcePos?: SourcePos
-    statementIndent?: number
-}
-
-interface Expr {
-    id: number
-    type: 'piped' | 'query'
-    sourcePos?: SourcePos
-    isStatement?: boolean
-    statementIndent?: number
-}
-
-interface ParsedQuery {
-    exprs: Expr[]
-}
+import { ParsedQuery, Expr, QueryExpr } from '.'
+import PipedExpr from './PipedExpr'
 
 class Context {
     originalStr: string
@@ -45,9 +13,9 @@ class Context {
     nextId: number = 1
 
     takeNextId() {
-        const result = this.nextId;
+        const id = this.nextId;
         this.nextId += 1;
-        return result;
+        return id;
     }
 }
 
@@ -101,11 +69,12 @@ function toSourcePos(firstToken: Token, lastToken: Token): SourcePos {
 function queryExpression(cxt: Context, it: TokenIterator): QueryExpr {
     const firstToken = it.next();
 
-    const out: QueryExpr = {
+    const out = new QueryExpr({
         id: cxt.takeNextId(),
         type: 'query',
-        args: []
-    }
+        args: [],
+        parent: cxt.result
+    })
 
     while (!it.finished()) {
 
@@ -147,11 +116,11 @@ function queryExpression(cxt: Context, it: TokenIterator): QueryExpr {
 
     const lastToken = it.last();
     out.sourcePos = toSourcePos(firstToken, lastToken);
-    cxt.result.exprs.push(out);
+    cxt.result.pushExpr(out);
     return out;
 }
 
-function barInfixedExpression(cxt, it): Expr {
+function barInfixedExpression(cxt: Context, it: TokenIterator): Expr {
     const firstToken = it.next();
 
     let exprs: QueryExpr[] = [queryExpression(cxt, it)];
@@ -166,12 +135,13 @@ function barInfixedExpression(cxt, it): Expr {
     if (exprs.length === 1) {
         out = exprs[0];
     } else {
-        out = {
+        out = new PipedExpr({
             id: cxt.takeNextId(),
             type: 'piped',
-            itemIds: exprs.map(expr => expr.id)
-        }
-        cxt.result.exprs.push(out);
+            itemIds: exprs.map(expr => expr.id),
+            parent: cxt.result
+        })
+        cxt.result.pushExpr(out);
     }
 
     const lastToken = it.last();
@@ -193,6 +163,7 @@ function statement(cxt: Context, it: TokenIterator): Expr {
 
     out.isStatement = true;
     out.statementIndent = statementIndent;
+    cxt.result.statementId = out.id;
 
     return out;
 }
@@ -224,9 +195,7 @@ function runRule(cxt: Context, it: TokenIterator, rule: string) {
 
 export function parseTokens(it: TokenIterator, firstRule: string) {
     const cxt = new Context();
-    cxt.result = {
-        exprs: []
-    }
+    cxt.result = new ParsedQuery();
 
     runRule(cxt, it, firstRule);
 
@@ -237,9 +206,7 @@ export function parseString(input: string, firstRule: string) {
     const cxt = new Context();
     const { iterator } = tokenizeString(input);
     cxt.originalStr = input;
-    cxt.result = {
-        exprs: []
-    }
+    cxt.result = new ParsedQuery();
 
     runRule(cxt, iterator, firstRule);
 

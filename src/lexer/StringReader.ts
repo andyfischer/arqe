@@ -10,6 +10,7 @@ export default class StringReader {
     isIterator = true
     lineNumber = 1
     charNumber = 1
+    leadingIndent = 0
 
     constructor(str: string) {
         this.str = str;
@@ -43,15 +44,21 @@ export default class StringReader {
 
     consume(match: TokenDef, len: number) {
 
+        // update leadingIndent
+        if (match === t_space && this.charNumber === 1)
+            this.leadingIndent = len;
+
         const result:Token = {
             match: match,
             length: len,
             startPos: this.index,
             endPos: this.index + len,
             lineStart: this.lineNumber,
-            columnStart: this.charNumber
+            columnStart: this.charNumber,
+            leadingIndent: this.leadingIndent
         };
 
+        // update lineNumber & charNumber
         if (this.next(0) === c_newline) {
             this.lineNumber += 1;
             this.charNumber = 1;

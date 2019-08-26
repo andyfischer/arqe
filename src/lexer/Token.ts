@@ -8,4 +8,5 @@ export default interface Token {
     endPos: number
     lineStart: number
     columnStart: number
+    leadingIndent: number
 }

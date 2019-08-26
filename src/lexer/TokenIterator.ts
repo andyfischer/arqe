@@ -28,6 +28,7 @@ export default class TokenReader {
                 length: 0,
                 lineStart: 0,
                 columnStart: 0,
+                leadingIndent: 0,
                 match: null
             }
         }
@@ -44,6 +45,7 @@ export default class TokenReader {
                 length: 0,
                 lineStart: 0,
                 columnStart: 0,
+                leadingIndent: 0,
                 match: null
             }
         }

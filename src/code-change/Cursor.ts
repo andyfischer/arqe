@@ -1,5 +1,6 @@
 
-export default interface Cursor {
+export default class Cursor {
+
     tokenStart?: number
     tokenEnd?: number
 }
