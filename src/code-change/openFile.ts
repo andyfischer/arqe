@@ -6,6 +6,6 @@ type Operation = 'insert'
 
 export default async function openFileForEdit(filename: string): Promise<CodeFile> {
     const script = new CodeFile()
-    await script.open(filename);
+    await script.readFile(filename);
     return script;
 }

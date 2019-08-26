@@ -4,6 +4,7 @@ import { TokenDef } from './tokens'
 export default interface Token {
     match: TokenDef
     length: number
+    tokenIndex: number
     startPos: number
     endPos: number
     lineStart: number

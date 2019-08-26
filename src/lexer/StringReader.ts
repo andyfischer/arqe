@@ -7,6 +7,7 @@ const c_newline = '\n'.charCodeAt(0);
 export default class StringReader {
     str: string
     index = 0
+    tokenIndex = 0
     isIterator = true
     lineNumber = 1
     charNumber = 1
@@ -51,6 +52,7 @@ export default class StringReader {
         const result:Token = {
             match: match,
             length: len,
+            tokenIndex: this.tokenIndex,
             startPos: this.index,
             endPos: this.index + len,
             lineStart: this.lineNumber,
@@ -66,6 +68,7 @@ export default class StringReader {
             this.charNumber += len;
         }
 
+        this.tokenIndex += 1;
         this.index = result.endPos;
 
         return result;

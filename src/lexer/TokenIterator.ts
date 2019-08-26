@@ -25,6 +25,7 @@ export default class TokenReader {
             return {
                 startPos: this.tokens.length,
                 endPos: this.tokens.length,
+                tokenIndex: 0,
                 length: 0,
                 lineStart: 0,
                 columnStart: 0,
@@ -42,6 +43,7 @@ export default class TokenReader {
             return {
                 startPos: 0,
                 endPos: 0,
+                tokenIndex: 0,
                 length: 0,
                 lineStart: 0,
                 columnStart: 0,

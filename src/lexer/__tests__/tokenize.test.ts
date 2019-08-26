@@ -22,6 +22,7 @@ it("handles identifiers", () => {
         "lineStart": 1,
         "matchName": "ident",
         "startPos": 0,
+        "tokenIndex": 0,
       },
     ]
   `);
@@ -35,6 +36,7 @@ it("handles identifiers", () => {
         "lineStart": 1,
         "matchName": "ident",
         "startPos": 0,
+        "tokenIndex": 0,
       },
       Object {
         "columnStart": 6,
@@ -44,6 +46,7 @@ it("handles identifiers", () => {
         "lineStart": 1,
         "matchName": "space",
         "startPos": 5,
+        "tokenIndex": 1,
       },
       Object {
         "columnStart": 7,
@@ -53,6 +56,7 @@ it("handles identifiers", () => {
         "lineStart": 1,
         "matchName": "ident",
         "startPos": 6,
+        "tokenIndex": 2,
       },
     ]
   `);
@@ -67,6 +71,7 @@ it("handles identifiers", () => {
         "lineStart": 1,
         "matchName": "ident",
         "startPos": 0,
+        "tokenIndex": 0,
       },
     ]
   `);
@@ -83,6 +88,7 @@ it("handles spaces", () => {
         "lineStart": 1,
         "matchName": "space",
         "startPos": 0,
+        "tokenIndex": 0,
       },
       Object {
         "columnStart": 3,
@@ -92,6 +98,7 @@ it("handles spaces", () => {
         "lineStart": 1,
         "matchName": "dash",
         "startPos": 2,
+        "tokenIndex": 1,
       },
       Object {
         "columnStart": 4,
@@ -101,6 +108,7 @@ it("handles spaces", () => {
         "lineStart": 1,
         "matchName": "space",
         "startPos": 3,
+        "tokenIndex": 2,
       },
     ]
   `);
@@ -117,6 +125,7 @@ it("handles special characters", () => {
         "lineStart": 1,
         "matchName": "percent",
         "startPos": 0,
+        "tokenIndex": 0,
       },
       Object {
         "columnStart": 2,
@@ -126,6 +135,7 @@ it("handles special characters", () => {
         "lineStart": 1,
         "matchName": "dollar",
         "startPos": 1,
+        "tokenIndex": 1,
       },
       Object {
         "columnStart": 3,
@@ -135,6 +145,7 @@ it("handles special characters", () => {
         "lineStart": 1,
         "matchName": "unrecognized",
         "startPos": 2,
+        "tokenIndex": 2,
       },
       Object {
         "columnStart": 4,
@@ -144,6 +155,7 @@ it("handles special characters", () => {
         "lineStart": 1,
         "matchName": "slash",
         "startPos": 3,
+        "tokenIndex": 3,
       },
     ]
   `);
@@ -151,51 +163,51 @@ it("handles special characters", () => {
 
 xit("handles quoted strings", () => {
   expect(consise(tokenizeString('hello "there" '))).toMatchInlineSnapshot(`
-                    Array [
-                      Object {
-                        "charNumber": 1,
-                        "endPos": 5,
-                        "lineNumber": 0,
-                        "matchName": "ident",
-                        "startPos": 0,
-                      },
-                      Object {
-                        "charNumber": 6,
-                        "endPos": 6,
-                        "lineNumber": 0,
-                        "matchName": "space",
-                        "startPos": 5,
-                      },
-                      Object {
-                        "charNumber": 7,
-                        "endPos": 7,
-                        "lineNumber": 0,
-                        "matchName": "unrecognized",
-                        "startPos": 6,
-                      },
-                      Object {
-                        "charNumber": 8,
-                        "endPos": 12,
-                        "lineNumber": 0,
-                        "matchName": "ident",
-                        "startPos": 7,
-                      },
-                      Object {
-                        "charNumber": 13,
-                        "endPos": 13,
-                        "lineNumber": 0,
-                        "matchName": "unrecognized",
-                        "startPos": 12,
-                      },
-                      Object {
-                        "charNumber": 14,
-                        "endPos": 14,
-                        "lineNumber": 0,
-                        "matchName": "space",
-                        "startPos": 13,
-                      },
-                    ]
-            `);
+                        Array [
+                          Object {
+                            "charNumber": 1,
+                            "endPos": 5,
+                            "lineNumber": 0,
+                            "matchName": "ident",
+                            "startPos": 0,
+                          },
+                          Object {
+                            "charNumber": 6,
+                            "endPos": 6,
+                            "lineNumber": 0,
+                            "matchName": "space",
+                            "startPos": 5,
+                          },
+                          Object {
+                            "charNumber": 7,
+                            "endPos": 7,
+                            "lineNumber": 0,
+                            "matchName": "unrecognized",
+                            "startPos": 6,
+                          },
+                          Object {
+                            "charNumber": 8,
+                            "endPos": 12,
+                            "lineNumber": 0,
+                            "matchName": "ident",
+                            "startPos": 7,
+                          },
+                          Object {
+                            "charNumber": 13,
+                            "endPos": 13,
+                            "lineNumber": 0,
+                            "matchName": "unrecognized",
+                            "startPos": 12,
+                          },
+                          Object {
+                            "charNumber": 14,
+                            "endPos": 14,
+                            "lineNumber": 0,
+                            "matchName": "space",
+                            "startPos": 13,
+                          },
+                        ]
+              `);
 });
 
 it("provides identifier text", () => {
@@ -227,6 +239,7 @@ it("handles line comments 2", () => {
           "name": "ident",
         },
         "startPos": 0,
+        "tokenIndex": 0,
       },
       Object {
         "columnStart": 6,
@@ -238,6 +251,7 @@ it("handles line comments 2", () => {
           "name": "space",
         },
         "startPos": 5,
+        "tokenIndex": 1,
       },
       Object {
         "columnStart": 7,
@@ -249,6 +263,7 @@ it("handles line comments 2", () => {
           "name": "line_comment",
         },
         "startPos": 6,
+        "tokenIndex": 2,
       },
       Object {
         "columnStart": 15,
@@ -262,6 +277,7 @@ it("handles line comments 2", () => {
     ",
         },
         "startPos": 14,
+        "tokenIndex": 3,
       },
       Object {
         "columnStart": 1,
@@ -273,6 +289,7 @@ it("handles line comments 2", () => {
           "name": "ident",
         },
         "startPos": 15,
+        "tokenIndex": 4,
       },
       Object {
         "columnStart": 7,
@@ -284,6 +301,7 @@ it("handles line comments 2", () => {
           "name": "space",
         },
         "startPos": 21,
+        "tokenIndex": 5,
       },
       Object {
         "columnStart": 8,
@@ -295,6 +313,7 @@ it("handles line comments 2", () => {
           "name": "ident",
         },
         "startPos": 22,
+        "tokenIndex": 6,
       },
     ]
   `);

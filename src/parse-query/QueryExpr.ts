@@ -31,6 +31,16 @@ export default class QueryExpr implements Expr {
         return out;
     }
 
+    getKeywords(): string[] {
+        const out = [];
+        for (let i = 1; i < this.args.length; i += 1) {
+            const arg = this.args[i];
+            if (arg.keyword)
+                out.push(arg.keyword);
+        }
+        return out;
+    }
+
     getPipedQueries(): QueryExpr[] {
         return [this];
     }
