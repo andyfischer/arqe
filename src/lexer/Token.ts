@@ -10,4 +10,5 @@ export default interface Token {
     lineStart: number
     columnStart: number
     leadingIndent: number
+    pairsWithIndex?: number
 }

@@ -4,7 +4,12 @@ import { Token } from '.'
 
 const c_newline = '\n'.charCodeAt(0);
 
-export default class StringReader {
+interface BracketFrame {
+    startedAtIndex: number
+    lookingFor: string
+}
+
+export default class Context {
     str: string
     index = 0
     tokenIndex = 0
@@ -12,6 +17,8 @@ export default class StringReader {
     lineNumber = 1
     charNumber = 1
     leadingIndent = 0
+    resultTokens: Token[] = []
+    bracketStack: BracketFrame[] = []
 
     constructor(str: string) {
         this.str = str;
@@ -59,6 +66,33 @@ export default class StringReader {
             columnStart: this.charNumber,
             leadingIndent: this.leadingIndent
         };
+
+        // update bracket stack
+        if (match.bracketSide === 'left') {
+            this.bracketStack.push({
+                startedAtIndex: this.tokenIndex,
+                lookingFor: match.bracketPairsWith
+            });
+        }
+
+        if (match.bracketSide === 'right') {
+            const lookingFor = (this.bracketStack.length > 0)
+                && this.bracketStack[this.bracketStack.length - 1].lookingFor;
+
+            if (match.name !== lookingFor) {
+                // Closing bracket doesn't match opening bracket. TODO, save as an error.
+            } else {
+
+                const leftSideIndex = this.bracketStack[this.bracketStack.length - 1].startedAtIndex;
+                const rightSideIndex = this.tokenIndex;
+
+                result.pairsWithIndex = leftSideIndex;
+                this.resultTokens[leftSideIndex].pairsWithIndex = rightSideIndex;
+
+                this.bracketStack.pop();
+            }
+        }
+
 
         // update lineNumber & charNumber
         if (this.next(0) === c_newline) {

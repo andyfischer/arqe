@@ -1,5 +1,5 @@
 
-import StringReader from './StringReader'
+import Context from './Context'
 import TokenIterator from './TokenIterator'
 import Token from './Token'
 import LexedText from './LexedText'
@@ -41,13 +41,13 @@ function canContinueIdentifier(c) {
         || c === c_under);
 }
 
-function consumeNumber(input: StringReader) {
+function consumeNumber(input: Context) {
     // todo, handle floats
 
     return input.consumeWhile(t_integer, isDigit);
 }
 
-function consumeNext(input: StringReader) {
+function consumeNext(input: Context) {
     const c: number = input.next(0);
 
     if (canStartIdentifier(c))
@@ -74,26 +74,24 @@ function consumeNext(input: StringReader) {
     return input.consume(t_unrecognized, 1);
 }
 
-export function tokenizeString(str:string ): LexedText {
-    const reader = new StringReader(str);
+export function tokenizeString(str:string): LexedText {
+    const context = new Context(str);
 
-    const tokens = [];
+    while (!context.finished()) {
 
-    while (!reader.finished()) {
+        const pos = context.index;
 
-        const pos = reader.index;
+        context.resultTokens.push(consumeNext(context));
 
-        tokens.push(consumeNext(reader));
-
-        if (reader.index === pos) {
-            throw new Error(`internal error: reader stalled at index `
-                            +`${reader.index} (next char is ${reader.nextChar(0)}`);
+        if (context.index === pos) {
+            throw new Error(`internal error: lexer stalled at index `
+                            +`${context.index} (next char is ${context.nextChar(0)}`);
         }
     }
 
     const result = new LexedText(str);
-    result.tokens = tokens;
-    result.iterator = new TokenIterator(tokens);
+    result.tokens = context.resultTokens;
+    result.iterator = new TokenIterator(context.resultTokens);
     result.iterator.result = result;
     return result;
 }

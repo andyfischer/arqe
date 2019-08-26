@@ -2,26 +2,51 @@
 export interface TokenDef {
     name: string
     str?: string
+    bracketPairsWith?: string
+    bracketSide?: 'left' | 'right'
+
 }
 
 export const t_lparen = {
     name: "lparen",
-    str: "("
+    str: "(",
+    bracketPairsWith: 'rparen',
+    bracketSide: 'left'
 }
 
 export const t_rparen = {
     name: "rparen",
-    str: ")"
+    str: ")",
+    bracketPairsWith: 'lparen',
+    bracketSide: 'right'
 }
 
 export const t_lbracket = {
     name: "lbracket",
-    str: "["
+    str: "[",
+    bracketPairsWith: 'rbracket',
+    bracketSide: 'left'
 }
 
 export const t_rbracket = {
     name: "rbracket",
-    str: "]"
+    str: "]",
+    bracketPairsWith: 'lbracket',
+    bracketSide: 'right'
+}
+
+export const t_lbrace = {
+    name: "lbrace",
+    str: "{",
+    bracketPairsWith: 'rbrace',
+    bracketSide: 'let'
+}
+
+export const t_rbrace = {
+    name: "rbrace",
+    str: "}",
+    bracketPairsWith: 'lbrace',
+    bracketSide: 'right'
 }
 
 export const t_slash = {
@@ -35,7 +60,7 @@ export const t_dot = {
 }
 
 export const t_double_dot = {
-    name: "dot",
+    name: "double-dot",
     str: ".."
 }
 
@@ -139,6 +164,8 @@ export const everyToken: TokenDef[] = [
     t_rparen,
     t_lbracket,
     t_rbracket,
+    t_lbrace,
+    t_rbrace,
     t_slash,
     t_dot,
     t_double_dot,
@@ -165,8 +192,18 @@ export const everyToken: TokenDef[] = [
 
 export const tokenFromSingleCharCode: {[code:string]: TokenDef} = {}
 
+const tokensByName: {[name:string]: TokenDef} = {}
+
 for (const token of everyToken) {
+    if (!token.name)
+        throw new Error("token is missing name: " + token);
+
     if (token.str && token.str.length === 1) {
         tokenFromSingleCharCode[token.str.charCodeAt(0)] = token;
     }
+
+    if (tokensByName[token.name])
+        throw new Error("duplicate token name: " + token.name);
+
+    tokensByName[token.name] = token;
 }
