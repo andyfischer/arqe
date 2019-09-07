@@ -1,5 +1,4 @@
 
-import './agents'
 import './autocompleteInfo'
 import './bootstrapScripts'
 import './commandDatabase'
