@@ -4,8 +4,9 @@
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -p .",
-    "test": "jest --watch"
+    "build": "yarn self-fix && tsc -p .",
+    "test": "jest --watch",
+    "self-fix": "node dist/self-fix"
   },
   "dependencies": {
     "bent": "^1.5.13",

@@ -32,6 +32,10 @@ export default class Writer {
         this.startingNewLine = true;
     }
 
+    endLine() {
+        this.startingNewLine = true;
+    }
+
     getResult() {
         return this.lines.join('\n');
     }

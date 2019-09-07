@@ -1,5 +1,6 @@
 
 import { LineWriter } from '../shared'
+import fs from 'fs-extra'
 
 interface Interface {
     name: string
@@ -15,6 +16,10 @@ interface InterfaceField {
 
 export default class TypescriptWriter {
     out = new LineWriter()
+
+    async writeToFile(filename: string) {
+        await fs.writeFile(filename, this.out.getResult());
+    }
 
     lineComment(s: string) {
         this.out.writeln('// ' + s)
@@ -34,10 +39,22 @@ export default class TypescriptWriter {
         if (f.optional)
             this.out.write('?')
         this.out.write(': ' + f.typeDecl)
-        this.out.writeln()
+        this.out.endLine()
     }
 
-    close() {
+    import_(symbols, fromPath) {
+        this.out.write('import ')
+        if (symbols) {
+            this.out.write(symbols)
+            this.out.write(' from ')
+        }
+
+        this.out.write(fromPath)
+        this.out.write(';')
+        this.out.endLine();
+    }
+
+    closeBlock() {
         this.out.unindent()
         this.out.writeln('}')
     }
