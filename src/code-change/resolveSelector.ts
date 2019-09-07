@@ -78,6 +78,9 @@ function enterBlock(query: QueryExpr, cursor: Cursor) {
     cursor.ranges = out;
 }
 
+function afterContents(query: QueryExpr, cursor: Cursor) {
+}
+
 function handleCommand(query: QueryExpr, cursor: Cursor) {
     if (query.type !== 'query')
         throw new Error('expected query expr');
