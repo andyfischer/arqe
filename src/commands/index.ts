@@ -13,3 +13,4 @@ import './set';
 import './show-commands';
 import './spawn-discovery-agent-if-needed';
 import './that-should-work';
+import './timedate';

@@ -1,5 +1,4 @@
 
-import { implement } from '..'
 import { zeroPad } from '../stdlib'
 
 export function getDateStamp() {
@@ -9,6 +8,3 @@ export function getDateStamp() {
         +`-${zeroPad(now.getUTCDate(), 2)}`;
 }
 
-implement('get-date-stamp', (query) => {
-    query.respond(getDateStamp());
-});
