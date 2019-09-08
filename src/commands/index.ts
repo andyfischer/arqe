@@ -10,6 +10,7 @@ import './git-checkout';
 import './help';
 import './ls';
 import './npm-list-installed';
+import './set-in-current-file';
 import './set';
 import './show-commands';
 import './spawn-discovery-agent-if-needed';

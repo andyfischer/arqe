@@ -2,7 +2,6 @@
 import { Query } from '..'
 
 export default function(query: Query) {
-    console.log('autocompleteInfo saw', query.syntax.originalStr);
     query.snapshot.modifyGlobal('autocompleteInfo', (info) => {
         if (!info) {
             info = { 
