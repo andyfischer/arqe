@@ -1,6 +1,7 @@
 
 import { LineWriter } from '../shared'
 import fs from 'fs-extra'
+import { toQuotedString } from '../shared/stringCoerce'
 
 interface Interface {
     name: string
@@ -18,7 +19,7 @@ export default class TypescriptWriter {
     out = new LineWriter()
 
     async writeToFile(filename: string) {
-        await fs.writeFile(filename, this.out.getResult());
+        await fs.writeFile(filename, `// generated file\n\n` + this.out.getResult());
     }
 
     lineComment(s: string) {
@@ -42,20 +43,33 @@ export default class TypescriptWriter {
         this.out.endLine()
     }
 
-    import_(symbols, fromPath) {
+    import_(symbols: string, fromPath: string) {
         this.out.write('import ')
         if (symbols) {
             this.out.write(symbols)
             this.out.write(' from ')
         }
 
-        this.out.write(fromPath)
+        this.out.write(toQuotedString(fromPath))
         this.out.write(';')
         this.out.endLine();
     }
 
-    closeBlock() {
+    line(str: string) {
+        this.out.writeln(str)
+    }
+
+    blankLine() {
+        this.out.writeln()
+    }
+
+    openBlock(str: string) {
+        this.out.writeln(str);
+        this.out.indent()
+    }
+
+    closeBlock(str: string = "}") {
         this.out.unindent()
-        this.out.writeln('}')
+        this.out.writeln(str)
     }
 }

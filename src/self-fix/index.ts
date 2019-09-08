@@ -1,8 +1,10 @@
 
-import generateCommandImports from './commandImports'
+import commandsIndex from './commandsIndex'
+import queryWatcherIndex from './queryWatcherIndex'
 
 async function main() {
-    await generateCommandImports()
+    await commandsIndex()
+    await queryWatcherIndex()
 }
 
 main()
