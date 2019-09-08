@@ -46,6 +46,9 @@ export default async function runOneQuery(snapshot: Snapshot, query: Query): Pro
     for (const doc of snapshot.liveDocuments)
         applyQueryToReducer(snapshot, doc, query);
 
+    for (const watcher of snapshot.queryWatchers)
+        watcher(query);
+
     if (query.command) {
         runCommand(query);
     }

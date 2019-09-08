@@ -1,5 +1,4 @@
 
-import './autocompleteInfo'
 import './bootstrapScripts'
 import './commandDatabase'
 import './extraQueryInfo'

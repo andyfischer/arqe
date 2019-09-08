@@ -6,6 +6,8 @@ import { QueryOptions } from '../query'
 import { getZeroCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import { getZeroRelationDatabase } from '../types/RelationDatabase'
 import CommandImplementation from '../types/CommandImplementation'
+import QueryWatcher from './QueryWatcher'
+import { mountEveryQueryWatcher } from '../query-watchers'
 import '../reducers'
 
 const MissingValue = Symbol('missing');
@@ -21,6 +23,7 @@ export default class Snapshot {
     liveDocumentsByName: { [name: string]: Reducer } = {}
 
     commandImplementations: { [name: string]: CommandImplementation } = {}
+    queryWatchers: QueryWatcher[] = []
 
     constructor() {
         // Bootstrap values
@@ -30,6 +33,8 @@ export default class Snapshot {
         // Builtin documents
         for (const reducerDef of everyReducer)
             this.mountDocument(reducerDef());
+
+        mountEveryQueryWatcher(this);
     }
 
     mountDocument(reducer: Reducer) {
@@ -43,6 +48,10 @@ export default class Snapshot {
         this.liveDocumentsByName[reducer.name] = reducer;
 
         return reducer;
+    }
+
+    modifyGlobal(name: string, modifier: (val: any) => any) {
+        this.globalValues[name] = modifier(this.globalValues[name]);
     }
 
     isRelation(s: string) {
@@ -93,5 +102,9 @@ export default class Snapshot {
 
     implement(name, impl: CommandImplementation) {
         this.commandImplementations[name] = impl;
+    }
+
+    mountQueryWatcher(name, watcher: QueryWatcher) {
+        this.queryWatchers.push(watcher);
     }
 }
