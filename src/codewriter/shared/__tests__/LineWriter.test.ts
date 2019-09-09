@@ -29,4 +29,13 @@ describe('Writer', () => {
         writer.writeln('}');
         expect(writer.getResult()).toEqual(`function {\n    a = 1\n}`);
     });
+
+    it('calling writeln multiple times adds blank lines', () => {
+        const writer = new Writer();
+        writer.writeln();
+        writer.writeln();
+        writer.writeln();
+        writer.writeln('hi');
+        expect(writer.getResult()).toEqual('\n\n\nhi');
+    });
 });

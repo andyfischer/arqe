@@ -1,7 +1,7 @@
 
 import { LineWriter } from '../shared'
 import fs from 'fs-extra'
-import { toQuotedString } from '../shared/stringCoerce'
+import { toQuotedString, toIdentifier } from '../shared/stringCoerce'
 
 interface Interface {
     name: string
@@ -45,6 +45,10 @@ export default class TypescriptWriter {
 
     import_(symbols: string, fromPath: string) {
         this.out.write('import ')
+
+        if (symbols && symbols[0] !== '{')
+            symbols = toIdentifier(symbols)
+
         if (symbols) {
             this.out.write(symbols)
             this.out.write(' from ')
@@ -60,7 +64,7 @@ export default class TypescriptWriter {
     }
 
     blankLine() {
-        this.out.writeln()
+        this.out.writeln('')
     }
 
     openBlock(str: string) {

@@ -3,6 +3,7 @@ export default class Writer {
     indentLevel: number = 0
     spacesPerIndent: number = 4
     lines: string[] = []
+
     startingNewLine = true
 
     indent() {
@@ -29,6 +30,10 @@ export default class Writer {
     writeln(s?: string) {
         if (s)
             this.write(s);
+
+        if (this.startingNewLine)
+            this.lines.push('');
+
         this.startingNewLine = true;
     }
 

@@ -18,9 +18,11 @@ export default async function() {
 
     out.blankLine()
 
-    out.openBlock("export mountEveryQueryWatcher(snapshot: Snapshot) {")
+    out.openBlock("export function mountEveryQueryWatcher(snapshot: Snapshot) {")
     for (const moduleName of modules)
         out.line(`snapshot.mountQueryWatcher('${moduleName}', ${toIdentifier(moduleName)})`)
 
     out.closeBlock()
+
+    await out.writeToFile(path.join(dir, 'index.ts'));
 }
