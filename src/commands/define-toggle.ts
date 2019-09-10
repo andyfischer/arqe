@@ -1,41 +1,44 @@
 
 import { implement, Query, print, error, performedAction, done } from '..'
 import { getCommandDatabase } from '../types/CommandDatabase'
+import { Snapshot } from '../framework'
 
-implement('define-toggle', async (query: Query) => {
-    const enableCommand = query.get('name');
-    const db = getCommandDatabase(query);
+export default function(snapshot: Snapshot) {
+    implement('define-toggle', async (query: Query) => {
+        const enableCommand = query.get('name');
+        const db = getCommandDatabase(query);
 
-    if (!enableCommand.startsWith('enable-')) {
-        query.respond(error("define-toggle command should start with 'enable-'"));
-        return;
-    }
-
-    const disableCommand = enableCommand.replace('enable-', 'disable-');
-
-    db.byName[enableCommand] = {
-        name: enableCommand,
-        args: {},
-        mainArgs: [],
-        run: (query: Query) => {
-            query.respond({
-                effects: [{type: 'assign-global', name: enableCommand, value: true}],
-                message: `set ${enableCommand} to true`
-            })
+        if (!enableCommand.startsWith('enable-')) {
+            query.respond(error("define-toggle command should start with 'enable-'"));
+            return;
         }
-    }
-    
-    db.byName[disableCommand] = {
-        name: disableCommand,
-        mainArgs: [],
-        args: {},
-        run: (query: Query) => {
-            query.respond({
-                effects: [{type: 'assign-global', name: enableCommand, value: false}],
-                message: `set ${enableCommand} to false`
-            })
-        }
-    }
 
-    query.respond(done());
-});
+        const disableCommand = enableCommand.replace('enable-', 'disable-');
+
+        db.byName[enableCommand] = {
+            name: enableCommand,
+            args: {},
+            mainArgs: [],
+            run: (query: Query) => {
+                query.respond({
+                    effects: [{type: 'assign-global', name: enableCommand, value: true}],
+                    message: `set ${enableCommand} to true`
+                })
+            }
+        }
+        
+        db.byName[disableCommand] = {
+            name: disableCommand,
+            mainArgs: [],
+            args: {},
+            run: (query: Query) => {
+                query.respond({
+                    effects: [{type: 'assign-global', name: enableCommand, value: false}],
+                    message: `set ${enableCommand} to false`
+                })
+            }
+        }
+
+        query.respond(done());
+    });
+}

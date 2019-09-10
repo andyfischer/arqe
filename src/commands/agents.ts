@@ -1,21 +1,24 @@
 
 import { implement } from '..'
 import { getAgents, getServices } from '../agents/clientApi'
+import { Snapshot } from '../framework'
 
-implement('list-agents', async (query) => {
-    const data = await getAgents(query.snapshot);
+export default function(snapshot: Snapshot) {
+    snapshot.implement('list-agents', async (query) => {
+        const data = await getAgents(query.snapshot);
 
-    query.respond({
-        type: 'agent[]',
-        terminalFormat: 'table',
-        items: data
+        query.respond({
+            type: 'agent[]',
+            terminalFormat: 'table',
+            items: data
+        });
     });
-});
 
-implement('list-services', async (query) => {
-    const data = await getServices(query.snapshot);
+    snapshot.implement('list-services', async (query) => {
+        const data = await getServices(query.snapshot);
 
-    query.respond({
-        body: data
+        query.respond({
+            body: data
+        });
     });
-});
+}

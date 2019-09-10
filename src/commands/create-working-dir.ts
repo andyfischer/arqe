@@ -3,15 +3,18 @@ import { runAsMain } from '../framework'
 import { mkdirp } from 'fs-extra'
 import { print, randomHex } from '../utils'
 import path from 'path'
+import { Snapshot } from '../framework'
 
-implement('create-working-dir', async (query: Query) => {
-    const rootWorkingDir = query.get('filesystem.workingdir');
-    const dirName = query.getOptional('dir-name', 'anon');
-    const hash = randomHex(6);
+export default function(snapshot: Snapshot) {
+    implement('create-working-dir', async (query: Query) => {
+        const rootWorkingDir = query.get('filesystem.workingdir');
+        const dirName = query.getOptional('dir-name', 'anon');
+        const hash = randomHex(6);
 
-    const fullDir = path.join(rootWorkingDir, `${dirName}-${hash}`);
+        const fullDir = path.join(rootWorkingDir, `${dirName}-${hash}`);
 
-    await mkdirp(fullDir);
+        await mkdirp(fullDir);
 
-    query.respond({dir: fullDir});
-});
+        query.respond({dir: fullDir});
+    });
+}

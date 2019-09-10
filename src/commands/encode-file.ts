@@ -5,6 +5,7 @@ import Path from 'path'
 import Crypto from 'crypto'
 import { implement, Query } from '..'
 import { print, values, allTrue } from '../utils'
+import { Snapshot } from '../framework'
 
 const selfCheck = true;
 
@@ -28,39 +29,41 @@ function getFiletype(filename: string, contents: Buffer) {
     return 'unknown'
 }
 
-implement('encode-file', async (query: Query) => {
-    const files = process.argv.slice(2);
+export default function(snapshot: Snapshot) {
+    implement('encode-file', async (query: Query) => {
+        const files = process.argv.slice(2);
 
-    if (files.length === 0) {
-        print('error: no file?')
-        return;
-    }
+        if (files.length === 0) {
+            print('error: no file?')
+            return;
+        }
 
-    for (const file of files) {
-        const basename = Path.basename(file);
-        const contents = await Fs.readFile(file);
-        const base64 = contents.toString('base64');
-        const sha1 = getSha1(contents);
-        const filetype = getFiletype(basename, contents);
-        const cmd = `file-contents filename=${basename} filetype=${filetype} sha1=${sha1} base64=${base64}`
-        print(cmd);
+        for (const file of files) {
+            const basename = Path.basename(file);
+            const contents = await Fs.readFile(file);
+            const base64 = contents.toString('base64');
+            const sha1 = getSha1(contents);
+            const filetype = getFiletype(basename, contents);
+            const cmd = `file-contents filename=${basename} filetype=${filetype} sha1=${sha1} base64=${base64}`
+            print(cmd);
 
-        /*
-        if (selfCheck) {
-            const parsed = parseQueries(cmd);
-            const options = parsed[0].options;
+            /*
+            if (selfCheck) {
+                const parsed = parseQueries(cmd);
+                const options = parsed[0].options;
 
-            const matches = {
-                filename: basename === options.filename,
-                filetype: filetype === options.filetype,
-                sha1: sha1 === options.sha1,
-                base64: base64 === options.base64
-            }
+                const matches = {
+                    filename: basename === options.filename,
+                    filetype: filetype === options.filetype,
+                    sha1: sha1 === options.sha1,
+                    base64: base64 === options.base64
+                }
 
-            if (!allTrue(values(matches))) {
-                print(`error: self check failed\n  operation: encode-file\n`
-                      +`  command: ${cmd}\n  matches: ${JSON.stringify(matches)}`);
-            }
-        }*/
-    }
-});
+                if (!allTrue(values(matches))) {
+                    print(`error: self check failed\n  operation: encode-file\n`
+                          +`  command: ${cmd}\n  matches: ${JSON.stringify(matches)}`);
+                }
+            }*/
+        }
+    });
+}

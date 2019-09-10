@@ -2,10 +2,13 @@
 import { implement, Query } from '..'
 import { getCommandDatabase } from '../types/CommandDatabase'
 import { print } from '../utils'
+import { Snapshot } from '../framework'
 
-implement('env', async (query: Query) => {
-    const env = Object.assign({}, query.snapshot.globalValues, {
-        commandDatabase: undefined
+export default function(snapsho: Snapshot) {
+    implement('env', async (query: Query) => {
+        const env = Object.assign({}, query.snapshot.globalValues, {
+            commandDatabase: undefined
+        });
+        query.respond(JSON.stringify(query.snapshot.globalValues, null, 2));
     });
-    query.respond(JSON.stringify(query.snapshot.globalValues, null, 2));
-});
+}
