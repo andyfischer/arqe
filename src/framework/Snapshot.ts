@@ -1,5 +1,5 @@
 
-import { Reducer, everyReducer } from '../framework'
+import { Reducer } from '../framework'
 import { print } from '../utils'
 import { Query } from '..'
 import { QueryOptions } from '../query'
@@ -9,7 +9,6 @@ import CommandImplementation from '../types/CommandImplementation'
 import QueryWatcher from './QueryWatcher'
 import { mountEveryQueryWatcher } from '../query-watchers'
 import { implementEveryCommand } from '../commands'
-import '../reducers'
 
 const MissingValue = Symbol('missing');
 
@@ -30,10 +29,6 @@ export default class Snapshot {
         // Bootstrap values
         this.globalValues['commandDatabase'] = getZeroCommandDatabase();
         this.globalValues['relationDatabase'] = getZeroRelationDatabase();
-
-        // Builtin documents
-        for (const reducerDef of everyReducer)
-            this.mountDocument(reducerDef());
 
         mountEveryQueryWatcher(this);
         implementEveryCommand(this);

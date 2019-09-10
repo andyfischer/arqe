@@ -1,6 +1,5 @@
 
 import { Query } from '..'
-import { declareReducer } from '../framework'
 import { print } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 
@@ -139,12 +138,6 @@ function update(query: Query, db: CommandDatabase) {
     }
 }
 
-declareReducer(() => {
-    return {
-        name: 'commandDB',
-        value: {},
-        reducer(query: Query) {
-            update(query, getCommandDatabase(query));
-        }
-    }
-});
+export default function(query: Query) {
+    update(query, getCommandDatabase(query));
+}
