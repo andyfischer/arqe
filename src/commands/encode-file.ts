@@ -3,7 +3,7 @@
 import Fs from 'fs-extra'
 import Path from 'path'
 import Crypto from 'crypto'
-import { implement, Query } from '..'
+import { Query } from '..'
 import { print, values, allTrue } from '../utils'
 import { Snapshot } from '../framework'
 
@@ -30,7 +30,7 @@ function getFiletype(filename: string, contents: Buffer) {
 }
 
 export default function(snapshot: Snapshot) {
-    implement('encode-file', async (query: Query) => {
+    snapshot.implement('encode-file', async (query: Query) => {
         const files = process.argv.slice(2);
 
         if (files.length === 0) {

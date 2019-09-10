@@ -1,11 +1,11 @@
 
-import { implement, Query } from '..'
+import { Query } from '..'
 import { getCommandDatabase } from '../types/CommandDatabase'
 import { print } from '../utils'
 import { Snapshot } from '../framework'
 
-export default function(snapsho: Snapshot) {
-    implement('env', async (query: Query) => {
+export default function(snapshot: Snapshot) {
+    snapshot.implement('env', async (query: Query) => {
         const env = Object.assign({}, query.snapshot.globalValues, {
             commandDatabase: undefined
         });

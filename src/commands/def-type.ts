@@ -1,6 +1,6 @@
 
 import { print } from '../utils'
-import { implement, Query } from '..'
+import { Query } from '..'
 import { Snapshot } from '../framework'
 
 interface Database {
@@ -11,8 +11,8 @@ interface Type {
     name: string
 }
 
-export default function(snapsho: Snapshot) {
-    implement('def-type', async (query: Query) => {
+export default function(snapshot: Snapshot) {
+    snapshot.implement('def-type', async (query: Query) => {
         const name = query.args[0];
         query.snapshot.modifyGlobal('typeDatabase', (db: Database) => {
             if (!db) {

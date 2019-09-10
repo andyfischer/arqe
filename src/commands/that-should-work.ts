@@ -1,9 +1,9 @@
 
-import { implement, Query, appendToLog } from '..'
+import { Query, appendToLog } from '..'
 import { Snapshot } from '../framework'
 
 export default function(snapshot: Snapshot) {
-    implement('that-should-work', (query: Query) => {
+    snapshot.implement('that-should-work', (query: Query) => {
         const str = query.get('lastQueryStr');
         const shouldWork = 'should-work -- ' + str;
         appendToLog('should-work', shouldWork);

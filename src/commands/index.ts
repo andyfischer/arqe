@@ -12,6 +12,7 @@ import deploy from './deploy';
 import dirSnapshots from './dir-snapshots';
 import encodeFile from './encode-file';
 import env from './env';
+import findRelations from './find-relations';
 import gitCheckout from './git-checkout';
 import help from './help';
 import ls from './ls';
@@ -35,6 +36,7 @@ export function implementEveryCommand(snapshot: Snapshot) {
     dirSnapshots(snapshot);
     encodeFile(snapshot);
     env(snapshot);
+    findRelations(snapshot);
     gitCheckout(snapshot);
     help(snapshot);
     ls(snapshot);

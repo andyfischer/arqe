@@ -1,5 +1,5 @@
 
-import { implement, Query, print, error } from '..'
+import { Query, print, error } from '..'
 import { runAsMain } from '../framework'
 import { mkdirp } from 'fs-extra'
 import path from 'path'
@@ -7,7 +7,7 @@ import { exec } from '../utils'
 import { Snapshot } from '../framework'
 
 export default function(snapshot: Snapshot) {
-    implement('git-clone', async (query: Query) => {
+    snapshot.implement('git-clone', async (query: Query) => {
         const repoUrl = query.get('repo-url');
         let dir = query.getOptional('dir', null);
 

@@ -1,11 +1,11 @@
 
 import { print } from '../utils'
-import { implement, Query } from '..'
+import { Query } from '..'
 import { mkdirp } from 'fs-extra'
 import { Snapshot } from '../framework'
 
 export default function(snapshot: Snapshot) {
-    implement('deploy', async (query: Query) => {
+    snapshot.implement('deploy', async (query: Query) => {
         // Check if there is a designated deployment location
         // Look at the deployment targret
         // Create the directory

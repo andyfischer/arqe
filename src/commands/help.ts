@@ -1,11 +1,11 @@
 
-import { implement, Query } from '..'
+import { Query } from '..'
 import { print } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import { Snapshot } from '../framework'
 
 export default function(snapshot: Snapshot) {
-    implement('help', async (query: Query) => {
+    snapshot.implement('help', async (query: Query) => {
         const db = getCommandDatabase(query);
 
         const lines = [];

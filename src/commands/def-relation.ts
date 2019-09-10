@@ -1,12 +1,12 @@
 
-import { implement, Query } from '..'
+import { Query } from '..'
 import { print } from '../utils'
 import { Snapshot } from '../framework'
 
 const verbose = false;
 
-export default function(snapsho: Snapshot) {
-    implement('def-relation', async (query: Query) => {
+export default function(snapshot: Snapshot) {
+    snapshot.implement('def-relation', async (query: Query) => {
         const rel = query.args[0];
 
         query.snapshot.modifyGlobal('relations', set => {

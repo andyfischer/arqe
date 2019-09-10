@@ -1,9 +1,9 @@
 
-import { implement, print, error, performedAction } from '..'
 import { Snapshot } from '../framework'
+import { error, performedAction } from '..'
 
 export default function(snapshot: Snapshot) {
-    implement('cd', (query) => {
+    snapshot.implement('cd', (query) => {
         const dir = query.args[0];
 
         try {
@@ -22,7 +22,7 @@ export default function(snapshot: Snapshot) {
         query.respond(performedAction('changed directory to: ' + dir));
     });
 
-    implement('cwd', (query) => {
+    snapshot.implement('cwd', (query) => {
         query.respond(process.cwd());
     });
 }

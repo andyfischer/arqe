@@ -1,5 +1,5 @@
 
-import { implement, Query } from '..'
+import { Query } from '..'
 import { declareReducer } from '../framework'
 import { print } from '../utils'
 import { Snapshot } from '../framework'
@@ -12,8 +12,8 @@ interface Function {
     name: string
 }
 
-export default function(snapsho: Snapshot) {
-    implement('def-function', async (query: Query) => {
+export default function(snapshot: Snapshot) {
+    snapshot.implement('def-function', async (query: Query) => {
         const name = query.args[0];
         query.snapshot.modifyGlobal('functionDatabase', (db: Database) => {
             if (!db) {

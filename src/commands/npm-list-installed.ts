@@ -1,7 +1,7 @@
 
 import fs from 'fs-extra'
 import fg from 'fast-glob'
-import { implement, print, error, performedAction } from '..'
+import { print, error, performedAction } from '..'
 import { Snapshot } from '../framework'
 
 function by(items, key) {
@@ -22,7 +22,7 @@ function where(items, condition) {
 }
 
 export default function(snapshot: Snapshot) {
-    implement('npm-list-installed', async (query) => {
+    snapshot.implement('npm-list-installed', async (query) => {
 
         const out = { items: [] }
         const everyPackageFile = await fg("node_modules/**/package.json");

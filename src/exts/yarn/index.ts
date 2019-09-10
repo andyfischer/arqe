@@ -1,4 +1,5 @@
 
+/*
 import ChildProcess from 'child_process'
 import Util from 'util'
 import { implement } from '../..'
@@ -26,3 +27,4 @@ implement('yarn-workspace-list', async (query) => {
         return;
     }
 });
+*/
