@@ -88,7 +88,7 @@ export default async function runCommand(query: Query) {
         if (query.options[name])
             return query.options[name];
 
-        return this.snapshot.getValueOpt(name, defaultValue);
+        return query.snapshot.getValueOpt(name, defaultValue);
     }
 
     function queryGet(name: string) {

@@ -72,10 +72,10 @@ export default function parseQueryStructure(snapshot: Snapshot, syntax: QuerySyn
         const lastIncompleteClause = snapshot.getLastIncompleteClause();
 
         if (lastIncompleteClause) {
-            const dotsLocation = findIndex(lastIncompleteClause.syntax.clauses, x => x.isDots);
-            const combined = lastIncompleteClause.syntax.clauses.slice(0, dotsLocation)
+            const dotsLocation = findIndex(lastIncompleteClause.clauses, x => x.isDots);
+            const combined = lastIncompleteClause.clauses.slice(0, dotsLocation)
                 .concat(clauses)
-                .concat(lastIncompleteClause.syntax.clauses.slice(dotsLocation + 1));
+                .concat(lastIncompleteClause.clauses.slice(dotsLocation + 1));
 
             clauses = combined;
         }

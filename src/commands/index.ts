@@ -3,6 +3,9 @@
 import './agents';
 import './cd';
 import './create-working-dir';
+import './def-function';
+import './def-relation';
+import './def-type';
 import './define-toggle';
 import './deploy';
 import './dir-snapshots';

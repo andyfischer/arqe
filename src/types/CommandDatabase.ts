@@ -32,8 +32,7 @@ export function getZeroCommandDatabase(): CommandDatabase {
                         isRequired: true
                     }
                 },
-                mainArgs: ['command-name'],
-                hasNoImplementation: true
+                mainArgs: ['command-name']
             },
             'def-relation': {
                 name: 'def-relation',
@@ -42,8 +41,7 @@ export function getZeroCommandDatabase(): CommandDatabase {
                         isRequired: true
                     }
                 },
-                mainArgs: ['relation-name'],
-                hasNoImplementation: true
+                mainArgs: ['relation-name']
             }
         }
     }

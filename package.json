@@ -46,7 +46,7 @@
     ]
   },
   "bin": {
-    "s": "dist/terminal/main.js",
+    "s": "dist/startup/main.js",
     "s-discovery-agent": "dist/agents/discovery",
     "encode-file": "dist/tools/encode-file.js"
   }

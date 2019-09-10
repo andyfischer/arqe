@@ -4,7 +4,7 @@ import { print } from '../utils'
 import { Query } from '..'
 import { QueryOptions } from '../query'
 import { getZeroCommandDatabase, getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
-import { getZeroRelationDatabase } from '../types/RelationDatabase'
+import { getZeroRelationDatabase, getRelationDatabase } from '../types/RelationDatabase'
 import CommandImplementation from '../types/CommandImplementation'
 import QueryWatcher from './QueryWatcher'
 import { mountEveryQueryWatcher } from '../query-watchers'
@@ -51,7 +51,8 @@ export default class Snapshot {
     }
 
     modifyGlobal(name: string, modifier: (val: any) => any) {
-        this.globalValues[name] = modifier(this.globalValues[name]);
+        const result = modifier(this.globalValues[name]);
+        this.globalValues[name] = result;
     }
 
     isRelation(s: string) {
