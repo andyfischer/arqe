@@ -8,6 +8,7 @@ import { getZeroRelationDatabase, getRelationDatabase } from '../types/RelationD
 import CommandImplementation from '../types/CommandImplementation'
 import QueryWatcher from './QueryWatcher'
 import { mountEveryQueryWatcher } from '../query-watchers'
+import { implementEveryCommand } from '../commands'
 import '../reducers'
 
 const MissingValue = Symbol('missing');
@@ -35,6 +36,7 @@ export default class Snapshot {
             this.mountDocument(reducerDef());
 
         mountEveryQueryWatcher(this);
+        implementEveryCommand(this);
     }
 
     mountDocument(reducer: Reducer) {

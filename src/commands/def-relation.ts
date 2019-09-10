@@ -6,6 +6,7 @@ import { Snapshot } from '../framework'
 const verbose = false;
 
 export default function(snapshot: Snapshot) {
+
     snapshot.implement('def-relation', async (query: Query) => {
         const rel = query.args[0];
 

@@ -1,13 +1,10 @@
 
 import { Snapshot } from '.'
 import { Query } from '..'
-import { everyImplementation } from '../framework/declareImplementation'
 import { print, values, timedOut } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import CommandImplementation from '../types/CommandImplementation'
 import { ensureModuleLoaded } from '../lazymodules'
-import '../commands'
-import '../functions'
 
 const verbose = !!process.env.verbose;
 const MissingValue = Symbol('missing');
@@ -102,7 +99,7 @@ export default async function runCommand(query: Query) {
     query.get = queryGet;
     query.getOptional = queryGetOptional;
 
-    const func: CommandImplementation = command.run || everyImplementation[query.command];
+    const func: CommandImplementation = command.run || snapshot.commandImplementations[query.command];
 
     if (!func) {
         if (query.isInteractive)
