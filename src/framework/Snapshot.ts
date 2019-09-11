@@ -1,5 +1,4 @@
 
-import { Reducer } from '../framework'
 import { print } from '../utils'
 import { Query } from '..'
 import { QueryOptions } from '../query'
@@ -19,9 +18,6 @@ export default class Snapshot {
     globalValues: { [name: string]: any } = {}
     fileScopedValues: { [name: string]: any } = {}
 
-    liveDocuments: Reducer[] = []
-    liveDocumentsByName: { [name: string]: Reducer } = {}
-
     commandImplementations: { [name: string]: CommandImplementation } = {}
     queryWatchers: QueryWatcher[] = []
 
@@ -32,19 +28,6 @@ export default class Snapshot {
 
         mountEveryQueryWatcher(this);
         implementEveryCommand(this);
-    }
-
-    mountDocument(reducer: Reducer) {
-        if (!reducer.name)
-            throw new Error('missing name');
-
-        if (this.liveDocumentsByName[reducer.name])
-            throw new Error('already have a reducer with name: ' + reducer.name);
-
-        this.liveDocuments.push(reducer);
-        this.liveDocumentsByName[reducer.name] = reducer;
-
-        return reducer;
     }
 
     modifyGlobal(name: string, modifier: (val: any) => any) {
@@ -66,21 +49,12 @@ export default class Snapshot {
         return this.getValueOpt('lastIncompleteClause', null);
     }
 
-    hasDocument(documentName: string) {
-        const doc = this.liveDocumentsByName[documentName];
-        return !!doc;
-    }
-
     getValueOpt(name: string, defaultValue: any) {
         if (this.fileScopedValues[name])
             return this.fileScopedValues[name];
 
         if (this.globalValues[name])
             return this.globalValues[name];
-
-        const doc = this.liveDocumentsByName[name];
-        if (doc)
-            return doc.value;
 
         return defaultValue;
     }
