@@ -8,6 +8,7 @@ import CommandImplementation from '../types/CommandImplementation'
 import QueryWatcher from './QueryWatcher'
 import { mountEveryQueryWatcher } from '../query-watchers'
 import { implementEveryCommand } from '../commands'
+import { Scope } from '../scope'
 
 const MissingValue = Symbol('missing');
 
@@ -16,12 +17,15 @@ export default class Snapshot {
     typeSnapshot = true
 
     globalValues: { [name: string]: any } = {}
-    fileScopedValues: { [name: string]: any } = {}
 
     commandImplementations: { [name: string]: CommandImplementation } = {}
     queryWatchers: QueryWatcher[] = []
 
+    fileScope: Scope
+
     constructor() {
+        this.fileScope = new Scope()
+
         // Bootstrap values
         this.globalValues['commandDatabase'] = getZeroCommandDatabase();
         this.globalValues['relationDatabase'] = getZeroRelationDatabase();
@@ -50,8 +54,10 @@ export default class Snapshot {
     }
 
     getValueOpt(name: string, defaultValue: any) {
-        if (this.fileScopedValues[name])
-            return this.fileScopedValues[name];
+        const found = this.fileScope.getOptional(name, MissingValue);
+
+        if (found !== MissingValue)
+            return found;
 
         if (this.globalValues[name])
             return this.globalValues[name];

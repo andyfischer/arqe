@@ -12,7 +12,7 @@ interface Function {
 }
 
 export default function(snapshot: Snapshot) {
-    snapshot.implement('def-function', async (query: Query) => {
+    snapshot.implement('def-function', (query: Query) => {
         const name = query.args[0];
         query.snapshot.modifyGlobal('functionDatabase', (db: Database) => {
             if (!db) {

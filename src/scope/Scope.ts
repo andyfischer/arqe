@@ -1,26 +1,28 @@
 
-import ScopeValue from './ScopeValue'
+import Slot from './Slot'
 
 const MissingValue = Symbol('missing');
 
 export default class Scope {
     parent?: Scope
 
-    values: { [name: string]: ScopeValue }
+    slots: { [name: string]: Slot } = {}
 
     constructor() {
     }
 
-    getValueOpt(name: string, defaultValue: any) {
-        if (this.values[name])
-            return this.values[name].current;
+    getOptional(name: string, defaultValue: any) {
+        if (this.slots[name])
+            return this.slots[name].current;
 
         if (this.parent)
-            return this.parent.getValueOpt(name, defaultValue);
+            return this.parent.getOptional(name, defaultValue);
+
+        return defaultValue;
     }
 
-    getValue(name: string) {
-        const found = this.getValueOpt(name, MissingValue);
+    get(name: string) {
+        const found = this.getOptional(name, MissingValue);
 
         if (found === MissingValue)
             throw new Error('value not found for: ' + name);
@@ -28,6 +30,22 @@ export default class Scope {
         return found;
     }
 
+    set(name: string, value: any) {
+        if (!this.slots[name]) {
+            throw new Error("no slot with name: " + name);
+        }
+
+        const slot = this.slots[name];
+        slot.current = value;
+    }
+
     modify(name: string, callback: (val: any) => any) {
+        if (!this.slots[name]) {
+            throw new Error("no slot with name: " + name);
+        }
+
+        const slot = this.slots[name];
+
+        slot.current = callback(slot.current);
     }
 }

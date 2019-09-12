@@ -6,7 +6,7 @@ export default function(snapshot: Snapshot) {
         const key = query.args[1];
         const value = query.args[2];
 
-        query.snapshot.fileScopedValues[key] = value;
+        query.snapshot.fileScope.set(key, value);
         return
     });
 }
