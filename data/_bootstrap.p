@@ -110,5 +110,6 @@ bootstrap-scripts includes ..
   timedate.p
   workingdir.p
   yarn.p
+  watch.p
 
 # (relation bootstrap-scripts includes *) save-to _bootstrap.p

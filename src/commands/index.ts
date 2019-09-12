@@ -23,6 +23,7 @@ import showCommands from './show-commands';
 import spawnDiscoveryAgentIfNeeded from './spawn-discovery-agent-if-needed';
 import thatShouldWork from './that-should-work';
 import timedate from './timedate';
+import watch from './watch';
 
 export function implementEveryCommand(snapshot: Snapshot) {
     agents(snapshot);
@@ -47,4 +48,5 @@ export function implementEveryCommand(snapshot: Snapshot) {
     spawnDiscoveryAgentIfNeeded(snapshot);
     thatShouldWork(snapshot);
     timedate(snapshot);
+    watch(snapshot);
 }

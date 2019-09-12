@@ -1,0 +1,9 @@
+
+new class Scope
+
+  Create a scope for the "global" information
+  Scopes are chained
+  Subdirectories can have their own scope
+  Values have change tracking
+  Values can be derived from other values
+
