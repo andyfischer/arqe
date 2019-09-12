@@ -3,6 +3,6 @@ import { Query } from '..'
 
 export default function(query: Query) {
     const str = query.syntax.originalStr;
-    query.snapshot.globalValues.lastQueryStr = query.snapshot.globalValues.thisQueryStr;
-    query.snapshot.globalValues.thisQueryStr = str;
+    query.snapshot.globalScope.set('lastQueryStr', query.snapshot.globalScope.getOptional('thisQueryStr', null));
+    query.snapshot.globalScope.set('thisQueryStr', str);
 }

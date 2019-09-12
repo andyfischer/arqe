@@ -1,4 +1,5 @@
 
+def-slot stored-snapshot-dir
 def-command save-dir-snapshot
 def-command restore-dir-snapshot
 

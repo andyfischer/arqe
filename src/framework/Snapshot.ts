@@ -9,6 +9,7 @@ import QueryWatcher from './QueryWatcher'
 import { mountEveryQueryWatcher } from '../query-watchers'
 import { implementEveryCommand } from '../commands'
 import { Scope } from '../scope'
+import setupBuiltinSlots from '../scope/setupBuiltinSlots'
 
 const MissingValue = Symbol('missing');
 
@@ -16,27 +17,28 @@ export default class Snapshot {
 
     typeSnapshot = true
 
-    globalValues: { [name: string]: any } = {}
-
     commandImplementations: { [name: string]: CommandImplementation } = {}
     queryWatchers: QueryWatcher[] = []
 
+    globalScope: Scope
     fileScope: Scope
 
     constructor() {
+        this.globalScope = new Scope()
         this.fileScope = new Scope()
 
+        setupBuiltinSlots(this.globalScope);
+
         // Bootstrap values
-        this.globalValues['commandDatabase'] = getZeroCommandDatabase();
-        this.globalValues['relationDatabase'] = getZeroRelationDatabase();
+        this.globalScope.set('commandDatabase', getZeroCommandDatabase());
+        this.globalScope.set('relationDatabase', getZeroRelationDatabase());
 
         mountEveryQueryWatcher(this);
         implementEveryCommand(this);
     }
 
     modifyGlobal(name: string, modifier: (val: any) => any) {
-        const result = modifier(this.globalValues[name]);
-        this.globalValues[name] = result;
+        this.globalScope.modify(name, modifier);
     }
 
     isRelation(s: string) {
@@ -54,13 +56,14 @@ export default class Snapshot {
     }
 
     getValueOpt(name: string, defaultValue: any) {
-        const found = this.fileScope.getOptional(name, MissingValue);
+        let found = this.fileScope.getOptional(name, MissingValue);
 
         if (found !== MissingValue)
             return found;
 
-        if (this.globalValues[name])
-            return this.globalValues[name];
+        found = this.globalScope.getOptional(name, MissingValue);
+        if (found !== MissingValue)
+            return found;
 
         return defaultValue;
     }

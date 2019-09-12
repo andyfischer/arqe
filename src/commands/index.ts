@@ -6,6 +6,7 @@ import cd from './cd';
 import createWorkingDir from './create-working-dir';
 import defFunction from './def-function';
 import defRelation from './def-relation';
+import defSlot from './def-slot';
 import defType from './def-type';
 import defineToggle from './define-toggle';
 import deploy from './deploy';
@@ -31,6 +32,7 @@ export function implementEveryCommand(snapshot: Snapshot) {
     createWorkingDir(snapshot);
     defFunction(snapshot);
     defRelation(snapshot);
+    defSlot(snapshot);
     defType(snapshot);
     defineToggle(snapshot);
     deploy(snapshot);

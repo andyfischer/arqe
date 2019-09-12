@@ -2,6 +2,7 @@
 def-command def-command
 def-command def-relation
 def-command def-function
+def-command def-slot
 
 def-relation is
 def-relation includes
@@ -40,6 +41,10 @@ command/def-type ..
 command/def-function ..
   requires-arg function-name
   has-main-arg function-name
+
+command/def-slot ..
+  requires-arg slot-name
+  has-main-arg slot-name
 
 def-command eof
 command/eof ..
@@ -89,6 +94,8 @@ command/set ..
 def-function find-relations
 command/find-relations ..
   takes-any-args
+
+def-slot bootstrapScripts
 
 bootstrap-scripts includes ..
   agents.p

@@ -11,6 +11,13 @@ export default class Scope {
     constructor() {
     }
 
+    createSlot(name) {
+        if (this.slots[name])
+            throw new Error('slot already exists: ' + name);
+
+        this.slots[name] = new Slot()
+    }
+
     getOptional(name: string, defaultValue: any) {
         if (this.slots[name])
             return this.slots[name].current;

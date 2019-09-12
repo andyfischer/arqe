@@ -11,7 +11,7 @@ export default function(snapshot: Snapshot) {
 
         const options = query.options;
 
-        query.snapshot.globalValues[name] = value;
+        query.snapshot.globalScope.set(name, value);
 
         query.respond(`set '${name}' to: '${value}'`)
     });

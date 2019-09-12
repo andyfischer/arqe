@@ -1,4 +1,5 @@
 
+def-slot filesystem.workingdir
 def-command create-working-dir
 
 command/create-working-dir ..

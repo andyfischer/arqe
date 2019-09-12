@@ -1,4 +1,5 @@
 
+def-slot discovery-service-url
 def-command list-agents
 def-command list-services
 def-command spawn-discovery-agent-if-needed
