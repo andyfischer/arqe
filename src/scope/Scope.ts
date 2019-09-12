@@ -3,12 +3,17 @@ import Slot from './Slot'
 
 const MissingValue = Symbol('missing');
 
+interface ConstructorOptions {
+    parent?: Scope
+}
+
 export default class Scope {
     parent?: Scope
 
     slots: { [name: string]: Slot } = {}
 
-    constructor() {
+    constructor(opts: ConstructorOptions = {}) {
+        this.parent = opts.parent;
     }
 
     createSlot(name) {
