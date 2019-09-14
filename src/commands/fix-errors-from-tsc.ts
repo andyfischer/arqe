@@ -1,6 +1,7 @@
 
 import { Query, Snapshot } from '..'
 import { print, exec } from '../utils'
+import { openFile, runChangeCommand } from '../code-change'
 
 const sourcePosition = /([a-zA-Z0-9_\-\/\.]+)\((\d+),(\d+)\): /
 const cannotFindName = /Cannot find name '(\w+)'/
@@ -72,7 +73,8 @@ function getFixForError(snapshot: Snapshot, error: ParsedError): string {
         });
 
         if (needsRenameTo) {
-            return ""
+            const to = needsRenameTo.relationParams[0];
+            return `select-line ${error.lineNo} | find-ident ${name} | insert ${to}`
         }
 
         const needsImport = getOneMatchingRelation({
@@ -101,12 +103,19 @@ export default function(snapshot: Snapshot) {
             return;
         }
 
-        print(`Found ${errors.length} errors..`)
+        print(`TSC reported ${errors.length} errors..`)
         for (const error of errors) {
             print(' TSC says: ' + error);
-            const parsed = parseTscError(error);
-            print(' Understood error as: ' + JSON.stringify(parsed));
-            const fix = getFixForError(snapshot, parsed);
+            const parsedError = parseTscError(error);
+            print(' Understood error as: ' + JSON.stringify(parsedError));
+
+            const filename = parsedError.filename
+            if (!filename) {
+                print(" Can't fix, didn't understand filename");
+                continue;
+            }
+
+            const fix = getFixForError(snapshot, parsedError);
 
             if (!fix) {
                 print(" Don't know how to fix!");
@@ -114,9 +123,13 @@ export default function(snapshot: Snapshot) {
             }
 
             print(' Applying fix: ' + fix);
+            
+            const file = await openFile(filename);
+            runChangeCommand(file, fix);
+            await file.saveFile(filename);
         }
 
-        print('Applying fixes..');
+        print('Done');
 
     });
 }

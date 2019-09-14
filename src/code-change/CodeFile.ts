@@ -10,6 +10,10 @@ export default class CodeFile {
         this.textContents = await fs.readFile(filename, 'utf8')
     }
 
+    async saveFile(filename: string) {
+        await fs.writeFile(filename, this.getText());
+    }
+
     readString(text: string) {
         this.textContents = text;
     }
