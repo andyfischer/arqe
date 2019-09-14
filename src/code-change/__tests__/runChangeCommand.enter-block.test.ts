@@ -1,4 +1,4 @@
-import { CodeFile, resolveSelector } from "..";
+import { CodeFile, runChangeCommand } from "..";
 
 function toCodeFile(text: string) {
   const file = new CodeFile();
@@ -22,7 +22,7 @@ const testFile1 = toCodeFile(`
 
 describe("enter-block", () => {
   it("enters a block", () => {
-    const cursor = resolveSelector(
+    const cursor = runChangeCommand(
       testFile1,
       "find-ident appleFunc | enter-block"
     );

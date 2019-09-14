@@ -1,5 +1,5 @@
 
-import { Token, t_ident, t_lbrace, t_rbrace } from '../lexer'
+import { Token, t_ident, t_lbrace, t_rbrace, LexedText } from '../lexer'
 import { parseString, Expr, PipedExpr, QueryExpr } from '../parse-query'
 import CodeFile from './CodeFile'
 import Cursor, { TokenRange } from './Cursor'
@@ -78,10 +78,48 @@ function enterBlock(query: QueryExpr, cursor: Cursor) {
     cursor.ranges = out;
 }
 
-function afterContents(query: QueryExpr, cursor: Cursor) {
+function toStartOfLine(text: LexedText, pos: number) {
+    const line = text.tokens[pos].lineStart;
+
+    while (true) {
+        const next = pos - 1;
+        if (next >= 0 && text.tokens[next].lineStart === line) {
+            pos = next;
+            continue;
+        }
+
+        break;
+    }
+
+    return pos;
 }
 
-function handleCommand(query: QueryExpr, cursor: Cursor) {
+function toEndOfLine(text: LexedText, pos: number) {
+    const line = text.tokens[pos].lineStart;
+
+    while (true) {
+        const next = pos + 1;
+        if (next < text.tokens.length && text.tokens[next].lineStart === line) {
+            pos = next;
+            continue;
+        }
+
+        break;
+    }
+
+    return pos;
+}
+
+function selectLine(query: QueryExpr, cursor: Cursor) {
+    cursor.ranges = cursor.ranges.map(range => {
+        return {
+            start: toStartOfLine(cursor.file.lexed, range.start),
+            end: toEndOfLine(cursor.file.lexed, range.end)
+        }
+    });
+}
+
+export default function handleCommand(query: QueryExpr, cursor: Cursor) {
     if (query.type !== 'query')
         throw new Error('expected query expr');
 
@@ -92,15 +130,19 @@ function handleCommand(query: QueryExpr, cursor: Cursor) {
         findIdent(query, cursor);
         break;
 
-    case 'find-call':
-        break;
+    //case 'find-call':
+    //    break;
 
     case 'enter-block':
         enterBlock(query, cursor);
         break;
 
-    case 'after-contents':
+    case 'select-line':
+        selectLine(query, cursor);
         break;
+
+    //case 'after-contents':
+    //    break;
 
     case 'replace-arg':
         break;
@@ -109,26 +151,4 @@ function handleCommand(query: QueryExpr, cursor: Cursor) {
         throw new Error('unrecognized command: ' + command);
     }
 }
-
-export default function resolveSelector(file: CodeFile, selector: string) {
-    const syntax = parseString(selector, 'statement');
-
-    // Find the statement.
-    const statement = syntax.getStatement();
-
-    // Maintain an in-progress cursor.
-    const cursor = new Cursor(file)
-
-    // Loop through each barred section.
-    for (const expr of statement.getPipedQueries()) {
-        handleCommand(expr, cursor);
-    }
-
-    return cursor;
-}
-
-// examples:
-//       find-string implementAll | enter-block | after-contents
-//       insert after-imports
-//       replace call func=implement argument 0
 

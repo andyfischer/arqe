@@ -31,4 +31,15 @@ export default class Cursor {
             }
         }
     }
+
+    getSelectedText(): string {
+        if (this.ranges.length === 0)
+            throw new Error("no selected text");
+
+        if (this.ranges.length > 1)
+            throw new Error("multiple selected ranges, can't call .getSelectedText");
+
+        const range = this.ranges[0];
+        return this.file.textContents.slice(range.start, range.end);
+    }
 }

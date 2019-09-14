@@ -14,6 +14,7 @@ import dirSnapshots from './dir-snapshots';
 import encodeFile from './encode-file';
 import env from './env';
 import findRelations from './find-relations';
+import fixErrorsFromTsc from './fix-errors-from-tsc';
 import gitCheckout from './git-checkout';
 import help from './help';
 import ls from './ls';
@@ -40,6 +41,7 @@ export function implementEveryCommand(snapshot: Snapshot) {
     encodeFile(snapshot);
     env(snapshot);
     findRelations(snapshot);
+    fixErrorsFromTsc(snapshot);
     gitCheckout(snapshot);
     help(snapshot);
     ls(snapshot);

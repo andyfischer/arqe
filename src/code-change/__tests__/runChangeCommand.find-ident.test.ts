@@ -1,4 +1,4 @@
-import { CodeFile, resolveSelector } from "..";
+import { CodeFile, runChangeCommand } from "..";
 
 function toCodeFile(text: string) {
   const file = new CodeFile();
@@ -22,7 +22,7 @@ const testFile1 = toCodeFile(`
 
 describe("find-ident", () => {
   it("finds an identifier", () => {
-    const cursor = resolveSelector(testFile1, "find-ident appleFunc");
+    const cursor = runChangeCommand(testFile1, "find-ident appleFunc");
     expect(cursor.ranges).toMatchInlineSnapshot(`
                   Array [
                     Object {
@@ -34,12 +34,12 @@ describe("find-ident", () => {
   });
 
   it("doesn't find string-based matches", () => {
-    const cursor = resolveSelector(testFile1, "find-ident apple");
+    const cursor = runChangeCommand(testFile1, "find-ident apple");
     expect(cursor.ranges).toEqual([]);
   });
 
   it("can find multiple matches", () => {
-    const cursor = resolveSelector(testFile1, "find-ident bananaFunc");
+    const cursor = runChangeCommand(testFile1, "find-ident bananaFunc");
     expect(cursor.ranges).toMatchInlineSnapshot(`
             Array [
               Object {
@@ -55,7 +55,7 @@ describe("find-ident", () => {
   });
 
   it("supports indentation filters", () => {
-    const cursor = resolveSelector(testFile1, "find-ident bananaFunc indent=4");
+    const cursor = runChangeCommand(testFile1, "find-ident bananaFunc indent=4");
     expect(cursor.ranges).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -67,7 +67,7 @@ describe("find-ident", () => {
   });
 
   it("can find no matches", () => {
-    const cursor = resolveSelector(testFile1, "find-ident xxx");
+    const cursor = runChangeCommand(testFile1, "find-ident xxx");
     expect(cursor.ranges).toEqual([]);
   });
 });
