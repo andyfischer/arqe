@@ -14,6 +14,10 @@ export default class CodeFile {
         this.textContents = text;
     }
 
+    getText() {
+        return this.textContents;
+    }
+
     getLexed() {
         if (!this._lexed) {
             this._lexed = tokenizeString(this.textContents)

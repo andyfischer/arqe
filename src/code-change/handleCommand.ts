@@ -105,6 +105,25 @@ function toEndOfLine(text: LexedText, pos: number) {
 
 function selectLine(query: QueryExpr, cursor: Cursor) {
     const lexed = cursor.file.getLexed();
+    const lineNumber = parseInt(query.getPositionalArgs()[0]);
+
+    let start;
+    let end;
+
+    for (let pos = 0; pos < lexed.tokens.length; pos += 1) {
+        const token = lexed.tokens[pos];
+        if (token.lineStart === lineNumber) {
+            end = pos + 1;
+            if (start === undefined)
+                start = pos;
+        }
+    }
+
+    cursor.range = { start, end }
+}
+
+function selectCurrentLine(query: QueryExpr, cursor: Cursor) {
+    const lexed = cursor.file.getLexed();
 
     cursor.range = {
         start: toStartOfLine(lexed, cursor.range.start),
@@ -122,6 +141,10 @@ function insertLine(query: QueryExpr, cursor: Cursor) {
     const lexed = cursor.file.getLexed();
     const indent = lexed.tokens[cursor.range.start].leadingIndent;
     cursor.patch(' '.repeat(indent) + text + '\n');
+}
+
+function deleteCommand(query: QueryExpr, cursor: Cursor) {
+    cursor.patch('');
 }
 
 function selectFile(query: QueryExpr, cursor: Cursor) {
@@ -177,6 +200,10 @@ export default function handleCommand(query: QueryExpr, cursor: Cursor) {
         break;
 
     case 'select-current-line':
+        selectCurrentLine(query, cursor);
+        break;
+
+    case 'select-line':
         selectLine(query, cursor);
         break;
 
@@ -187,6 +214,7 @@ export default function handleCommand(query: QueryExpr, cursor: Cursor) {
     case 'after-imports':
         afterImports(query, cursor);
         break;
+
 
     //case 'after-contents':
     //    break;
@@ -199,8 +227,12 @@ export default function handleCommand(query: QueryExpr, cursor: Cursor) {
         insertLine(query, cursor);
         break;
 
-    case 'replace-arg':
+    case 'delete':
+        deleteCommand(query, cursor);
         break;
+
+    //case 'replace-arg':
+        //break;
 
     default:
         throw new Error('unrecognized command: ' + command);

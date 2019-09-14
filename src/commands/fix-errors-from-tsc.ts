@@ -81,8 +81,6 @@ function getFixForError(snapshot: Snapshot, error: ParsedError): string {
         });
 
         if (needsImport) {
-            // TODO
-
         }
     }
 
