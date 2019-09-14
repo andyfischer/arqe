@@ -22,26 +22,26 @@ it("moves the cursor after the last import", () => {
   const file = sample();
   const cursor = runChangeCommand(file, "after-imports");
   expect(cursor.range).toMatchInlineSnapshot(`
-    Object {
-      "end": 16,
-      "start": 16,
-    }
-  `);
+        Object {
+          "end": 16,
+          "start": 16,
+        }
+    `);
 });
 
 it("supports appending a new import", () => {
   const file = sample();
   runChangeCommand(file, "after-imports | insert-line hello");
   expect(file.textContents).toMatchInlineSnapshot(`
-            "
+    "
 
-                import foo
-                import something from something
-            hello
+        import foo
+        import something from something
+        hello
 
-                function hi() {
-                }
+        function hi() {
+        }
 
-                "
-      `);
+        "
+  `);
 });

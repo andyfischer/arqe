@@ -119,7 +119,9 @@ function insert(query: QueryExpr, cursor: Cursor) {
 
 function insertLine(query: QueryExpr, cursor: Cursor) {
     const text = query.getPositionalArgs()[0];
-    cursor.patch(text + '\n');
+    const lexed = cursor.file.getLexed();
+    const indent = lexed.tokens[cursor.range.start].leadingIndent;
+    cursor.patch(' '.repeat(indent) + text + '\n');
 }
 
 function selectFile(query: QueryExpr, cursor: Cursor) {
