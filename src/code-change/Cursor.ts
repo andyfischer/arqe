@@ -18,16 +18,20 @@ export default class Cursor {
     }
 
     entireFile(): TokenRange {
+        const lexed = this.file.getLexed();
+
         return {
             start: 0,
-            end: this.file.lexed.tokens.length
+            end: lexed.tokens.length
         }
     }
 
     *eachTokenInRange() {
+        const lexed = this.file.getLexed();
+
         for (const range of this.ranges) {
             for (let i = range.start; i < range.end; i++) {
-                yield this.file.lexed.tokens[i];
+                yield lexed.tokens[i];
             }
         }
     }

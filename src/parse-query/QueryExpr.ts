@@ -31,7 +31,7 @@ export default class QueryExpr implements Expr {
         return out;
     }
 
-    getKeywords(): string[] {
+    getPositionalArgs(): string[] {
         const out = [];
         for (let i = 1; i < this.args.length; i += 1) {
             const arg = this.args[i];

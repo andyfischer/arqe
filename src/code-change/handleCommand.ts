@@ -14,9 +14,9 @@ function forAll(item, conds) {
 
 function findIdent(query: QueryExpr, cursor: Cursor) {
     const filterConditions: ((Token) => boolean)[] = [];
-    const file = cursor.file;
+    const lexed = cursor.file.getLexed();
 
-    const identText = query.getKeywords()[0];
+    const identText = query.getPositionalArgs()[0];
     const options = query.getNameValuePairs();
 
     if (options.indent) {
@@ -29,9 +29,8 @@ function findIdent(query: QueryExpr, cursor: Cursor) {
     const ranges: TokenRange[] = [];
 
     for (const token of cursor.eachTokenInRange()) {
-
         if (token.match === t_ident
-                && file.lexed.getTokenText(token) === identText
+                && lexed.getTokenText(token) === identText
                 && forAll(token, filterConditions)) {
 
             ranges.push({
@@ -45,8 +44,10 @@ function findIdent(query: QueryExpr, cursor: Cursor) {
 }
 
 function advanceToNextBlock(file: CodeFile, range: TokenRange): TokenRange {
-    for (let i = range.start; i < file.lexed.tokens.length; i++) {
-        const t = file.lexed.tokens[i];
+    const lexed = file.getLexed();
+
+    for (let i = range.start; i < lexed.tokens.length; i++) {
+        const t = lexed.tokens[i];
 
         if (t.match === t_lbrace) {
             return {
@@ -111,12 +112,54 @@ function toEndOfLine(text: LexedText, pos: number) {
 }
 
 function selectLine(query: QueryExpr, cursor: Cursor) {
+    const lexed = cursor.file.getLexed();
+
     cursor.ranges = cursor.ranges.map(range => {
         return {
-            start: toStartOfLine(cursor.file.lexed, range.start),
-            end: toEndOfLine(cursor.file.lexed, range.end)
+            start: toStartOfLine(lexed, range.start),
+            end: toEndOfLine(lexed, range.end)
         }
     });
+}
+
+function appendNewLine(cursor: Cursor) {
+}
+
+function insert(query: QueryExpr, cursor: Cursor) {
+    const text = query.getPositionalArgs()[0];
+    const file: CodeFile = cursor.file;
+    const lexed = file.getLexed();
+    for (const range of cursor.ranges) {
+        const charStart = lexed.tokenCharIndex(range.start);
+        const charEnd = lexed.tokenCharIndex(range.end);
+        file.patch(charStart, charEnd, text);
+    }
+}
+
+function selectFile(query: QueryExpr, cursor: Cursor) {
+    const lexed = cursor.file.getLexed();
+
+    cursor.ranges = [{
+        start: 0,
+        end: lexed.tokens.length
+    }];
+}
+
+function afterImports(query: QueryExpr, cursor: Cursor) {
+    const file = cursor.file;
+    const lexed: LexedText = cursor.file.getLexed();
+
+    let lastImport = -1;
+
+    for (let pos = 0; pos < lexed.tokens.length; pos += 1) {
+        const token = lexed.tokens[pos];
+        if (token.match === t_ident && lexed.getTokenText(token) === "import") {
+            lastImport = pos;
+        }
+    }
+
+    if (lastImport === -1)
+        throw new Error("no 'import' found in file");
 }
 
 export default function handleCommand(query: QueryExpr, cursor: Cursor) {
@@ -137,12 +180,24 @@ export default function handleCommand(query: QueryExpr, cursor: Cursor) {
         enterBlock(query, cursor);
         break;
 
-    case 'select-line':
+    case 'select-current-line':
         selectLine(query, cursor);
+        break;
+
+    case 'select-file':
+        selectFile(query, cursor);
+        break;
+
+    case 'after-imports':
+        afterImports(query, cursor);
         break;
 
     //case 'after-contents':
     //    break;
+
+    case 'insert':
+        insert(query, cursor);
+        break;
 
     case 'replace-arg':
         break;

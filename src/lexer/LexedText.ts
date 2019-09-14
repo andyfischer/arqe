@@ -14,4 +14,11 @@ export default class LexedText {
     getTokenText(token: Token) {
         return this.originalStr.slice(token.startPos, token.endPos);
     }
+
+    tokenCharIndex(tokenIndex: number) {
+        if (tokenIndex >= this.tokens.length)
+            return this.originalStr.length;
+
+        return this.tokens[tokenIndex].startPos;
+    }
 }

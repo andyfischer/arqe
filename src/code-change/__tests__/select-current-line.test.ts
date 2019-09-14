@@ -13,6 +13,6 @@ a = 1
 b = 2
 c = 3
                             `);
-    const cursor = runChangeCommand(file, "find-ident b | select-line");
+    const cursor = runChangeCommand(file, "find-ident b | select-current-line");
     expect(cursor.getSelectedText()).toEqual("b = 2");
 });
