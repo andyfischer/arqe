@@ -6,8 +6,8 @@ function toCodeFile(text: string) {
   return file;
 }
 
-it("moves the cursor after the last import", () => {
-  const file = toCodeFile(`
+function sample() {
+  return toCodeFile(`
 
     import foo
     import something from something
@@ -16,14 +16,32 @@ it("moves the cursor after the last import", () => {
     }
 
     `);
+}
 
+it("moves the cursor after the last import", () => {
+  const file = sample();
   const cursor = runChangeCommand(file, "after-imports");
-  expect(cursor.ranges).toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "end": 31,
-        "start": 0,
-      },
-    ]
+  expect(cursor.range).toMatchInlineSnapshot(`
+    Object {
+      "end": 16,
+      "start": 16,
+    }
   `);
+});
+
+it("supports appending a new import", () => {
+  const file = sample();
+  runChangeCommand(file, "after-imports | insert-line hello");
+  expect(file.textContents).toMatchInlineSnapshot(`
+            "
+
+                import foo
+                import something from something
+            hello
+
+                function hi() {
+                }
+
+                "
+      `);
 });

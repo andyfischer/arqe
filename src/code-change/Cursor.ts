@@ -10,11 +10,11 @@ export interface TokenRange {
 export default class Cursor {
 
     file: CodeFile
-    ranges: TokenRange[]
+    range?: TokenRange
 
     constructor(file: CodeFile) {
         this.file = file;
-        this.ranges = [ this.entireFile() ]
+        this.range = this.entireFile()
     }
 
     entireFile(): TokenRange {
@@ -29,21 +29,23 @@ export default class Cursor {
     *eachTokenInRange() {
         const lexed = this.file.getLexed();
 
-        for (const range of this.ranges) {
-            for (let i = range.start; i < range.end; i++) {
-                yield lexed.tokens[i];
-            }
+        for (let i = this.range.start; i < this.range.end; i++) {
+            yield lexed.tokens[i];
         }
     }
 
+    hasSelection() {
+        return !!this.range;
+    }
+
     getSelectedText(): string {
-        if (this.ranges.length === 0)
-            throw new Error("no selected text");
+        return this.file.textContents.slice(this.range.start, this.range.end);
+    }
 
-        if (this.ranges.length > 1)
-            throw new Error("multiple selected ranges, can't call .getSelectedText");
-
-        const range = this.ranges[0];
-        return this.file.textContents.slice(range.start, range.end);
+    patch(text: string) {
+        const lexed = this.file.getLexed();
+        const charStart = lexed.tokenCharIndex(this.range.start);
+        const charEnd = lexed.tokenCharIndex(this.range.end);
+        this.file.patch(charStart, charEnd, text);
     }
 }

@@ -26,13 +26,11 @@ describe("enter-block", () => {
       testFile1,
       "find-ident appleFunc | enter-block"
     );
-    expect(cursor.ranges).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "end": 17,
-          "start": 8,
-        },
-      ]
+    expect(cursor.range).toMatchInlineSnapshot(`
+      Object {
+        "end": 17,
+        "start": 8,
+      }
     `);
   });
 });

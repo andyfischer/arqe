@@ -26,21 +26,22 @@ function findIdent(query: QueryExpr, cursor: Cursor) {
         });
     }
 
-    const ranges: TokenRange[] = [];
-
     for (const token of cursor.eachTokenInRange()) {
         if (token.match === t_ident
                 && lexed.getTokenText(token) === identText
                 && forAll(token, filterConditions)) {
 
-            ranges.push({
+            cursor.range = {
                 start: token.tokenIndex,
                 end: token.tokenIndex + 1
-            });
+            };
+
+            return;
         }
     }
 
-    cursor.ranges = ranges;
+    // Not found
+    cursor.range = null;
 }
 
 function advanceToNextBlock(file: CodeFile, range: TokenRange): TokenRange {
@@ -62,21 +63,12 @@ function advanceToNextBlock(file: CodeFile, range: TokenRange): TokenRange {
 }
 
 function enterBlock(query: QueryExpr, cursor: Cursor) {
-    if (cursor.ranges.length === 0)
-        throw new Error("cursor is currently empty");
+    const next = advanceToNextBlock(cursor.file, cursor.range);
 
-    const out: TokenRange[] = []
-
-    for (const range of cursor.ranges) {
-        const next = advanceToNextBlock(cursor.file, range);
-        if (next)
-            out.push(next);
-    }
-
-    if (out.length === 0)
+    if (!next)
         throw new Error("no block found");
 
-    cursor.ranges = out;
+    cursor.range = next;
 }
 
 function toStartOfLine(text: LexedText, pos: number) {
@@ -114,35 +106,29 @@ function toEndOfLine(text: LexedText, pos: number) {
 function selectLine(query: QueryExpr, cursor: Cursor) {
     const lexed = cursor.file.getLexed();
 
-    cursor.ranges = cursor.ranges.map(range => {
-        return {
-            start: toStartOfLine(lexed, range.start),
-            end: toEndOfLine(lexed, range.end)
-        }
-    });
-}
-
-function appendNewLine(cursor: Cursor) {
+    cursor.range = {
+        start: toStartOfLine(lexed, cursor.range.start),
+        end: toEndOfLine(lexed, cursor.range.end)
+    }
 }
 
 function insert(query: QueryExpr, cursor: Cursor) {
     const text = query.getPositionalArgs()[0];
-    const file: CodeFile = cursor.file;
-    const lexed = file.getLexed();
-    for (const range of cursor.ranges) {
-        const charStart = lexed.tokenCharIndex(range.start);
-        const charEnd = lexed.tokenCharIndex(range.end);
-        file.patch(charStart, charEnd, text);
-    }
+    cursor.patch(text);
+}
+
+function insertLine(query: QueryExpr, cursor: Cursor) {
+    const text = query.getPositionalArgs()[0];
+    cursor.patch(text + '\n');
 }
 
 function selectFile(query: QueryExpr, cursor: Cursor) {
     const lexed = cursor.file.getLexed();
 
-    cursor.ranges = [{
+    cursor.range = {
         start: 0,
         end: lexed.tokens.length
-    }];
+    };
 }
 
 function afterImports(query: QueryExpr, cursor: Cursor) {
@@ -160,7 +146,15 @@ function afterImports(query: QueryExpr, cursor: Cursor) {
 
     if (lastImport === -1)
         throw new Error("no 'import' found in file");
+
+    const pos = toEndOfLine(lexed, lastImport) + 1;
+
+    cursor.range = {
+        start: pos,
+        end: pos
+    };
 }
+
 
 export default function handleCommand(query: QueryExpr, cursor: Cursor) {
     if (query.type !== 'query')
@@ -197,6 +191,10 @@ export default function handleCommand(query: QueryExpr, cursor: Cursor) {
 
     case 'insert':
         insert(query, cursor);
+        break;
+
+    case 'insert-line':
+        insertLine(query, cursor);
         break;
 
     case 'replace-arg':

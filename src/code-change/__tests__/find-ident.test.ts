@@ -23,51 +23,34 @@ const testFile1 = toCodeFile(`
 describe("find-ident", () => {
   it("finds an identifier", () => {
     const cursor = runChangeCommand(testFile1, "find-ident appleFunc");
-    expect(cursor.ranges).toMatchInlineSnapshot(`
-                  Array [
-                    Object {
-                      "end": 5,
-                      "start": 4,
-                    },
-                  ]
-            `);
+    expect(cursor.range).toMatchInlineSnapshot(`
+      Object {
+        "end": 5,
+        "start": 4,
+      }
+    `);
   });
 
   it("doesn't find string-based matches", () => {
     const cursor = runChangeCommand(testFile1, "find-ident apple");
-    expect(cursor.ranges).toEqual([]);
-  });
-
-  it("can find multiple matches", () => {
-    const cursor = runChangeCommand(testFile1, "find-ident bananaFunc");
-    expect(cursor.ranges).toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "end": 24,
-                "start": 23,
-              },
-              Object {
-                "end": 50,
-                "start": 49,
-              },
-            ]
-        `);
+    expect(cursor.range).toBeFalsy();
   });
 
   it("supports indentation filters", () => {
-    const cursor = runChangeCommand(testFile1, "find-ident bananaFunc indent=4");
-    expect(cursor.ranges).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "end": 24,
-          "start": 23,
-        },
-      ]
+    const cursor = runChangeCommand(
+      testFile1,
+      "find-ident bananaFunc indent=4"
+    );
+    expect(cursor.range).toMatchInlineSnapshot(`
+      Object {
+        "end": 24,
+        "start": 23,
+      }
     `);
   });
 
   it("can find no matches", () => {
     const cursor = runChangeCommand(testFile1, "find-ident xxx");
-    expect(cursor.ranges).toEqual([]);
+    expect(cursor.range).toBeFalsy();
   });
 });
