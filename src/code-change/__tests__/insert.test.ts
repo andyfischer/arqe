@@ -10,13 +10,13 @@ function toCodeFile(text: string) {
 it('inserts at the start of the file', () => {
     const file = toCodeFile(`a b c`);
     runChangeCommand(file, "find-ident a | insert new-a");
-    expect(file.textContents).toEqual('new-a b c');
+    expect(file.getText()).toEqual('new-a b c');
 });
 
 it('inserts in the middle of the file', () => {
     const file = toCodeFile(`new-a b c`);
     runChangeCommand(file, "find-ident b | insert new-b");
-    expect(file.textContents).toEqual('new-a new-b c');
+    expect(file.getText()).toEqual('new-a new-b c');
 });
 
 it('works correctly after multiple imports', () => {
@@ -24,5 +24,5 @@ it('works correctly after multiple imports', () => {
     runChangeCommand(file, "find-ident a | insert new-a");
     runChangeCommand(file, "find-ident b | insert new-b");
     runChangeCommand(file, "find-ident c | insert new-c");
-    expect(file.textContents).toEqual('new-a new-b new-c');
+    expect(file.getText()).toEqual('new-a new-b new-c');
 });

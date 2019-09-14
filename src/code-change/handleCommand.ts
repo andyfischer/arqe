@@ -147,6 +147,18 @@ function deleteCommand(query: QueryExpr, cursor: Cursor) {
     cursor.patch('');
 }
 
+function stringReplaceAll(str: string, from: string, to: string) {
+    return str.split(from).join(to);
+}
+
+function replaceCommand(query: QueryExpr, cursor: Cursor) {
+
+    const { from, to } = query.getNameValuePairs()
+    let text = cursor.getSelectedText();
+    text = stringReplaceAll(text, from, to);
+    cursor.patch(text);
+}
+
 function selectFile(query: QueryExpr, cursor: Cursor) {
     const lexed = cursor.file.getLexed();
 
@@ -229,6 +241,10 @@ export default function handleCommand(query: QueryExpr, cursor: Cursor) {
 
     case 'delete':
         deleteCommand(query, cursor);
+        break;
+
+    case 'replace':
+        replaceCommand(query, cursor);
         break;
 
     //case 'replace-arg':
