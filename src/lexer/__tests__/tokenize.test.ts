@@ -161,54 +161,6 @@ it("handles special characters", () => {
       `);
 });
 
-xit("handles quoted strings", () => {
-  expect(consise(tokenizeString('hello "there" '))).toMatchInlineSnapshot(`
-                                Array [
-                                  Object {
-                                    "charNumber": 1,
-                                    "endPos": 5,
-                                    "lineNumber": 0,
-                                    "matchName": "ident",
-                                    "startPos": 0,
-                                  },
-                                  Object {
-                                    "charNumber": 6,
-                                    "endPos": 6,
-                                    "lineNumber": 0,
-                                    "matchName": "space",
-                                    "startPos": 5,
-                                  },
-                                  Object {
-                                    "charNumber": 7,
-                                    "endPos": 7,
-                                    "lineNumber": 0,
-                                    "matchName": "unrecognized",
-                                    "startPos": 6,
-                                  },
-                                  Object {
-                                    "charNumber": 8,
-                                    "endPos": 12,
-                                    "lineNumber": 0,
-                                    "matchName": "ident",
-                                    "startPos": 7,
-                                  },
-                                  Object {
-                                    "charNumber": 13,
-                                    "endPos": 13,
-                                    "lineNumber": 0,
-                                    "matchName": "unrecognized",
-                                    "startPos": 12,
-                                  },
-                                  Object {
-                                    "charNumber": 14,
-                                    "endPos": 14,
-                                    "lineNumber": 0,
-                                    "matchName": "space",
-                                    "startPos": 13,
-                                  },
-                                ]
-                  `);
-});
 
 it("provides identifier text", () => {
   const result = tokenizeString("apple banana-cherry");

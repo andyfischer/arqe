@@ -4,7 +4,8 @@ import TokenIterator from './TokenIterator'
 import Token from './Token'
 import LexedText from './LexedText'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
-    t_double_dot, t_line_comment, tokenFromSingleCharCode, TokenDef } from './tokens'
+    t_double_dot, t_line_comment, t_quoted_string,
+    tokenFromSingleCharCode, TokenDef } from './tokens'
 
 const c_0 = '0'.charCodeAt(0);
 const c_9 = '9'.charCodeAt(0);
@@ -18,6 +19,9 @@ const c_space = ' '.charCodeAt(0);
 const c_dot = '.'.charCodeAt(0);
 const c_newline = '\n'.charCodeAt(0);
 const c_hash = '#'.charCodeAt(0);
+const c_single_quote = "'".charCodeAt(0);
+const c_double_quote = "\"".charCodeAt(0);
+const c_backslash = '\\'.charCodeAt(0);
 
 function isLowerCase(c) {
     return c >= c_a && c <= c_z;
@@ -47,6 +51,30 @@ function consumeNumber(input: Context) {
     return input.consumeWhile(t_integer, isDigit);
 }
 
+function consumeQuotedString(input: Context, lookingFor: number) {
+    let lookahead = 1;
+
+    while (true) {
+        if (input.finished(lookahead))
+            break;
+
+        if (input.next(lookahead) === c_backslash) {
+            // escape next character
+            lookahead += 2;
+            continue;
+        }
+
+        if (input.next(lookahead) === lookingFor) {
+            lookahead += 1;
+            break;
+        }
+
+        lookahead += 1;
+    }
+
+    return input.consume(t_quoted_string, lookahead);
+}
+
 function consumeNext(input: Context) {
     const c: number = input.next(0);
 
@@ -55,6 +83,12 @@ function consumeNext(input: Context) {
 
     if (c === c_hash)
         return input.consumeWhile(t_line_comment, c => c !== c_newline);
+
+    if (c === c_single_quote)
+        return consumeQuotedString(input, c_single_quote);
+    
+    if (c === c_double_quote)
+        return consumeQuotedString(input, c_double_quote);
 
     if (c === c_space)
         return input.consumeWhile(t_space, c => c === c_space);

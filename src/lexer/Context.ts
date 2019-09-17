@@ -24,8 +24,8 @@ export default class Context {
         this.str = str;
     }
 
-    finished() : boolean {
-        return this.index >= this.str.length;
+    finished(lookahead: number = 0) : boolean {
+        return (this.index + lookahead) >= this.str.length;
     }
 
     next(lookahead:number = 0) {

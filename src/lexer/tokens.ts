@@ -141,14 +141,8 @@ export const t_newline = {
     str: '\n'
 }
 
-export const t_single_quote = {
-    name: "single_quote",
-    str: "'"
-}
-
-export const t_double_quote = {
-    name: "double_quote",
-    str: '"'
+export const t_quoted_string = {
+    name: "quoted_string",
 }
 
 export const t_line_comment = {
@@ -184,8 +178,7 @@ export const everyToken: TokenDef[] = [
     t_integer,
     t_space,
     t_newline,
-    t_single_quote,
-    t_double_quote,
+    t_quoted_string,
     t_line_comment,
     t_unrecognized
 ];
