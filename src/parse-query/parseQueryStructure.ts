@@ -1,5 +1,5 @@
 
-import { Query } from '.'
+import { Query } from '..'
 import { print, freeze } from '../utils'
 import { Snapshot } from '../framework'
 import QuerySyntax from '../parse-query/QuerySyntax'

@@ -10,6 +10,7 @@ export default interface Expr {
     isStatement?: boolean
     statementIndent?: number
     parent: ParsedQuery
+    originalStr?: string
 
     getPipedQueries: () => QueryExpr[]
 }

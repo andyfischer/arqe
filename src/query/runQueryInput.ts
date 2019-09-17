@@ -1,6 +1,6 @@
 
 import { Snapshot } from '../framework'
-import parseQueryStructure from './parseQueryStructure'
+import parseQueryStructure from '../parse-query/parseQueryStructure'
 import runOneQuery from './runOneQuery'
 import { print } from '../utils'
 import QueryOptions from './QueryOptions'
