@@ -1,5 +1,6 @@
 
 import { Token, TokenDef, LexedText, t_space, t_newline } from '.'
+import SourcePos from '../types/SourcePos'
 
 export default class TokenReader {
 
@@ -67,6 +68,11 @@ export default class TokenReader {
         return this.result.getTokenText(token);
     }
 
+    nextUnquotedText(lookahead: number = 0): string {
+        const token = this.next(lookahead);
+        return this.result.getUnquotedText(token);
+    }
+
     nextLength(lookahead: number = 0): number {
         const token = this.next(lookahead);
         return token.endPos - token.startPos;
@@ -92,5 +98,21 @@ export default class TokenReader {
         this.skipWhile(token => token.match !== t_newline);
         if (this.nextIs(t_newline))
             this.consume();
+    }
+
+    skipSpaces() {
+        while (this.nextIs(t_space))
+            this.consume(t_space);
+    }
+
+    toSourcePos(firstToken: Token, lastToken: Token): SourcePos {
+        return {
+            posStart: firstToken.startPos,
+            posEnd: lastToken.startPos,
+            lineStart: firstToken.lineStart,
+            columnStart: lastToken.columnStart,
+            lineEnd: firstToken.lineStart,
+            columnEnd: lastToken.columnStart + lastToken.length
+        }
     }
 }

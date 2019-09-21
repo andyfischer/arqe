@@ -2,6 +2,7 @@
 import Token from './Token'
 import TokenIterator from './TokenIterator'
 import unescape from './unescape'
+import { t_quoted_string } from './tokens'
 
 export default class LexedText {
     tokens: Token[]
@@ -16,9 +17,13 @@ export default class LexedText {
         return this.originalStr.slice(token.startPos, token.endPos);
     }
 
-    getUnquotedString(token: Token) {
-        const str = this.originalStr.slice(token.startPos + 1, token.endPos - 1);
-        return unescape(str);
+    getUnquotedText(token: Token) {
+        if (token.match === t_quoted_string) {
+            const str = this.originalStr.slice(token.startPos + 1, token.endPos - 1);
+            return unescape(str);
+        }
+
+        return this.getTokenText(token);
     }
 
     tokenCharIndex(tokenIndex: number) {

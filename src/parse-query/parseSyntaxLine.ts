@@ -16,7 +16,7 @@ function consumeKey(it: TokenIterator) {
             && !it.nextIs(t_newline)
             && !it.nextIs(t_equals)) {
 
-        text += it.nextText();
+        text += it.nextUnquotedText();
         it.consume();
     }
 
@@ -30,7 +30,7 @@ function consumeOptionValue(it: TokenIterator) {
             && !it.nextIs(t_space)
             && !it.nextIs(t_newline)
           ) {
-        text += it.nextText();
+        text += it.nextUnquotedText();
         it.consume();
     }
 
