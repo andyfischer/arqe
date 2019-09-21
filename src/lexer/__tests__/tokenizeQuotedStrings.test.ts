@@ -40,3 +40,22 @@ it("handles escaped quotes inside strings", () => {
   expect(tokens.length).toEqual(1);
 });
 
+describe('getUnquotedString', () => {
+    it("gets the correct string", () => {
+        const result = tokenizeString(`"the string"`);
+        const tokens = result.tokens;
+        expect(result.getUnquotedString(result.tokens[0])).toEqual("the string");
+    });
+    
+    it("unescapes", () => {
+        const result = tokenizeString(`"the \\" character"`);
+        const tokens = result.tokens;
+        expect(result.getUnquotedString(result.tokens[0])).toEqual(`the " character`);
+    });
+
+    it("unescapes multiple", () => {
+        const result = tokenizeString(`"\\a \\b \\c \\d \\e"`);
+        const tokens = result.tokens;
+        expect(result.getUnquotedString(result.tokens[0])).toEqual(`a b c d e`);
+    });
+});

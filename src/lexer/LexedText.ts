@@ -1,6 +1,7 @@
 
 import Token from './Token'
 import TokenIterator from './TokenIterator'
+import unescape from './unescape'
 
 export default class LexedText {
     tokens: Token[]
@@ -13,6 +14,11 @@ export default class LexedText {
 
     getTokenText(token: Token) {
         return this.originalStr.slice(token.startPos, token.endPos);
+    }
+
+    getUnquotedString(token: Token) {
+        const str = this.originalStr.slice(token.startPos + 1, token.endPos - 1);
+        return unescape(str);
     }
 
     tokenCharIndex(tokenIndex: number) {
