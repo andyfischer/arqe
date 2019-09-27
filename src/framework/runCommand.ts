@@ -9,7 +9,7 @@ import { ensureModuleLoaded } from '../lazymodules'
 const verbose = !!process.env.verbose;
 const MissingValue = Symbol('missing');
 
-export default async function runCommand(query: Query) {
+export default async function runCommandFromQuery(query: Query) {
 
     // Look up command definition.
     const snapshot = query.snapshot;
@@ -76,7 +76,6 @@ export default async function runCommand(query: Query) {
         query.respond(null);
         return;
     }
-
 
     function queryGetOptional(name: string, defaultValue: any) {
         if (incoming[name])

@@ -1,4 +1,5 @@
 
+/*
 import { Clause } from '.'
 import QuerySyntax from './QuerySyntax'
 import { tokenizeString, TokenIterator, Token,
@@ -213,3 +214,4 @@ export function parseString(input: string, firstRule: string) {
     return cxt.result;
 }
 
+*/

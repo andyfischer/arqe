@@ -1,6 +1,6 @@
 
 import { Token, t_ident, t_lbrace, t_rbrace, LexedText } from '../lexer'
-import { parseString, Expr, PipedExpr, QueryExpr } from '../parse-query'
+import { QueryExpr } from '../parse-query'
 import CodeFile from './CodeFile'
 import Cursor, { TokenRange } from './Cursor'
 

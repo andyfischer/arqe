@@ -17,7 +17,7 @@ interface QueryArg {
     rhsValue?: string
 }
 
-interface QueryExpr extends Expr {
+export interface QueryExpr extends Expr {
     id: number
     type: 'query'
     args: QueryArg[]
@@ -25,7 +25,7 @@ interface QueryExpr extends Expr {
     originalStr?: string
 }
 
-interface PipeExpr extends Expr {
+export interface PipeExpr extends Expr {
     id: number
     type: 'pipe'
     pipedExprs: number[]
@@ -33,7 +33,7 @@ interface PipeExpr extends Expr {
     originalStr?: string
 }
 
-interface Expr {
+export interface Expr {
     id: number
     type: 'pipe' | 'query'
     sourcePos?: SourcePos
@@ -45,8 +45,12 @@ interface ProgressEvent {
 
 interface ParseRequest {
     text: string
-    onExpr: (expr: Expr) => Promise<any>
-    onProgress: (event: ProgressEvent) => Promise<any>
+    onExpr?: (expr: Expr) => Promise<any>
+    onProgress?: (event: ProgressEvent) => Promise<any>
+}
+
+interface ParseResult {
+    exprs?: Expr[]
 }
 
 class Context {
@@ -54,6 +58,8 @@ class Context {
     req: ParseRequest
     it: TokenIterator
     nextId: number = 1
+    onExpr?: (expr: Expr) => Promise<any>
+    onProgress?: (event: ProgressEvent) => Promise<any>
 
     takeNextId() {
         const id = this.nextId;
@@ -200,9 +206,25 @@ export async function parseSingleLine(req: ParseRequest) {
     const cxt = new Context();
     cxt.it = iterator;
     cxt.req = req;
+    cxt.onExpr = req.onExpr;
+    cxt.onProgress = req.onProgress;
     cxt.text = req.text;
 
+    const result: ParseResult = {}
+
+    if (!cxt.onExpr) {
+        cxt.onExpr = async (expr) => {
+            result.exprs = result.exprs || [];
+            result.exprs.push(expr);
+        }
+    }
+
+    if (!cxt.onProgress)
+        cxt.onProgress = () => null;
+
     await expression(cxt);
+
+    return result;
 }
 
 export async function parseMultiLine(req: ParseRequest) {
