@@ -114,7 +114,7 @@ function queryExpression(cxt: Context, it: TokenIterator): QueryExpr {
         out.args.push({ keyword, lhsName, rhsValue });
     }
 
-    const lastToken = it.last();
+    const lastToken = it.next(-1);
     out.sourcePos = toSourcePos(firstToken, lastToken);
     cxt.result.pushExpr(out);
     return out;
@@ -144,7 +144,7 @@ function barInfixedExpression(cxt: Context, it: TokenIterator): Expr {
         cxt.result.pushExpr(out);
     }
 
-    const lastToken = it.last();
+    const lastToken = it.next(-1);
     out.sourcePos = toSourcePos(firstToken, lastToken);
     return out;
 }

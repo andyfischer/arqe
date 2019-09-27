@@ -105,7 +105,7 @@ export function parseSyntaxLineFromTokens(it: TokenIterator): QuerySyntax {
         out.clauses.push({ key, assignVal });
     }
 
-    const lastToken = it.last();
+    const lastToken = it.next(-1);
     out.sourcePos.posEnd = lastToken.endPos;
     out.sourcePos.lineEnd = lastToken.lineStart;
     out.sourcePos.columnEnd = lastToken.columnStart + lastToken.length;

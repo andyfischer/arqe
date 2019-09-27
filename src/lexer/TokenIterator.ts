@@ -2,7 +2,7 @@
 import { Token, TokenDef, LexedText, t_space, t_newline } from '.'
 import SourcePos from '../types/SourcePos'
 
-export default class TokenReader {
+export default class TokenIterator {
 
     position: number = 0
     tokens: Token[]
@@ -22,25 +22,8 @@ export default class TokenReader {
 
     next(lookahead: number = 0): Token {
         const pos = this.position + lookahead;
-        if (pos >= this.tokens.length) {
-            return {
-                startPos: this.tokens.length,
-                endPos: this.tokens.length,
-                tokenIndex: 0,
-                length: 0,
-                lineStart: 0,
-                columnStart: 0,
-                leadingIndent: 0,
-                match: null
-            }
-        }
 
-        return this.tokens[pos];
-    }
-
-    last(): Token {
-        const pos = this.position;
-        if (pos == 0) {
+        if (pos < 0) {
             return {
                 startPos: 0,
                 endPos: 0,
@@ -52,15 +35,27 @@ export default class TokenReader {
                 match: null
             }
         }
-        return this.tokens[pos - 1];
+
+        if (pos >= this.tokens.length) {
+            const lastToken = this.tokens[this.tokens.length - 1];
+            return {
+                startPos: lastToken.endPos,
+                endPos: lastToken.endPos,
+                tokenIndex: -1,
+                length: 0,
+                lineStart: lastToken.lineStart,
+                columnStart: lastToken.columnStart + lastToken.length,
+                leadingIndent: lastToken.leadingIndent,
+                match: null
+            }
+        }
+
+        return this.tokens[pos];
     }
 
     nextIs(match: TokenDef, lookahead: number = 0): boolean {
-        const pos = this.position + lookahead;
-        if (pos >= this.tokens.length)
-            return false;
-
-        return this.tokens[pos].match === match;
+        const token = this.next(lookahead);
+        return token.match === match;
     }
 
     nextText(lookahead: number = 0): string {
@@ -108,9 +103,9 @@ export default class TokenReader {
     toSourcePos(firstToken: Token, lastToken: Token): SourcePos {
         return {
             posStart: firstToken.startPos,
-            posEnd: lastToken.startPos,
+            posEnd: lastToken.endPos,
             lineStart: firstToken.lineStart,
-            columnStart: lastToken.columnStart,
+            columnStart: firstToken.columnStart,
             lineEnd: firstToken.lineStart,
             columnEnd: lastToken.columnStart + lastToken.length
         }
