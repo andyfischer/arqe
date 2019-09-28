@@ -4,14 +4,6 @@ import { print, freeze } from '../utils'
 import { Snapshot } from '../framework'
 import QuerySyntax from '../parse-query/QuerySyntax'
 
-// this is not used yet:
-const clauseExpansionFormats = [
-    'omitted relation something',
-    'omitted relation omitted',
-    'something relation omitted',
-    'command ...'
-];
-
 function getOptions(syntax: QuerySyntax) {
     const obj: {[key:string]: any} = {};
     for (const clause of syntax.clauses) {

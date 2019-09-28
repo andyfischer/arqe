@@ -17,9 +17,9 @@ interface QueryArg {
     rhsValue?: string
 }
 
-export interface QueryExpr extends Expr {
+export interface SimpleExpr extends Expr {
     id: number
-    type: 'query'
+    type: 'simple'
     args: QueryArg[]
     sourcePos?: SourcePos
     originalStr?: string
@@ -35,7 +35,7 @@ export interface PipeExpr extends Expr {
 
 export interface Expr {
     id: number
-    type: 'pipe' | 'query'
+    type: 'pipe' | 'simple'
     sourcePos?: SourcePos
     originalStr?: string
 }
@@ -45,7 +45,7 @@ interface ProgressEvent {
 
 interface ParseRequest {
     text: string
-    onExpr?: (expr: Expr) => Promise<any>
+    onExpr?: (expr: Expr) => any
     onProgress?: (event: ProgressEvent) => Promise<any>
 }
 
@@ -58,7 +58,7 @@ class Context {
     req: ParseRequest
     it: TokenIterator
     nextId: number = 1
-    onExpr?: (expr: Expr) => Promise<any>
+    onExpr?: (expr: Expr) => any
     onProgress?: (event: ProgressEvent) => Promise<any>
 
     takeNextId() {
@@ -99,7 +99,7 @@ function consumeOptionValue(it: TokenIterator) {
     return text;
 }
 
-async function queryExpression(cxt: Context) {
+function queryExpression(cxt: Context) {
     const it = cxt.it;
     const firstToken = it.next();
     const id = cxt.takeNextId();
@@ -150,29 +150,29 @@ async function queryExpression(cxt: Context) {
         queryEndedAt -= 1;
 
     const sourcePos = it.toSourcePos(firstToken, it.next(queryEndedAt));
-    const expr: QueryExpr = {
+    const expr: SimpleExpr = {
         id,
-        type: 'query',
+        type: 'simple',
         args,
         sourcePos,
         originalStr: cxt.text.slice(sourcePos.posStart, sourcePos.posEnd)
     };
 
-    await cxt.req.onExpr(expr);
+    cxt.req.onExpr(expr);
     return id;
 }
 
-async function barPipeExpression(cxt: Context) {
+function barPipeExpression(cxt: Context) {
 
     const it = cxt.it;
     const firstToken = it.next();
-    const firstExpr = await queryExpression(cxt);
+    const firstExpr = queryExpression(cxt);
     const pipedExprs = [ firstExpr ];
 
     while (it.nextIs(t_bar)) {
         it.consume(t_bar);
         it.skipSpaces();
-        pipedExprs.push( await queryExpression(cxt) );
+        pipedExprs.push( queryExpression(cxt) );
         it.skipSpaces();
     }
 
@@ -188,7 +188,7 @@ async function barPipeExpression(cxt: Context) {
             originalStr: cxt.text.slice(sourcePos.posStart, sourcePos.posEnd)
         };
 
-        await cxt.req.onExpr(expr);
+        cxt.req.onExpr(expr);
 
         return id;
     }
@@ -196,11 +196,11 @@ async function barPipeExpression(cxt: Context) {
     return firstExpr;
 }
 
-async function expression(cxt: Context) {
-    return await barPipeExpression(cxt);
+function expression(cxt: Context) {
+    return barPipeExpression(cxt);
 }
 
-export async function parseSingleLine(req: ParseRequest) {
+export function parseSingleLine(req: ParseRequest) {
     const { iterator } = tokenizeString(req.text);
 
     const cxt = new Context();
@@ -213,7 +213,7 @@ export async function parseSingleLine(req: ParseRequest) {
     const result: ParseResult = {}
 
     if (!cxt.onExpr) {
-        cxt.onExpr = async (expr) => {
+        cxt.onExpr = (expr) => {
             result.exprs = result.exprs || [];
             result.exprs.push(expr);
         }
@@ -222,7 +222,7 @@ export async function parseSingleLine(req: ParseRequest) {
     if (!cxt.onProgress)
         cxt.onProgress = () => null;
 
-    await expression(cxt);
+    expression(cxt);
 
     return result;
 }
