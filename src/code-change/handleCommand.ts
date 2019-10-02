@@ -3,6 +3,8 @@ import { Token, t_ident, t_lbrace, t_rbrace, LexedText } from '../lexer'
 import { QueryExpr } from '../parse-query'
 import CodeFile from './CodeFile'
 import Cursor, { TokenRange } from './Cursor'
+import { CommandContext } from '../vm'
+import { setInEnvironment, Value } from '../rich-value'
 
 function forAll(item, conds) {
     for (const cond of conds)
@@ -12,12 +14,13 @@ function forAll(item, conds) {
     return true;
 }
 
-function findIdent(query: QueryExpr, cursor: Cursor) {
+function findIdent(cxt: CommandContext) {
     const filterConditions: ((Token) => boolean)[] = [];
+    const cursor = cxt.get('cursor');
     const lexed = cursor.file.getLexed();
 
-    const identText = query.getPositionalArgs()[0];
-    const options = query.getNameValuePairs();
+    const identText = cxt.input(0);
+    const options = cxt.options();
 
     if (options.indent) {
         const indentVal = parseInt(options.indent);
@@ -36,12 +39,13 @@ function findIdent(query: QueryExpr, cursor: Cursor) {
                 end: token.tokenIndex + 1
             };
 
-            return;
+            return setInEnvironment('cursor', cursor);
         }
     }
 
     // Not found
     cursor.range = null;
+    return setInEnvironment('cursor', cursor);
 }
 
 function advanceToNextBlock(file: CodeFile, range: TokenRange): TokenRange {
@@ -192,7 +196,6 @@ function afterImports(query: QueryExpr, cursor: Cursor) {
     };
 }
 
-
 export default function handleCommand(query: QueryExpr, cursor: Cursor) {
     if (query.type !== 'query')
         throw new Error('expected query expr');
@@ -200,9 +203,11 @@ export default function handleCommand(query: QueryExpr, cursor: Cursor) {
     const command = query.args[0].keyword;
     switch (command) {
 
+        /*
     case 'find-ident':
         findIdent(query, cursor);
         break;
+        */
 
     //case 'find-call':
     //    break;

@@ -4,7 +4,7 @@ import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { CommandDefinition } from '../types/CommandDatabase'
 import CommandImplementation from './CommandImplementation'
 import CommandContext, { simpleExprToCommandContext } from './CommandContext'
-import { RichValue } from '../rich-values'
+import { RichValue } from '../rich-value'
 
 export default class VM {
 

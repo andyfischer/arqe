@@ -61,3 +61,5 @@ export default class Scope {
         slot.current = callback(slot.current);
     }
 }
+
+

@@ -5,6 +5,8 @@ export { assertValue } from './validation'
 
 import RichValue from './RichValue'
 
+export { default as Value } from './RichValue'
+
 export function error(message: string) {
     return { error: message }
 }
@@ -19,4 +21,11 @@ export function done() {
 
 export function isList(val: RichValue) {
     return !!val.items;
+}
+
+export function setInEnvironment(name: string, value: string) {
+    return {
+        setInEnvironment: name,
+        value
+    }
 }
