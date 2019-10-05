@@ -5,19 +5,30 @@ import { CommandDefinition } from '../types/CommandDatabase'
 import CommandImplementation from './CommandImplementation'
 import CommandContext, { simpleExprToCommandContext } from './CommandContext'
 import { RichValue } from '../rich-value'
+import { Scope } from '../Scope'
 
 export default class VM {
 
-    scope: any = {}
-    nextExecId: number = 1
+    scope: Scope
+    _nextExecId: number = 1
     
     lookupCommand?: (s: string) => CommandImplementation
     onResult?: (execId: number, result: RichValue) => void
 
+    executeQueryString(query: string, options: {}) {
+        parseSingleLine({
+            text: query,
+            onExpr: (expr) => {
+                if (expr.type === 'simple')
+                    this.executeSimple(expr as SimpleExpr)
+            }
+        });
+    }
+
     executeSimple(expr: SimpleExpr) {
 
-        const execId = this.nextExecId;
-        this.nextExecId += 1;
+        const execId = this._nextExecId;
+        this._nextExecId += 1;
 
         const context = simpleExprToCommandContext(this, expr);
         const commandName = context.positionals[0];
@@ -35,15 +46,5 @@ export default class VM {
 
     handleCommandResponse(execId: number, val: RichValue) {
         this.onResult(execId, val);
-    }
-
-    executeQueryString(query: string, options: {}) {
-        parseSingleLine({
-            text: query,
-            onExpr: (expr) => {
-                if (expr.type === 'simple')
-                    this.executeSimple(expr as SimpleExpr)
-            }
-        });
     }
 }

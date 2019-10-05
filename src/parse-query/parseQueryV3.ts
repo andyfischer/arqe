@@ -227,5 +227,35 @@ export function parseSingleLine(req: ParseRequest) {
     return result;
 }
 
-export async function parseMultiLine(req: ParseRequest) {
+export function parseAsOneSimple(text: string): SimpleExpr {
+    let result = null;
+    let error = null;
+
+    parseSingleLine({
+        text,
+        onExpr(expr) {
+            if (error)
+                return;
+
+            if (expr.type === 'simple') {
+                if (result) {
+                    error = new Error("parseAsOneSimple: found two expressions")
+                    return;
+                }
+
+                result = expr;
+                return;
+            }
+
+            error = new Error("parseAsOneSimple: found unexpected expression type: " + expr.type);
+        }
+    });
+
+    if (error)
+        throw error;
+
+    if (!result)
+        throw new Error("parseAsOneSimple: no expression found");
+
+    return result;
 }

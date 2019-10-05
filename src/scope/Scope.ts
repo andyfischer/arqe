@@ -16,11 +16,13 @@ export default class Scope {
         this.parent = opts.parent;
     }
 
-    createSlot(name) {
+    createSlot(name, initialValue = null) {
         if (this.slots[name])
             throw new Error('slot already exists: ' + name);
 
-        this.slots[name] = new Slot()
+        const slot = new Slot()
+        this.slots[name] = slot
+        slot.current = initialValue;
     }
 
     getOptional(name: string, defaultValue: any) {
