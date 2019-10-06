@@ -15,7 +15,7 @@ interface Result {
     values: any[]
 }
 
-function resolveIncoming(scope: Scope, inputSpecs: InputSpec[]): Result {
+function resolveInputs(scope: Scope, inputSpecs: InputSpec[]): Result {
     const result: Result = {
         values: [],
         errors: []
@@ -62,14 +62,14 @@ function resolveIncoming(scope: Scope, inputSpecs: InputSpec[]): Result {
     return result;
 }
 
-export default resolveIncoming;
+export default resolveInputs;
 
-export function resolveIncoming_PropTest(scope: Scope, inputSpecs: InputSpec[]): Result {
+export function resolveInputs_PropTest(scope: Scope, inputSpecs: InputSpec[]): Result {
 
-    const result = resolveIncoming(scope, inputSpecs);
+    const result = resolveInputs(scope, inputSpecs);
 
     if (result.values.length !== inputSpecs.length) {
-        throw new Error(`proptest failure in resolveIncoming: result has different length `
+        throw new Error(`proptest failure in resolveInputs: result has different length `
                         +`(${result.values.length}) than inputSpecs length (${inputSpecs.length})`);
 
     }

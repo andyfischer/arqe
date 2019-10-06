@@ -6,6 +6,7 @@ import { Scope } from '../Scope'
 import FunctionMount from './FunctionMount'
 import simpleExprToScope from './simpleExprToScope'
 import runMountedFunction from './runMountedFunction'
+import VMEffect from './VMEffect'
 
 export default class VM {
 
@@ -42,8 +43,11 @@ export default class VM {
         if (!commandName)
             throw new Error('no command name found: ' + commandName);
 
-        runMountedFunction(funcMount, scope);
+        runMountedFunction(this, scope, funcMount);
         return execId;
+    }
+
+    handleEffect(effect: VMEffect) {
     }
 
     handleCommandResponse(execId: number, val: RichValue) {

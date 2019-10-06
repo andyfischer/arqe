@@ -1,12 +1,42 @@
 
 import FunctionMount from './FunctionMount'
 import { Scope } from '../Scope'
-import { resolveIncoming } from '../native-interface'
+import resolveInputs from './resolveInputs'
+import VM from './VM'
+import VMEffect from './VMEffect'
+import OutputSpec from './OutputSpec'
 
-export default function runMountedFunction(func: FunctionMount, scope: Scope) {
-    const resolvedInputs = resolveIncoming(scope, func.inputs);
+function valueToEffect(value: any, output: OutputSpec) {
+    switch (output.type) {
+    case 'set-env':
+        return {
+            type: output.type,
+            name: output.name,
+            value
+        }
+    case 'emit-result':
+        return {
+            type: output.type,
+            value
+        }
+    }
 
-    const result = func.callback.apply(null, resolveIncoming)
+    throw new Error('unhandled output.type: ' + output.type);
+}
 
-    return result;
+export default function runMountedFunction(vm: VM, scope: Scope, func: FunctionMount) {
+    const inputs = resolveInputs(scope, func.inputs);
+
+    const result = func.callback.apply(null, inputs);
+
+    // handle effects
+    const outputSpec = func.output;
+    if (Array.isArray(outputSpec)) {
+        for (let i = 0; i < outputSpec.length; i++) {
+            const spec = outputSpec[i];
+            vm.handleEffect(valueToEffect(result[i], spec));
+        }
+    } else {
+        vm.handleEffect(valueToEffect(result, outputSpec));
+    }
 }

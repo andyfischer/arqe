@@ -1,6 +1,6 @@
 
 import { Scope, scopeFromObject } from '../../scope'
-import { resolveIncoming_PropTest as resolveIncoming } from '../resolveIncoming'
+import { resolveInputs_PropTest as resolveInputs } from '../resolveInputs'
 
 it("handles positionals", () => {
 
@@ -8,7 +8,7 @@ it("handles positionals", () => {
         '#positionals': ['a', 'b']
     });
 
-    const result = resolveIncoming(scope, [{
+    const result = resolveInputs(scope, [{
         id: 0,
         fromPosition: 0
     },{
@@ -26,7 +26,7 @@ it("handles named", () => {
         b: 200
     });
 
-    const result = resolveIncoming(scope, [{
+    const result = resolveInputs(scope, [{
         id: 0,
         fromName: "a"
     },{
@@ -43,7 +43,7 @@ it("handles rest", () => {
         '#positionals': ['a', 'b', 'c', 'd']
     });
 
-    const result = resolveIncoming(scope, [{
+    const result = resolveInputs(scope, [{
         restStartingFrom: 1
     }]);
 
@@ -59,11 +59,11 @@ it("allows an arg to be either named or positional", () => {
         fromName: "arg-name"
     }];
 
-    expect(resolveIncoming(scopeFromObject({
+    expect(resolveInputs(scopeFromObject({
         'arg-name': 'the value'
     }), spec).values).toEqual(['the value']);
 
-    expect(resolveIncoming(scopeFromObject({
+    expect(resolveInputs(scopeFromObject({
         '#positionals': ['the value']
     }), spec).values).toEqual(['the value']);
 });
@@ -73,7 +73,7 @@ it("signals an error for a missing required named input", () => {
         a: 100
     });
 
-    const result = resolveIncoming(scope, [{
+    const result = resolveInputs(scope, [{
         id: 0,
         fromName: "b",
         required: true,
@@ -92,7 +92,7 @@ it("signals an error for a missing required positional input", () => {
         '#positionals': ["a"]
     });
 
-    const result = resolveIncoming(scope, [{
+    const result = resolveInputs(scope, [{
         id: 0,
         fromPosition: 2,
         required: true,
@@ -110,7 +110,7 @@ it("doesn't signal an error for a missing non-required input", () => {
     const scope = scopeFromObject({
     });
 
-    const result = resolveIncoming(scope, [{
+    const result = resolveInputs(scope, [{
         id: 0,
         fromName: "name",
         defaultValue: "the default"
