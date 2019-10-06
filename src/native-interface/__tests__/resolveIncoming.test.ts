@@ -2,7 +2,7 @@
 import { Scope, scopeFromObject } from '../../scope'
 import { resolveIncoming_PropTest as resolveIncoming } from '../resolveIncoming'
 
-it("handles incoming positionals", () => {
+it("handles positionals", () => {
 
     const scope = scopeFromObject({
         '#positionals': ['a', 'b']
@@ -20,7 +20,7 @@ it("handles incoming positionals", () => {
     expect(result.errors).toEqual([]);
 });
 
-it("handles incoming named", () => {
+it("handles named", () => {
     const scope = scopeFromObject({
         a: 100,
         b: 200
@@ -35,6 +35,19 @@ it("handles incoming named", () => {
     }]);
 
     expect(result.values).toEqual([100, 200]);
+    expect(result.errors).toEqual([]);
+});
+
+it("handles rest", () => {
+    const scope = scopeFromObject({
+        '#positionals': ['a', 'b', 'c', 'd']
+    });
+
+    const result = resolveIncoming(scope, [{
+        restStartingFrom: 1
+    }]);
+
+    expect(result.values).toEqual([['b', 'c', 'd']]);
     expect(result.errors).toEqual([]);
 });
 

@@ -1,2 +1,2 @@
 
-export { default as CommandContext } from './CommandContext'
+export { default as VM } from './VM'

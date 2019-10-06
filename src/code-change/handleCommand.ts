@@ -3,7 +3,6 @@ import { Token, t_ident, t_lbrace, t_rbrace, LexedText } from '../lexer'
 import { QueryExpr } from '../parse-query'
 import CodeFile from './CodeFile'
 import Cursor, { TokenRange } from './Cursor'
-import { CommandContext } from '../vm'
 import { setInEnvironment, Value } from '../rich-value'
 
 function forAll(item, conds) {
@@ -14,13 +13,9 @@ function forAll(item, conds) {
     return true;
 }
 
-function findIdent(cxt: CommandContext) {
+function findIdent(cursor: Cursor, identText: string, options: any): Cursor {
     const filterConditions: ((Token) => boolean)[] = [];
-    const cursor = cxt.get('cursor');
     const lexed = cursor.file.getLexed();
-
-    const identText = cxt.input(0);
-    const options = cxt.options();
 
     if (options.indent) {
         const indentVal = parseInt(options.indent);
@@ -39,13 +34,13 @@ function findIdent(cxt: CommandContext) {
                 end: token.tokenIndex + 1
             };
 
-            return setInEnvironment('cursor', cursor);
+            return cursor;
         }
     }
 
     // Not found
     cursor.range = null;
-    return setInEnvironment('cursor', cursor);
+    return cursor;
 }
 
 function advanceToNextBlock(file: CodeFile, range: TokenRange): TokenRange {

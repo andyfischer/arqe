@@ -1,19 +1,23 @@
 
 import { parseSingleLine } from '../parse-query'
 import { SimpleExpr } from '../parse-query/parseQueryV3'
-import { CommandDefinition } from '../types/CommandDatabase'
-import CommandImplementation from './CommandImplementation'
-import CommandContext, { simpleExprToCommandContext } from './CommandContext'
 import { RichValue } from '../rich-value'
 import { Scope } from '../Scope'
+import FunctionMount from './FunctionMount'
+import simpleExprToScope from './simpleExprToScope'
+import runMountedFunction from './runMountedFunction'
 
 export default class VM {
 
     scope: Scope
     _nextExecId: number = 1
     
-    lookupCommand?: (s: string) => CommandImplementation
+    functionMounts: { [name: string]: FunctionMount } = {}
     onResult?: (execId: number, result: RichValue) => void
+
+    mountFunction(name: string, mount: FunctionMount) {
+        this.functionMounts[name] = mount;
+    }
 
     executeQueryString(query: string, options: {}) {
         parseSingleLine({
@@ -30,17 +34,15 @@ export default class VM {
         const execId = this._nextExecId;
         this._nextExecId += 1;
 
-        const context = simpleExprToCommandContext(this, expr);
-        const commandName = context.positionals[0];
+        const scope = simpleExprToScope(this.scope, expr);
+        const commandName = scope.get('#positionals')[0];
+
+        const funcMount = this.functionMounts[commandName];
 
         if (!commandName)
-            throw new Error('no command name found: ' + expr.originalStr);
+            throw new Error('no command name found: ' + commandName);
 
-        const implementation = this.lookupCommand(commandName);
-        if (!implementation)
-            throw new Error('command not found: ' + commandName);
-
-        implementation(context)
+        runMountedFunction(funcMount, scope);
         return execId;
     }
 

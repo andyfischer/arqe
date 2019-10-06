@@ -3,6 +3,6 @@ import { InputSpec, OutputSpec } from '../native-interface'
 
 export default class FunctionMount {
     inputs: InputSpec[]
-    outputs: OutputSpec | OutputSpec[]
+    output: OutputSpec | OutputSpec[]
     callback: any
 }

@@ -24,17 +24,26 @@ function resolveIncoming(scope: Scope, inputSpecs: InputSpec[]): Result {
     const positionals = scope.getOptional('#positionals', []);
 
     for (const input of inputSpecs) {
+        // Handle 'fromPosition'
         if (input.fromPosition != null && input.fromPosition < positionals.length) {
             result.values.push(positionals[input.fromPosition]);
             continue;
         }
 
+        // Handle 'fromName'
         if (input.fromName) {
             const found = scope.getOptional(input.fromName, MissingValue);
             if (found !== MissingValue) {
                 result.values.push(found);
                 continue;
             }
+        }
+
+        // Handle 'restStartingFrom'
+        if (input.restStartingFrom) {
+            const found = positionals.slice(input.restStartingFrom);
+            result.values.push(found);
+            continue;
         }
 
         if (input.required) {

@@ -4,13 +4,15 @@ import VM from '../VM'
 describe('VM', () => {
     it('handles simple commands', () => {
         const vm = new VM();
-        vm.lookupCommand = (name) => {
-            if (name === 'concat-strings') {
-                return (cxt) => {
-                    cxt.respond(cxt.positionals.slice(1).join(' '))
-                }
+        vm.mountFunction('concat-strings', {
+            inputs: [{
+                restStartingFrom: 1
+            }],
+            output: {},
+            callback(...args) {
+                return args.join(' ')
             }
-        }
+        });
 
         const results = [];
         vm.onResult = (id, val) => results.push(val);
