@@ -8,8 +8,10 @@ describe('VM', () => {
             inputs: [{
                 restStartingFrom: 1
             }],
-            output: {},
-            callback(...args) {
+            outputs: [{
+                type: 'emit-result'
+            }],
+            callback(args: string[]) {
                 return args.join(' ')
             }
         });

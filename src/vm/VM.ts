@@ -7,6 +7,7 @@ import FunctionMount from './FunctionMount'
 import simpleExprToScope from './simpleExprToScope'
 import runMountedFunction from './runMountedFunction'
 import VMEffect from './VMEffect'
+import { assertOutputSpecs } from './validateOutputSpecs'
 
 export default class VM {
 
@@ -17,6 +18,7 @@ export default class VM {
     onResult?: (execId: number, result: RichValue) => void
 
     mountFunction(name: string, mount: FunctionMount) {
+        assertOutputSpecs(mount.outputs);
         this.functionMounts[name] = mount;
     }
 
@@ -43,11 +45,23 @@ export default class VM {
         if (!commandName)
             throw new Error('no command name found: ' + commandName);
 
-        runMountedFunction(this, scope, funcMount);
+        runMountedFunction(this, execId, scope, funcMount);
         return execId;
     }
 
     handleEffect(effect: VMEffect) {
+
+        switch (effect.type) {
+        case 'set-env':
+            this.scope.set(effect.name, effect.value);
+            return;
+
+        case 'emit-result':
+            this.onResult(effect.execId, effect.value);
+            return;
+        }
+
+        throw new Error('unhandled effect.type: '  + effect.type);
     }
 
     handleCommandResponse(execId: number, val: RichValue) {

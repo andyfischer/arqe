@@ -77,4 +77,3 @@ export function resolveInputs_PropTest(scope: Scope, inputSpecs: InputSpec[]): R
     return result;
 }
 
-

@@ -4,6 +4,6 @@ import OutputSpec from './OutputSpec'
 
 export default class FunctionMount {
     inputs: InputSpec[]
-    output: OutputSpec | OutputSpec[]
+    outputs: OutputSpec[]
     callback: any
 }
