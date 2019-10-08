@@ -3,7 +3,7 @@ import { parseSingleLine } from '../parse-query'
 import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { RichValue } from '../rich-value'
 import { Scope } from '../Scope'
-import FunctionMount from './FunctionMount'
+import FunctionMount, { FunctionMountShorthand, fixMountShorthand } from './FunctionMount'
 import simpleExprToScope from './simpleExprToScope'
 import runMountedFunction from './runMountedFunction'
 import VMEffect from './VMEffect'
@@ -18,6 +18,12 @@ export default class VM {
     onResult?: (execId: number, result: RichValue) => void
 
     mountFunction(name: string, mount: FunctionMount) {
+        assertOutputSpecs(mount.outputs);
+        this.functionMounts[name] = mount;
+    }
+
+    mountFunctionShorthand(name: string, shorthand: FunctionMountShorthand) {
+        const mount: FunctionMount = fixMountShorthand(shorthand);
         assertOutputSpecs(mount.outputs);
         this.functionMounts[name] = mount;
     }
