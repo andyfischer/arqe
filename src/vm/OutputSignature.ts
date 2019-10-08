@@ -1,5 +1,5 @@
 
-export default interface OutputSpec {
+export default interface OutputSignature {
     type: 'set-env' | 'emit-result'
     name?: string
 }

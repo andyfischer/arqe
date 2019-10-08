@@ -4,9 +4,9 @@ import { Scope } from '../Scope'
 import resolveInputs from './resolveInputs'
 import VM from './VM'
 import VMEffect from './VMEffect'
-import OutputSpec from './OutputSpec'
+import OutputSignature from './OutputSignature'
 
-function valueToEffect(execId: number, value: any, output: OutputSpec) {
+function valueToEffect(execId: number, value: any, output: OutputSignature) {
     switch (output.type) {
     case 'set-env':
         return {

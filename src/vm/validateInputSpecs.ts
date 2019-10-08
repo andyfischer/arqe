@@ -1,7 +1,7 @@
 
-import InputSpec from './InputSpec'
+import InputSignature from './InputSignature'
 
-export default function validateInputSpecs(inputs: InputSpec[]) {
+export default function validateInputSpecs(inputs: InputSignature[]) {
     // TODO
 
     return []

@@ -1,9 +1,9 @@
 
-import InputSpec from './InputSpec'
-import OutputSpec from './OutputSpec'
+import InputSignature from './InputSignature'
+import OutputSignature from './OutputSignature'
 
 export default class FunctionMount {
-    inputs: InputSpec[]
-    outputs: OutputSpec[]
+    inputs: InputSignature[]
+    outputs: OutputSignature[]
     callback: any
 }

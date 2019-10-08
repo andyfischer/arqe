@@ -1,5 +1,5 @@
 
-import InputSpec from './InputSpec'
+import InputSignature from './InputSignature'
 import { Scope } from '../scope'
 
 const MissingValue = Symbol('missing');
@@ -15,7 +15,7 @@ interface Result {
     values: any[]
 }
 
-function resolveInputs(scope: Scope, inputSpecs: InputSpec[]): Result {
+function resolveInputs(scope: Scope, inputSpecs: InputSignature[]): Result {
     const result: Result = {
         values: [],
         errors: []
@@ -64,7 +64,7 @@ function resolveInputs(scope: Scope, inputSpecs: InputSpec[]): Result {
 
 export default resolveInputs;
 
-export function resolveInputs_PropTest(scope: Scope, inputSpecs: InputSpec[]): Result {
+export function resolveInputs_PropTest(scope: Scope, inputSpecs: InputSignature[]): Result {
 
     const result = resolveInputs(scope, inputSpecs);
 
