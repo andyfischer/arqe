@@ -3,18 +3,21 @@ import { parseSingleLine } from '../parse-query'
 import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { RichValue } from '../rich-value'
 import { Scope } from '../Scope'
-import FunctionMount, { FunctionMountShorthand, fixMountShorthand } from './FunctionMount'
+import FunctionMount from './FunctionMount'
 import simpleExprToScope from './simpleExprToScope'
 import VMEffect from './VMEffect'
 import { assertOutputSpecs } from './validateOutputSpecs'
 import resolveInputs from './resolveInputs'
 import outputValueToEffect from './outputValueToEffect'
 
+const MissingValue = Symbol('missing');
+
 interface Task {
     id: number
     scope: Scope
     done?: boolean
     error?: any
+    result?: any
 
     waitingFor?: { [id: string]: boolean }
     waiters?: { [id: string]: boolean }
@@ -25,7 +28,7 @@ export default class VM {
     scope: Scope
     nextTaskId: number = 1
 
-    tasks: { [id: string]: Task }
+    tasks: { [id: string]: Task } = {}
 
     // Transient state
     currentlyEvaluating: boolean
@@ -45,28 +48,39 @@ export default class VM {
         this.scope.createSlot('#function:' + name, mount);
     }
 
-    mountFunctionShorthand(name: string, shorthand: FunctionMountShorthand) {
-        const mount: FunctionMount = fixMountShorthand(shorthand);
-        assertOutputSpecs(mount.outputs);
-        this.scope.createSlot('#function:' + name, mount);
+    evaluateSync(query: string) {
+
+        if (this.currentlyEvaluating)
+            throw new Error("VM is currently evaluating, can't call .evaluateSync");
+
+        const taskId = this.parseQueryAndStart(query);
+
+        // TODO: keep running queued tasks
+
+        const task = this.tasks[taskId];
+        if (!task.done) {
+            throw new Error("task didn't finish synchronously in evaluateSync");
+        }
+
+        if (task.error)
+            throw new Error(task.error);
+
+        return task.result;
     }
 
-    executeQueryString(query: string, options: {} = {}) {
-
-        let taskId;
+    parseQueryAndStart(query: string) {
+        let mainTaskId;
 
         parseSingleLine({
             text: query,
             onExpr: (expr) => {
                 if (expr.type === 'simple') {
-                    taskId = this.createSimpleTask(expr as SimpleExpr)
+                    mainTaskId = this.createSimpleTask(expr as SimpleExpr)
                 }
             }
         });
 
-        // TODO: keep running queued tasks
-
-        return taskId;
+        return mainTaskId;
     }
 
     createSimpleTask(expr: SimpleExpr) {
@@ -80,6 +94,8 @@ export default class VM {
             id: this.nextTaskId,
             scope
         }
+
+        this.tasks[task.id] = task;
 
         this.runTask(task);
 
@@ -123,10 +139,10 @@ export default class VM {
 
         // Check function.
         const commandName = task.scope.get('#commandName');
-        const func = task.scope.get('#function:' + commandName);
+        const func = task.scope.getOptional('#function:' + commandName, MissingValue);
 
-        if (!commandName) {
-            this.markTaskFailed(task, 'no command name found: ' + commandName);
+        if (func === MissingValue) {
+            this.markTaskFailed(task, 'command not found: ' + commandName);
             this.currentlyEvaluating = false;
             return;
         }
@@ -147,19 +163,19 @@ export default class VM {
             for (const pending of resolveResult.pending) {
                 this.markTaskWaitingFor(task, pending.taskId);
             }
-        } else {
-
-            const resolvedInputs = resolveResult.values;
-            const rawResult = func.callback.apply(null, resolvedInputs);
-
-            for (let i = 0; i < func.outputs.length; i++) {
-                const spec = func.outputs[i];
-                this.handleEffect(outputValueToEffect(task.id, rawResult, spec));
-            }
-
-            task.done = true;
-            this.currentlyEvaluating = false;
+            return;
         }
+
+        const resolvedInputs = resolveResult.values;
+        const rawResult = func.callback.apply(null, resolvedInputs);
+
+        for (let i = 0; i < func.outputs.length; i++) {
+            const spec = func.outputs[i];
+            this.handleEffect(outputValueToEffect(task.id, rawResult, spec));
+        }
+
+        task.done = true;
+        this.currentlyEvaluating = false;
     }
 
     resumeTask(task: Task) {
@@ -172,9 +188,11 @@ export default class VM {
             this.scope.set(effect.name, effect.value);
             return;
 
-        case 'emit-result':
-            this.onResult(effect.taskId, effect.value);
+        case 'save-result': {
+            const task = this.tasks[effect.taskId]
+            task.result = effect.value;
             return;
+        }
         }
 
         throw new Error('unhandled effect.type: '  + effect.type);

@@ -1,5 +1,5 @@
 
 export default interface OutputSignature {
-    type: 'set-env' | 'emit-result'
+    type: 'set-env' | 'save-result'
     name?: string
 }

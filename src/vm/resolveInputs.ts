@@ -52,7 +52,7 @@ export default function resolveInputs(scope: Scope, inputSpecs: InputSignature[]
 
                 const vm: VM = scope.get("#vm");
                 const query = found;
-                const taskId = vm.executeQueryString(query);
+                const taskId = vm.parseQueryAndStart(query);
 
                 result.values.push(pending);
                 result.pending.push({

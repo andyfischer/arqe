@@ -12,7 +12,7 @@ export default function outputValueToEffect(taskId: number, value: any, output: 
             taskId,
             value
         }
-    case 'emit-result':
+    case 'save-result':
         return {
             type: output.type,
             taskId,

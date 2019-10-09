@@ -8,16 +8,3 @@ export default class FunctionMount {
     callback: any
 }
 
-export interface FunctionMountShorthand {
-    inputs: InputSignature[]
-    outputs?: OutputSignature[]
-    callback: any
-}
-
-export function fixMountShorthand(mount: FunctionMountShorthand): FunctionMount {
-    if (!mount.outputs) {
-        mount.outputs = [{ type: 'emit-result' }]
-    }
-
-    return mount as FunctionMount;
-}
