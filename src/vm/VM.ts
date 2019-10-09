@@ -14,7 +14,10 @@ interface Task {
     id: number
     scope: Scope
     done?: boolean
-    result?: any
+    error?: any
+
+    waitingFor?: { [id: string]: boolean }
+    waiters?: { [id: string]: boolean }
 }
 
 export default class VM {
@@ -23,12 +26,18 @@ export default class VM {
     nextTaskId: number = 1
 
     tasks: { [id: string]: Task }
+
+    // Transient state
+    currentlyEvaluating: boolean
+    queuedTasks: Task[] = []
     
+    // External events
     onResult?: (taskId: number, result: RichValue) => void
 
     constructor() {
         this.scope = new Scope()
         this.scope.createSlot("#vm", this);
+        this.currentlyEvaluating = false;
     }
 
     mountFunction(name: string, mount: FunctionMount) {
@@ -50,15 +59,17 @@ export default class VM {
             text: query,
             onExpr: (expr) => {
                 if (expr.type === 'simple') {
-                    taskId = this.executeSimple(expr as SimpleExpr)
+                    taskId = this.createSimpleTask(expr as SimpleExpr)
                 }
             }
         });
 
+        // TODO: keep running queued tasks
+
         return taskId;
     }
 
-    executeSimple(expr: SimpleExpr) {
+    createSimpleTask(expr: SimpleExpr) {
 
         const taskId = this.nextTaskId;
         this.nextTaskId += 1;
@@ -70,45 +81,88 @@ export default class VM {
             scope
         }
 
-        this.taskStart(task);
+        this.runTask(task);
 
         return task.id;
     }
 
-    taskStart(task: Task) {
-        // Check function.
+    queueTask(task: Task) {
+        this.queuedTasks.push(task);
+    }
 
+    markTaskWaitingFor(task: Task, waitingForId: number) {
+        task.waitingFor = task.waitingFor || {}
+        task.waitingFor[waitingForId] = true;
+
+        const waitingForTask = this.tasks[waitingForId];
+        waitingForTask.waiters = waitingForTask.waiters || {}
+        waitingForTask.waiters[task.id] = true;
+    }
+
+    markTaskFailed(task: Task, message: string) {
+        task.error = message;
+        task.done = true;
+
+        // TODO: send message
+    }
+    
+    markTaskDone(task: Task) {
+        task.done = true;
+
+        // TODO: check waiters
+    }
+
+    runTask(task: Task) {
+
+        if (this.currentlyEvaluating) {
+            this.queueTask(task);
+            return;
+        }
+
+        this.currentlyEvaluating = true;
+
+        // Check function.
         const commandName = task.scope.get('#commandName');
         const func = task.scope.get('#function:' + commandName);
 
-        if (!commandName)
-            throw new Error('no command name found: ' + commandName);
+        if (!commandName) {
+            this.markTaskFailed(task, 'no command name found: ' + commandName);
+            this.currentlyEvaluating = false;
+            return;
+        }
 
         // Resolve inputs.
-        const resolved = resolveInputs(task.scope, func.inputs);
+        const resolveResult = resolveInputs(task.scope, func.inputs);
 
-        if (resolved.errors.length > 0)
-            throw new Error("error(s) resolving inputs: " + resolved.errors);
+        if (resolveResult.errors.length > 0) {
+            this.markTaskFailed(task, "error(s) resolving inputs: " + resolveResult.errors);
+            this.currentlyEvaluating = false;
+            return;
+        }
 
-        task.scope.createSlot('#resolvedInputs', resolved.values);
+        task.scope.createSlot('#resolvedInputs', resolveResult.values);
 
-        if (resolved.pending.length > 0) {
+        if (resolveResult.pending.length > 0) {
+            // Has pending inputs, finish it later.
+            for (const pending of resolveResult.pending) {
+                this.markTaskWaitingFor(task, pending.taskId);
+            }
         } else {
-            this.taskRunCallback(task);
+
+            const resolvedInputs = resolveResult.values;
+            const rawResult = func.callback.apply(null, resolvedInputs);
+
+            for (let i = 0; i < func.outputs.length; i++) {
+                const spec = func.outputs[i];
+                this.handleEffect(outputValueToEffect(task.id, rawResult, spec));
+            }
+
+            task.done = true;
+            this.currentlyEvaluating = false;
         }
     }
 
-    taskRunCallback(task: Task) {
-
-        const commandName = task.scope.get('#commandName');
-        const func = task.scope.get('#function:' + commandName);
-        const resolvedInputs = task.scope.get('#resolvedInputs');
-        const rawResult = func.callback.apply(null, resolvedInputs);
-
-        for (let i = 0; i < func.outputs.length; i++) {
-            const spec = func.outputs[i];
-            this.handleEffect(outputValueToEffect(task.id, rawResult, spec));
-        }
+    resumeTask(task: Task) {
     }
 
     handleEffect(effect: VMEffect) {
