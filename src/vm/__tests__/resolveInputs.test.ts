@@ -1,6 +1,6 @@
 
 import { Scope, scopeFromObject } from '../../scope'
-import { resolveInputs_PropTest as resolveInputs } from '../resolveInputs'
+import resolveInputs from '../resolveInputs'
 
 it("handles positionals", () => {
 

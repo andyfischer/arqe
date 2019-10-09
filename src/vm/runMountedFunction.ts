@@ -1,4 +1,5 @@
 
+/*
 import FunctionMount from './FunctionMount'
 import { Scope } from '../Scope'
 import resolveInputs from './resolveInputs'
@@ -6,31 +7,24 @@ import VM from './VM'
 import VMEffect from './VMEffect'
 import OutputSignature from './OutputSignature'
 
-function valueToEffect(execId: number, value: any, output: OutputSignature) {
-    switch (output.type) {
-    case 'set-env':
-        return {
-            type: output.type,
-            name: output.name,
-            execId,
-            value
-        }
-    case 'emit-result':
-        return {
-            type: output.type,
-            execId,
-            value
-        }
-    }
 
-    throw new Error('unhandled output.type: ' + output.type);
-}
+export default function runMountedFunction(vm: VM, taskId: number, scope: Scope, func: FunctionMount) {
+        const funcMount = this.functionMounts[commandName];
 
-export default function runMountedFunction(vm: VM, execId: number, scope: Scope, func: FunctionMount) {
+        if (!commandName)
+            throw new Error('no command name found: ' + commandName);
+
+        runMountedFunction(this, taskId, scope, funcMount);
+        return taskId;
+
     const resolved = resolveInputs(scope, func.inputs);
 
     if (resolved.errors.length > 0)
         throw new Error("error(s) resolving inputs: " + resolved.errors);
+
+    for (const pending of resolved.pending) {
+
+    }
 
     const rawResult = func.callback.apply(null, resolved.values);
 
@@ -38,6 +32,7 @@ export default function runMountedFunction(vm: VM, execId: number, scope: Scope,
     const outputSpec = func.outputs;
     for (let i = 0; i < func.outputs.length; i++) {
         const spec = func.outputs[i];
-        vm.handleEffect(valueToEffect(execId, rawResult, spec));
+        vm.handleEffect(outputValueToEffect(taskId, rawResult, spec));
     }
 }
+*/

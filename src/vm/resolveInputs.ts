@@ -1,8 +1,10 @@
 
 import InputSignature from './InputSignature'
 import { Scope } from '../scope'
+import VM from './VM'
 
 const MissingValue = Symbol('missing');
+const PendingValue = Symbol('pending');
 const ErrorValue = Symbol('error');
 
 interface InputError {
@@ -10,14 +12,21 @@ interface InputError {
     notFound: true
 }
 
+interface PendingInput {
+    positionIndex: number
+    taskId: number
+}
+
 interface Result {
     errors?: InputError[]
+    pending: PendingInput[]
     values: any[]
 }
 
-function resolveInputs(scope: Scope, inputSpecs: InputSignature[]): Result {
+export default function resolveInputs(scope: Scope, inputSpecs: InputSignature[]): Result {
     const result: Result = {
         values: [],
+        pending: [],
         errors: []
     }
 
@@ -36,6 +45,20 @@ function resolveInputs(scope: Scope, inputSpecs: InputSignature[]): Result {
             if (found !== MissingValue) {
                 result.values.push(found);
                 continue;
+            }
+
+            const defaultProvider = scope.getOptional('#provider:' + input.fromName, MissingValue);
+            if (found !== MissingValue) {
+
+                const vm: VM = scope.get("#vm");
+                const query = found;
+                const taskId = vm.executeQueryString(query);
+
+                result.values.push(pending);
+                result.pending.push({
+                    positionIndex: result.values.length,
+                    taskId
+                })
             }
         }
 
@@ -59,21 +82,14 @@ function resolveInputs(scope: Scope, inputSpecs: InputSignature[]): Result {
         result.values.push(input.defaultValue);
     }
 
-    return result;
-}
-
-export default resolveInputs;
-
-export function resolveInputs_PropTest(scope: Scope, inputSpecs: InputSignature[]): Result {
-
-    const result = resolveInputs(scope, inputSpecs);
+    /* prop test
 
     if (result.values.length !== inputSpecs.length) {
         throw new Error(`proptest failure in resolveInputs: result has different length `
                         +`(${result.values.length}) than inputSpecs length (${inputSpecs.length})`);
 
     }
+    */
 
     return result;
 }
-

@@ -14,6 +14,7 @@ export default function simpleExprToScope(parent: Scope, expr: SimpleExpr) {
     }
 
     scope.createSlot('#positionals', positionals);
+    scope.createSlot('#commandName', positionals[0]);
 
     return scope;
 }

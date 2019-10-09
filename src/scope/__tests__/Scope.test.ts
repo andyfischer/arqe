@@ -23,7 +23,7 @@ it("supports lookup on parent scopes", () => {
     parent.createSlot("a");
     parent.set("a", 1);
 
-    const child = new Scope({parent: parent});
+    const child = new Scope(parent);
     child.createSlot("b");
     child.set("b", 2);
 
