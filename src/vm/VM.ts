@@ -8,20 +8,11 @@ import simpleExprToScope from './simpleExprToScope'
 import VMEffect from './VMEffect'
 import { assertOutputSpecs } from './validateOutputSpecs'
 import resolveInputs from './resolveInputs'
-import outputValueToEffect from './outputValueToEffect'
+import outputValueToEffects from './outputValueToEffects'
+import handleEffect from './handleEffect'
+import Task from './Task'
 
 const MissingValue = Symbol('missing');
-
-interface Task {
-    id: number
-    scope: Scope
-    done?: boolean
-    error?: any
-    result?: any
-
-    waitingFor?: { [id: string]: boolean }
-    waiters?: { [id: string]: boolean }
-}
 
 export default class VM {
 
@@ -32,38 +23,54 @@ export default class VM {
 
     // Transient state
     currentlyEvaluating: boolean
-    queuedTasks: Task[] = []
+    queuedTaskIds: string[] = []
     
     // External events
+    onLog?: (message: string) => void
     onResult?: (taskId: number, result: RichValue) => void
 
     constructor() {
         this.scope = new Scope()
-        this.scope.createSlot("#vm", this);
+        this.scope.createSlotAndSet("#vm", this);
         this.currentlyEvaluating = false;
     }
 
+    log(message: string) {
+        this.onLog && this.onLog(message);
+    }
+
     mountFunction(name: string, mount: FunctionMount) {
+        // make sure each input as an ID
+        for (let i = 0; i < mount.inputs.length; i += 1) {
+            if (mount.inputs[i].id == null)
+                mount.inputs[i].id = i;
+        }
+
         assertOutputSpecs(mount.outputs);
-        this.scope.createSlot('#function:' + name, mount);
+        this.scope.createSlotAndSet('#function:' + name, mount);
     }
 
     evaluateSync(query: string) {
+
+        this.log("evaluate-sync -- " + query);
 
         if (this.currentlyEvaluating)
             throw new Error("VM is currently evaluating, can't call .evaluateSync");
 
         const taskId = this.parseQueryAndStart(query);
 
+        this.completeTaskQueue();
+
         // TODO: keep running queued tasks
 
         const task = this.tasks[taskId];
-        if (!task.done) {
-            throw new Error("task didn't finish synchronously in evaluateSync");
-        }
+        if (!task.done)
+            throw new Error(`task ${taskId} didn't finish synchronously in evaluateSync`);
 
         if (task.error)
             throw new Error(task.error);
+
+        this.log("finished-evaluate-sync -- " + query);
 
         return task.result;
     }
@@ -71,11 +78,14 @@ export default class VM {
     parseQueryAndStart(query: string) {
         let mainTaskId;
 
+        this.log('parse-and-start -- ' + query);
+
         parseSingleLine({
             text: query,
             onExpr: (expr) => {
                 if (expr.type === 'simple') {
                     mainTaskId = this.createSimpleTask(expr as SimpleExpr)
+                    this.log(`created-simple-task taskId=${mainTaskId} -- ${expr.originalStr}`);
                 }
             }
         });
@@ -91,7 +101,7 @@ export default class VM {
         const scope = simpleExprToScope(this.scope, expr);
 
         const task: Task = {
-            id: this.nextTaskId,
+            id: this.nextTaskId+'',
             scope
         }
 
@@ -102,17 +112,19 @@ export default class VM {
         return task.id;
     }
 
-    queueTask(task: Task) {
-        this.queuedTasks.push(task);
+    queueTask(id: string) {
+        this.queuedTaskIds.push(id);
     }
 
     markTaskWaitingFor(task: Task, waitingForId: number) {
+        /*
         task.waitingFor = task.waitingFor || {}
         task.waitingFor[waitingForId] = true;
 
         const waitingForTask = this.tasks[waitingForId];
         waitingForTask.waiters = waitingForTask.waiters || {}
         waitingForTask.waiters[task.id] = true;
+        */
     }
 
     markTaskFailed(task: Task, message: string) {
@@ -131,7 +143,7 @@ export default class VM {
     runTask(task: Task) {
 
         if (this.currentlyEvaluating) {
-            this.queueTask(task);
+            this.queueTask(task.id);
             return;
         }
 
@@ -148,7 +160,7 @@ export default class VM {
         }
 
         // Resolve inputs.
-        const resolveResult = resolveInputs(task.scope, func.inputs);
+        const resolveResult = resolveInputs(this, task, func.inputs);
 
         if (resolveResult.errors.length > 0) {
             this.markTaskFailed(task, "error(s) resolving inputs: " + resolveResult.errors);
@@ -156,13 +168,12 @@ export default class VM {
             return;
         }
 
-        task.scope.createSlot('#resolvedInputs', resolveResult.values);
-
         if (resolveResult.pending.length > 0) {
             // Has pending inputs, finish it later.
             for (const pending of resolveResult.pending) {
                 this.markTaskWaitingFor(task, pending.taskId);
             }
+            this.currentlyEvaluating = false;
             return;
         }
 
@@ -171,31 +182,41 @@ export default class VM {
 
         for (let i = 0; i < func.outputs.length; i++) {
             const spec = func.outputs[i];
-            this.handleEffect(outputValueToEffect(task.id, rawResult, spec));
+
+            for (const effect of outputValueToEffects(task, rawResult, spec)) {
+                handleEffect(this, effect);
+            }
         }
 
         task.done = true;
         this.currentlyEvaluating = false;
+
+        this.log(`finished-task taskId=${task.id}`)
+
+        for (const triggerTaskId in this.scope.findPairsWithKey('taskId', task.id, 'trigger')) {
+            this.log(`triggering-downstream-task taskId=${triggerTaskId}`)
+            this.queueTask(triggerTaskId);
+        }
     }
 
-    resumeTask(task: Task) {
-    }
+    completeTaskQueue() {
 
-    handleEffect(effect: VMEffect) {
+        if (this.currentlyEvaluating)
+            throw new Error("can't call completeTaskQueue while currentlyEvaluating is true");
 
-        switch (effect.type) {
-        case 'set-env':
-            this.scope.set(effect.name, effect.value);
-            return;
+        let iterations = 0;
 
-        case 'save-result': {
-            const task = this.tasks[effect.taskId]
-            task.result = effect.value;
-            return;
+        while (this.queuedTaskIds.length > 0) {
+            iterations += 1;
+            if (iterations > 100)
+                throw new Error("too many iterations in completeTaskQueue");
+
+            const next = this.queuedTaskIds.shift();
+            this.runTask(this.tasks[next]);
+
+            if (this.currentlyEvaluating)
+                throw new Error("currentlyEvaluating was still true after runTask");
         }
-        }
-
-        throw new Error('unhandled effect.type: '  + effect.type);
     }
 
     handleCommandResponse(taskId: number, val: RichValue) {

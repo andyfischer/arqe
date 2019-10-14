@@ -10,11 +10,11 @@ export default function simpleExprToScope(parent: Scope, expr: SimpleExpr) {
         if (arg.keyword)
             positionals.push(arg.keyword);
         else
-            scope.createSlot(arg.lhsName, arg.rhsValue);
+            scope.createSlotAndSet(arg.lhsName, arg.rhsValue);
     }
 
-    scope.createSlot('#positionals', positionals);
-    scope.createSlot('#commandName', positionals[0]);
+    scope.createSlotAndSet('#positionals', positionals);
+    scope.createSlotAndSet('#commandName', positionals[0]);
 
     return scope;
 }

@@ -1,14 +1,26 @@
 
 import { Scope, scopeFromObject } from '../../scope'
 import resolveInputs from '../resolveInputs'
+import Task from '../Task'
+import VM from '../VM'
+
+const vm = new VM();
+
+function quickTask(obj: any): Task {
+    const scope = scopeFromObject(obj);
+    return {
+        id: '1',
+        scope
+    }
+}
 
 it("handles positionals", () => {
 
-    const scope = scopeFromObject({
+    const task = quickTask({
         '#positionals': ['a', 'b']
     });
 
-    const result = resolveInputs(scope, [{
+    const result = resolveInputs(vm, task, [{
         id: 0,
         fromPosition: 0
     },{
@@ -21,12 +33,12 @@ it("handles positionals", () => {
 });
 
 it("handles named", () => {
-    const scope = scopeFromObject({
+    const task = quickTask({
         a: 100,
         b: 200
     });
 
-    const result = resolveInputs(scope, [{
+    const result = resolveInputs(vm, task, [{
         id: 0,
         fromName: "a"
     },{
@@ -39,11 +51,11 @@ it("handles named", () => {
 });
 
 it("handles rest", () => {
-    const scope = scopeFromObject({
+    const task = quickTask({
         '#positionals': ['a', 'b', 'c', 'd']
     });
 
-    const result = resolveInputs(scope, [{
+    const result = resolveInputs(vm, task, [{
         restStartingFrom: 1
     }]);
 
@@ -59,21 +71,21 @@ it("allows an arg to be either named or positional", () => {
         fromName: "arg-name"
     }];
 
-    expect(resolveInputs(scopeFromObject({
+    expect(resolveInputs(vm, quickTask({
         'arg-name': 'the value'
     }), spec).values).toEqual(['the value']);
 
-    expect(resolveInputs(scopeFromObject({
+    expect(resolveInputs(vm, quickTask({
         '#positionals': ['the value']
     }), spec).values).toEqual(['the value']);
 });
 
 it("signals an error for a missing required named input", () => {
-    const scope = scopeFromObject({
+    const task = quickTask({
         a: 100
     });
 
-    const result = resolveInputs(scope, [{
+    const result = resolveInputs(vm, task, [{
         id: 0,
         fromName: "b",
         required: true,
@@ -88,11 +100,11 @@ it("signals an error for a missing required named input", () => {
 });
 
 it("signals an error for a missing required positional input", () => {
-    const scope = scopeFromObject({
+    const task = quickTask({
         '#positionals': ["a"]
     });
 
-    const result = resolveInputs(scope, [{
+    const result = resolveInputs(vm, task, [{
         id: 0,
         fromPosition: 2,
         required: true,
@@ -107,10 +119,10 @@ it("signals an error for a missing required positional input", () => {
 });
 
 it("doesn't signal an error for a missing non-required input", () => {
-    const scope = scopeFromObject({
+    const task = quickTask({
     });
 
-    const result = resolveInputs(scope, [{
+    const result = resolveInputs(vm, task, [{
         id: 0,
         fromName: "name",
         defaultValue: "the default"

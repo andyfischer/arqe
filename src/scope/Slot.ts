@@ -4,7 +4,8 @@ const MissingValue = Symbol('missing');
 type PatchType = 'override'
 
 export default class ScopeValue {
-    current: any
+    value: any
+    empty: boolean
 
     patch?: PatchType
 }

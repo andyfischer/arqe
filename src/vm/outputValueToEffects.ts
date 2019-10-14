@@ -1,23 +1,24 @@
 
 import VMEffect from './VMEffect'
 import OutputSignature from './OutputSignature'
+import Task from './Task'
 
-export default function outputValueToEffect(taskId: number, value: any, output: OutputSignature) {
+export default function outputValueToEffects(task: Task, value: any, output: OutputSignature): VMEffect[] {
     switch (output.type) {
 
     case 'set-env':
-        return {
+        return [{
             type: output.type,
             name: output.name,
-            taskId,
+            fromTaskId: task.id,
             value
-        }
+        }]
     case 'save-result':
-        return {
+        return [{
             type: output.type,
-            taskId,
+            fromTaskId: task.id,
             value
-        }
+        }]
     }
 
     throw new Error('unhandled output.type: ' + output.type);

@@ -34,7 +34,7 @@ describe('VM', () => {
 
     it('handles values from the environment', () => {
         const vm = new VM();
-        vm.scope.createSlot("a", "the value");
+        vm.scope.createSlotAndSet("a", "the value");
 
         vm.mountFunction('get-a', {
             inputs: [{ fromName: 'a' } ],
@@ -46,5 +46,31 @@ describe('VM', () => {
 
         const result = vm.evaluateSync('get-a');
         expect(result).toEqual('the value');
+    });
+
+    it('uses a provider for missing named values', () => {
+        const vm = new VM();
+        // vm.onLog = console.log;
+        vm.scope.createSlotAndSet("#provider:a", "provide-a");
+        vm.scope.createSlot("a");
+        
+        vm.mountFunction('provide-a', {
+            inputs: [],
+            outputs: [{ type: 'set-env', name: 'a' }],
+            callback() {
+                return "the provided value"
+            }
+        });
+
+        vm.mountFunction('get-a', {
+            inputs: [{ fromName: 'a' } ],
+            outputs: [{ type: 'save-result' }],
+            callback(a) {
+                return a;
+            }
+        });
+
+        const result = vm.evaluateSync('get-a');
+        expect(result).toEqual('the provided value');
     });
 });
