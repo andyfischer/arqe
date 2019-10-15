@@ -61,8 +61,6 @@ export default class VM {
 
         this.completeTaskQueue();
 
-        // TODO: keep running queued tasks
-
         const task = this.tasks[taskId];
         if (!task.done)
             throw new Error(`task ${taskId} didn't finish synchronously in evaluateSync`);
@@ -116,17 +114,6 @@ export default class VM {
         this.queuedTaskIds.push(id);
     }
 
-    markTaskWaitingFor(task: Task, waitingForId: number) {
-        /*
-        task.waitingFor = task.waitingFor || {}
-        task.waitingFor[waitingForId] = true;
-
-        const waitingForTask = this.tasks[waitingForId];
-        waitingForTask.waiters = waitingForTask.waiters || {}
-        waitingForTask.waiters[task.id] = true;
-        */
-    }
-
     markTaskFailed(task: Task, message: string) {
         task.error = message;
         task.done = true;
@@ -168,11 +155,7 @@ export default class VM {
             return;
         }
 
-        if (resolveResult.pending.length > 0) {
-            // Has pending inputs, finish it later.
-            for (const pending of resolveResult.pending) {
-                this.markTaskWaitingFor(task, pending.taskId);
-            }
+        if (resolveResult.hasPending) {
             this.currentlyEvaluating = false;
             return;
         }

@@ -20,7 +20,7 @@ interface PendingInput {
 
 interface Result {
     errors?: InputError[]
-    pending: PendingInput[]
+    hasPending?: boolean
     values: any[]
 }
 
@@ -31,7 +31,6 @@ export default function resolveInputs(vm: VM, task: Task, inputs: InputSignature
     const scope = task.scope;
     const result: Result = {
         values: [],
-        pending: [],
         errors: []
     }
 
@@ -63,11 +62,8 @@ export default function resolveInputs(vm: VM, task: Task, inputs: InputSignature
                 const query = provider;
                 const providerTaskId = vm.parseQueryAndStart(query);
 
+                result.hasPending = true;
                 result.values.push(pending);
-                result.pending.push({
-                    positionIndex: result.values.length,
-                    taskId: providerTaskId
-                });
 
                 vm.scope.insert({
                     taskId: providerTaskId,
