@@ -60,7 +60,7 @@ export default function resolveInputs(vm: VM, task: Task, inputs: InputSignature
 
             if (provider !== MissingValue) {
                 const query = provider;
-                const providerTaskId = vm.parseQueryAndStart(query);
+                const providerTaskId = vm.evaluateQuery(query);
 
                 result.hasPending = true;
                 result.values.push(pending);

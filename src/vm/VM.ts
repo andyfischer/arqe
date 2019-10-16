@@ -1,5 +1,5 @@
 
-import { parseSingleLine } from '../parse-query'
+import { parseQueries } from '../parse-query'
 import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { RichValue } from '../rich-value'
 import { Scope } from '../Scope'
@@ -11,6 +11,7 @@ import resolveInputs from './resolveInputs'
 import outputValueToEffects from './outputValueToEffects'
 import handleEffect from './handleEffect'
 import Task from './Task'
+import { print } from '..'
 
 const MissingValue = Symbol('missing');
 
@@ -29,8 +30,9 @@ export default class VM {
     onLog?: (message: string) => void
     onResult?: (taskId: number, result: RichValue) => void
 
-    constructor() {
-        this.scope = new Scope()
+    constructor(scope?: Scope) {
+        scope = scope || new Scope()
+        this.scope = scope;
         this.scope.createSlotAndSet("#vm", this);
         this.currentlyEvaluating = false;
     }
@@ -50,7 +52,7 @@ export default class VM {
         if (this.currentlyEvaluating)
             throw new Error("VM is currently evaluating, can't call .evaluateSync");
 
-        const taskId = this.parseQueryAndStart(query);
+        const taskId = this.evaluateQuery(query);
 
         this.completeTaskQueue();
 
@@ -66,17 +68,23 @@ export default class VM {
         return task.result;
     }
 
-    parseQueryAndStart(query: string) {
+    evaluateMultiLine(contents: string) {
+        //parseMultiLine();
+    }
+
+    evaluateQuery(query: string) {
         let mainTaskId;
 
-        this.log('parse-and-start -- ' + query);
+        this.log('evaluate-query -- ' + query);
 
-        parseSingleLine({
+        parseQueries({
             text: query,
             onExpr: (expr) => {
                 if (expr.type === 'simple') {
                     mainTaskId = this.createSimpleTask(expr as SimpleExpr)
                     this.log(`created-simple-task taskId=${mainTaskId} -- ${expr.originalStr}`);
+                } else {
+                    print('error: unrecognized expr type: ' + expr.type);
                 }
             }
         });

@@ -3,7 +3,7 @@ import handleCommand from './handleCommand'
 import { Expr, PipedExpr, QueryExpr } from '../parse-query'
 import CodeFile from './CodeFile'
 import Cursor, { TokenRange } from './Cursor'
-import { parseSingleLine } from '../parse-query'
+// import { parseSingleLine } from '../parse-query'
 
 export default function resolveSelector(file: CodeFile, selector: string) {
     // Maintain an in-progress cursor.

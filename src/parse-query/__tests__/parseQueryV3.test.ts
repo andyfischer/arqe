@@ -1,10 +1,10 @@
 
-import { parseSingleLine } from '../parseQueryV3'
+import { parseQueries } from '../parseQueryV3'
 
-async function parse(text: string) {
+async function quickParse(text: string) {
     const exprs = [];
 
-    await parseSingleLine({
+    await parseQueries({
         text,
         onExpr: (e) => {
             exprs.push(e);
@@ -16,7 +16,7 @@ async function parse(text: string) {
 }
 
 it('parses simple queries', async () => {
-    const exprs = await parse("command a=b c");
+    const exprs = await quickParse("command a=b c");
     expect(exprs.length).toEqual(1)
     expect(exprs[0].type).toEqual('simple')
     expect(exprs[0].args.length).toEqual(3);
@@ -27,7 +27,7 @@ it('parses simple queries', async () => {
 });
 
 it('parses bar pipes', async () => {
-    const exprs = await parse("command a | command b");
+    const exprs = await quickParse("command a | command b");
     expect(exprs[0].type).toEqual('simple')
     expect(exprs[0].originalStr).toEqual("command a")
     expect(exprs[1].type).toEqual('simple')

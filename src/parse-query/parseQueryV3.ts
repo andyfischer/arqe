@@ -200,7 +200,7 @@ function expression(cxt: Context) {
     return barPipeExpression(cxt);
 }
 
-export function parseSingleLine(req: ParseRequest) {
+export function parseQueries(req: ParseRequest) {
     const { iterator } = tokenizeString(req.text);
 
     const cxt = new Context();
@@ -231,7 +231,7 @@ export function parseAsOneSimple(text: string): SimpleExpr {
     let result = null;
     let error = null;
 
-    parseSingleLine({
+    parseQueries({
         text,
         onExpr(expr) {
             if (error)

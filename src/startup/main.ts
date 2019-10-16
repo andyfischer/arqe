@@ -10,15 +10,16 @@ import { print, readTextLinesSync } from '../utils'
 import { loadDataFile } from '../framework'
 import { runQueryInput } from '../query'
 import { setupUserDir } from '../storage'
-import { loadMainSnapshot } from '../framework'
+import { loadStdlibScope } from '../bootstrap-runtime'
 import nodeRepl from '../terminal/nodeRepl'
 
 async function main() {
 
     await setupUserDir();
-    const snapshot = await loadMainSnapshot();
+    const scope = await loadStdlibScope();
     const args = process.argv.slice(2);
     
+    /*
     if (args.length > 0) {
         // Run args as a query.
         await runQueryInput(snapshot, args.join(' '), { isInteractive: true });
@@ -26,6 +27,7 @@ async function main() {
     }
 
     nodeRepl(snapshot);
+    */
 }
 
 main()
