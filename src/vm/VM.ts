@@ -3,7 +3,7 @@ import { parseSingleLine } from '../parse-query'
 import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { RichValue } from '../rich-value'
 import { Scope } from '../Scope'
-import FunctionMount from './FunctionMount'
+import FunctionDefinition from './FunctionDefinition'
 import simpleExprToScope from './simpleExprToScope'
 import VMEffect from './VMEffect'
 import mountFunction from './mountFunction'
@@ -39,8 +39,8 @@ export default class VM {
         this.onLog && this.onLog(message);
     }
 
-    mountFunction(name: string, mount: FunctionMount) {
-        mountFunction(this.scope, name, mount);
+    mountFunction(name: string, def: FunctionDefinition) {
+        mountFunction(this.scope, name, def);
     }
 
     evaluateSync(query: string) {

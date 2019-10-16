@@ -1,6 +1,7 @@
 
 import { Scope } from '../scope'
 import { mountFunction } from '../vm'
+import defCommand from './defCommand'
 
 export function bootstrap(scope: Scope) {
     mountFunction(scope, 'def-command', {
@@ -11,8 +12,7 @@ export function bootstrap(scope: Scope) {
             fromName: 'command-name',
             isRequired: true
         }],
-        callback: (scope: Scope, commandName: string) => {
-        },
+        callback: defCommand,
         outputs: []
     });
 
