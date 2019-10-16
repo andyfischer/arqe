@@ -88,7 +88,7 @@ it("signals an error for a missing required named input", () => {
     const result = resolveInputs(vm, task, [{
         id: 0,
         fromName: "b",
-        required: true,
+        isRequired: true,
         defaultValue: "?"
     }]);
 
@@ -107,7 +107,7 @@ it("signals an error for a missing required positional input", () => {
     const result = resolveInputs(vm, task, [{
         id: 0,
         fromPosition: 2,
-        required: true,
+        isRequired: true,
         defaultValue: "?"
     }]);
 

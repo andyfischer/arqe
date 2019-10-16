@@ -1,12 +1,13 @@
 
 import VM from '../VM'
+import { Scope } from '../../scope'
 
 describe('VM', () => {
     it('handles simple commands', () => {
         const vm = new VM();
         vm.mountFunction('concat-strings', {
             inputs: [{ restStartingFrom: 1 }],
-            outputs: [{ type: 'save-result' }],
+            outputs: [{ type: 'value' }],
             callback(args: string[]) {
                 return args.join(' ')
             }
@@ -22,7 +23,7 @@ describe('VM', () => {
 
         vm.mountFunction('concat-a-and-b', {
             inputs: [{ fromName: 'a' }, { fromName: 'b'} ],
-            outputs: [{ type: 'save-result' }],
+            outputs: [{ type: 'value' }],
             callback(a, b) {
                 return a + ' ' + b;
             }
@@ -38,7 +39,7 @@ describe('VM', () => {
 
         vm.mountFunction('get-a', {
             inputs: [{ fromName: 'a' } ],
-            outputs: [{ type: 'save-result' }],
+            outputs: [{ type: 'value' }],
             callback(a) {
                 return a;
             }
@@ -56,7 +57,7 @@ describe('VM', () => {
         
         vm.mountFunction('provide-a', {
             inputs: [],
-            outputs: [{ type: 'set-env', name: 'a' }],
+            outputs: [{ type: 'define', name: 'a' }],
             callback() {
                 return "the provided value"
             }
@@ -64,7 +65,7 @@ describe('VM', () => {
 
         vm.mountFunction('get-a', {
             inputs: [{ fromName: 'a' } ],
-            outputs: [{ type: 'save-result' }],
+            outputs: [{ type: 'value' }],
             callback(a) {
                 return a;
             }
@@ -72,5 +73,22 @@ describe('VM', () => {
 
         const result = vm.evaluateSync('get-a');
         expect(result).toEqual('the provided value');
+    });
+
+    it('supports functions that make meta changes to scope', () => {
+        const vm = new VM();
+
+        vm.mountFunction('func', {
+            inputs: [{
+                fromMeta: 'scope'
+            }],
+            outputs: [],
+            callback(scope: Scope) {
+                scope.createSlotAndSet('a', 1);
+            }
+        });
+
+        vm.evaluateSync('func');
+        expect(vm.scope.get('a')).toEqual(1);
     });
 });

@@ -71,6 +71,7 @@ export default function resolveInputs(vm: VM, task: Task, inputs: InputSignature
                 }, []);
 
                 vm.log(`resolver-started-provider taskId=${providerTaskId} -- ${query}`)
+                continue;
             }
         }
 
@@ -81,7 +82,14 @@ export default function resolveInputs(vm: VM, task: Task, inputs: InputSignature
             continue;
         }
 
-        if (input.required) {
+        if (input.fromMeta === 'scope') {
+            result.values.push(vm.scope);
+            continue;
+        }
+
+        // Not found
+
+        if (input.isRequired) {
             result.values.push(input.defaultValue);
             result.errors.push({
                 id: input.id,

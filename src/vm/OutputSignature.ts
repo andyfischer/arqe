@@ -1,5 +1,5 @@
 
 export default interface OutputSignature {
-    type: 'set-env' | 'save-result'
+    type: 'define' | 'value' | 'vmeffect'
     name?: string
 }

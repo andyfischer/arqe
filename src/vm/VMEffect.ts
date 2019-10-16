@@ -1,6 +1,6 @@
 
 export default interface VMEffect {
-    type: 'set-env' | 'save-result' | 'fill-pending-input'
+    type: 'define' | 'value'
     fromTaskId: string
     name?: string
     value?: string

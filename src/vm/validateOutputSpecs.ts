@@ -3,8 +3,11 @@ import OutputSignature from './OutputSignature'
 
 export default function validateOutputSpecs(outputs: OutputSignature[]) {
 
+    /*
+       TODO
     if (outputs.length === 0)
         return ["has 0 outputs"]
+        */
 
     return []
 }

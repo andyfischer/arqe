@@ -6,7 +6,7 @@ import { Scope } from '../Scope'
 import FunctionMount from './FunctionMount'
 import simpleExprToScope from './simpleExprToScope'
 import VMEffect from './VMEffect'
-import { assertOutputSpecs } from './validateOutputSpecs'
+import mountFunction from './mountFunction'
 import resolveInputs from './resolveInputs'
 import outputValueToEffects from './outputValueToEffects'
 import handleEffect from './handleEffect'
@@ -40,14 +40,7 @@ export default class VM {
     }
 
     mountFunction(name: string, mount: FunctionMount) {
-        // make sure each input as an ID
-        for (let i = 0; i < mount.inputs.length; i += 1) {
-            if (mount.inputs[i].id == null)
-                mount.inputs[i].id = i;
-        }
-
-        assertOutputSpecs(mount.outputs);
-        this.scope.createSlotAndSet('#function:' + name, mount);
+        mountFunction(this.scope, name, mount);
     }
 
     evaluateSync(query: string) {
@@ -200,9 +193,5 @@ export default class VM {
             if (this.currentlyEvaluating)
                 throw new Error("currentlyEvaluating was still true after runTask");
         }
-    }
-
-    handleCommandResponse(taskId: number, val: RichValue) {
-        this.onResult(taskId, val);
     }
 }
