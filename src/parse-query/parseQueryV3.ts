@@ -222,7 +222,20 @@ export function parseQueries(req: ParseRequest) {
     if (!cxt.onProgress)
         cxt.onProgress = () => null;
 
-    expression(cxt);
+    while (true) {
+        cxt.it.skipWhile(t => t.match === t_newline || t.match === t_space);
+
+        if (cxt.it.finished())
+            break;
+
+        const pos = cxt.it.getPosition();
+
+        expression(cxt);
+
+        if (pos === cxt.it.getPosition()) {
+            throw new Error('internal error: parser is stalled');
+        }
+    }
 
     return result;
 }
