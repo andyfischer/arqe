@@ -12,22 +12,24 @@ import { runQueryInput } from '../query'
 import { setupUserDir } from '../storage'
 import { loadStdlibScope } from '../bootstrap-runtime'
 import nodeRepl from '../terminal/nodeRepl'
+import { VM } from '../VM'
 
 async function main() {
 
     await setupUserDir();
     const scope = await loadStdlibScope();
     const args = process.argv.slice(2);
+    const vm = new VM(scope);
     
-    /*
     if (args.length > 0) {
-        // Run args as a query.
-        await runQueryInput(snapshot, args.join(' '), { isInteractive: true });
+        print('error: sorry not working');
         return;
+        // Run args as a query.
+        //await runQueryInput(snapshot, args.join(' '), { isInteractive: true });
+        //return;
     }
 
-    nodeRepl(snapshot);
-    */
+    nodeRepl(vm);
 }
 
 main()

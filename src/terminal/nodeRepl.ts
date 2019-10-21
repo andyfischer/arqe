@@ -1,5 +1,5 @@
 
-import { Snapshot } from '../framework'
+import { VM } from '../vm'
 import { runQueryInput } from '../query'
 import { printEvents } from '../utils'
 
@@ -41,13 +41,13 @@ function onFinishedPrompt() {
     promptIsRecentlyPrinted = false;
 }
 
-export default async function nodeRepl(snapshot: Snapshot) {
+export default async function nodeRepl(vm: VM) {
     
     async function evaluate(line) {
         onFinishedPrompt();
 
         line = trimEndline(line);
-        await runQueryInput(snapshot, line, { isInteractive: true } );
+        vm.evaluateQuery(line);
 
         repl.displayPrompt();
 
@@ -55,6 +55,7 @@ export default async function nodeRepl(snapshot: Snapshot) {
     }
 
     function completer(line) {
+        /*
         try {
             const autocompleteInfo = snapshot.getValueOpt('autocompleteInfo', null)
             if (!autocompleteInfo)
@@ -72,6 +73,8 @@ export default async function nodeRepl(snapshot: Snapshot) {
             console.error(err);
             return []
         }
+        */
+        return []
     }
 
     onStartedPrompt();

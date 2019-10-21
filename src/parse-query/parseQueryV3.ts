@@ -200,6 +200,23 @@ function expression(cxt: Context) {
     return barPipeExpression(cxt);
 }
 
+function expressionLines(cxt: Context) {
+    while (true) {
+        cxt.it.skipWhile(t => t.match === t_newline || t.match === t_space);
+
+        if (cxt.it.finished())
+            break;
+
+        const pos = cxt.it.getPosition();
+
+        expression(cxt);
+
+        if (pos === cxt.it.getPosition()) {
+            throw new Error('internal error: parser is stalled');
+        }
+    }
+}
+
 export function parseQueries(req: ParseRequest) {
     const { iterator } = tokenizeString(req.text);
 
@@ -222,20 +239,7 @@ export function parseQueries(req: ParseRequest) {
     if (!cxt.onProgress)
         cxt.onProgress = () => null;
 
-    while (true) {
-        cxt.it.skipWhile(t => t.match === t_newline || t.match === t_space);
-
-        if (cxt.it.finished())
-            break;
-
-        const pos = cxt.it.getPosition();
-
-        expression(cxt);
-
-        if (pos === cxt.it.getPosition()) {
-            throw new Error('internal error: parser is stalled');
-        }
-    }
+    expressionLines(cxt);
 
     return result;
 }

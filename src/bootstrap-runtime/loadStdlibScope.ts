@@ -12,7 +12,7 @@ async function loadFile(scope: Scope, filename: string) {
 
 export default async function loadStdlibScope() {
     const scope = new Scope();
-    const vm = new VM(scope);
+    // const vm = new VM(scope);
 
     await loadFile(scope, `${__dirname}/../../data/_bootstrap.p`);
 
@@ -27,4 +27,6 @@ export default async function loadStdlibScope() {
     if (await fs.exists('.fshell'))
         await loadDataFile(snapshot, '.fshell');
     */
+
+    return scope;
 }

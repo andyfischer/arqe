@@ -119,6 +119,7 @@ export default class VM {
         task.error = message;
         task.done = true;
 
+        print("error: " + message);
         // TODO: send message
     }
     
