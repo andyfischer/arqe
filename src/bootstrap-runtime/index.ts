@@ -1,3 +1,3 @@
 
-export { default as bootstrapAtoms } from './bootstrapAtoms'
+export { default as bootstrapPrimitives } from './bootstrapPrimitives'
 export { default as loadStdlibScope } from './loadStdlibScope'

@@ -1,7 +1,10 @@
 
 import { Scope } from '../scope'
 import { mountFunction } from '../vm'
+
 import defCommand from './defCommand'
+import defRelation from './defRelation'
+import relate from './relate'
 
 export default function bootstrap(scope: Scope) {
     mountFunction(scope, 'def-command', {
@@ -22,7 +25,13 @@ export default function bootstrap(scope: Scope) {
             fromName: 'relation-name',
             isRequired: true
         }],
-        callback: null,
+        callback: defRelation,
+        outputs: []
+    });
+
+    mountFunction(scope, 'relate', {
+        inputs: [],
+        callback: relate,
         outputs: []
     });
 }

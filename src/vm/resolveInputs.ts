@@ -82,10 +82,17 @@ export default function resolveInputs(vm: VM, task: Task, inputs: InputSignature
             continue;
         }
 
+        // Handle 'restKeyValues'
+        if (input.restKeyValues) {
+            result.values.push(scope.getOptional('#commandOptions', {}));
+            continue;
+        }
+
         if (input.fromMeta === 'scope') {
             result.values.push(vm.scope);
             continue;
         }
+
 
         // Not found
 

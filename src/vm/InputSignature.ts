@@ -5,6 +5,7 @@ export default interface InputSignature {
     fromPosition?: number
     fromMeta?: 'scope'
     restStartingFrom?: number
+    restKeyValues?: boolean
     isRequired?: boolean
     defaultValue?: any
 }

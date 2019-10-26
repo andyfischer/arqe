@@ -5,6 +5,7 @@ import fs from 'fs-extra'
 
 import { Scope } from '../scope'
 import { VM } from '../vm'
+import bootstrapPrimitives from './bootstrapPrimitives'
 
 async function loadFile(scope: Scope, filename: string) {
     const contents = await fs.readFile(filename, 'utf8');
@@ -12,6 +13,7 @@ async function loadFile(scope: Scope, filename: string) {
 
 export default async function loadStdlibScope() {
     const scope = new Scope();
+    bootstrapPrimitives(scope);
     // const vm = new VM(scope);
 
     await loadFile(scope, `${__dirname}/../../data/_bootstrap.p`);

@@ -1,4 +1,4 @@
 
- - hook up repl to new VM
+ X hook up repl to new VM
  - get relation queries working again
  - commands for checking relations

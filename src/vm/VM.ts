@@ -120,7 +120,6 @@ export default class VM {
         task.done = true;
 
         print("error: " + message);
-        // TODO: send message
     }
     
     markTaskDone(task: Task) {
