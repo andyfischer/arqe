@@ -1,27 +1,18 @@
 
 import Slot from './Slot'
 import Relation from './Relation'
+import RelationSearch from './RelationSearch'
+import createSearch from './createSearch'
+import parseTag from './parseTag'
 
 const MissingValue = Symbol('missing')
-
-function normalizeTags(tags: { [key: string]: string }) {
-    const keys = Object.keys(tags);
-    keys.sort();
-
-    const pairs = [];
-
-    for (const key of keys) {
-        pairs.push(key + '=' + tags[key])
-    }
-
-    return pairs.join(',');
-}
 
 export default class Scope {
     parent?: Scope
 
     slots: { [name: string]: Slot } = {}
-    relations: { [ntags: string]: Relation } = {}
+    relations: { [tag: string]: Relation } = {}
+    searches: { [pattern: string]: RelationSearch } = {}
 
     constructor(parent?: Scope) {
         this.parent = parent;
@@ -87,47 +78,55 @@ export default class Scope {
         slot.value = callback(slot.value);
     }
 
-    deleteRelation(tags: { [key: string]: string }) {
-        const ntags = normalizeTags(tags);
-        delete this.relations[ntags];
+    deleteRelation(tags: string) {
+        delete this.relations[tags];
     }
 
-    insert(tags: { [key: string]: string }, value) {
-        const ntags = normalizeTags(tags);
+    insert(tags: string, value?: any) {
 
-        if (!this.relations[ntags]) {
+        if (!this.relations[tags]) {
             const rel = new Relation()
             rel.tags = tags;
-            rel.tagCount = Object.keys(rel.tags).length;
-            this.relations[ntags] = rel
+            const parsed = parseTag(tags);
+            rel.tagCount = parsed.tagCount;
+            this.relations[tags] = rel;
         }
 
-        this.relations[ntags].value = value;
+        this.relations[tags].value = value;
     }
 
-    find(tags: { [key: string]: string }) {
+    find(tags: string) {
 
         const found = this.findOptional(tags, MissingValue);
-        const ntags = normalizeTags(tags);
         if (found === MissingValue)
-            throw new Error("relation not found: " + ntags);
+            throw new Error("relation not found: " + tags);
 
         return found;
     }
 
-    findOptional(tags: { [key: string]: string }, defaultValue) {
-        const ntags = normalizeTags(tags);
-        const relation = this.relations[ntags];
+    findOptional(tag: string, defaultValue) {
+        const relation = this.relations[tag];
 
         if (relation)
             return relation.value;
 
         if (this.parent)
-            return this.parent.findOptional(tags, defaultValue);
+            return this.parent.findOptional(tag, defaultValue);
 
         return defaultValue;
     }
 
+    search(pattern: string) {
+        let existing = this.searches[pattern];
+        if (!existing) {
+            existing = createSearch(this, pattern);
+            this.searches[pattern] = existing;
+        }
+
+        return existing.latestMatches;
+    }
+
+    /*
     findPairsWithKey(knownTagKey: string, knownTagValue: string, starTag: string): any {
         const out = {}
         for (const ntags in this.relations) {
@@ -141,5 +140,6 @@ export default class Scope {
         }
         return out;
     }
+    */
 }
 

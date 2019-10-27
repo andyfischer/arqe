@@ -177,7 +177,7 @@ export default class VM {
 
         this.log(`finished-task taskId=${task.id}`)
 
-        for (const triggerTaskId in this.scope.findPairsWithKey('taskId', task.id, 'trigger')) {
+        for (const triggerTaskId in this.scope.search(`taskId/${task.id} trigger/*`)) {
             this.log(`triggering-downstream-task taskId=${triggerTaskId}`)
             this.queueTask(triggerTaskId);
         }
