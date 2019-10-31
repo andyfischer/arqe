@@ -15,7 +15,7 @@ function findTagWithPrefix(parsedTag: ParsedTag, prefix: string) {
 }
 
 export default class RelationSearch {
-    latestMatches: { [remainingTag:string]: FoundMatch } = {}
+    latestMatches: { [tag:string]: FoundMatch } = {}
 
     exactTags: string[] = []
     tagPrefixes: string[] = []
@@ -60,6 +60,10 @@ export default class RelationSearch {
         if (this.matches(parsedTag)) {
             this.latestMatches[parsedTag.normalizedString] = this.toFoundMatch(parsedTag);
         }
+    }
+
+    maybeDelete(tag: string) {
+        delete this.latestMatches[tag];
     }
 
     latestResultsAsObject(scope: Scope) {

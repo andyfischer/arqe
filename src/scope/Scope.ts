@@ -78,8 +78,12 @@ export default class Scope {
         slot.value = callback(slot.value);
     }
 
-    deleteRelation(tags: string) {
+    del(tags: string) {
         delete this.relations[tags];
+
+        for (const pattern in this.searches) {
+            this.searches[pattern].maybeDelete(tags);
+        }
     }
 
     insert(tags: string, value?: any) {
@@ -90,6 +94,10 @@ export default class Scope {
             const parsed = parseTag(tags);
             rel.tagCount = parsed.tagCount;
             this.relations[tags] = rel;
+
+            for (const pattern in this.searches) {
+                this.searches[pattern].maybeInclude(parsed);
+            }
         }
 
         this.relations[tags].value = value;
