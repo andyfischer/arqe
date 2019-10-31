@@ -117,29 +117,13 @@ export default class Scope {
     }
 
     search(pattern: string) {
-        let existing = this.searches[pattern];
-        if (!existing) {
-            existing = createSearch(this, pattern);
-            this.searches[pattern] = existing;
+        let searchObj = this.searches[pattern];
+        if (!searchObj) {
+            searchObj = createSearch(this, pattern);
+            this.searches[pattern] = searchObj;
         }
 
-        return existing.latestMatches;
+        return searchObj.latestResultsAsObject(this);
     }
-
-    /*
-    findPairsWithKey(knownTagKey: string, knownTagValue: string, starTag: string): any {
-        const out = {}
-        for (const ntags in this.relations) {
-            const relation = this.relations[ntags];
-
-            if (relation.tagCount === 2
-                    && relation.tags[knownTagKey] === knownTagValue
-                    && relation.tags[starTag] != null) {
-                out[relation.tags[starTag]] = relation.value;
-            }
-        }
-        return out;
-    }
-    */
 }
 

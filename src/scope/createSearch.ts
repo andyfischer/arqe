@@ -1,6 +1,7 @@
 
 import Scope from './Scope'
 import RelationSearch from './RelationSearch'
+import parseTag from './parseTag'
 
 export default function createSearch(scope: Scope, pattern: string) {
     const items = pattern.split(' ');
@@ -21,8 +22,9 @@ export default function createSearch(scope: Scope, pattern: string) {
     }
 
     // Update with any existing relations
-    for (const existingRelation in scope.relations) {
-
+    for (const existingRelationTag in scope.relations) {
+        const parsed = parseTag(existingRelationTag);
+        search.maybeInclude(parsed);
     }
 
     return search;

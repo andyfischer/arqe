@@ -1,7 +1,7 @@
 
 import ParsedTag from './ParsedTag'
 
-export default function parseTag(tag: string) {
+export default function parseTag(tag: string): ParsedTag {
     const items = tag.split(' ');
 
     const table = {}

@@ -1,5 +1,4 @@
 
-
 import Scope from '../Scope'
 
 it('handles none found', () => {
