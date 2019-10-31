@@ -125,6 +125,7 @@ export default class Scope {
     }
 
     search(pattern: string) {
+
         let searchObj = this.searches[pattern];
         if (!searchObj) {
             searchObj = createSearch(this, pattern);
