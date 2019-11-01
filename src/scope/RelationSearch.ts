@@ -1,6 +1,7 @@
 
 import ParsedTag from './ParsedTag'
 import Scope from './Scope'
+import FindExtResult from './FindExtResult'
 
 interface FoundMatch {
     remainingTag: string
@@ -66,13 +67,30 @@ export default class RelationSearch {
         delete this.latestMatches[tag];
     }
 
-    latestResultsAsObject(scope: Scope) {
-        const out = {}
+    latest(scope: Scope): any[] {
+        const results = []
+
+        for (const normalizedTag in this.latestMatches) {
+            const value = scope.relations[normalizedTag].value;
+            results.push(value);
+        }
+        return results;
+    }
+
+    latestExt(scope: Scope): FindExtResult[] {
+        const results: FindExtResult[] = []
+
         for (const normalizedTag in this.latestMatches) {
             const matchInfo = this.latestMatches[normalizedTag];
-            out[matchInfo.remainingTag] = scope.relations[normalizedTag].value;
+            const value = scope.relations[normalizedTag].value;
+
+            results.push({
+                value,
+                tag: normalizedTag,
+                remainingTag: matchInfo.remainingTag
+            })
         }
 
-        return out;
+        return results;
     }
 }

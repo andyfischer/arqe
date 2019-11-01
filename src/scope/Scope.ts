@@ -2,10 +2,12 @@
 import Slot from './Slot'
 import Relation from './Relation'
 import RelationSearch from './RelationSearch'
+import FindExtResult from './FindExtResult'
 import createSearch from './createSearch'
 import parseTag from './parseTag'
 
 const MissingValue = Symbol('missing')
+
 
 export default class Scope {
     parent?: Scope
@@ -124,7 +126,17 @@ export default class Scope {
         return defaultValue;
     }
 
-    search(pattern: string) {
+    findNew(pattern: string): any[] {
+        let searchObj = this.searches[pattern];
+        if (!searchObj) {
+            searchObj = createSearch(this, pattern);
+            this.searches[pattern] = searchObj;
+        }
+
+        return searchObj.latest(this);
+    }
+
+    findExt(pattern: string): FindExtResult[] {
 
         let searchObj = this.searches[pattern];
         if (!searchObj) {
@@ -132,7 +144,15 @@ export default class Scope {
             this.searches[pattern] = searchObj;
         }
 
-        return searchObj.latestResultsAsObject(this);
+        return searchObj.latestExt(this);
+    }
+
+    findAsObject(pattern: string): any {
+        const out = {};
+        for (const result of this.findExt(pattern)) {
+            out[result.remainingTag] = result.value;
+        }
+        return out;
     }
 }
 
