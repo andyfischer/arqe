@@ -1,9 +1,9 @@
 
-import Scope from './Scope'
+import Graph from './Graph'
 import LiveSearch from './LiveSearch'
 import parseTag from './parseTag'
 
-export default function createSearch(scope: Scope, pattern: string) {
+export default function createSearch(graph: Graph, pattern: string) {
     const items = pattern.split(' ');
     const search = new LiveSearch()
 
@@ -22,7 +22,7 @@ export default function createSearch(scope: Scope, pattern: string) {
     }
 
     // Update with any existing relations
-    for (const existingRelationTag in scope.relations) {
+    for (const existingRelationTag in graph.relations) {
         const parsed = parseTag(existingRelationTag);
         search.maybeInclude(parsed);
     }

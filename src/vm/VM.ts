@@ -2,7 +2,7 @@
 import { parseQueries } from '../parse-query'
 import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { RichValue } from '../rich-value'
-import { Scope } from '../Scope'
+import { Scope, Graph } from '../Scope'
 import FunctionDefinition from './FunctionDefinition'
 import simpleExprToScope from './simpleExprToScope'
 import VMEffect from './VMEffect'
@@ -18,6 +18,7 @@ const MissingValue = Symbol('missing');
 export default class VM {
 
     scope: Scope
+    graph: Graph
     nextTaskId: number = 1
 
     tasks: { [id: string]: Task } = {}
@@ -33,6 +34,7 @@ export default class VM {
     constructor(scope?: Scope) {
         scope = scope || new Scope()
         this.scope = scope;
+        this.graph = new Graph();
         this.scope.createSlotAndSet("#vm", this);
         this.currentlyEvaluating = false;
     }
@@ -177,7 +179,7 @@ export default class VM {
 
         this.log(`finished-task taskId=${task.id}`)
 
-        for (const match of this.scope.findExt(`task/${task.id} trigger/*`)) {
+        for (const match of this.graph.findExt(`task/${task.id} trigger/*`)) {
             const triggerTaskId = match.remainingTag;
             this.log(`triggering-downstream-task task=${triggerTaskId}`)
             this.queueTask(triggerTaskId);

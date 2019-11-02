@@ -1,6 +1,6 @@
 
 import ParsedTag from './ParsedTag'
-import Scope from './Scope'
+import Graph from './Graph'
 import FindExtResult from './FindExtResult'
 
 interface FoundMatch {
@@ -67,22 +67,22 @@ export default class LiveSearch {
         delete this.latestMatches[tag];
     }
 
-    latest(scope: Scope): any[] {
+    latest(graph: Graph): any[] {
         const results = []
 
         for (const normalizedTag in this.latestMatches) {
-            const value = scope.relations[normalizedTag].value;
+            const value = graph.relations[normalizedTag].value;
             results.push(value);
         }
         return results;
     }
 
-    latestExt(scope: Scope): FindExtResult[] {
+    latestExt(graph: Graph): FindExtResult[] {
         const results: FindExtResult[] = []
 
         for (const normalizedTag in this.latestMatches) {
             const matchInfo = this.latestMatches[normalizedTag];
-            const value = scope.relations[normalizedTag].value;
+            const value = graph.relations[normalizedTag].value;
 
             results.push({
                 value,

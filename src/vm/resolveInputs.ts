@@ -65,7 +65,7 @@ export default function resolveInputs(vm: VM, task: Task, inputs: InputSignature
                 result.hasPending = true;
                 result.values.push(pending);
 
-                vm.scope.insert(`task/${providerTaskId} trigger/${task.id}`);
+                vm.graph.insert(`task/${providerTaskId} trigger/${task.id}`);
 
                 vm.log(`resolver-started-provider taskId=${providerTaskId} -- ${query}`)
                 continue;
