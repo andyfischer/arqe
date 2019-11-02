@@ -1,11 +1,11 @@
 
 import Scope from './Scope'
-import RelationSearch from './RelationSearch'
+import LiveSearch from './LiveSearch'
 import parseTag from './parseTag'
 
 export default function createSearch(scope: Scope, pattern: string) {
     const items = pattern.split(' ');
-    const search = new RelationSearch()
+    const search = new LiveSearch()
 
     search.tagCount = items.length;
 

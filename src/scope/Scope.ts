@@ -1,46 +1,48 @@
 
 import Slot from './Slot'
 import Relation from './Relation'
-import RelationSearch from './RelationSearch'
+import LiveSearch from './LiveSearch'
 import FindExtResult from './FindExtResult'
 import createSearch from './createSearch'
 import parseTag from './parseTag'
 
 const MissingValue = Symbol('missing')
 
-
 export default class Scope {
     parent?: Scope
 
-    slots: { [name: string]: Slot } = {}
-    relations: { [tag: string]: Relation } = {}
-    searches: { [pattern: string]: RelationSearch } = {}
+    relations: { [key: string]: Relation } = {}
+    searches: { [pattern: string]: LiveSearch } = {}
 
     constructor(parent?: Scope) {
         this.parent = parent;
     }
 
     createSlot(name: string) {
-        if (this.slots[name])
+
+        const key = 'slot/' + name;
+
+        if (this.exists(key))
             throw new Error('slot already exists: ' + name);
 
         const slot = new Slot()
-        this.slots[name] = slot
         slot.empty = true;
+        this.insert(key, slot);
+        return slot;
     }
 
     createSlotAndSet(name: string, initialValue: any) {
-        if (this.slots[name])
-            throw new Error('slot already exists: ' + name);
 
-        const slot = new Slot()
-        this.slots[name] = slot
+        const slot = this.createSlot(name);
         slot.empty = false;
         slot.value = initialValue;
     }
 
     getOptional(name: string, defaultValue: any) {
-        const slot = this.slots[name];
+
+        const key = 'slot/' + name;
+        const slot = this.findOne(key, null);
+
         if (slot && !slot.empty)
             return slot.value;
 
@@ -60,68 +62,85 @@ export default class Scope {
     }
 
     set(name: string, value: any) {
-        if (!this.slots[name])
+        const key = 'slot/' + name;
+        const slot = this.findOne(key, null);
+
+        if (!slot)
             throw new Error("no slot with name: " + name);
 
-        const slot = this.slots[name];
         slot.empty = false;
         slot.value = value;
     }
 
     modify(name: string, callback: (val: any) => any) {
-        if (!this.slots[name])
+        const key = 'slot/' + name;
+        const slot = this.findOne(key, null);
+
+        if (!slot)
             throw new Error("no slot with name: " + name);
 
-        const slot = this.slots[name];
-
-        if (slot.empty)
-            throw new Error("can't modify, slot has no value: " + name);
-
+        slot.empty = false;
         slot.value = callback(slot.value);
     }
 
-    del(tags: string) {
-        delete this.relations[tags];
+    del(pattern: string) {
+        delete this.relations[pattern];
 
-        for (const pattern in this.searches) {
-            this.searches[pattern].maybeDelete(tags);
+        for (const livePattern in this.searches) {
+            this.searches[livePattern].maybeDelete(pattern);
         }
     }
 
-    insert(tags: string, value?: any) {
+    insert(key: string, value?: any) {
 
-        if (!this.relations[tags]) {
+        if (!this.relations[key]) {
             const rel = new Relation()
-            rel.tags = tags;
-            const parsed = parseTag(tags);
+            rel.key = key;
+            const parsed = parseTag(key);
             rel.tagCount = parsed.tagCount;
-            this.relations[tags] = rel;
+            this.relations[key] = rel;
 
             for (const pattern in this.searches) {
                 this.searches[pattern].maybeInclude(parsed);
             }
         }
 
-        this.relations[tags].value = value;
+        this.relations[key].value = value;
     }
 
-    find(tags: string) {
+    exists(key: string) {
+        return this.findOne(key, MissingValue) !== MissingValue;
+    }
 
-        const found = this.findOptional(tags, MissingValue);
+    find(key: string) {
+
+        const found = this.findOptional(key, MissingValue);
         if (found === MissingValue)
-            throw new Error("relation not found: " + tags);
+            throw new Error("relation not found: " + key);
 
         return found;
     }
 
-    findOptional(tag: string, defaultValue) {
-        const relation = this.relations[tag];
+    findOne(key: string, defaultValue: any) {
+        const relation = this.relations[key];
 
         if (relation)
             return relation.value;
 
         if (this.parent)
-            return this.parent.findOptional(tag, defaultValue);
+            return this.parent.findOne(key, defaultValue);
+
+        return defaultValue;
+    }
+
+    findOptional(key: string, defaultValue) {
+        const relation = this.relations[key];
+
+        if (relation)
+            return relation.value;
+
+        if (this.parent)
+            return this.parent.findOptional(key, defaultValue);
 
         return defaultValue;
     }

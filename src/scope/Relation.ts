@@ -1,6 +1,6 @@
 
 export default class Relation {
-    tags: string
+    key: string
     tagCount: number
     value: any
 }

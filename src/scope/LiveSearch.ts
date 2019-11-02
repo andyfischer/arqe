@@ -15,7 +15,7 @@ function findTagWithPrefix(parsedTag: ParsedTag, prefix: string) {
     return null;
 }
 
-export default class RelationSearch {
+export default class LiveSearch {
     latestMatches: { [tag:string]: FoundMatch } = {}
 
     exactTags: string[] = []
