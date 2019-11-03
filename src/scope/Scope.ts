@@ -10,12 +10,12 @@ import Graph from './Graph'
 const MissingValue = Symbol('missing')
 
 export default class Scope {
-    parent?: Scope
     graph: Graph
 
-    constructor(parent?: Scope) {
-        this.parent = parent;
-        this.graph = new Graph()
+    constructor(graph: Graph) {
+        if (!graph)
+            throw new Error('missing: graph');
+        this.graph = graph
     }
 
     createSlot(name: string) {
@@ -45,9 +45,6 @@ export default class Scope {
 
         if (slot && !slot.empty)
             return slot.value;
-
-        if (this.parent)
-            return this.parent.getOptional(name, defaultValue);
 
         return defaultValue;
     }

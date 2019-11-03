@@ -4,7 +4,7 @@ import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { RichValue } from '../rich-value'
 import { Scope, Graph } from '../Scope'
 import FunctionDefinition from './FunctionDefinition'
-import simpleExprToScope from './simpleExprToScope'
+import exposeSimpleExpr from './exposeSimpleExpr'
 import VMEffect from './VMEffect'
 import mountFunction from './mountFunction'
 import resolveInputs from './resolveInputs'
@@ -32,9 +32,9 @@ export default class VM {
     onResult?: (taskId: number, result: RichValue) => void
 
     constructor(scope?: Scope) {
-        scope = scope || new Scope()
-        this.scope = scope;
         this.graph = new Graph();
+        scope = scope || new Scope(this.graph)
+        this.scope = scope;
         this.scope.createSlotAndSet("#vm", this);
         this.currentlyEvaluating = false;
     }
@@ -99,7 +99,9 @@ export default class VM {
         const taskId = this.nextTaskId;
         this.nextTaskId += 1;
 
-        const scope = simpleExprToScope(this.scope, expr);
+        const graph = new Graph(this.graph);
+        const scope = new Scope(graph);
+        exposeSimpleExpr(scope, expr);
 
         const task: Task = {
             id: this.nextTaskId+'',

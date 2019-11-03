@@ -2,8 +2,7 @@
 import { SimpleExpr } from '../parse-query/parseQueryV3'
 import { Scope } from '../Scope'
 
-export default function simpleExprToScope(parent: Scope, expr: SimpleExpr) {
-    const scope = new Scope(parent)
+export default function exposeSimpleExpr(scope: Scope, expr: SimpleExpr) {
 
     const positionals = [];
     const commandOptions = {};
@@ -20,6 +19,4 @@ export default function simpleExprToScope(parent: Scope, expr: SimpleExpr) {
     scope.createSlotAndSet('#positionals', positionals);
     scope.createSlotAndSet('#commandName', positionals[0]);
     scope.createSlotAndSet('#commandOptions', commandOptions);
-
-    return scope;
 }
