@@ -11,13 +11,16 @@ import { loadDataFile } from '../framework'
 import { runQueryInput } from '../query'
 import { setupUserDir } from '../storage'
 import { loadStdlibScope } from '../bootstrap-runtime'
+import { Graph, Scope } from '../scope'
 import nodeRepl from '../terminal/nodeRepl'
 import { VM } from '../VM'
 
 async function main() {
 
     await setupUserDir();
-    const scope = await loadStdlibScope();
+    const graph = new Graph()
+    const scope = new Scope(graph)
+    await loadStdlibScope(scope);
     const args = process.argv.slice(2);
     const vm = new VM(scope);
     

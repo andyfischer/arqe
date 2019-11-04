@@ -11,8 +11,7 @@ async function loadFile(scope: Scope, filename: string) {
     const contents = await fs.readFile(filename, 'utf8');
 }
 
-export default async function loadStdlibScope() {
-    const scope = new Scope();
+export default async function loadStdlibScope(scope: Scope) {
     bootstrapPrimitives(scope);
     // const vm = new VM(scope);
 

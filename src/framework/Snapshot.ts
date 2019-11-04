@@ -8,7 +8,7 @@ import CommandImplementation from '../types/CommandImplementation'
 import QueryWatcher from './QueryWatcher'
 import { mountEveryQueryWatcher } from '../query-watchers'
 import { implementEveryCommand } from '../commands'
-import { Scope } from '../scope'
+import { Scope, Graph } from '../scope'
 import setupBuiltinSlots from '../scope/setupBuiltinSlots'
 
 const MissingValue = Symbol('missing');
@@ -24,8 +24,9 @@ export default class Snapshot {
     fileScope: Scope
 
     constructor() {
-        this.globalScope = new Scope()
-        this.fileScope = new Scope()
+        const graph = new Graph()
+        this.globalScope = new Scope(graph)
+        this.fileScope = new Scope(graph)
 
         setupBuiltinSlots(this.globalScope);
 
