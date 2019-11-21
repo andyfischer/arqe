@@ -6,7 +6,9 @@
   "scripts": {
     "build": "yarn self-fix && tsc -p .",
     "test": "jest --watch",
-    "self-fix": "node dist/self-fix"
+    "self-fix": "node dist/self-fix",
+    "tsc-watch": "tsc -w",
+    "start-tags-db": "concurrently -n tsc,server 'tsc -w' 'nodemon dist/tags-db/startServer.js'"
   },
   "dependencies": {
     "bent": "^1.5.13",
@@ -21,11 +23,13 @@
     "minimist": "^1.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "source-map-support": "^0.5.12"
+    "source-map-support": "^0.5.12",
+    "ws": "^7.2.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.15",
     "@types/node": "^12.0.3",
+    "concurrently": "^5.0.0",
     "jest": "^24.8.0",
     "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
@@ -48,6 +52,7 @@
   "bin": {
     "s": "dist/startup/main.js",
     "s-discovery-agent": "dist/agents/discovery",
+    "tag-server": "dist/tags-db/startServer.js",
     "encode-file": "dist/tools/encode-file.js"
   }
 }

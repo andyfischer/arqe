@@ -1,7 +1,6 @@
 
 import { Query } from '..'
 import { Snapshot } from '../framework'
-import { ReducerDefinition } from '.'
 
 export default interface LiveReducer<ValueT = any> {
     name: string
