@@ -1,6 +1,7 @@
 
 import WebSocket from 'ws'
 import Graph from './Graph'
+import parseCommand, { ParsedCommand, ParsedArg } from './parseCommand'
 
 export default class ServerSocket {
     graph: Graph
@@ -12,20 +13,30 @@ export default class ServerSocket {
 
         this.wss.on('connection', (ws) => {
             ws.on('message', async (str) => {
+
                 const data = JSON.parse(str);
                 const { reqid, command } = data;
                 try {
                     const result = await this.handleCommand(command)
                     ws.send(JSON.stringify({reqid, result}));
                 } catch (err) {
-                    console.log('uncaught server error: ', err);
                     ws.send(JSON.stringify({reqid, internalError: true, err}));
                 }
             });
         });
     }
 
-    async handleCommand(command: string) {
-        const response = this.graph.handleCommandStr(command);
+    async handleCommand(commandStr: string) {
+        const command = parseCommand(commandStr);
+
+        switch (command.command) {
+        case 'context': {
+            this.graph = this.graph.getGraphWithContext(command.args);
+            return "#done";
+        }
+        }
+
+        const response = this.graph.handleCommand(command);
+        return response;
     }
 }

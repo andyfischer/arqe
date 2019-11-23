@@ -1,19 +1,30 @@
 
 import parseCommand, { ParsedCommand, ParsedArg } from './parseCommand'
 import TagType from './TagType'
-
-interface Relation {
-    ntag: string
-    value: any
-}
+import Relation from './Relation'
+import { normalizeExactTag } from './parseCommand'
 
 interface Column {
     name: string
 }
 
 export default class Graph {
+
+    parent: Graph
+    typesAddedToParent: { [name: string]: boolean } = {}
+
     everyRelation: Relation[] = []
-    tagTypes: { [name: string]: TagType }
+
+    relationsByNtag: { [ ntag: string]: Relation } = {}
+    tagTypes: { [name: string]: TagType } = {}
+
+    getGraphWithContext(args: ParsedArg[]) {
+        const newGraph = new Graph();
+        newGraph.parent = this;
+        for (const arg of args)
+            newGraph.typesAddedToParent[arg.tagType] = true;
+        return newGraph;
+    }
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
@@ -36,19 +47,40 @@ export default class Graph {
             }
         }
 
+        this.save(args);
 
+        const ntag = normalizeExactTag(args);
+
+        return ntag;
     }
 
     exists(args: ParsedArg[]) {
+        const ntag = normalizeExactTag(args);
+        return !!this.relationsByNtag[ntag];
     }
 
     save(args: ParsedArg[]) {
+        const ntag = normalizeExactTag(args);
+
+        if (this.relationsByNtag[ntag]) {
+            return;
+        }
+
+        this.relationsByNtag[ntag] = new Relation()
+        return "#done"
     }
 
     get(args: ParsedArg[]) {
+        const ntag = normalizeExactTag(args);
+
+        if (this.relationsByNtag[ntag])
+            return '#exists';
+
+        return null;
     }
 
     handleCommand(command: ParsedCommand) {
+
         switch (command.command) {
 
         case 'save-unique': {
@@ -71,6 +103,7 @@ export default class Graph {
     handleCommandStr(str: string) {
         try { 
             const parsed = parseCommand(str);
+            return this.handleCommand(parsed);
         } catch (err) {
             console.log('handleCommandStr error: ', err);
         }

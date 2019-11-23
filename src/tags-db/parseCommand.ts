@@ -30,10 +30,19 @@ export default function parseCommand(str: string): ParsedCommand {
                    tagValue,
                    star: tagValue === '*'
                 };
+            } else {
+                return {
+                    tagType: str,
+                    tagValue: null
+                }
             }
 
             throw new Error('unrecognized arg: ' + str);
-        })
+        });
+
+    args.sort((a, b) => {
+        return a.tagType.localeCompare(b.tagType);
+    });
 
     const parsed = {
         command,
@@ -41,4 +50,10 @@ export default function parseCommand(str: string): ParsedCommand {
     }
 
     return parsed;
+}
+
+export function normalizeExactTag(args: ParsedArg[]) {
+    return (args
+        .map(arg => arg.tagType + '/' + arg.tagValue)
+        .join(' '));
 }
