@@ -13,11 +13,11 @@ export default class TagType {
         let attempts = 0;
 
         while (attempts < 100) {
-            const check = randomHex(5);
-            if (this.everyValue[check])
-                return check;
+            const id = randomHex(5);
+            if (this.everyValue[id])
+                continue;
 
-            return check;
+            return id;
         }
 
         throw new Error('failed to generate a unique ID');

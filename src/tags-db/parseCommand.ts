@@ -1,18 +1,8 @@
 
 import { parseAsOneSimple } from '../parse-query/parseQueryV3'
+import Command, { CommandArg } from './Command'
 
-export interface ParsedArg {
-    tagType: string
-    tagValue: string
-    star?: boolean
-}
-
-export interface ParsedCommand {
-    command: string
-    args: ParsedArg[]
-}
-
-export default function parseCommand(str: string): ParsedCommand {
+export default function parseCommand(str: string): Command {
     //const syntax = parseAsOneSimple(str);
 
     const clauses = str.split(/ +/)
@@ -20,39 +10,72 @@ export default function parseCommand(str: string): ParsedCommand {
     const argStrs = clauses.slice(1);
     const args = argStrs
         .map(str => {
-            const slashPos = str.indexOf('/');
-            if (slashPos !== -1) {
-                const tagType = str.substring(0, slashPos);
-                const tagValue = str.substring(slashPos + 1)
+            let tagType;
+            let tagValue;
+            let subtract;
+            let star;
 
-                return {
-                   tagType,
-                   tagValue,
-                   star: tagValue === '*'
-                };
+            const slashPos = str.indexOf('/');
+
+            if (slashPos !== -1) {
+                tagType = str.substring(0, slashPos);
+                tagValue = str.substring(slashPos + 1)
+
             } else {
-                return {
-                    tagType: str,
-                    tagValue: null
-                }
+                tagType = str;
+                tagValue = null;
             }
 
-            throw new Error('unrecognized arg: ' + str);
+            if (tagType[0] === '-') {
+                tagType = tagType.substring(1);
+                subtract = true;
+            }
+
+            star = tagValue === '*';
+
+            return {
+               tagType,
+               tagValue,
+               subtract,
+               star
+            };
         });
 
     args.sort((a, b) => {
         return a.tagType.localeCompare(b.tagType);
     });
 
-    const parsed = {
-        command,
-        args
-    }
+    const parsed = new Command();
+    parsed.command = command;
+    parsed.args = args;
 
     return parsed;
 }
 
-export function normalizeExactTag(args: ParsedArg[]) {
+export function commandArgsToString(args: CommandArg[]) {
+    return args.map(arg => {
+        let s = arg.tagType;
+
+        if (arg.tagValue) {
+            s += '/' + arg.tagValue;
+        } else if (arg.star) {
+            s += '*';
+        }
+
+        return s;
+    }).join(' ');
+}
+
+export function parseAsSave(str: string) {
+    const command = parseCommand(str);
+
+    if (command.command !== 'save')
+        throw new Error("Expected 'save' command: " + str);
+
+    return command.args;
+}
+
+export function normalizeExactTag(args: CommandArg[]) {
     return (args
         .map(arg => arg.tagType + '/' + arg.tagValue)
         .join(' '));

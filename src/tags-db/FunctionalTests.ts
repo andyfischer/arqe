@@ -1,49 +1,49 @@
 
 import CommandConnection from './CommandConnection'
+import TestSession from './TestSession'
+import TestSuite from './TestSuite'
 
-async function setup(conn: CommandConnection) {
-    const testId = await conn.run('save-unique testcase/*');
-    await conn.run('context ' + testId);
+async function simpleSaveAndLoad(session: TestSession) {
+    await session.runScript(`
+        get a/x
+        expect #null
+        save a/x
+        get a/x
+        expect #exists
+        get a/y
+        expect #null
+    `);
 }
 
-async function runSteps(conn, steps) {
-    for (const step of steps) {
-        const result = await conn.run(step);
-        console.log(`[test] ${step} -> ${result}`)
-    }
-}
-
-async function simpleSaveAndLoad(conn: CommandConnection) {
-    const steps = [
-        'get a/x',
-        'save a/x',
-        'get a/x',
-        'get a/y'
-    ];
-    
-    await runSteps(conn, steps);
-}
-
-async function contextIsolation(conn: CommandConnection) {
-    console.log('[test] (starting contextIsolation)')
-    await runSteps(conn, [
-        'get a/top',
-        'save a/top',
-        'get a/isolated',
-        'context isolation',
-        'get a/isolated',
-        'save a/isolated',
-        'get a/isolated',
-        'context -isolation',
-        'get a/top',
-        'get a/isolated',
-    ]);
+async function contextIsolation(session: TestSession) {
+    await session.runScript(`
+        get a/top
+        expect #null
+        save a/top
+        get a/isolated
+        expect #null
+        context isolation
+        get a/isolated
+        expect #null
+        save a/isolated
+        get a/isolated
+        expect #exists
+        context -isolation
+        get a/top
+        expect #exists
+        get a/isolated
+        expect #null
+    `);
 }
 
 export async function mainFunctionalTests(conn: CommandConnection) {
 
-    await setup(conn);
-
-    await simpleSaveAndLoad(conn);
-    await contextIsolation(conn);
+    const suite = new TestSuite();
+    suite.conn = conn;
+    await suite.runAll([
+        simpleSaveAndLoad,
+        contextIsolation
+    ])
+    const session = new TestSession();
+    session.conn = conn;
 }

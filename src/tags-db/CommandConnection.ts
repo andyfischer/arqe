@@ -18,7 +18,11 @@ export default class CommandConnection {
         });
     }
 
-    async run(command: string) {
+    async run(command: string): Promise<string> {
+
+        if (command.indexOf('/null') !== -1)
+            throw new Error("Found /null in command: " + command);
+
         const reqid = this.nextReqId;
         this.nextReqId += 1
         this.ws.send(JSON.stringify({reqid, command}));

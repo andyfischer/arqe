@@ -1,8 +1,9 @@
 
-import parseCommand, { ParsedCommand, ParsedArg } from './parseCommand'
+import Command, { CommandArg } from './Command'
+import parseCommand from './parseCommand'
 import TagType from './TagType'
 import Relation from './Relation'
-import { normalizeExactTag } from './parseCommand'
+import { normalizeExactTag, commandArgsToString } from './parseCommand'
 
 interface Column {
     name: string
@@ -10,21 +11,10 @@ interface Column {
 
 export default class Graph {
 
-    parent: Graph
-    typesAddedToParent: { [name: string]: boolean } = {}
-
     everyRelation: Relation[] = []
 
     relationsByNtag: { [ ntag: string]: Relation } = {}
     tagTypes: { [name: string]: TagType } = {}
-
-    getGraphWithContext(args: ParsedArg[]) {
-        const newGraph = new Graph();
-        newGraph.parent = this;
-        for (const arg of args)
-            newGraph.typesAddedToParent[arg.tagType] = true;
-        return newGraph;
-    }
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
@@ -38,7 +28,10 @@ export default class Graph {
         return this.tagTypes[name];
     }
 
-    saveUnique(args: ParsedArg[]) {
+    saveUnique(args: CommandArg[]) {
+
+        // console.log('save unique: ', commandArgsToString(args));
+
         // Resolve stars to randomly generated IDs.
         for (const arg of args) {
             if (arg.star) {
@@ -51,15 +44,18 @@ export default class Graph {
 
         const ntag = normalizeExactTag(args);
 
-        return ntag;
+        return 'save ' + ntag;
     }
 
-    exists(args: ParsedArg[]) {
+    exists(args: CommandArg[]) {
+        // console.log('exists: ', commandArgsToString(args));
         const ntag = normalizeExactTag(args);
         return !!this.relationsByNtag[ntag];
     }
 
-    save(args: ParsedArg[]) {
+    save(args: CommandArg[]) {
+        //console.log('save: ', commandArgsToString(args));
+
         const ntag = normalizeExactTag(args);
 
         if (this.relationsByNtag[ntag]) {
@@ -70,16 +66,18 @@ export default class Graph {
         return "#done"
     }
 
-    get(args: ParsedArg[]) {
+    get(args: CommandArg[]) {
         const ntag = normalizeExactTag(args);
 
         if (this.relationsByNtag[ntag])
             return '#exists';
 
-        return null;
+        return '#null';
     }
 
-    handleCommand(command: ParsedCommand) {
+    handleCommand(command: Command) {
+
+        // console.log('graph handle: ', command.toCommandString());
 
         switch (command.command) {
 
