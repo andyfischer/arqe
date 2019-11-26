@@ -4,14 +4,13 @@ import parseCommand from './parseCommand'
 import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandArgsToString } from './parseCommand'
+import FullSearch from './FullSearch'
 
 interface Column {
     name: string
 }
 
 export default class Graph {
-
-    everyRelation: Relation[] = []
 
     relationsByNtag: { [ ntag: string]: Relation } = {}
     tagTypes: { [name: string]: TagType } = {}
@@ -62,11 +61,31 @@ export default class Graph {
             return;
         }
 
-        this.relationsByNtag[ntag] = new Relation()
+        this.relationsByNtag[ntag] = new Relation(ntag, args)
+
         return "#done"
     }
 
+    getWithStar(args: CommandArg[]) {
+        const search = new FullSearch(this, args);
+        const matches = search.run();
+        const variedType = search.starArgs[0];
+
+        const outValues = []
+        for (const match of matches) {
+            outValues.push(match.asMap[variedType.tagType]);
+        }
+
+        return '[' + outValues.join(', ') + ']'
+    }
+
     get(args: CommandArg[]) {
+        //console.log('get: ', commandArgsToString(args))
+
+        for (const arg of args)
+            if (arg.star)
+                return this.getWithStar(args);
+
         const ntag = normalizeExactTag(args);
 
         if (this.relationsByNtag[ntag])

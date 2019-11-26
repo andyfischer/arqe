@@ -21,3 +21,10 @@ it('parses subtraction tags', () => {
     expect(parsed.args[0].tagType).toEqual('a')
     expect(parsed.args[0].subtract).toEqual(true)
 });
+
+it('parses tags with stars', () => {
+    const parsed = parseCommand('test a/*');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.args[0].tagType).toEqual('a')
+    expect(parsed.args[0].star).toEqual(true)
+});

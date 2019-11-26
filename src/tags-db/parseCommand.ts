@@ -3,8 +3,6 @@ import { parseAsOneSimple } from '../parse-query/parseQueryV3'
 import Command, { CommandArg } from './Command'
 
 export default function parseCommand(str: string): Command {
-    //const syntax = parseAsOneSimple(str);
-
     const clauses = str.split(/ +/)
     const command = clauses[0];
     const argStrs = clauses.slice(1);
@@ -76,7 +74,7 @@ export function parseAsSave(str: string) {
 }
 
 export function normalizeExactTag(args: CommandArg[]) {
-    return (args
-        .map(arg => arg.tagType + '/' + arg.tagValue)
-        .join(' '));
+    const argStrs = args.map(arg => arg.tagType + '/' + arg.tagValue)
+    argStrs.sort();
+    return argStrs.join(' ');
 }
