@@ -14,6 +14,8 @@ export default class ServerSocket {
 
         this.wss.on('connection', (ws) => {
 
+            console.log('server: client connected');
+
             const graphContext = new GraphContext(this.graph)
 
             ws.on('message', async (str) => {
@@ -28,6 +30,10 @@ export default class ServerSocket {
                 } catch (err) {
                     ws.send(JSON.stringify({reqid, internalError: true, err}));
                 }
+            });
+
+            ws.on('close', async (str) => {
+                console.log('server: client closed');
             });
         });
     }

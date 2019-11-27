@@ -14,6 +14,8 @@ export default async function main() {
 
     const commandConnection = new CommandConnection(ws);
     await mainFunctionalTests(commandConnection);
+
+    commandConnection.close();
 }
 
 main()

@@ -18,6 +18,10 @@ export default class CommandConnection {
         });
     }
 
+    close() {
+        this.ws.terminate();
+    }
+
     async run(command: string): Promise<string> {
 
         if (command.indexOf('/null') !== -1)

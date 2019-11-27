@@ -89,6 +89,15 @@ fromScript(`
     save a/3 b/2
     get a/* b/2
     expect [3]
+`),
+fromScript(`
+    save a/1 b
+    save a/2 b
+    save a/3 c
+    get a/* b
+    expect [1, 2]
+    get a/* c
+    expect [3]
 `)]
 
 export async function mainFunctionalTests(conn: CommandConnection) {

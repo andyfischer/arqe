@@ -18,9 +18,17 @@ export default class FullSearch {
     }
 
     relationMatches(rel: Relation) {
-        for (const arg of this.fixedArgs)
+        for (const arg of this.fixedArgs) {
+            if (!arg.tagValue) {
+                if (!rel.asMap[arg.tagType])
+                    return false;
+
+                continue;
+            }
+
             if (rel.asMap[arg.tagType] !== arg.tagValue)
                 return false;
+        }
 
         for (const arg of this.starArgs)
             if (!rel.asMap[arg.tagType])
