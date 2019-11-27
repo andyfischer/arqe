@@ -18,7 +18,7 @@ export default async function main() {
 
     //const repl = new ClientRepl(commandConnection);
     //repl.start();
-    //commandConnection.close();
+    commandConnection.close();
 }
 
 main()

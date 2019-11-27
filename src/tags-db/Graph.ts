@@ -33,8 +33,8 @@ export default class Graph {
 
         // Resolve stars to randomly generated IDs.
         for (const arg of args) {
-            if (arg.star) {
-                delete arg.star; 
+            if (arg.starValue) {
+                delete arg.starValue; 
                 arg.tagValue = this.findTagType(arg.tagType).getUniqueId()
             }
         }
@@ -69,7 +69,7 @@ export default class Graph {
     getWithStar(args: CommandArg[]) {
         const search = new FullSearch(this, args);
         const matches = search.run();
-        const variedType = search.starArgs[0];
+        const variedType = search.starValueArgs[0];
 
         const outValues = []
         for (const match of matches) {
@@ -83,7 +83,7 @@ export default class Graph {
         //console.log('get: ', commandArgsToString(args))
 
         for (const arg of args)
-            if (arg.star)
+            if (arg.starValue)
                 return this.getWithStar(args);
 
         const ntag = normalizeExactTag(args);

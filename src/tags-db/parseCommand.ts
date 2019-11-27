@@ -6,12 +6,11 @@ export default function parseCommand(str: string): Command {
     const clauses = str.split(/ +/)
     const command = clauses[0];
     const argStrs = clauses.slice(1);
-    const args = argStrs
+    const args: CommandArg[] = argStrs
         .map(str => {
             let tagType;
             let tagValue;
             let subtract;
-            let star;
 
             const slashPos = str.indexOf('/');
 
@@ -29,14 +28,16 @@ export default function parseCommand(str: string): Command {
                 subtract = true;
             }
 
-            star = tagValue === '*';
+            const starValue = tagValue === '*';
 
-            return {
+            const arg:CommandArg = {
                tagType,
                tagValue,
                subtract,
-               star
+               starValue
             };
+
+            return arg;
         });
 
     args.sort((a, b) => {
@@ -56,7 +57,7 @@ export function commandArgsToString(args: CommandArg[]) {
 
         if (arg.tagValue) {
             s += '/' + arg.tagValue;
-        } else if (arg.star) {
+        } else if (arg.starValue) {
             s += '*';
         }
 

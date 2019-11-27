@@ -26,5 +26,5 @@ it('parses tags with stars', () => {
     const parsed = parseCommand('test a/*');
     expect(parsed.command).toEqual('test')
     expect(parsed.args[0].tagType).toEqual('a')
-    expect(parsed.args[0].star).toEqual(true)
+    expect(parsed.args[0].starValue).toEqual(true)
 });

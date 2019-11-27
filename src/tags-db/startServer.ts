@@ -37,7 +37,7 @@ export default async function main() {
     const serverSocket = new ServerSocket(wsServer, null)
 
     console.log(`Launching self client..`)
-    require('./startClient');
+    require('./funcTestClient');
 }
 
 main()

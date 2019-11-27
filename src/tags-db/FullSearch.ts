@@ -6,13 +6,13 @@ import Relation from './Relation'
 export default class FullSearch {
     graph: Graph;
     fixedArgs: CommandArg[] = []
-    starArgs: CommandArg[] = []
+    starValueArgs: CommandArg[] = []
 
     constructor(graph: Graph, args: CommandArg[]) {
         this.graph = graph;
         for (const arg of args)
-            if (arg.star)
-                this.starArgs.push(arg);
+            if (arg.starValue)
+                this.starValueArgs.push(arg);
             else
                 this.fixedArgs.push(arg);
     }
@@ -30,7 +30,7 @@ export default class FullSearch {
                 return false;
         }
 
-        for (const arg of this.starArgs)
+        for (const arg of this.starValueArgs)
             if (!rel.asMap[arg.tagType])
                 return false;
 

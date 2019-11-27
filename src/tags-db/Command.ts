@@ -5,7 +5,7 @@ export interface CommandArg {
     tagType: string
     tagValue: string
     subtract?: boolean
-    star?: boolean
+    starValue?: boolean
 }
 
 export default class Command {
