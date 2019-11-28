@@ -27,25 +27,6 @@ export default class Graph {
         return this.tagTypes[name];
     }
 
-    saveUnique(args: CommandArg[]) {
-
-        // console.log('save unique: ', commandArgsToString(args));
-
-        // Resolve stars to randomly generated IDs.
-        for (const arg of args) {
-            if (arg.starValue) {
-                delete arg.starValue; 
-                arg.tagValue = this.findTagType(arg.tagType).getUniqueId()
-            }
-        }
-
-        this.save(args);
-
-        const ntag = normalizeExactTag(args);
-
-        return 'save ' + ntag;
-    }
-
     exists(args: CommandArg[]) {
         // console.log('exists: ', commandArgsToString(args));
         const ntag = normalizeExactTag(args);
@@ -54,6 +35,13 @@ export default class Graph {
 
     save(args: CommandArg[]) {
         //console.log('save: ', commandArgsToString(args));
+
+        // Resolve any special args
+        for (const arg of args) {
+            if (arg.tagValue === '#unique') {
+                arg.tagValue = this.findTagType(arg.tagType).getUniqueId()
+            }
+        }
 
         const ntag = normalizeExactTag(args);
 
@@ -99,10 +87,6 @@ export default class Graph {
         // console.log('graph handle: ', command.toCommandString());
 
         switch (command.command) {
-
-        case 'save-unique': {
-            return this.saveUnique(command.args);
-        }
 
         case 'save': {
             return this.save(command.args);

@@ -80,9 +80,7 @@ export class TestSession {
     }
 
     async setup() {
-        const responseArgs = parseAsSave(await this.command('save-unique testcase/*'));
-        const testId = responseArgs[0].tagValue;
-        await this.command('context testcase/' + testId);
+        await this.command('context testcase/#unique');
     }
 
     async runSteps(steps: string[]) {
