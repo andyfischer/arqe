@@ -1,0 +1,11 @@
+get a/x
+expect #null
+
+save a/x
+get a/x
+expect #exists
+
+save a/x b/y
+get b/y a/x
+expect #exists
+

@@ -1,0 +1,17 @@
+get a/top
+expect #null
+save a/top
+get a/isolated
+expect #null
+context isolation
+get a/isolated
+expect #null
+save a/isolated
+get a/isolated
+expect #exists
+context -isolation
+get a/top
+expect #exists
+get a/isolated
+expect #null
+

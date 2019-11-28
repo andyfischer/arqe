@@ -1,0 +1,7 @@
+
+save lower/a a/1
+context lower/a
+get a/1
+expect #exists
+context -lower/a
+

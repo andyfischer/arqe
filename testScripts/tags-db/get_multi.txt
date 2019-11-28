@@ -1,0 +1,16 @@
+
+get a/*
+expect []
+
+save a/1
+get a/*
+expect [1]
+
+save a/1
+save a/2
+get a/*
+expect [1, 2]
+save a/3
+get a/*
+expect [1, 2, 3]
+
