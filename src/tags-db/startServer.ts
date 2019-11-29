@@ -1,6 +1,8 @@
 
 import WebSocket from 'ws'
 import ServerSocket from './ServerSocket'
+import Graph from './Graph'
+import bootstrapGraph from './bootstrapGraph'
 
 const port = 42940;
 
@@ -34,7 +36,10 @@ export default async function main() {
 
     console.log(`Now listening on port ${port}`);
 
-    const serverSocket = new ServerSocket(wsServer, null)
+    const graph = new Graph()
+    bootstrapGraph(graph);
+
+    const serverSocket = new ServerSocket(wsServer, graph)
 
     console.log(`Launching self client..`)
     require('./funcTestClient');

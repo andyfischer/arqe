@@ -1,0 +1,17 @@
+
+save a/1
+save a/2
+context branch/#unique
+
+save a/3
+
+get a/1
+expect #exists
+
+get a/2
+expect #exists
+
+get a/3
+expect #exists
+
+context -branch

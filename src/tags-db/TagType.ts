@@ -5,6 +5,9 @@ export default class TagType {
     name: string
     everyValue = {}
 
+    // options
+    inherits: boolean
+
     constructor(name: string) {
         this.name = name;
     }

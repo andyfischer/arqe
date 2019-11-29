@@ -1,0 +1,8 @@
+
+save a/1 b
+save a/2 b
+save a/3 c
+get a/* b
+expect [1, 2]
+get a/* c
+expect [3]
