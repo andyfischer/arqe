@@ -26,8 +26,10 @@ export default class Get {
             else
                 this.fixedArgs.push(arg);
 
-            if (tagType.inherits)
+            if (tagType.inherits) {
+                arg.tagTypeInherits = true;
                 this.inheritArgs.push(arg);
+            }
         }
     }
 
@@ -40,13 +42,17 @@ export default class Get {
                 continue;
             }
 
+            if (arg.tagTypeInherits && rel.includesType(arg.tagType))
+                continue;
+
             if (rel.asMap[arg.tagType] !== arg.tagValue)
                 return false;
         }
 
-        for (const arg of this.starValueArgs)
+        for (const arg of this.starValueArgs) {
             if (!rel.asMap[arg.tagType])
                 return false;
+        }
 
         return true;
     }

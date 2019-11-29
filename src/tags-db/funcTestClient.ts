@@ -15,9 +15,6 @@ export default async function main() {
 
     const commandConnection = new CommandConnection(ws);
     await mainFunctionalTests(commandConnection);
-
-    //const repl = new ClientRepl(commandConnection);
-    //repl.start();
     commandConnection.close();
 }
 

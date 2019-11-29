@@ -6,6 +6,7 @@ export interface CommandArg {
     tagValue: string
     subtract?: boolean
     starValue?: boolean
+    tagTypeInherits?: boolean
 }
 
 export default class Command {

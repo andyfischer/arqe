@@ -13,4 +13,8 @@ export default class Relation {
             this.asMap[arg.tagType] = arg.tagValue || true;
         }
     }
+
+    includesType(name: string) {
+        return this.asMap[name] !== undefined;
+    }
 }

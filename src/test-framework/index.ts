@@ -89,6 +89,11 @@ export class TestSession {
             if (step === '')
                 continue;
 
+            if (step.startsWith('-- ')) {
+                this.log(step);
+                continue;
+            }
+
             const command = parseCommand(step);
 
             if (command.command === 'expect') {

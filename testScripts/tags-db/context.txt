@@ -1,14 +1,19 @@
+-- context test
 get a/top
 expect #null
 save a/top
 get a/isolated
 expect #null
+
+-- enter an isolated context
 context isolation
 get a/isolated
 expect #null
 save a/isolated
 get a/isolated
 expect #exists
+
+-- leave context
 context -isolation
 get a/top
 expect #exists
