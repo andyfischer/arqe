@@ -8,7 +8,9 @@
     "test": "jest --watch",
     "self-fix": "node dist/self-fix",
     "tsc-watch": "tsc -w",
-    "start-tags-db": "concurrently -n tsc,server 'tsc -w' 'nodemon dist/tags-db/startServer.js'"
+    "start": "yarn start-tags-db",
+    "nodemon-tags-server": "nodemon --watch testScripts -e js,ts,txt dist/tags-db/startServer.js",
+    "start-tags-db": "concurrently -n tsc,server 'tsc -w' 'yarn nodemon-tags-server'"
   },
   "dependencies": {
     "bent": "^1.5.13",
