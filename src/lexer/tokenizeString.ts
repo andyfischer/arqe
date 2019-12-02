@@ -4,7 +4,7 @@ import TokenIterator from './TokenIterator'
 import Token from './Token'
 import LexedText from './LexedText'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
-    t_double_dot, t_line_comment, t_quoted_string,
+    t_double_dot, t_line_comment, t_quoted_string, t_double_equals,
     tokenFromSingleCharCode, TokenDef } from './tokens'
 
 const c_0 = '0'.charCodeAt(0);
@@ -16,6 +16,7 @@ const c_Z = 'Z'.charCodeAt(0);
 const c_dash = '-'.charCodeAt(0);
 const c_under = '_'.charCodeAt(0);
 const c_space = ' '.charCodeAt(0);
+const c_equals = '='.charCodeAt(0);
 const c_dot = '.'.charCodeAt(0);
 const c_newline = '\n'.charCodeAt(0);
 const c_hash = '#'.charCodeAt(0);
@@ -95,6 +96,9 @@ function consumeNext(input: Context) {
 
     if (isDigit(c))
         return consumeNumber(input);
+
+    if (c === c_equals && input.next(1) === c_equals)
+        return input.consume(t_double_equals, 2);
 
     if (c === c_dash && input.next(1) === c_dash)
         return input.consume(t_double_dash, 2);

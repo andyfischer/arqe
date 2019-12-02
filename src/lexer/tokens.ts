@@ -99,6 +99,11 @@ export const t_equals = {
     str: "="
 }
 
+export const t_double_equals = {
+    name: "double-equals",
+    str: "=="
+}
+
 export const t_hash = {
     name: "hash",
     str: "#"
@@ -169,6 +174,7 @@ export const everyToken: TokenDef[] = [
     t_dash,
     t_star,
     t_equals,
+    t_double_equals,
     t_hash,
     t_percent,
     t_dollar,

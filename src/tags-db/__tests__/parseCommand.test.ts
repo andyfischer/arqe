@@ -58,14 +58,14 @@ it('parses star type', () => {
 });
 
 it('parses payload', () => {
-    const parsed = parseCommand('test - 1');
+    const parsed = parseCommand('test == 1');
     expect(parsed.command).toEqual('test')
     expect(parsed.tags).toEqual([])
     expect(parsed.payloadStr).toEqual('1')
 });
 
 it('payload can have whitespace', () => {
-    const parsed = parseCommand('test - 1 2 3');
+    const parsed = parseCommand('test == 1 2 3');
     expect(parsed.command).toEqual('test')
     expect(parsed.tags).toEqual([])
     expect(parsed.payloadStr).toEqual('1 2 3')

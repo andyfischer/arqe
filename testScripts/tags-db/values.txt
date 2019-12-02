@@ -1,4 +1,4 @@
 
-save a - 1
+save a == 1
 get a
 expect 1

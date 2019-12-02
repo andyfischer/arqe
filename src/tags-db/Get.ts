@@ -8,27 +8,27 @@ import { normalizeExactTag, commandArgsToString } from './parseCommand'
 export default class Get {
 
     graph: Graph;
-    originalArgs: CommandTag[]
+    command: Command;
     fixedArgs: CommandTag[] = []
     starValueTags: CommandTag[] = []
     inheritArgs: CommandTag[] = []
 
-    constructor(graph: Graph, args: CommandTag[]) {
+    constructor(graph: Graph, command: Command) {
         this.graph = graph;
-        this.originalArgs = args;
+        this.command = command;
 
-        for (const arg of args) {
+        for (const tag of command.tags) {
 
-            const tagType = this.graph.findTagType(arg.tagType);
+            const tagType = this.graph.findTagType(tag.tagType);
 
-            if (arg.starValue)
-                this.starValueTags.push(arg);
+            if (tag.starValue)
+                this.starValueTags.push(tag);
             else
-                this.fixedArgs.push(arg);
+                this.fixedArgs.push(tag);
 
             if (tagType.inherits) {
-                arg.tagTypeInherits = true;
-                this.inheritArgs.push(arg);
+                tag.tagTypeInherits = true;
+                this.inheritArgs.push(tag);
             }
         }
     }
@@ -80,27 +80,26 @@ export default class Get {
         return '[' + outValues.join(', ') + ']'
     }
 
-    checkExactMatch(args: CommandTag[]) {
+    findExactMatch(args: CommandTag[]): Relation|null {
         // Exact tag lookup.
         const ntag = normalizeExactTag(args);
 
-        if (this.graph.relationsByNtag[ntag])
-            return true;
-
-        return false;
+        return this.graph.relationsByNtag[ntag]
     }
 
     run(): string {
         if (this.starValueTags.length > 0)
             return this.runFullSearch();
 
-        if (this.checkExactMatch(this.originalArgs))
-            return '#exists'
+        const found = this.findExactMatch(this.command.tags);
+        if (found)
+            return found.payloadStr;
 
         for (const inheritArg of this.inheritArgs) {
-            const remainingArgs = this.originalArgs.filter(arg => arg.tagType !== inheritArg.tagType);
-            if (this.checkExactMatch(remainingArgs))
-                return '#exists'
+            const remainingArgs = this.command.tags.filter(arg => arg.tagType !== inheritArg.tagType);
+            const found = this.findExactMatch(remainingArgs);
+            if (found)
+                return found.payloadStr;
         }
 
         return '#null';

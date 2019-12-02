@@ -48,13 +48,13 @@ export default class Graph {
         }
     }
 
-    save(tags: CommandTag[]) {
+    save(command: Command) {
         //console.log('save: ', commandArgsToString(tags));
 
         let affectsTypeInfo = false;
 
         // Resolve any special tags
-        for (const arg of tags) {
+        for (const arg of command.tags) {
             if (arg.tagValue === '#unique')
                 arg.tagValue = this.findTagType(arg.tagType).getUniqueId()
 
@@ -62,14 +62,15 @@ export default class Graph {
                 affectsTypeInfo = true;
         }
 
-        const ntag = normalizeExactTag(tags);
+        const ntag = normalizeExactTag(command.tags);
+        const existing = this.relationsByNtag[ntag];
 
-        if (this.relationsByNtag[ntag]) {
-            // Already have this relation
+        if (existing) {
+            existing.payloadStr = command.payloadStr;
             return;
         }
 
-        const relation = new Relation(ntag, tags);
+        const relation = new Relation(ntag, command.tags, command.payloadStr);
 
         if (affectsTypeInfo) {
             this.updateTypeInfo(relation);
@@ -113,9 +114,9 @@ export default class Graph {
     }
     */
 
-    get(tags: CommandTag[]) {
+    get(command: Command) {
         try {
-            const get = new Get(this, tags);
+            const get = new Get(this, command);
             const result = get.run();
             return result;
         } catch (err) {
@@ -131,11 +132,11 @@ export default class Graph {
         switch (command.command) {
 
         case 'save': {
-            return this.save(command.tags);
+            return this.save(command);
         }
 
         case 'get': {
-            return this.get(command.tags);
+            return this.get(command);
         }
         
         }

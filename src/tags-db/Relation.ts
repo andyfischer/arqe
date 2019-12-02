@@ -3,11 +3,12 @@ import { CommandTag } from './Command'
 
 export default class Relation {
     ntag: string
-    value: any
+    payloadStr: any
     asMap: any = {}
 
-    constructor(ntag: string, tags: CommandTag[]) {
+    constructor(ntag: string, tags: CommandTag[], payloadStr: string) {
         this.ntag = ntag;
+        this.payloadStr = payloadStr || '#exists';
 
         for (const arg of tags) {
             this.asMap[arg.tagType] = arg.tagValue || true;

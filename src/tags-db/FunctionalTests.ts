@@ -16,7 +16,7 @@ function loadCasesFromFiles() {
     return files.map(file => {
         const filename = Path.join(testDir, file);
         const contents = Fs.readFileSync(filename, 'utf8');
-        return fromScript(contents);
+        return fromScript(`-- File: ${file}\n${contents}`)
     });
 }
 

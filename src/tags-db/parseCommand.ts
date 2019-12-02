@@ -2,7 +2,8 @@
 import { parseAsOneSimple } from '../parse-query/parseQueryV3'
 import Command, { CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
-    t_equals, t_dash, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash } from '../lexer'
+    t_equals, t_dash, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
+    t_double_equals } from '../lexer'
 
 interface Clause {
     str?: string
@@ -10,7 +11,7 @@ interface Clause {
 }
 
 function nextIsPayloadStart(it: TokenIterator) {
-    return it.nextIs(t_dash) && it.nextIs(t_space, 1);
+    return it.nextIs(t_double_equals);
 }
 
 function parseCommandTags(it: TokenIterator, command: Command) {
@@ -60,8 +61,8 @@ function parsePayload(it: TokenIterator, command: Command) {
     if (!nextIsPayloadStart(it))
         return;
 
-    it.consume(t_dash);
-    it.consume(t_space);
+    it.consume(t_double_equals);
+    it.skipSpaces();
 
     let str = "";
 
