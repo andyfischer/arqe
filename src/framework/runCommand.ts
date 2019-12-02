@@ -4,7 +4,7 @@ import { Query } from '..'
 import { print, values, timedOut } from '../utils'
 import { getCommandDatabase, CommandDatabase } from '../types/CommandDatabase'
 import CommandImplementation from '../types/CommandImplementation'
-import { ensureModuleLoaded } from '../lazymodules'
+// import { ensureModuleLoaded } from '../lazymodules'
 
 const verbose = !!process.env.verbose;
 const MissingValue = Symbol('missing');
@@ -68,9 +68,11 @@ export default async function runCommandFromQuery(query: Query) {
         return;
     }
 
+    /*
     if (command.fromLazyModule) {
         ensureModuleLoaded(command.fromLazyModule);
     }
+    */
 
     if (command.hasNoImplementation) {
         query.respond(null);

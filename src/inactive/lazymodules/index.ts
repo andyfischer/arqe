@@ -1,4 +1,5 @@
 
+/*
 import Path from 'path'
 import { print } from '../utils'
 
@@ -14,3 +15,4 @@ export async function ensureModuleLoaded(filename: string) {
 
     _loaded[absFilename] = require(absFilename);
 }
+*/
