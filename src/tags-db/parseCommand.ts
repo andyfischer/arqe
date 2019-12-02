@@ -24,7 +24,7 @@ function parseCommandTags(it: TokenIterator, command: Command) {
             command.tags.push({
                 starType: true
             });
-            return;
+            continue;
         }
 
         let subtract = false;
@@ -40,10 +40,10 @@ function parseCommandTags(it: TokenIterator, command: Command) {
         let starValue = false;
 
         if (it.tryConsume(t_slash)) {
-            if (it.nextIs(t_star)) {
+            if (it.tryConsume(t_star)) {
                 starValue = true;
             } else {
-                tagValue = it.nextUnquotedText();
+                tagValue = it.consumeNextUnquotedText();
             }
         }
 
