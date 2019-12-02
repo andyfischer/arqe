@@ -34,3 +34,23 @@ it('ignores extra spaces', () => {
     expect(parsed.command).toEqual('test')
     expect(parsed.tags[0].tagType).toEqual('a')
 });
+
+it('parses star type', () => {
+    const parsed = parseCommand('test *');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.tags[0].starType).toEqual(true)
+});
+
+it('parses payload', () => {
+    const parsed = parseCommand('test - 1');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.tags).toEqual([])
+    expect(parsed.payloadStr).toEqual('1')
+});
+
+it('payload can have whitespace', () => {
+    const parsed = parseCommand('test - 1 2 3');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.tags).toEqual([])
+    expect(parsed.payloadStr).toEqual('1 2 3')
+});

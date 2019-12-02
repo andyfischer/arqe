@@ -66,9 +66,9 @@ function parsePayload(it: TokenIterator, command: Command) {
     let str = "";
 
     while (!it.nextIs(t_newline) && !it.finished())
-        str += it.nextText();
+        str += it.consumeNextText();
 
-    command.payload = str;
+    command.payloadStr = str;
 }
 
 function parseCommandFromLexed(it: TokenIterator): Command {

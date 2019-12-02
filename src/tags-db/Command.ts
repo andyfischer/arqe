@@ -16,7 +16,7 @@ export interface CommandTag {
 export default class Command {
     command: string
     tags: CommandTag[] = []
-    payload: string
+    payloadStr: string
 
     toCommandString() {
         return this.command + ' ' + commandArgsToString(this.tags);
