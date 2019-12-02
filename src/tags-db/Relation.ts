@@ -1,15 +1,15 @@
 
-import { CommandArg } from './Command'
+import { CommandTag } from './Command'
 
 export default class Relation {
     ntag: string
     value: any
     asMap: any = {}
 
-    constructor(ntag: string, args: CommandArg[]) {
+    constructor(ntag: string, tags: CommandTag[]) {
         this.ntag = ntag;
 
-        for (const arg of args) {
+        for (const arg of tags) {
             this.asMap[arg.tagType] = arg.tagValue || true;
         }
     }

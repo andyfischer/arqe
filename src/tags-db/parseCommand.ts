@@ -1,58 +1,103 @@
 
 import { parseAsOneSimple } from '../parse-query/parseQueryV3'
-import Command, { CommandArg } from './Command'
+import Command, { CommandTag } from './Command'
+import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
+    t_equals, t_dash, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash } from '../lexer'
 
-export default function parseCommand(str: string): Command {
-    const clauses = str.split(/ +/)
-    const command = clauses[0];
-    const argStrs = clauses.slice(1);
-    const args: CommandArg[] = argStrs
-        .map(str => {
-            let tagType;
-            let tagValue;
-            let subtract;
-
-            const slashPos = str.indexOf('/');
-
-            if (slashPos !== -1) {
-                tagType = str.substring(0, slashPos);
-                tagValue = str.substring(slashPos + 1)
-
-            } else {
-                tagType = str;
-                tagValue = null;
-            }
-
-            if (tagType[0] === '-') {
-                tagType = tagType.substring(1);
-                subtract = true;
-            }
-
-            const starValue = tagValue === '*';
-
-            const arg:CommandArg = {
-               tagType,
-               tagValue,
-               subtract,
-               starValue
-            };
-
-            return arg;
-        });
-
-    args.sort((a, b) => {
-        return a.tagType.localeCompare(b.tagType);
-    });
-
-    const parsed = new Command();
-    parsed.command = command;
-    parsed.args = args;
-
-    return parsed;
+interface Clause {
+    str?: string
+    payload?: string
 }
 
-export function commandArgsToString(args: CommandArg[]) {
-    return args.map(arg => {
+function nextIsPayloadStart(it: TokenIterator) {
+    return it.nextIs(t_dash) && it.nextIs(t_space, 1);
+}
+
+function parseCommandTags(it: TokenIterator, command: Command) {
+    while (true) {
+        it.skipSpaces();
+
+        if (it.finished() || it.nextIs(t_newline) || nextIsPayloadStart(it))
+            return;
+
+        if (it.tryConsume(t_star)) {
+            command.tags.push({
+                starType: true
+            });
+            return;
+        }
+
+        let subtract = false;
+
+        if (it.nextIs(t_dash) && !it.nextIs(t_space, 1)) {
+            subtract = true;
+            it.consume();
+        }
+
+        const tagType = it.consumeNextUnquotedText();
+
+        let tagValue = null;
+        let starValue = false;
+
+        if (it.tryConsume(t_slash)) {
+            if (it.nextIs(t_star)) {
+                starValue = true;
+            } else {
+                tagValue = it.nextUnquotedText();
+            }
+        }
+
+        command.tags.push({
+            tagType,
+            tagValue,
+            subtract,
+            starValue
+        });
+    }
+}
+
+function parsePayload(it: TokenIterator, command: Command) {
+    if (!nextIsPayloadStart(it))
+        return;
+
+    it.consume(t_dash);
+    it.consume(t_space);
+
+    let str = "";
+
+    while (!it.nextIs(t_newline) && !it.finished())
+        str += it.nextText();
+
+    command.payload = str;
+}
+
+function parseCommandFromLexed(it: TokenIterator): Command {
+    const command = new Command();
+
+    // Parse directive
+    it.skipSpaces();
+    if (!it.nextIs(t_ident) && !it.nextIs(t_quoted_string))
+        throw new Error("expected identifier, saw: " + it.nextText());
+
+    command.command = it.consumeNextUnquotedText();
+
+    // Parse tag args
+    parseCommandTags(it, command);
+
+    // Parse payload
+    parsePayload(it, command);
+
+    return command;
+}
+
+export default function parseCommand(str: string) {
+    const it = lexStringToIterator(str);
+    const command = parseCommandFromLexed(it);
+    return command;
+}
+
+export function commandArgsToString(tags: CommandTag[]) {
+    return tags.map(arg => {
         let s = arg.tagType;
 
         if (arg.tagValue) {
@@ -71,11 +116,11 @@ export function parseAsSave(str: string) {
     if (command.command !== 'save')
         throw new Error("Expected 'save' command: " + str);
 
-    return command.args;
+    return command.tags;
 }
 
-export function normalizeExactTag(args: CommandArg[]) {
-    const argStrs = args.map(arg => arg.tagType + '/' + arg.tagValue)
+export function normalizeExactTag(tags: CommandTag[]) {
+    const argStrs = tags.map(arg => arg.tagType + '/' + arg.tagValue)
     argStrs.sort();
     return argStrs.join(' ');
 }

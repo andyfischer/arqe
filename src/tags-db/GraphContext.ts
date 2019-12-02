@@ -1,9 +1,9 @@
 
 import Graph from './Graph'
-import Command, { CommandArg } from './Command'
+import Command, { CommandTag } from './Command'
 
-function containsTagType(args: CommandArg[], tagType: string) {
-    for (const arg of args)
+function containsTagType(tags: CommandTag[], tagType: string) {
+    for (const arg of tags)
         if (arg.tagType === tagType)
             return true;
 
@@ -12,7 +12,7 @@ function containsTagType(args: CommandArg[], tagType: string) {
 
 export default class GraphContext {
     graph: Graph
-    contextArgs: CommandArg[] = []
+    contextArgs: CommandTag[] = []
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -23,7 +23,7 @@ export default class GraphContext {
     }
 
     contextCommand(command: Command) {
-        for (const arg of command.args) {
+        for (const arg of command.tags) {
             if (!arg.tagType)
                 throw new Error('error: context arg needs type name: ' + JSON.stringify(arg));
 
@@ -45,10 +45,10 @@ export default class GraphContext {
             return this.contextCommand(command);
         }
 
-        // Apply context args to this command.
+        // Apply context tags to this command.
         for (const contextArg of this.contextArgs) {
-            if (!containsTagType(command.args, contextArg.tagType))
-                command.args.push(contextArg);
+            if (!containsTagType(command.tags, contextArg.tagType))
+                command.tags.push(contextArg);
         }
         
         return await this.graph.handleCommand(command);

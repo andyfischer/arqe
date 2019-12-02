@@ -1,5 +1,5 @@
 
-import Command, { CommandArg } from './Command'
+import Command, { CommandTag } from './Command'
 import Graph from './Graph'
 import TagType from './TagType'
 import Relation from './Relation'
@@ -8,12 +8,12 @@ import { normalizeExactTag, commandArgsToString } from './parseCommand'
 export default class Get {
 
     graph: Graph;
-    originalArgs: CommandArg[]
-    fixedArgs: CommandArg[] = []
-    starValueArgs: CommandArg[] = []
-    inheritArgs: CommandArg[] = []
+    originalArgs: CommandTag[]
+    fixedArgs: CommandTag[] = []
+    starValueTags: CommandTag[] = []
+    inheritArgs: CommandTag[] = []
 
-    constructor(graph: Graph, args: CommandArg[]) {
+    constructor(graph: Graph, args: CommandTag[]) {
         this.graph = graph;
         this.originalArgs = args;
 
@@ -22,7 +22,7 @@ export default class Get {
             const tagType = this.graph.findTagType(arg.tagType);
 
             if (arg.starValue)
-                this.starValueArgs.push(arg);
+                this.starValueTags.push(arg);
             else
                 this.fixedArgs.push(arg);
 
@@ -49,7 +49,7 @@ export default class Get {
                 return false;
         }
 
-        for (const arg of this.starValueArgs) {
+        for (const arg of this.starValueTags) {
             if (!rel.asMap[arg.tagType])
                 return false;
         }
@@ -70,7 +70,7 @@ export default class Get {
 
     runFullSearch() {
         const matches = this.fullSearch()
-        const variedType = this.starValueArgs[0];
+        const variedType = this.starValueTags[0];
 
         const outValues = [];
         for (const match of matches) {
@@ -80,7 +80,7 @@ export default class Get {
         return '[' + outValues.join(', ') + ']'
     }
 
-    checkExactMatch(args: CommandArg[]) {
+    checkExactMatch(args: CommandTag[]) {
         // Exact tag lookup.
         const ntag = normalizeExactTag(args);
 
@@ -91,7 +91,7 @@ export default class Get {
     }
 
     run(): string {
-        if (this.starValueArgs.length > 0)
+        if (this.starValueTags.length > 0)
             return this.runFullSearch();
 
         if (this.checkExactMatch(this.originalArgs))

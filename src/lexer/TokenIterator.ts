@@ -79,9 +79,30 @@ export default class TokenIterator {
 
     consume(match: TokenDef = null) {
         if (match !== null && !this.nextIs(match))
-            throw new Error(`consume expected match: ${match}, found match: ${this.next().match}`);
+            throw new Error(`consume expected match: ${match.name}, found match: ${this.next().match.name}`);
 
         this.position += 1;
+    }
+
+    consumeNextText(lookahead: number = 0): string {
+        const str = this.nextText(lookahead);
+        this.consume();
+        return str;
+    }
+
+
+    consumeNextUnquotedText(lookahead: number = 0): string {
+        const str = this.nextUnquotedText(lookahead);
+        this.consume();
+        return str;
+    }
+
+    tryConsume(match: TokenDef): boolean {
+        if (this.nextIs(match)) {
+            this.consume();
+            return true;
+        }
+        return false;
     }
 
     skipWhile(condition: (next: Token) => boolean) {

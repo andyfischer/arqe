@@ -129,3 +129,8 @@ export function tokenizeString(str:string): LexedText {
     result.iterator.result = result;
     return result;
 }
+
+export function lexStringToIterator(str: string): TokenIterator {
+    const { iterator } = tokenizeString(str);
+    return iterator;
+}

@@ -1,5 +1,5 @@
 
-import Command, { CommandArg } from './Command'
+import Command, { CommandTag } from './Command'
 import parseCommand from './parseCommand'
 import TagType from './TagType'
 import Relation from './Relation'
@@ -28,9 +28,9 @@ export default class Graph {
         return this.tagTypes[name];
     }
 
-    exists(args: CommandArg[]) {
-        // console.log('exists: ', commandArgsToString(args));
-        const ntag = normalizeExactTag(args);
+    exists(tags: CommandTag[]) {
+        // console.log('exists: ', commandArgsToString(tags));
+        const ntag = normalizeExactTag(tags);
         return !!this.relationsByNtag[ntag];
     }
 
@@ -48,13 +48,13 @@ export default class Graph {
         }
     }
 
-    save(args: CommandArg[]) {
-        //console.log('save: ', commandArgsToString(args));
+    save(tags: CommandTag[]) {
+        //console.log('save: ', commandArgsToString(tags));
 
         let affectsTypeInfo = false;
 
-        // Resolve any special args
-        for (const arg of args) {
+        // Resolve any special tags
+        for (const arg of tags) {
             if (arg.tagValue === '#unique')
                 arg.tagValue = this.findTagType(arg.tagType).getUniqueId()
 
@@ -62,14 +62,14 @@ export default class Graph {
                 affectsTypeInfo = true;
         }
 
-        const ntag = normalizeExactTag(args);
+        const ntag = normalizeExactTag(tags);
 
         if (this.relationsByNtag[ntag]) {
             // Already have this relation
             return;
         }
 
-        const relation = new Relation(ntag, args);
+        const relation = new Relation(ntag, tags);
 
         if (affectsTypeInfo) {
             this.updateTypeInfo(relation);
@@ -81,8 +81,8 @@ export default class Graph {
     }
 
     /*
-    getWithStar(args: CommandArg[]) {
-        const search = new FullSearch(this, args);
+    getWithStar(tags: CommandTag[]) {
+        const search = new FullSearch(this, tags);
         const matches = search.run();
         const variedType = search.starValueArgs[0];
 
@@ -96,14 +96,14 @@ export default class Graph {
     */
 
     /*
-    getFixed(args: CommandArg[]) {
-        const ntag = normalizeExactTag(args);
+    getFixed(tags: CommandTag[]) {
+        const ntag = normalizeExactTag(tags);
 
         if (this.relationsByNtag[ntag])
             return '#exists';
 
         for (const inheritTag of inheritTags) {
-            const attemptArgs = args.filter(arg => arg.tagType !== inheritTag.name);
+            const attemptArgs = tags.filter(arg => arg.tagType !== inheritTag.name);
             const result = this.getFixed(attemptArgs);
             if (result === '#exists')
                 return result;
@@ -113,9 +113,9 @@ export default class Graph {
     }
     */
 
-    get(args: CommandArg[]) {
+    get(tags: CommandTag[]) {
         try {
-            const get = new Get(this, args);
+            const get = new Get(this, tags);
             const result = get.run();
             return result;
         } catch (err) {
@@ -131,11 +131,11 @@ export default class Graph {
         switch (command.command) {
 
         case 'save': {
-            return this.save(command.args);
+            return this.save(command.tags);
         }
 
         case 'get': {
-            return this.get(command.args);
+            return this.get(command.tags);
         }
         
         }
