@@ -94,6 +94,15 @@ export default class Graph {
         }
     }
 
+    dump(command: Command) {
+        for (const ntag in this.relationsByNtag) {
+            const rel = this.relationsByNtag[ntag];
+            command.respondPart(rel.asSaveCommand());
+        }
+
+        command.respondEnd();
+    }
+
     handleCommand(command: Command) {
 
         switch (command.command) {
@@ -105,6 +114,11 @@ export default class Graph {
 
         case 'get': {
             this.get(command);
+            return;
+        }
+
+        case 'dump': {
+            this.dump(command);
             return;
         }
         

@@ -18,4 +18,18 @@ export default class Relation {
     includesType(name: string) {
         return this.asMap[name] !== undefined;
     }
+
+    asSaveCommand() {
+        const args = []
+        for (const key in this.asMap) {
+            const value = this.asMap[key];
+            let str = key;
+            if (value !== true)
+                str += `/${value}`
+
+            args.push(str);
+        }
+
+        return 'save ' + args.join(' ');
+    }
 }

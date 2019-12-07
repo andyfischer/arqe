@@ -20,7 +20,8 @@ export default class Command {
 
     // Execution context
     respond: (msg: string) => void
-    receiveResponsePart: (msg: string) => void
+    respondPart: (msg: string) => void
+    respondEnd: () => void
 
     toCommandString() {
         return this.command + ' ' + commandArgsToString(this.tags);
