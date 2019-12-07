@@ -36,13 +36,14 @@ export default class GraphContext {
             this.contextArgs.push(arg);
         }
 
-        return '#done'
+        command.respond('#done');
     }
 
     async handleCommand(command: Command) {
         switch (command.command) {
         case 'context':
-            return this.contextCommand(command);
+            this.contextCommand(command);
+            return;
         }
 
         // Apply context tags to this command.
@@ -51,6 +52,6 @@ export default class GraphContext {
                 command.tags.push(contextArg);
         }
         
-        return await this.graph.handleCommand(command);
+        await this.graph.handleCommand(command);
     }
 }

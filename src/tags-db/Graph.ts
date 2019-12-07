@@ -67,6 +67,7 @@ export default class Graph {
 
         if (existing) {
             existing.payloadStr = command.payloadStr;
+            command.respond("#done");
             return;
         }
 
@@ -78,45 +79,53 @@ export default class Graph {
 
         this.relationsByNtag[ntag] = relation;
 
-        return "#done"
+        command.respond("#done");
     }
 
     get(command: Command) {
         try {
             const get = new Get(this, command);
             const result = get.run();
-            return result;
+            command.respond(result);
+
         } catch (err) {
             console.log(err.stack || err);
-            return '#internal_error'
+            command.respond("#internal_error");
         }
     }
 
     handleCommand(command: Command) {
 
-        // console.log('graph handle: ', command.toCommandString());
-
         switch (command.command) {
 
         case 'save': {
-            return this.save(command);
+            this.save(command);
+            return;
         }
 
         case 'get': {
-            return this.get(command);
+            this.get(command);
+            return;
         }
         
         }
 
-        return "unrecognized command: " + command.command;
+        command.respond("unrecognized command: " + command.command);
     }
 
     handleCommandStr(str: string) {
+        let result = null;
+
         try { 
+
             const parsed = parseCommand(str);
-            return this.handleCommand(parsed);
+            parsed.respond = msg => { result = msg; }
+            this.handleCommand(parsed);
+            return result;
+
         } catch (err) {
             console.log('handleCommandStr error: ', err);
+            return '';
         }
     }
 }

@@ -13,7 +13,15 @@ export default class CommandConnection {
 
         ws.on('message', str => {
             const { reqid, result } = JSON.parse(str);
-            this.reqListeners[reqid](result);
+
+            const listener = this.reqListeners[reqid]
+
+            if (!listener) {
+                console.log('CommandConnection internal error: unrecognized reqid: ' + str);
+                return;
+            }
+
+            listener(result);
             delete this.reqListeners[reqid];
         });
     }

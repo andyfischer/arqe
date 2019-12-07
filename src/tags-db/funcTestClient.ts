@@ -14,6 +14,7 @@ export default async function main() {
     console.log('client: Connected to server');
 
     const commandConnection = new CommandConnection(ws);
+    console.log('running tests..')
     await mainFunctionalTests(commandConnection);
     commandConnection.close();
 }

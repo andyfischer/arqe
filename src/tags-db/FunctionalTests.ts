@@ -25,7 +25,6 @@ export async function mainFunctionalTests(conn: CommandConnection) {
     const suite = new TestSuite();
     suite.conn = conn;
 
-
     await suite.runAll(loadCasesFromFiles());
     
     const session = new TestSession();

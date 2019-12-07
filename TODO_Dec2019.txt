@@ -1,0 +1,6 @@
+
+ - Set up process-associated data? Could be useful.
+
+ - Database dump/restore
+   - Set up CommandContext
+   - Set up streaming output

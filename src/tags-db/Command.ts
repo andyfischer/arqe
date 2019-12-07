@@ -18,6 +18,10 @@ export default class Command {
     tags: CommandTag[] = []
     payloadStr: string
 
+    // Execution context
+    respond: (msg: string) => void
+    receiveResponsePart: (msg: string) => void
+
     toCommandString() {
         return this.command + ' ' + commandArgsToString(this.tags);
     }

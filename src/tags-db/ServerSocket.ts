@@ -24,8 +24,12 @@ export default class ServerSocket {
 
                 try {
                     const parsedCommand = parseCommand(command);
-                    const result = await graphContext.handleCommand(parsedCommand)
-                    ws.send(JSON.stringify({reqid, result}));
+
+                    parsedCommand.respond = (result) => {
+                        ws.send(JSON.stringify({reqid, result}));
+                    }
+
+                    await graphContext.handleCommand(parsedCommand)
 
                 } catch (err) {
                     ws.send(JSON.stringify({reqid, internalError: true, err}));
