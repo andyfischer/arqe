@@ -81,39 +81,6 @@ export default class Graph {
         return "#done"
     }
 
-    /*
-    getWithStar(tags: CommandTag[]) {
-        const search = new FullSearch(this, tags);
-        const matches = search.run();
-        const variedType = search.starValueArgs[0];
-
-        const outValues = []
-        for (const match of matches) {
-            outValues.push(match.asMap[variedType.tagType]);
-        }
-
-        return '[' + outValues.join(', ') + ']'
-    }
-    */
-
-    /*
-    getFixed(tags: CommandTag[]) {
-        const ntag = normalizeExactTag(tags);
-
-        if (this.relationsByNtag[ntag])
-            return '#exists';
-
-        for (const inheritTag of inheritTags) {
-            const attemptArgs = tags.filter(arg => arg.tagType !== inheritTag.name);
-            const result = this.getFixed(attemptArgs);
-            if (result === '#exists')
-                return result;
-        }
-
-        return '#null';
-    }
-    */
-
     get(command: Command) {
         try {
             const get = new Get(this, command);
