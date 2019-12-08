@@ -1,12 +1,15 @@
 
 import { CommandTag } from './Command'
+import Graph from './Graph'
 
 export default class Relation {
     ntag: string
     payloadStr: any
     asMap: any = {}
+    graph: Graph
 
-    constructor(ntag: string, tags: CommandTag[], payloadStr: string) {
+    constructor(graph: Graph, ntag: string, tags: CommandTag[], payloadStr: string) {
+        this.graph = graph;
         this.ntag = ntag;
         this.payloadStr = payloadStr || '#exists';
 
@@ -14,22 +17,34 @@ export default class Relation {
             this.asMap[arg.tagType] = arg.tagValue || true;
         }
     }
+    
+    getOptional(typeName: string, defaultValue) {
+        const found = this.asMap[typeName];
+        if (found === undefined)
+            return defaultValue;
+        return found;
+    }
+
+    get(typeName: string) {
+        const found = this.asMap[typeName];
+        if (found === undefined)
+            throw new Error("type not found: " + typeName);
+        return found;
+    }
+    
+    has(typeName: string) {
+        return this.asMap[typeName] !== undefined;
+    }
+
+    tags() {
+        const result = [];
+        for (const key in this.asMap) {
+            result.push({key, value: this.asMap[key]});
+        }
+        return result;
+    }
 
     includesType(name: string) {
         return this.asMap[name] !== undefined;
-    }
-
-    asSaveCommand() {
-        const args = []
-        for (const key in this.asMap) {
-            const value = this.asMap[key];
-            let str = key;
-            if (value !== true)
-                str += `/${value}`
-
-            args.push(str);
-        }
-
-        return 'save ' + args.join(' ');
     }
 }

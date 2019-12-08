@@ -40,23 +40,23 @@ export default class CommandConnection {
         this.ws.terminate();
     }
 
-    async run(command: string): Promise<string> {
-
+    async _runWithListener(command: string, listener: Listener) {
         const reqid = this.nextReqId;
         this.nextReqId += 1
 
         this.ws.send(JSON.stringify({reqid, command}));
+        this.reqListeners[reqid] = listener;
+    }
+
+    async run(command: string): Promise<string> {
 
         const lines = []
 
         return new Promise((resolve, reject) => {
-            this.reqListeners[reqid] = {
+            this._runWithListener(command, {
                 receivePart: (msg) => { lines.push(msg) },
                 receiveEnd: () => resolve(lines.join('\n'))
-            };
+            });
         });
-    }
-
-    async runStreaming(command: string, receivePart: (msg) => void) {
     }
 }

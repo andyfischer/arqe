@@ -6,6 +6,7 @@ import Relation from './Relation'
 import { normalizeExactTag, commandArgsToString } from './parseCommand'
 import FullSearch from './FullSearch'
 import Get from './Get'
+import TagTypeOrdering from './TagTypeOrdering'
 
 interface Column {
     name: string
@@ -15,6 +16,7 @@ export default class Graph {
 
     relationsByNtag: { [ ntag: string]: Relation } = {}
     tagTypes: { [name: string]: TagType } = {}
+    ordering = new TagTypeOrdering
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
@@ -35,16 +37,15 @@ export default class Graph {
     }
 
     updateTypeInfo(rel: Relation) {
-        for (const k in rel.asMap) {
-            if (k !== 'typeinfo' && k !== 'option')
-                throw new Error(`can't save tag ${k} with typeinfo`);
+        const tagType = this.findTagType(rel.get('typeinfo'))
+
+        if (rel.getOptional('option', null) === 'inherits') {
+            tagType.inherits = true;
+            return;
         }
 
-        const tagType = this.findTagType(rel.asMap['typeinfo'])
-
-        if (rel.asMap['option'] === 'inherits') {
-            // console.log(`tag type '${tagType.name}' inherits`)
-            tagType.inherits = true;
+        if (rel.has('order')) {
+            this.ordering.updateInfo(rel);
         }
     }
 
@@ -71,7 +72,7 @@ export default class Graph {
             return;
         }
 
-        const relation = new Relation(ntag, command.tags, command.payloadStr);
+        const relation = new Relation(this, ntag, command.tags, command.payloadStr);
 
         if (affectsTypeInfo) {
             this.updateTypeInfo(relation);
@@ -97,10 +98,26 @@ export default class Graph {
     dump(command: Command) {
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
-            command.respondPart(rel.asSaveCommand());
+            command.respondPart(this.stringifyRelation(rel));
         }
 
         command.respondEnd();
+    }
+
+    stringifyRelation(rel: Relation) {
+        const keys = Object.keys(rel.asMap);
+        keys.sort((a,b) => this.ordering.compareTagTypes(a, b));
+
+        const args = keys.map(key => {
+            const value = rel.asMap[key];
+            let str = key;
+            if (value !== true)
+                str += `/${value}`
+
+            return str;
+        });
+
+        return 'save ' + args.join(' ');
     }
 
     handleCommand(command: Command) {

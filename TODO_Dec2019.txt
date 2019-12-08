@@ -2,5 +2,7 @@
  - Set up process-associated data? Could be useful.
 
  - Database dump/restore
-   - Set up CommandContext
-   - Set up streaming output
+   X Set up CommandContext
+   X Set up streaming output
+
+ X Define tag ordering
