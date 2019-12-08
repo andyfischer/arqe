@@ -57,6 +57,13 @@ it('parses star type', () => {
     expect(parsed.tags[0].starType).toEqual(true)
 });
 
+it('parses option syntax', () => {
+    const parsed = parseCommand('test .foo');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.tags[0].tagType).toEqual('option')
+    expect(parsed.tags[0].tagValue).toEqual('foo')
+});
+
 it('parses payload', () => {
     const parsed = parseCommand('test == 1');
     expect(parsed.command).toEqual('test')
@@ -70,3 +77,4 @@ it('payload can have whitespace', () => {
     expect(parsed.tags).toEqual([])
     expect(parsed.payloadStr).toEqual('1 2 3')
 });
+

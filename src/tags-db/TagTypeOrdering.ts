@@ -10,9 +10,6 @@ export default class TagTypeOrdering {
     section = {}
 
     updateInfo(rel: Relation) {
-        if (!rel.has('order'))
-            throw new Error('expected "order" relation');
-
         if (!rel.has('typeinfo'))
             throw new Error('expected "typeinfo" relation');
 

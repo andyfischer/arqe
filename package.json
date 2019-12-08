@@ -8,9 +8,8 @@
     "test": "jest --watch",
     "self-fix": "node dist/self-fix",
     "tsc-watch": "tsc -w",
-    "start": "yarn start-tags-db",
+    "start": "concurrently -n tsc,server,jest 'tsc -w' 'yarn nodemon-tags-server' 'yarn test'",
     "nodemon-tags-server": "nodemon --watch dist --watch testScripts -e js,ts,txt dist/tags-db/startServer.js",
-    "start-tags-db": "concurrently -n tsc,server 'tsc -w' 'yarn nodemon-tags-server'",
     "tags-cli": "node dist/tags-db/startCli.js"
   },
   "dependencies": {

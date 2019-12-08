@@ -8,8 +8,6 @@ export default async function main() {
     const cliArgs = Minimist(process.argv.slice(2), {
     });
 
-    console.log('cliArgs: ', cliArgs);
-
     const ws = new WebSocket('http://localhost:42940');
     await new Promise((resolve, reject) => {
         ws.on('open', resolve);
@@ -21,6 +19,7 @@ export default async function main() {
         const command = cliArgs._.join(' ');
 
         const result = await commandConnection.run(command);
+        console.log(result);
         commandConnection.close();
         return;
     }
