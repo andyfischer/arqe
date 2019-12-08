@@ -11,7 +11,7 @@
     "start": "yarn start-tags-db",
     "nodemon-tags-server": "nodemon --watch dist --watch testScripts -e js,ts,txt dist/tags-db/startServer.js",
     "start-tags-db": "concurrently -n tsc,server 'tsc -w' 'yarn nodemon-tags-server'",
-    "tags-cli": "nodemon --watch dist dist/tags-db/startCli.js"
+    "tags-cli": "node dist/tags-db/startCli.js"
   },
   "dependencies": {
     "bent": "^1.5.13",
