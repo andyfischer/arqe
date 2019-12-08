@@ -17,6 +17,10 @@ export default class Relation {
             this.asMap[arg.tagType] = arg.tagValue || true;
         }
     }
+
+    setPayload(payloadStr: string) {
+        this.payloadStr = payloadStr || '#exists';
+    }
     
     getOptional(typeName: string, defaultValue) {
         const found = this.asMap[typeName];

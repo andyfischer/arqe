@@ -10,7 +10,7 @@
     "tsc-watch": "tsc -w",
     "start": "concurrently -n tsc,server,jest 'tsc -w' 'yarn nodemon-tags-server' 'yarn test'",
     "nodemon-tags-server": "nodemon --watch dist --watch testScripts -e js,ts,txt dist/tags-db/startServer.js",
-    "tags-cli": "node dist/tags-db/startCli.js"
+    "cli": "node dist/tags-db/startCli.js"
   },
   "dependencies": {
     "bent": "^1.5.13",

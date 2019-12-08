@@ -57,51 +57,69 @@ export default class Get {
         return true;
     }
 
-    fullSearch(): Relation[] {
+    hasListResult() {
+        return this.starValueTags.length > 0;
+    }
+
+    *matchingFullSearch() {
         const found = [];
         const graph = this.graph;
         for (const ntag in graph.relationsByNtag) {
             const rel = graph.relationsByNtag[ntag];
             if (this.relationMatches(rel))
-                found.push(rel);
+                yield rel;
         }
-        return found;
-    }
-
-    runFullSearch() {
-        const matches = this.fullSearch()
-        const variedType = this.starValueTags[0];
-
-        const outValues = [];
-        for (const match of matches) {
-            outValues.push(match.asMap[variedType.tagType]);
-        }
-
-        return '[' + outValues.join(', ') + ']'
     }
 
     findExactMatch(args: CommandTag[]): Relation|null {
         // Exact tag lookup.
         const ntag = normalizeExactTag(args);
-
         return this.graph.relationsByNtag[ntag]
     }
 
-    run(): string {
-        if (this.starValueTags.length > 0)
-            return this.runFullSearch();
-
+    findOneMatch(): Relation { 
         const found = this.findExactMatch(this.command.tags);
         if (found)
-            return found.payloadStr;
+            return found;
 
         for (const inheritArg of this.inheritArgs) {
             const remainingArgs = this.command.tags.filter(arg => arg.tagType !== inheritArg.tagType);
             const found = this.findExactMatch(remainingArgs);
             if (found)
-                return found.payloadStr;
+                return found;
+        }
+    }
+
+    *matchingRelations() {
+        if (this.hasListResult())
+            yield *this.matchingFullSearch();
+        else
+            yield this.findOneMatch();
+    }
+
+    formattedListResult() {
+        const variedType = this.starValueTags[0];
+
+        const outValues = [];
+        for (const rel of this.matchingFullSearch()) {
+            outValues.push(rel.asMap[variedType.tagType]);
         }
 
-        return '#null';
+        return '[' + outValues.join(', ') + ']'
+    }
+
+    formattedSingleResult() {
+        const found = this.findOneMatch();
+        if (found)
+            return found.payloadStr;
+
+        return '#null'
+    }
+
+    formattedResult(): string {
+        if (this.hasListResult())
+            return this.formattedListResult();
+        else
+            return this.formattedSingleResult();
     }
 }

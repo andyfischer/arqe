@@ -1,16 +1,16 @@
 
-get a/*
+get multi1/*
 expect []
 
-save a/1
-get a/*
+save multi1/1
+get multi1/*
 expect [1]
 
-save a/1
-save a/2
-get a/*
+save multi1/1
+save multi1/2
+get multi1/*
 expect [1, 2]
-save a/3
-get a/*
+save multi1/3
+get multi1/*
 expect [1, 2, 3]
 

@@ -31,7 +31,6 @@ export default class Graph {
     }
 
     exists(tags: CommandTag[]) {
-        // console.log('exists: ', commandArgsToString(tags));
         const ntag = normalizeExactTag(tags);
         return !!this.relationsByNtag[ntag];
     }
@@ -68,7 +67,7 @@ export default class Graph {
         const existing = this.relationsByNtag[ntag];
 
         if (existing) {
-            existing.payloadStr = command.payloadStr;
+            existing.setPayload(command.payloadStr);
             command.respond("#done");
             return;
         }
@@ -87,7 +86,7 @@ export default class Graph {
     get(command: Command) {
         try {
             const get = new Get(this, command);
-            const result = get.run();
+            const result = get.formattedResult();
             command.respond(result);
 
         } catch (err) {
@@ -103,6 +102,16 @@ export default class Graph {
         }
 
         command.respondEnd();
+    }
+
+    deleteCmd(command: Command) {
+        const get = new Get(this, command);
+        for (const rel of get.matchingRelations()) {
+            if (rel.has('typeinfo'))
+                throw new Error("can't delete a typeinfo relation");
+            delete this.relationsByNtag[rel.ntag];
+        }
+        command.respond('#done');
     }
 
     stringifyRelation(rel: Relation) {
@@ -123,7 +132,13 @@ export default class Graph {
             return str;
         });
 
-        return 'save ' + args.join(' ');
+        let payload = '';
+
+        if (rel.payloadStr !== '#exists') {
+            payload = ' == ' + rel.payloadStr;
+        }
+
+        return 'save ' + args.join(' ') + payload;
     }
 
     handleCommand(command: Command) {
@@ -142,6 +157,11 @@ export default class Graph {
 
         case 'dump': {
             this.dump(command);
+            return;
+        }
+
+        case 'delete': {
+            this.deleteCmd(command);
             return;
         }
         

@@ -1,0 +1,12 @@
+
+save d/1
+get d/1
+expect #exists
+
+save d/1 == 1
+get d/1
+expect 1
+
+save d/1
+get d/1
+expect #exists

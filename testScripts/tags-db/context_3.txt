@@ -1,7 +1,7 @@
 
-save lower/a a/1
+save lower/a cxt/1
 context lower/a
-get a/1
+get cxt/1
 expect #exists
 context -lower/a
 
