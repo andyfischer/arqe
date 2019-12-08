@@ -83,6 +83,9 @@ export default class Graph {
         command.respond("#done");
     }
 
+    saveUnique(command: Command) {
+    }
+
     get(command: Command) {
         try {
             const get = new Get(this, command);
@@ -109,6 +112,7 @@ export default class Graph {
         for (const rel of get.matchingRelations()) {
             if (rel.has('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
+
             delete this.relationsByNtag[rel.ntag];
         }
         command.respond('#done');
@@ -147,6 +151,11 @@ export default class Graph {
 
         case 'save': {
             this.save(command);
+            return;
+        }
+
+        case 'save-unique': {
+            this.saveUnique(command);
             return;
         }
 

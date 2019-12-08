@@ -3,7 +3,7 @@ import { parseAsOneSimple } from '../parse-query/parseQueryV3'
 import Command, { CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_dash, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot } from '../lexer'
+    t_double_equals, t_dot, t_question } from '../lexer'
 
 interface Clause {
     str?: string
@@ -41,10 +41,13 @@ function parseOneTag(it: TokenIterator) {
 
     let tagValue = null;
     let starValue = false;
+    let questionValue = false;
 
     if (it.tryConsume(t_slash)) {
         if (it.tryConsume(t_star)) {
             starValue = true;
+        } else if (it.tryConsume(t_question)) {
+            questionValue = true;
         } else {
             tagValue = it.consumeNextUnquotedText();
         }

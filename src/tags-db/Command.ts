@@ -8,6 +8,7 @@ export interface CommandTag {
     subtract?: boolean
     starType?: boolean
     starValue?: boolean
+    questionValue?: boolean
 
     // Semantic fields
     tagTypeInherits?: boolean

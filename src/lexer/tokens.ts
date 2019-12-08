@@ -129,6 +129,11 @@ export const t_bar = {
     str: "|"
 }
 
+export const t_question = {
+    name: "question",
+    str: "?"
+}
+
 export const t_ident = {
     name: "ident"
 }
@@ -180,6 +185,7 @@ export const everyToken: TokenDef[] = [
     t_dollar,
     t_bang,
     t_bar,
+    t_question,
     t_ident,
     t_integer,
     t_space,

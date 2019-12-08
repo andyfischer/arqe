@@ -1,9 +1,11 @@
 
- - Set up process-associated data? Could be useful.
+ - Set up process-associated data
 
- - Database dump/restore
+ X Database dump
    X Set up CommandContext
    X Set up streaming output
+
+ - Database restore
 
  X Define tag ordering
 
