@@ -53,11 +53,14 @@ export default class Graph {
         //console.log('save: ', commandArgsToString(tags));
 
         let affectsTypeInfo = false;
+        let expectsEcho = false;
 
         // Resolve any special tags
         for (const arg of command.tags) {
-            if (arg.tagValue === '#unique')
+            if (arg.tagValue === '#unique') {
                 arg.tagValue = this.findTagType(arg.tagType).getUniqueId()
+                expectsEcho = true;
+            }
 
             if (arg.tagType === 'typeinfo')
                 affectsTypeInfo = true;
@@ -68,22 +71,21 @@ export default class Graph {
 
         if (existing) {
             existing.setPayload(command.payloadStr);
+        } else {
+            const relation = new Relation(this, ntag, command.tags, command.payloadStr);
+
+            if (affectsTypeInfo) {
+                this.updateTypeInfo(relation);
+            }
+
+            this.relationsByNtag[ntag] = relation;
+        }
+
+        if (expectsEcho) {
+            command.respond(this.stringifyRelation(this.relationsByNtag[ntag]));
+        } else {
             command.respond("#done");
-            return;
         }
-
-        const relation = new Relation(this, ntag, command.tags, command.payloadStr);
-
-        if (affectsTypeInfo) {
-            this.updateTypeInfo(relation);
-        }
-
-        this.relationsByNtag[ntag] = relation;
-
-        command.respond("#done");
-    }
-
-    saveUnique(command: Command) {
     }
 
     get(command: Command) {
@@ -151,11 +153,6 @@ export default class Graph {
 
         case 'save': {
             this.save(command);
-            return;
-        }
-
-        case 'save-unique': {
-            this.saveUnique(command);
             return;
         }
 

@@ -14,17 +14,21 @@ export interface CommandTag {
     tagTypeInherits?: boolean
 }
 
-export default class Command {
+export default interface Command {
     command: string
-    tags: CommandTag[] = []
+    tags: CommandTag[]
     payloadStr: string
 
     // Execution context
-    respond: (msg: string) => void
-    respondPart: (msg: string) => void
-    respondEnd: () => void
+    respond?: (msg: string) => void
+    respondPart?: (msg: string) => void
+    respondEnd?: () => void
+}
 
-    toCommandString() {
-        return this.command + ' ' + commandArgsToString(this.tags);
+export function newCommand(): Command {
+    return {
+        command: '',
+        payloadStr: '',
+        tags: []
     }
 }

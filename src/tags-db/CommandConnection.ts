@@ -7,7 +7,6 @@ interface Listener {
 }
 
 export default class CommandConnection {
-
     ws: WebSocket
     nextReqId: number = 1
 

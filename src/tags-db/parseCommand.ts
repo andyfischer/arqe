@@ -1,13 +1,17 @@
 
 import { parseAsOneSimple } from '../parse-query/parseQueryV3'
-import Command, { CommandTag } from './Command'
+import Command, { newCommand, CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_dash, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question } from '../lexer'
+    t_double_equals, t_dot, t_question, t_integer } from '../lexer'
 
 interface Clause {
     str?: string
     payload?: string
+}
+
+function acceptableTagValue(token: Token) {
+    return token.match !== t_space && token.match !== t_newline;
 }
 
 function nextIsPayloadStart(it: TokenIterator) {
@@ -29,7 +33,7 @@ function parseOneTag(it: TokenIterator) {
     }
 
     if (it.tryConsume(t_dot)) {
-        const optionValue = it.consumeNextUnquotedText();
+        const optionValue = it.consumeTextWhile(acceptableTagValue);
         return {
             tagType: 'option',
             tagValue: optionValue,
@@ -49,7 +53,7 @@ function parseOneTag(it: TokenIterator) {
         } else if (it.tryConsume(t_question)) {
             questionValue = true;
         } else {
-            tagValue = it.consumeNextUnquotedText();
+            tagValue = it.consumeTextWhile(acceptableTagValue);
         }
     }
 
@@ -57,7 +61,8 @@ function parseOneTag(it: TokenIterator) {
         tagType,
         tagValue,
         subtract,
-        starValue
+        starValue,
+        questionValue
     }
 }
 
@@ -90,7 +95,7 @@ function parsePayload(it: TokenIterator, command: Command) {
 }
 
 function parseCommandFromLexed(it: TokenIterator): Command {
-    const command = new Command();
+    const command = newCommand();
 
     // Parse directive
     it.skipSpaces();
@@ -122,10 +127,16 @@ export function commandArgsToString(tags: CommandTag[]) {
             s += '/' + arg.tagValue;
         } else if (arg.starValue) {
             s += '*';
+        } else if (arg.questionValue) {
+            s += '?';
         }
 
         return s;
     }).join(' ');
+}
+
+export function parsedCommandToString(command: Command) {
+    return command.command + ' ' + commandArgsToString(command.tags)
 }
 
 export function parseAsSave(str: string) {

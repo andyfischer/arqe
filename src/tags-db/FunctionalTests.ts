@@ -1,3 +1,10 @@
+/*
+ CommandConnection
+  - WebSocket
+  - ServerSocket
+  - GraphContext
+  - Graph
+*/
 
 import Fs from 'fs'
 import Path from 'path'
@@ -20,12 +27,28 @@ function loadCasesFromFiles() {
     });
 }
 
+async function testSaveUnique(session: TestSession) {
+    const result = await session.command('save uniquetype/#unique');
+    if (!result.startsWith('save uniquetype/'))
+        session.fail('expected "save uniquetype/...", saw: ' + result);
+
+    if (result.indexOf('#unique') !== -1)
+        session.fail('expected not to contain "#unique": ' + result);
+}
+
+const localTests = [
+    testSaveUnique
+]
+
 export async function mainFunctionalTests(conn: CommandConnection) {
 
     const suite = new TestSuite();
     suite.conn = conn;
 
-    await suite.runAll(loadCasesFromFiles());
+    const testCases = loadCasesFromFiles()
+        .concat(localTests);
+
+    await suite.runAll(testCases);
     
     const session = new TestSession();
     session.conn = conn;

@@ -90,10 +90,19 @@ export default class TokenIterator {
         return str;
     }
 
-
     consumeNextUnquotedText(lookahead: number = 0): string {
         const str = this.nextUnquotedText(lookahead);
         this.consume();
+        return str;
+    }
+
+    consumeTextWhile(condition: (next: Token) => boolean) {
+        let str = '';
+
+        while (!this.finished() && condition(this.next())) {
+            str += this.consumeNextText();
+        }
+
         return str;
     }
 
