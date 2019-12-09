@@ -14,6 +14,8 @@ export default async function main() {
     });
 
     const commandConnection = new CommandConnection(ws);
+    await commandConnection.setup();
+    await commandConnection.linkWithThisProcess();
 
     if (cliArgs._.length > 0) {
         const command = cliArgs._.join(' ');
@@ -26,6 +28,8 @@ export default async function main() {
 
     const repl = new ClientRepl(commandConnection);
     repl.start();
+
+    // TODO: close connection on exit
 }
 
 main()
