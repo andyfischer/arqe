@@ -1,9 +1,9 @@
 
-import { parseAsOneSimple } from '../parse-query/parseQueryV3'
+import { parseAsOneSimple } from './parse-query/parseQueryV3'
 import Command, { newCommand, CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_dash, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question, t_integer } from '../lexer'
+    t_double_equals, t_dot, t_question, t_integer } from './lexer'
 
 interface Clause {
     str?: string

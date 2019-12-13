@@ -1,5 +1,5 @@
 
-import { randomHex } from '../utils'
+import { randomHex } from './utils'
 
 export default class TagType {
     name: string

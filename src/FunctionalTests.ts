@@ -9,7 +9,7 @@
 import Fs from 'fs'
 import Path from 'path'
 import CommandConnection from './CommandConnection'
-import { TestSession, TestSuite } from '../test-framework'
+import { TestSession, TestSuite } from './test-framework'
 
 function fromScript(script: string) {
     return (async (session: TestSession) => {

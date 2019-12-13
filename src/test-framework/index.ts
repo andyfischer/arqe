@@ -1,6 +1,6 @@
 
-import CommandConnection from '../tags-db/CommandConnection'
-import { parseAsSave } from '../tags-db/parseCommand'
+import CommandConnection from '../CommandConnection'
+import { parseAsSave } from '../parseCommand'
 
 export type TestCase = (session: TestSession) => Promise<void>
 
