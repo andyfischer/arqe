@@ -1,6 +1,6 @@
 
 import WebSocket from 'ws'
-import ServerSocket from './ServerSocket'
+import SocketServer from './SocketServer'
 import Graph from './Graph'
 import bootstrapGraph from './bootstrapGraph'
 
@@ -39,7 +39,7 @@ export default async function main() {
     const graph = new Graph()
     bootstrapGraph(graph);
 
-    const serverSocket = new ServerSocket(wsServer, graph)
+    const serverSocket = new SocketServer(wsServer, graph)
 
     console.log(`Launching self client..`)
     require('./funcTestClient');
