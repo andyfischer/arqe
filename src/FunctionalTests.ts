@@ -18,7 +18,7 @@ function fromScript(script: string) {
 }
 
 function loadCasesFromFiles() {
-    const testDir = __dirname + '/../../testScripts/tags-db';
+    const testDir = __dirname + '/../testScripts/tags-db';
     const files = Fs.readdirSync(testDir)
     return files.map(file => {
         const filename = Path.join(testDir, file);

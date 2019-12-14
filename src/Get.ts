@@ -91,10 +91,13 @@ export default class Get {
     }
 
     *matchingRelations() {
-        if (this.hasListResult())
+        if (this.hasListResult()) {
             yield *this.matchingFullSearch();
-        else
-            yield this.findOneMatch();
+        } else {
+            const one = this.findOneMatch();
+            if (one)
+                yield one;
+        }
     }
 
     formattedListResult() {

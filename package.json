@@ -4,13 +4,12 @@
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "scripts": {
-    "build": "yarn self-fix && tsc -p .",
+    "build": "tsc -p .",
     "test": "jest --watch",
-    "self-fix": "node dist/self-fix",
     "tsc-watch": "tsc -w",
     "start": "concurrently -n tsc,server,jest 'tsc -w' 'yarn nodemon-tags-server' 'yarn test'",
-    "nodemon-tags-server": "nodemon --watch dist --watch testScripts -e js,ts,txt dist/tags-db/startServer.js",
-    "cli": "node dist/tags-db/startCli.js"
+    "nodemon-tags-server": "nodemon --watch dist --watch testScripts -e js,ts,txt dist/startServer.js",
+    "cli": "node dist/startCli.js"
   },
   "dependencies": {
     "bent": "^1.5.13",

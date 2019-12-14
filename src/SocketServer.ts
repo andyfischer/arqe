@@ -3,6 +3,7 @@ import WebSocket from 'ws'
 import Graph from './Graph'
 import GraphContext from './GraphContext'
 import parseCommand from './parseCommand'
+import { createUniqueEntity } from './GraphORM'
 
 export default class ServerSocket {
     graph: Graph
@@ -14,9 +15,10 @@ export default class ServerSocket {
 
         this.wss.on('connection', (ws) => {
 
-            console.log('server: client connected');
+            const id = createUniqueEntity(graph, 'connection')
+            console.log(`server: client ${id} connected`);
 
-            const graphContext = new GraphContext(this.graph)
+            const graphContext = new GraphContext(this.graph);
 
             ws.on('message', async (str) => {
                 const data = JSON.parse(str);
@@ -45,7 +47,8 @@ export default class ServerSocket {
             });
 
             ws.on('close', async (str) => {
-                console.log('server: client closed');
+                graph.handleCommandStr(`delete connection/${id} *`)
+                console.log(`server: client ${id} closed`);
             });
         });
     }
