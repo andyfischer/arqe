@@ -1,6 +1,5 @@
 
 import WebSocket from 'ws'
-import acquireConnectionId from './acquireConnectionId'
 
 interface Listener {
     receivePart?: (msg: string) => void
@@ -38,17 +37,9 @@ export default class CommandConnection {
     }
 
     async setup() {
-        this.connectionId = await acquireConnectionId(this)
-    }
-
-    async linkWithThisProcess() {
-        await this.run(`save connection/${this.connectionId} process/${process.pid}`); 
     }
 
     async close() {
-        if (this.connectionId)
-            await this.run(`delete connection/${this.connectionId} *`);
-
         this.ws.terminate();
     }
 

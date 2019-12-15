@@ -16,7 +16,7 @@ export default class ServerSocket {
         this.wss.on('connection', (ws) => {
 
             const id = createUniqueEntity(graph, 'connection')
-            console.log(`server: client ${id} connected`);
+            console.log(`server: opened connection/${id}`);
 
             const graphContext = new GraphContext(this.graph);
 
@@ -48,7 +48,7 @@ export default class ServerSocket {
 
             ws.on('close', async (str) => {
                 graph.handleCommandStr(`delete connection/${id} *`)
-                console.log(`server: client ${id} closed`);
+                console.log(`server: closed connection/${id}`);
             });
         });
     }

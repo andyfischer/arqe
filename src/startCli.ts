@@ -16,7 +16,6 @@ export default async function main() {
 
     const commandConnection = new CommandConnection(ws);
     await commandConnection.setup();
-    await commandConnection.linkWithThisProcess();
 
     if (cliArgs._.length > 0) {
         const command = cliArgs._.join(' ');
