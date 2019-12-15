@@ -3,6 +3,6 @@ save a/1 b
 save a/2 b
 save a/3 c
 get a/* b
-expect [1, 2]
+expect [a/1, a/2]
 get a/* c
-expect [3]
+expect [a/3]

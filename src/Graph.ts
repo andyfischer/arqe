@@ -8,15 +8,11 @@ import FullSearch from './FullSearch'
 import Get from './Get'
 import TagTypeOrdering from './TagTypeOrdering'
 
-interface Column {
-    name: string
-}
-
 export default class Graph {
 
     relationsByNtag: { [ ntag: string]: Relation } = {}
     tagTypes: { [name: string]: TagType } = {}
-    ordering = new TagTypeOrdering
+    ordering = new TagTypeOrdering()
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)

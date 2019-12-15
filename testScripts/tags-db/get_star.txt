@@ -4,4 +4,4 @@ expect []
 
 save a 1
 get *
-expect ['a 1']
+expect [a 1]

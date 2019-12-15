@@ -5,6 +5,7 @@ import Graph from './Graph'
 export default class Relation {
     ntag: string
     payloadStr: any
+    tags: CommandTag[]
     tagCount: number
     asMap: any = {}
     graph: Graph
@@ -13,11 +14,17 @@ export default class Relation {
         this.graph = graph;
         this.ntag = ntag;
         this.payloadStr = payloadStr || '#exists';
+        this.tags = tags;
         this.tagCount = tags.length;
 
         for (const arg of tags) {
             this.asMap[arg.tagType] = arg.tagValue || true;
         }
+    }
+
+    *eachTag() {
+        for (const tag of this.tags)
+            yield tag;
     }
 
     setPayload(payloadStr: string) {
@@ -40,14 +47,6 @@ export default class Relation {
     
     has(typeName: string) {
         return this.asMap[typeName] !== undefined;
-    }
-
-    tags() {
-        const result = [];
-        for (const key in this.asMap) {
-            result.push({key, value: this.asMap[key]});
-        }
-        return result;
     }
 
     includesType(name: string) {

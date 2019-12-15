@@ -125,12 +125,11 @@ export default class Get {
 
             const outTags = [];
 
-            for (const typename in rel.asMap) {
-                if (this.fixedArgsIncludesType[typename])
+            for (const tag of rel.eachTag()) {
+                if (this.fixedArgsIncludesType[tag.tagType])
                     continue;
 
-                // TEMP
-                outTags.push(rel.asMap[typename]);
+                outTags.push(commandTagToString(tag));
             }
 
             outStrings.push(outTags.join(' '))
