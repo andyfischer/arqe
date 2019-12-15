@@ -1,0 +1,11 @@
+
+save a/1 b c
+
+get a/* b
+expect []
+
+get a/* b c
+expect [1]
+
+get a/* b c d
+expect []

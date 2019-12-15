@@ -51,10 +51,10 @@ it('ignores extra spaces', () => {
     expect(parsed.tags[0].tagType).toEqual('a')
 });
 
-it('parses star type', () => {
+it('parses star', () => {
     const parsed = parseCommand('test *');
     expect(parsed.command).toEqual('test')
-    expect(parsed.tags[0].starType).toEqual(true)
+    expect(parsed.tags[0].star).toEqual(true)
 });
 
 it('parses question value', () => {

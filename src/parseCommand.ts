@@ -18,10 +18,10 @@ function nextIsPayloadStart(it: TokenIterator) {
     return it.nextIs(t_double_equals);
 }
 
-function parseOneTag(it: TokenIterator) {
+function parseOneTag(it: TokenIterator): CommandTag {
     if (it.tryConsume(t_star)) {
         return {
-            starType: true
+            star: true
         };
     }
 
@@ -119,20 +119,25 @@ export default function parseCommand(str: string) {
     return command;
 }
 
+export function commandTagToString(tag: CommandTag) {
+    if (tag.star)
+        return '*';
+
+    let s = tag.tagType;
+
+    if (tag.tagValue) {
+        s += '/' + tag.tagValue;
+    } else if (tag.starValue) {
+        s += '*';
+    } else if (tag.questionValue) {
+        s += '?';
+    }
+
+    return s;
+}
+
 export function commandArgsToString(tags: CommandTag[]) {
-    return tags.map(arg => {
-        let s = arg.tagType;
-
-        if (arg.tagValue) {
-            s += '/' + arg.tagValue;
-        } else if (arg.starValue) {
-            s += '*';
-        } else if (arg.questionValue) {
-            s += '?';
-        }
-
-        return s;
-    }).join(' ');
+    return tags.map(commandTagToString).join(' ');
 }
 
 export function parsedCommandToString(command: Command) {

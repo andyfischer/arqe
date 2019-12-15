@@ -6,7 +6,7 @@ export interface CommandTag {
     tagType?: string
     tagValue?: string
     subtract?: boolean
-    starType?: boolean
+    star?: boolean
     starValue?: boolean
     questionValue?: boolean
 

@@ -5,6 +5,7 @@ import Graph from './Graph'
 export default class Relation {
     ntag: string
     payloadStr: any
+    tagCount: number
     asMap: any = {}
     graph: Graph
 
@@ -12,6 +13,7 @@ export default class Relation {
         this.graph = graph;
         this.ntag = ntag;
         this.payloadStr = payloadStr || '#exists';
+        this.tagCount = tags.length;
 
         for (const arg of tags) {
             this.asMap[arg.tagType] = arg.tagValue || true;

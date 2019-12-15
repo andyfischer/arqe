@@ -1,4 +1,5 @@
 
+import 'source-map-support'
 import WebSocket from 'ws'
 import SocketServer from './SocketServer'
 import Graph from './Graph'

@@ -125,7 +125,6 @@ export default class Graph {
         keys.sort((a,b) => this.ordering.compareTagTypes(a, b));
 
         const args = keys.map(key => {
-
             const value = rel.asMap[key];
             if (key === 'option')
                 return '.' + value;

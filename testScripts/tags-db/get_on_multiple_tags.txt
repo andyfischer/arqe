@@ -1,0 +1,11 @@
+
+save a b c
+
+get a b
+expect #null
+
+get a b c
+expect #exists
+
+get a b c d
+expect #null

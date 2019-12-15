@@ -3,28 +3,36 @@ import Command, { CommandTag } from './Command'
 import Graph from './Graph'
 import TagType from './TagType'
 import Relation from './Relation'
-import { normalizeExactTag, commandArgsToString } from './parseCommand'
+import { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
 
 export default class Get {
 
     graph: Graph;
     command: Command;
     fixedArgs: CommandTag[] = []
+    fixedArgsIncludesType: { [typename:string]: true } = {}
     starValueTags: CommandTag[] = []
     inheritArgs: CommandTag[] = []
+    hasStarTag: boolean
+    tagCount: number
 
     constructor(graph: Graph, command: Command) {
         this.graph = graph;
         this.command = command;
+        this.tagCount = command.tags.length;
 
         for (const tag of command.tags) {
 
             const tagType = this.graph.findTagType(tag.tagType);
 
-            if (tag.starValue)
+            if (tag.star) {
+                this.hasStarTag = true
+            } else if (tag.starValue) {
                 this.starValueTags.push(tag);
-            else
+            } else {
                 this.fixedArgs.push(tag);
+                this.fixedArgsIncludesType[tag.tagType] = true;
+            }
 
             if (tagType.inherits) {
                 tag.tagTypeInherits = true;
@@ -34,6 +42,12 @@ export default class Get {
     }
 
     relationMatches(rel: Relation) {
+
+        // Tag counts must match (unless the query has a * in it)
+        if ((rel.tagCount !== this.tagCount) && !this.hasStarTag)
+            return false;
+
+        // For all fixed args: Check that each one is found in this relation.
         for (const arg of this.fixedArgs) {
             if (!arg.tagValue) {
                 if (!rel.asMap[arg.tagType])
@@ -49,6 +63,7 @@ export default class Get {
                 return false;
         }
 
+        // For all star values: Check that the relation has a tag of this type.
         for (const arg of this.starValueTags) {
             if (!rel.asMap[arg.tagType])
                 return false;
@@ -58,7 +73,7 @@ export default class Get {
     }
 
     hasListResult() {
-        return this.starValueTags.length > 0;
+        return this.hasStarTag || (this.starValueTags.length > 0);
     }
 
     *matchingFullSearch() {
@@ -103,12 +118,25 @@ export default class Get {
     formattedListResult() {
         const variedType = this.starValueTags[0];
 
-        const outValues = [];
+        // Return results. Use shorthand, don't mention tags that were provided exactly.
+        const outStrings = [];
+        
         for (const rel of this.matchingFullSearch()) {
-            outValues.push(rel.asMap[variedType.tagType]);
+
+            const outTags = [];
+
+            for (const typename in rel.asMap) {
+                if (this.fixedArgsIncludesType[typename])
+                    continue;
+
+                // TEMP
+                outTags.push(rel.asMap[typename]);
+            }
+
+            outStrings.push(outTags.join(' '))
         }
 
-        return '[' + outValues.join(', ') + ']'
+        return '[' + outStrings.join(', ') + ']'
     }
 
     formattedSingleResult() {
