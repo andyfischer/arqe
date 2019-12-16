@@ -7,8 +7,8 @@
     "build": "tsc -p .",
     "test": "jest --watch",
     "tsc-watch": "tsc -w",
-    "start": "concurrently -n tsc,server,jest 'tsc -w' 'yarn nodemon-tags-server' 'yarn test'",
-    "nodemon-tags-server": "nodemon --watch dist --watch testScripts -e js,ts,txt dist/startServer.js",
+    "start": "concurrently -n server,jest 'yarn server-watch' 'yarn test'",
+    "server-watch": "tsc-watch --onSuccess 'node dist/startServer.js'",
     "cli": "node dist/startCli.js"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "jest": "^24.8.0",
     "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
+    "tsc-watch": "^4.0.0",
     "typescript": "^3.5.3"
   },
   "jest": {
