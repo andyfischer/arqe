@@ -85,3 +85,23 @@ it('payload can have whitespace', () => {
     expect(parsed.payloadStr).toEqual('1 2 3')
 });
 
+it('parses flags', () => {
+    const parsed = parseCommand('test -a 1');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.flags).toEqual({a: true})
+    expect(parsed.tags[0].tagType).toEqual('1');
+});
+
+it('parses multiple flags', () => {
+    const parsed = parseCommand('test -a -b -c 1');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.flags).toEqual({a: true, b: true, c: true})
+    expect(parsed.tags[0].tagType).toEqual('1');
+});
+
+it('parses multiple grouped flags', () => {
+    const parsed = parseCommand('test -abc 1');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.flags).toEqual({a: true, b: true, c: true})
+    expect(parsed.tags[0].tagType).toEqual('1');
+});

@@ -3,5 +3,6 @@ get *
 expect []
 
 save a 1
+
 get *
 expect [a 1]

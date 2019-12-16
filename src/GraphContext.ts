@@ -42,6 +42,9 @@ export default class GraphContext {
 
     contextCommand(command: Command) {
         for (const tag of command.tags) {
+            if (tag.tagType === '/')
+                throw new Error("parsing error, found tagType of '/'");
+
             if (!tag.tagType)
                 throw new Error('error: context tag needs type name: ' + JSON.stringify(tag));
 

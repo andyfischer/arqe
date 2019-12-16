@@ -3,7 +3,7 @@ import { parseAsOneSimple } from './parse-query/parseQueryV3'
 import Command, { newCommand, CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question, t_integer } from './lexer'
+    t_double_equals, t_dot, t_question, t_integer, t_dash } from './lexer'
 
 interface Clause {
     str?: string
@@ -66,12 +66,34 @@ function parseOneTag(it: TokenIterator): CommandTag {
     }
 }
 
-function parseCommandTags(it: TokenIterator, command: Command) {
+function parseFlag(it: TokenIterator, command: Command) {
+    it.consume(t_dash);
+
+    if (!(it.nextIs(t_ident) || it.nextIs(t_integer))) {
+        throw new Error('expected letter or number after -, found: ' + it.nextText());
+    }
+
+    const str = it.consumeNextText();
+
+    for (const letter of str) {
+        command.flags[letter] = true;
+    }
+    
+    if (!it.finished() && !it.nextIs(t_space))
+        throw new Error(`Expected space after -${str}`);
+}
+
+function parseArgs(it: TokenIterator, command: Command) {
     while (true) {
         it.skipSpaces();
 
         if (it.finished() || it.nextIs(t_newline) || nextIsPayloadStart(it))
             return;
+
+        if (it.nextIs(t_dash)) {
+            parseFlag(it, command);
+            continue;
+        }
 
         const tag = parseOneTag(it);
 
@@ -97,7 +119,7 @@ function parsePayload(it: TokenIterator, command: Command) {
 function parseCommandFromLexed(it: TokenIterator): Command {
     const command = newCommand();
 
-    // Parse directive
+    // Parse main command
     it.skipSpaces();
     if (!it.nextIs(t_ident) && !it.nextIs(t_quoted_string))
         throw new Error("expected identifier, saw: " + it.nextText());
@@ -105,7 +127,7 @@ function parseCommandFromLexed(it: TokenIterator): Command {
     command.command = it.consumeNextUnquotedText();
 
     // Parse tag args
-    parseCommandTags(it, command);
+    parseArgs(it, command);
 
     // Parse payload
     parsePayload(it, command);
@@ -116,6 +138,14 @@ function parseCommandFromLexed(it: TokenIterator): Command {
 export default function parseCommand(str: string) {
     const it = lexStringToIterator(str);
     const command = parseCommandFromLexed(it);
+
+    // Validate
+    for (const tag of command.tags) {
+        if (tag.tagType === '/') {
+            throw new Error("internal error, parsed a tagType of '/' from: " + str);
+        }
+    }
+
     return command;
 }
 

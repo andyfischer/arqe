@@ -16,6 +16,7 @@ export interface CommandTag {
 
 export default interface Command {
     command: string
+    flags: { [flag: string]: any }
     tags: CommandTag[]
     payloadStr: string
 
@@ -27,6 +28,7 @@ export default interface Command {
 
 export function newCommand(): Command {
     return {
+        flags: {},
         command: '',
         payloadStr: '',
         tags: []

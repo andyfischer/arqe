@@ -4,6 +4,7 @@ import Graph from './Graph'
 import GraphContext from './GraphContext'
 import parseCommand from './parseCommand'
 import { createUniqueEntity } from './GraphORM'
+import logError from './logError'
 
 export default class ServerSocket {
     graph: Graph
@@ -42,6 +43,7 @@ export default class ServerSocket {
                     await graphContext.handleCommand(parsedCommand)
 
                 } catch (err) {
+                    logError(err);
                     ws.send(JSON.stringify({reqid, internalError: true, err}));
                 }
             });

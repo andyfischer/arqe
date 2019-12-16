@@ -138,12 +138,21 @@ export default class Get {
         return '[' + outStrings.join(', ') + ']'
     }
 
+    extendedResult() {
+        return this.command['x'];
+    }
+
     formattedSingleResult() {
         const found = this.findOneMatch();
-        if (found)
-            return found.payloadStr;
 
-        return '#null'
+        if (!found)
+            return '#null'
+
+        if (this.extendedResult()) {
+            return this.graph.stringifyRelation(found);
+        } else {
+            return found.payloadStr;
+        }
     }
 
     formattedResult(): string {

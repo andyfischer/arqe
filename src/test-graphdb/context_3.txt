@@ -3,5 +3,5 @@ save lower/a cxt/1
 context lower/a
 get cxt/1
 expect #exists
-context -lower/a
+context !lower/a
 
