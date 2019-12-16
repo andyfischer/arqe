@@ -2,7 +2,7 @@
 import 'source-map-support'
 import WebSocket from 'ws'
 import CommandConnection from './CommandConnection'
-import { mainFunctionalTests } from './FunctionalTests'
+import { mainFunctionalTests } from './test-graphdb'
 import ClientRepl from './ClientRepl'
 
 export default async function main() {

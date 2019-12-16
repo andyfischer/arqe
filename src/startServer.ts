@@ -43,7 +43,7 @@ export default async function main() {
     const serverSocket = new SocketServer(wsServer, graph)
 
     console.log(`Launching self client..`)
-    require('./funcTestClient');
+    require('./test-graphdb/funcTestClient');
 }
 
 main()

@@ -8,8 +8,8 @@
 
 import Fs from 'fs'
 import Path from 'path'
-import CommandConnection from './CommandConnection'
-import { TestSession, TestSuite } from './test-framework'
+import CommandConnection from '../CommandConnection'
+import { TestSession, TestSuite } from './TestFramework'
 
 function fromScript(script: string) {
     return (async (session: TestSession) => {
@@ -18,13 +18,15 @@ function fromScript(script: string) {
 }
 
 function loadCasesFromFiles() {
-    const testDir = __dirname + '/../testScripts/tags-db';
+    const testDir = __dirname + '/../../src/test-graphdb'
     const files = Fs.readdirSync(testDir)
-    return files.map(file => {
-        const filename = Path.join(testDir, file);
-        const contents = Fs.readFileSync(filename, 'utf8');
-        return fromScript(`-- File: ${file}\n${contents}`)
-    });
+    return files
+        .filter(file => file.endsWith('.txt'))
+        .map(file => {
+            const filename = Path.join(testDir, file);
+            const contents = Fs.readFileSync(filename, 'utf8');
+            return fromScript(`-- File: ${file}\n${contents}`)
+        });
 }
 
 async function testSaveUnique(session: TestSession) {
@@ -40,7 +42,7 @@ const localTests = [
     testSaveUnique
 ]
 
-export async function mainFunctionalTests(conn: CommandConnection) {
+export default async function mainFunctionalTests(conn: CommandConnection) {
 
     const suite = new TestSuite();
     suite.conn = conn;
