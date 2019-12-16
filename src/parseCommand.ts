@@ -2,7 +2,7 @@
 import { parseAsOneSimple } from './parse-query/parseQueryV3'
 import Command, { newCommand, CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
-    t_equals, t_dash, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
+    t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer } from './lexer'
 
 interface Clause {
@@ -25,10 +25,10 @@ function parseOneTag(it: TokenIterator): CommandTag {
         };
     }
 
-    let subtract = false;
+    let negate = false;
 
-    if (it.nextIs(t_dash) && !it.nextIs(t_space, 1)) {
-        subtract = true;
+    if (it.nextIs(t_exclamation)) {
+        negate = true;
         it.consume();
     }
 
@@ -37,7 +37,7 @@ function parseOneTag(it: TokenIterator): CommandTag {
         return {
             tagType: 'option',
             tagValue: optionValue,
-            subtract
+            negate
         }
     }
 
@@ -60,7 +60,7 @@ function parseOneTag(it: TokenIterator): CommandTag {
     return {
         tagType,
         tagValue,
-        subtract,
+        negate,
         starValue,
         questionValue
     }

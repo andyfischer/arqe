@@ -119,9 +119,14 @@ export const t_dollar = {
     str: "$"
 }
 
-export const t_bang = {
-    name: "bang",
+export const t_tilde = {
+    name: "tilde",
     str: "~"
+}
+
+export const t_exclamation = {
+    name: "exclamation",
+    str: "!"
 }
 
 export const t_bar = {
@@ -183,7 +188,8 @@ export const everyToken: TokenDef[] = [
     t_hash,
     t_percent,
     t_dollar,
-    t_bang,
+    t_tilde,
+    t_exclamation,
     t_bar,
     t_question,
     t_ident,

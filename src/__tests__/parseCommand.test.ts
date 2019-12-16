@@ -15,11 +15,11 @@ it('parses tags with values', () => {
     expect(parsed.tags[0].tagValue).toEqual('1')
 });
 
-it('parses subtraction tags', () => {
-    const parsed = parseCommand('test -a');
+it('parses negation', () => {
+    const parsed = parseCommand('test !a');
     expect(parsed.command).toEqual('test')
     expect(parsed.tags[0].tagType).toEqual('a')
-    expect(parsed.tags[0].subtract).toEqual(true)
+    expect(parsed.tags[0].negate).toEqual(true)
 });
 
 it('parses multiple tags', () => {

@@ -14,7 +14,7 @@ get a/isolated
 expect #exists
 
 -- leave context
-context -isolation
+context !isolation
 get a/top
 expect #exists
 get a/isolated

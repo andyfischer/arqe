@@ -4,8 +4,8 @@ import Command, { CommandTag } from './Command'
 import parseCommand, { parsedCommandToString } from './parseCommand'
 
 function containsTagType(tags: CommandTag[], tagType: string) {
-    for (const arg of tags)
-        if (arg.tagType === tagType)
+    for (const tag of tags)
+        if (tag.tagType === tagType)
             return true;
 
     return false;
@@ -13,8 +13,10 @@ function containsTagType(tags: CommandTag[], tagType: string) {
 
 export default class GraphContext {
     graph: Graph
-    contextArgs: CommandTag[] = []
+    contextTags: CommandTag[] = []
     contextTypeMap: { [typeName: string]: true } = {}
+
+    optionalContextTags: CommandTag[] = []
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -22,29 +24,34 @@ export default class GraphContext {
 
     refreshContextTypeMap() {
         const map = {}
-        for (const arg of this.contextArgs) {
-            map[arg.tagType] = true;
+        for (const tag of this.contextTags) {
+            map[tag.tagType] = true;
         }
         this.contextTypeMap = map;
     }
 
+    addOptionalContextTag(tag: CommandTag) {
+        this.optionalContextTags = this.optionalContextTags.filter(t => t.tagType !== tag.tagType);
+        this.optionalContextTags.push(tag);
+    }
+
     removeContextType(name: string) {
-        this.contextArgs = this.contextArgs.filter(arg => arg.tagType !== name);
+        this.contextTags = this.contextTags.filter(tag => tag.tagType !== name);
         this.refreshContextTypeMap()
     }
 
     contextCommand(command: Command) {
-        for (const arg of command.tags) {
-            if (!arg.tagType)
-                throw new Error('error: context arg needs type name: ' + JSON.stringify(arg));
+        for (const tag of command.tags) {
+            if (!tag.tagType)
+                throw new Error('error: context tag needs type name: ' + JSON.stringify(tag));
 
-            if (arg.subtract) {
-                this.removeContextType(arg.tagType);
+            if (tag.negate) {
+                this.removeContextType(tag.tagType);
                 continue;
             }
 
-            this.removeContextType(arg.tagType);
-            this.contextArgs.push(arg);
+            this.removeContextType(tag.tagType);
+            this.contextTags.push(tag);
         }
 
         this.refreshContextTypeMap()
@@ -78,7 +85,7 @@ export default class GraphContext {
         }
 
         // Apply context tags to this command.
-        for (const contextArg of this.contextArgs) {
+        for (const contextArg of this.contextTags) {
             if (!containsTagType(command.tags, contextArg.tagType)) {
                 command.tags.push(contextArg);
             }

@@ -50,7 +50,7 @@ it("includes context fields", async () => {
 
 it("supports removing context fields", async () => {
     await runCommand('context branch/1');
-    await runCommand('context -branch');
+    await runCommand('context !branch');
     const response = await runCommand('get 1');
     expect(graphCalls).toEqual(['get 1']);
 });
