@@ -78,7 +78,7 @@ export default class Graph {
         }
 
         if (expectsEcho) {
-            command.respond('save ' + this.stringifyRelation(this.relationsByNtag[ntag]));
+            command.respond(this.stringifyRelation(this.relationsByNtag[ntag]));
         } else {
             command.respond("#done");
         }
@@ -99,7 +99,7 @@ export default class Graph {
     dump(command: Command) {
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
-            command.respondPart('save ' + this.stringifyRelation(rel));
+            command.respondPart(this.stringifyRelation(rel));
         }
 
         command.respondEnd();
@@ -139,7 +139,7 @@ export default class Graph {
             payload = ' == ' + rel.payloadStr;
         }
 
-        return args.join(' ') + payload;
+        return 'save ' + args.join(' ') + payload;
     }
 
     handleCommand(command: Command) {

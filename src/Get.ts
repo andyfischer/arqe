@@ -139,7 +139,7 @@ export default class Get {
     }
 
     extendedResult() {
-        return this.command['x'];
+        return this.command.flags.x;
     }
 
     formattedSingleResult() {
