@@ -20,6 +20,7 @@ export default class ServerSocket {
             console.log(`server: opened connection/${id}`);
 
             const graphContext = new GraphContext(this.graph);
+            graphContext.addOptionalContextTag({ tagType: 'connection', tagValue: id });
 
             ws.on('message', async (str) => {
                 const data = JSON.parse(str);

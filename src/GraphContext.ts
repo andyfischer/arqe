@@ -14,9 +14,8 @@ function containsTagType(tags: CommandTag[], tagType: string) {
 export default class GraphContext {
     graph: Graph
     contextTags: CommandTag[] = []
-    contextTypeMap: { [typeName: string]: true } = {}
-
-    optionalContextTags: CommandTag[] = []
+    contextTypeMap: { [typeName: string]: CommandTag } = {}
+    optionalContextTagMap: { [ typeName: string]: CommandTag } = {}
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -25,14 +24,13 @@ export default class GraphContext {
     refreshContextTypeMap() {
         const map = {}
         for (const tag of this.contextTags) {
-            map[tag.tagType] = true;
+            map[tag.tagType] = tag;
         }
         this.contextTypeMap = map;
     }
 
     addOptionalContextTag(tag: CommandTag) {
-        this.optionalContextTags = this.optionalContextTags.filter(t => t.tagType !== tag.tagType);
-        this.optionalContextTags.push(tag);
+        this.optionalContextTagMap[tag.tagType] = tag;
     }
 
     removeContextType(name: string) {
@@ -80,6 +78,29 @@ export default class GraphContext {
     }
 
     async handleCommand(command: Command) {
+
+        // Resolve any '?' tags that we know of.
+        for (let i = 0; i < command.tags.length; i += 1) {
+            const tag = command.tags[i];
+
+            if (!tag.questionValue)
+                continue;
+
+            if (this.contextTypeMap[tag.tagType]) {
+                command.tags[i] = {
+                    ...this.contextTypeMap[tag.tagType]
+                }
+                continue;
+            }
+
+            if (this.optionalContextTagMap[tag.tagType]) {
+                command.tags[i] = {
+                    ...this.optionalContextTagMap[tag.tagType]
+                }
+                continue;
+            }
+
+        }
 
         switch (command.command) {
         case 'context':
