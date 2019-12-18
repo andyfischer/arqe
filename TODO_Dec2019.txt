@@ -1,5 +1,5 @@
 
- - Set up process-associated data
+ X Set up process-associated data
 
  X Database dump
    X Set up CommandContext
@@ -9,12 +9,19 @@
 
  X Define tag ordering
 
+----
+
 Process-associated data..
 
- - Add a function to get the process's unique identifier.
- - Clean up process tag on close.
- - Watch process with PID, if it's gone (or re-registered) then cleanup.
- - Central coordinator will manage
+ X Add a function to get the process's unique identifier.
+ X Clean up process tag on close.
+ X Watch process with PID, if it's gone (or re-registered) then cleanup.
+ X Central coordinator will manage
 
  - Fetch listening port per process
  - Fetch listening port per capability
+
+----
+
+ - Add pub/sub style listener
+ - Add sync-to-dir
