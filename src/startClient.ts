@@ -1,7 +1,7 @@
 
 import 'source-map-support'
 import WebSocket from 'ws'
-import CommandConnection from './CommandConnection'
+import CommandConnection from './socket/CommandConnection'
 import { mainFunctionalTests } from './test-graphdb'
 import ClientRepl from './ClientRepl'
 

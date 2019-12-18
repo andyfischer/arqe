@@ -2,7 +2,7 @@
 import 'source-map-support'
 import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
-import CommandConnection from './CommandConnection'
+import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
 
 export default async function main() {

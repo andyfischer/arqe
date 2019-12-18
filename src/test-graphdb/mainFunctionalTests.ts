@@ -8,7 +8,7 @@
 
 import Fs from 'fs'
 import Path from 'path'
-import CommandConnection from '../CommandConnection'
+import CommandConnection from '../socket/CommandConnection'
 import { TestSession, TestSuite } from './TestFramework'
 
 function fromScript(script: string) {

@@ -1,11 +1,10 @@
 
 import 'source-map-support'
-import WebSocket from 'ws'
-import SocketServer from './SocketServer'
+import SocketServer from './socket/SocketServer'
 import Graph from './Graph'
 import bootstrapGraph from './bootstrapGraph'
-import createWebSocketServer from './createWebSocketServer'
-import port from './defaultServerPort'
+import createWebSocketServer from './socket/createWebSocketServer'
+import port from './socket/defaultServerPort'
 
 export default async function main() {
     const wsServer = createWebSocketServer();

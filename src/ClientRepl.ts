@@ -1,6 +1,6 @@
 
 import Repl from 'repl'
-import CommandConnection from './CommandConnection'
+import CommandConnection from './socket/CommandConnection'
 
 const prompt = '~ '
 

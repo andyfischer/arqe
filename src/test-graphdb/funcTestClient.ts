@@ -1,6 +1,6 @@
 
 import WebSocket from 'ws'
-import CommandConnection from '../CommandConnection'
+import CommandConnection from '../socket/CommandConnection'
 import mainFunctionalTests from './mainFunctionalTests'
 import ClientRepl from '../ClientRepl'
 

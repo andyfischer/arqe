@@ -1,5 +1,5 @@
 
-import CommandConnection from '../CommandConnection'
+import CommandConnection from '../socket/CommandConnection'
 
 export type TestCase = (session: TestSession) => Promise<void>
 

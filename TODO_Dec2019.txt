@@ -24,4 +24,4 @@ Process-associated data..
 ----
 
  - Add pub/sub style listener
- - Add sync-to-dir
+ - Add sync-to-dir tool

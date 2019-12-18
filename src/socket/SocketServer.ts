@@ -1,10 +1,10 @@
 
 import WebSocket from 'ws'
-import Graph from './Graph'
-import GraphContext from './GraphContext'
-import parseCommand from './parseCommand'
-import { createUniqueEntity } from './GraphORM'
-import logError from './logError'
+import Graph from '../Graph'
+import GraphContext from '../GraphContext'
+import parseCommand from '../parseCommand'
+import { createUniqueEntity } from '../GraphORM'
+import logError from '../logError'
 
 export default class ServerSocket {
     graph: Graph
