@@ -1,9 +1,9 @@
 
-save a/1
-save a/2
+set a/1
+set a/2
 context branch/#unique
 
-save a/3
+set a/3
 
 get a/1
 expect #exists

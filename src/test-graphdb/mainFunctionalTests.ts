@@ -30,9 +30,9 @@ function loadCasesFromFiles() {
 }
 
 async function testSaveUnique(session: TestSession) {
-    const result = await session.command('save uniquetype/#unique');
-    if (!result.startsWith('save uniquetype/'))
-        session.fail('expected "save uniquetype/...", saw: ' + result);
+    const result = await session.command('set uniquetype/#unique');
+    if (!result.startsWith('set uniquetype/'))
+        session.fail('expected "set uniquetype/...", saw: ' + result);
 
     if (result.indexOf('#unique') !== -1)
         session.fail('expected not to contain "#unique": ' + result);
@@ -41,8 +41,8 @@ async function testSaveUnique(session: TestSession) {
 async function testGetConnectionId(session: TestSession) {
     const result = await session.command('get -x connection/?');
 
-    if (!result.startsWith('save connection/'))
-        session.fail('expected save connection/..., saw: ' + result);
+    if (!result.startsWith('set connection/'))
+        session.fail('expected set connection/..., saw: ' + result);
 
     if (result.indexOf('?') !== -1)
         session.fail('expected not to contain ?: ' + result);

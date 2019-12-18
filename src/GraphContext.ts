@@ -60,7 +60,7 @@ export default class GraphContext {
     }
 
     translateResponse(msg: string) {
-        if (msg.startsWith('save ')) {
+        if (msg.startsWith('set ')) {
             const parsed = parseCommand(msg);
 
             parsed.tags = parsed.tags.filter(tag => {

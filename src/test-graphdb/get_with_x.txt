@@ -1,4 +1,4 @@
 
-save a
+set a
 get -x a
-expect save a
+expect set a

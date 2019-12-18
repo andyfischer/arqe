@@ -174,11 +174,11 @@ export function parsedCommandToString(command: Command) {
     return command.command + ' ' + commandArgsToString(command.tags)
 }
 
-export function parseAsSave(str: string) {
+export function parseAsSet(str: string) {
     const command = parseCommand(str);
 
-    if (command.command !== 'save')
-        throw new Error("Expected 'save' command: " + str);
+    if (command.command !== 'set')
+        throw new Error("Expected 'set' command: " + str);
 
     return command.tags;
 }

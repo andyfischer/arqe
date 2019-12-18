@@ -55,15 +55,15 @@ it("supports removing context fields", async () => {
     expect(graphCalls).toEqual(['get 1']);
 });
 
-it("removes context from 'save' responses", async () => {
+it("removes context from 'set' responses", async () => {
     await runCommand('context branch/1');
-    let response: string = await runCommand('save id/#unique');
-    expect(graphCalls).toEqual(['save id/#unique branch/1']);
+    let response: string = await runCommand('set id/#unique');
+    expect(graphCalls).toEqual(['set id/#unique branch/1']);
     response = response.replace(/id\/[a-z0-9]*/, 'id/xxx')
-    expect(response).toEqual('save id/xxx')
+    expect(response).toEqual('set id/xxx')
 });
 
-it("doesn't echo save if it doesn't need to", async () => {
-    let response: string = await runCommand('save a/1 b/2');
+it("doesn't echo set if it doesn't need to", async () => {
+    let response: string = await runCommand('set a/1 b/2');
     expect(response).toEqual('#done');
 });

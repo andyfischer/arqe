@@ -1,6 +1,6 @@
 
-save a/1 b c
-save a/2 b c
+set a/1 b c
+set a/2 b c
 
 get a/* *
 expect [a/1 b c, a/2 b c]

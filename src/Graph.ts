@@ -45,8 +45,8 @@ export default class Graph {
         }
     }
 
-    save(command: Command) {
-        //console.log('save: ', commandArgsToString(tags));
+    set(command: Command) {
+        //console.log('set: ', commandArgsToString(tags));
 
         let affectsTypeInfo = false;
         let expectsEcho = false;
@@ -139,15 +139,15 @@ export default class Graph {
             payload = ' == ' + rel.payloadStr;
         }
 
-        return 'save ' + args.join(' ') + payload;
+        return 'set ' + args.join(' ') + payload;
     }
 
     handleCommand(command: Command) {
 
         switch (command.command) {
 
-        case 'save': {
-            this.save(command);
+        case 'set': {
+            this.set(command);
             return;
         }
 

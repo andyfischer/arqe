@@ -2,7 +2,7 @@
 get a *
 expect []
 
-save a 1
+set a 1
 
 get a *
 expect [1]

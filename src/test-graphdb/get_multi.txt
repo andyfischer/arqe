@@ -2,15 +2,15 @@
 get multi1/*
 expect []
 
-save multi1/1
+set multi1/1
 get multi1/*
 expect [multi1/1]
 
-save multi1/1
-save multi1/2
+set multi1/1
+set multi1/2
 get multi1/*
 expect [multi1/1, multi1/2]
-save multi1/3
+set multi1/3
 get multi1/*
 expect [multi1/1, multi1/2, multi1/3]
 

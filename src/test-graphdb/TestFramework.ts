@@ -1,6 +1,5 @@
 
 import CommandConnection from '../CommandConnection'
-import { parseAsSave } from '../parseCommand'
 
 export type TestCase = (session: TestSession) => Promise<void>
 
