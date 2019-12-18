@@ -12,7 +12,8 @@ export default class Get {
     fixedArgs: CommandTag[] = []
     fixedArgsIncludesType: { [typename:string]: true } = {}
     starValueTags: CommandTag[] = []
-    inheritArgs: CommandTag[] = []
+    tagTypes: TagType[] = []
+    hasInheritTags: boolean = false
     hasStarTag: boolean
     tagCount: number
 
@@ -24,6 +25,7 @@ export default class Get {
         for (const tag of command.tags) {
 
             const tagType = this.graph.findTagType(tag.tagType);
+            this.tagTypes.push(tagType)
 
             if (tag.star) {
                 this.hasStarTag = true
@@ -35,29 +37,42 @@ export default class Get {
             }
 
             if (tagType.inherits) {
+                this.hasInheritTags = true
                 tag.tagTypeInherits = true;
-                this.inheritArgs.push(tag);
             }
         }
     }
 
     relationMatches(rel: Relation) {
 
-        // Tag counts must match (unless the query has a * in it)
-        if ((rel.tagCount !== this.tagCount) && !this.hasStarTag)
+        // For no star tag: Query must have equal number or more tags than the relation.
+        if (!this.hasStarTag && (rel.tagCount > this.tagCount)) {
+            return false;
+        }
+
+        // With star tag: Query must have fewer tags than the relation
+        if (this.hasStarTag && rel.tagCount < this.tagCount)
             return false;
 
         // For all fixed args: Check that each one is found in this relation.
         for (const arg of this.fixedArgs) {
+
+            if (!rel.includesType(arg.tagType)) {
+                // The relation doesn't mention this type. If this is an 'inherits' type
+                // then that's fine, otherwise disqualify.
+                if (arg.tagTypeInherits) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+                
             if (!arg.tagValue) {
                 if (!rel.asMap[arg.tagType])
                     return false;
 
                 continue;
             }
-
-            if (arg.tagTypeInherits && rel.includesType(arg.tagType))
-                continue;
 
             if (rel.asMap[arg.tagType] !== arg.tagValue)
                 return false;
@@ -77,10 +92,10 @@ export default class Get {
     }
 
     *matchingFullSearch() {
-        const found = [];
         const graph = this.graph;
         for (const ntag in graph.relationsByNtag) {
             const rel = graph.relationsByNtag[ntag];
+
             if (this.relationMatches(rel))
                 yield rel;
         }
@@ -89,19 +104,33 @@ export default class Get {
     findExactMatch(args: CommandTag[]): Relation|null {
         // Exact tag lookup.
         const ntag = normalizeExactTag(args);
+
         return this.graph.relationsByNtag[ntag]
     }
+
+    /*
+    *variantsForInheritTags(startIndex: number) {
+        for (let index=startIndex; index < this.tagTypes.length; index += 1) {
+            const tagType = this.tagTypes[index];
+            if (tagType.inherits) {
+                console.log('found inherits tag: ', tagType.inherits);
+                const remainingArgs = this.command.tags.filter(arg => arg.tagType !== tagType.name);
+                yield remainingArgs;
+                yield *this.variantsForInheritTags(startIndex + 1);
+            }
+        }
+    }
+    */
 
     findOneMatch(): Relation { 
         const found = this.findExactMatch(this.command.tags);
         if (found)
             return found;
 
-        for (const inheritArg of this.inheritArgs) {
-            const remainingArgs = this.command.tags.filter(arg => arg.tagType !== inheritArg.tagType);
-            const found = this.findExactMatch(remainingArgs);
-            if (found)
-                return found;
+        if (this.hasInheritTags) {
+            for (const match of this.matchingFullSearch()) {
+                return match;
+            }
         }
     }
 
@@ -132,7 +161,8 @@ export default class Get {
                 outTags.push(commandTagToString(tag));
             }
 
-            outStrings.push(outTags.join(' '))
+            const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
+            outStrings.push(str)
         }
 
         return '[' + outStrings.join(', ') + ']'

@@ -22,6 +22,10 @@ export default class Relation {
         }
     }
 
+    hasPayload() {
+        return this.payloadStr !== '#exists'
+    }
+
     *eachTag() {
         for (const tag of this.tags)
             yield tag;

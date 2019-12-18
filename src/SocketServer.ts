@@ -17,7 +17,6 @@ export default class ServerSocket {
         this.wss.on('connection', (ws) => {
 
             const id = createUniqueEntity(graph, 'connection')
-            console.log(`server: opened connection/${id}`);
 
             const graphContext = new GraphContext(this.graph);
             graphContext.addOptionalContextTag({ tagType: 'connection', tagValue: id });
@@ -26,19 +25,23 @@ export default class ServerSocket {
                 const data = JSON.parse(str);
                 const { reqid, command } = data;
 
+                function send(data) {
+                    ws.send(JSON.stringify(data))
+                }
+
                 try {
                     const parsedCommand = parseCommand(command);
 
                     parsedCommand.respond = (result) => {
-                        ws.send(JSON.stringify({reqid, result}));
+                        send({reqid, result});
                     }
 
                     parsedCommand.respondPart = (result) => {
-                        ws.send(JSON.stringify({reqid, result, more: true}));
+                        send({reqid, result, more: true});
                     }
 
                     parsedCommand.respondEnd = () => {
-                        ws.send(JSON.stringify({reqid}));
+                        send({reqid});
                     }
 
                     await graphContext.handleCommand(parsedCommand)

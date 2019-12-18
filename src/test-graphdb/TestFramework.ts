@@ -14,7 +14,7 @@ export class TestSuite {
 
         for (const testCase of cases) {
             testCount += 1;
-            const session = await this.runOneCase(testCase, {});
+            const session = await this.runOneCase(testCase, {  });
 
             if (session.failed)
                 failed.push(testCase);

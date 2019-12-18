@@ -99,7 +99,6 @@ export default class GraphContext {
                 }
                 continue;
             }
-
         }
 
         switch (command.command) {

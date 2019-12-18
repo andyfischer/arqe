@@ -38,8 +38,19 @@ async function testSaveUnique(session: TestSession) {
         session.fail('expected not to contain "#unique": ' + result);
 }
 
+async function testGetConnectionId(session: TestSession) {
+    const result = await session.command('get -x connection/?');
+
+    if (!result.startsWith('save connection/'))
+        session.fail('expected save connection/..., saw: ' + result);
+
+    if (result.indexOf('?') !== -1)
+        session.fail('expected not to contain ?: ' + result);
+}
+
 const localTests = [
-    testSaveUnique
+    testSaveUnique,
+    testGetConnectionId
 ]
 
 export default async function mainFunctionalTests(conn: CommandConnection) {
