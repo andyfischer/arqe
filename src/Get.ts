@@ -144,28 +144,31 @@ export default class Get {
         }
     }
 
+    formatRelation(rel: Relation) {
+        const outTags = [];
+
+        for (const tag of rel.eachTag()) {
+            if (this.fixedArgsIncludesType[tag.tagType])
+                continue;
+
+            outTags.push(commandTagToString(tag));
+        }
+
+        const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
+        return str;
+    }
+
     formattedListResult() {
         const variedType = this.starValueTags[0];
 
         // Return results. Use shorthand, don't mention tags that were provided exactly.
-        const outStrings = [];
+        const formattedResults = [];
         
         for (const rel of this.matchingFullSearch()) {
-
-            const outTags = [];
-
-            for (const tag of rel.eachTag()) {
-                if (this.fixedArgsIncludesType[tag.tagType])
-                    continue;
-
-                outTags.push(commandTagToString(tag));
-            }
-
-            const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
-            outStrings.push(str)
+            formattedResults.push(this.formatRelation(rel))
         }
 
-        return '[' + outStrings.join(', ') + ']'
+        return '[' + formattedResults.join(', ') + ']'
     }
 
     extendedResult() {

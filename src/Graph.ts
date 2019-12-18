@@ -6,12 +6,17 @@ import Relation from './Relation'
 import { normalizeExactTag, commandArgsToString } from './parseCommand'
 import Get from './Get'
 import TagTypeOrdering from './TagTypeOrdering'
+import GraphListener from './GraphListener'
+
+export type ListenerAction = 'set' | 'delete'
+export type ListenerCallback = (str: string) => void
 
 export default class Graph {
 
     relationsByNtag: { [ ntag: string]: Relation } = {}
     tagTypes: { [name: string]: TagType } = {}
     ordering = new TagTypeOrdering()
+    listeners: GraphListener[] = []
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
@@ -62,12 +67,12 @@ export default class Graph {
         }
 
         const ntag = normalizeExactTag(command.tags);
-        const existing = this.relationsByNtag[ntag];
+        let relation = this.relationsByNtag[ntag];
 
-        if (existing) {
-            existing.setPayload(command.payloadStr);
+        if (relation) {
+            relation.setPayload(command.payloadStr);
         } else {
-            const relation = new Relation(this, ntag, command.tags, command.payloadStr);
+            relation = new Relation(this, ntag, command.tags, command.payloadStr);
 
             if (affectsTypeInfo) {
                 this.updateTypeInfo(relation);
@@ -76,8 +81,10 @@ export default class Graph {
             this.relationsByNtag[ntag] = relation;
         }
 
+        this.onRelationUpdated(relation);
+
         if (expectsEcho) {
-            command.respond(this.stringifyRelation(this.relationsByNtag[ntag]));
+            command.respond(this.stringifyRelation(relation));
         } else {
             command.respond("#done");
         }
@@ -110,8 +117,11 @@ export default class Graph {
             if (rel.has('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 
+            const found = this.relationsByNtag[rel.ntag];
             delete this.relationsByNtag[rel.ntag];
+            this.onRelationDeleted(found);
         }
+
         command.respond('#done');
     }
 
@@ -170,11 +180,20 @@ export default class Graph {
         command.respond("unrecognized command: " + command.command);
     }
 
+    onRelationUpdated(rel: Relation) {
+        for (const listener of this.listeners)
+            listener.onRelationUpdated(rel);
+    }
+
+    onRelationDeleted(rel: Relation) {
+        for (const listener of this.listeners)
+            listener.onRelationDeleted(rel);
+    }
+
     handleCommandStr(str: string) {
-        let result = null;
 
         try { 
-
+            let result = null;
             const parsed = parseCommand(str);
             parsed.respond = msg => { result = msg; }
             this.handleCommand(parsed);
@@ -182,6 +201,25 @@ export default class Graph {
 
         } catch (err) {
             console.log('handleCommandStr error: ', err);
+            return '';
+        }
+    }
+
+    addListener(command: Command, callback: ListenerCallback) {
+        const listener = new GraphListener(this, command);
+        this.listeners.push(listener);
+        listener.addCallback(callback);
+    }
+
+    addStringListener(str: string, callback: ListenerCallback) {
+
+        try { 
+            const parsed = parseCommand(str);
+            this.addListener(parsed, callback);
+            return '#done';
+
+        } catch (err) {
+            console.log('error in addStringListener: ', err);
             return '';
         }
     }
