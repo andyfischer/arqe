@@ -4,7 +4,6 @@ import parseCommand from './parseCommand'
 import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandArgsToString } from './parseCommand'
-import FullSearch from './FullSearch'
 import Get from './Get'
 import TagTypeOrdering from './TagTypeOrdering'
 
