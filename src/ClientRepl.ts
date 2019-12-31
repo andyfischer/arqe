@@ -19,10 +19,20 @@ export default class ClientRepl {
         this.conn = conn;
     }
 
+    receive(msg: string) {
+        console.log(' > ' + msg);
+    }
+
     async eval(line) {
         line = trimEndline(line);
-        const response = await this.conn.run(line)
-        console.log(' > ' + response);
+
+        await new Promise((resolve, reject) => {
+            this.conn.run(line, response => {
+                this.receive(response);
+                resolve();
+            })
+        })
+
         this.displayPrompt()
     }
 

@@ -116,9 +116,7 @@ export default class GraphContext {
 
         const wrappedCommand = {
             ...command,
-            respond: (msg) => command.respond(this.translateResponse(msg)),
-            respondPart: command.respondPart,
-            respondEnd: command.respondEnd,
+            respond: (msg) => command.respond(this.translateResponse(msg))
         }
         
         await this.graph.handleCommand(wrappedCommand);

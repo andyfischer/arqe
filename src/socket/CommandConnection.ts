@@ -2,8 +2,8 @@
 import WebSocket from 'ws'
 
 interface Listener {
-    receivePart?: (msg: string) => void
-    receiveEnd?: () => void
+    receive: (msg: string) => void
+    streaming?: boolean
 }
 
 export default class CommandConnection {
@@ -17,8 +17,7 @@ export default class CommandConnection {
         this.ws = ws;
 
         ws.on('message', str => {
-            const { reqid, result, more } = JSON.parse(str);
-
+            const { reqid, msg } = JSON.parse(str);
             const listener = this.reqListeners[reqid]
 
             if (!listener) {
@@ -26,11 +25,12 @@ export default class CommandConnection {
                 return;
             }
 
-            if (result)
-                listener.receivePart(result);
+            listener.receive(msg);
 
-            if (!more) {
-                listener.receiveEnd();
+            if (msg === '#started')
+                listener.streaming = true;
+
+            if (!listener.streaming) {
                 delete this.reqListeners[reqid];
             }
         });
@@ -43,23 +43,14 @@ export default class CommandConnection {
         this.ws.terminate();
     }
 
-    async _runWithListener(command: string, listener: Listener) {
+    async run(command: string, receive: (msg: string) => void) {
+
         const reqid = this.nextReqId;
         this.nextReqId += 1
 
         this.ws.send(JSON.stringify({reqid, command}));
-        this.reqListeners[reqid] = listener;
-    }
-
-    async run(command: string): Promise<string> {
-
-        const lines = []
-
-        return new Promise((resolve, reject) => {
-            this._runWithListener(command, {
-                receivePart: (msg) => { lines.push(msg) },
-                receiveEnd: () => resolve(lines.join('\n'))
-            });
-        });
+        this.reqListeners[reqid] = {
+            receive
+        }
     }
 }

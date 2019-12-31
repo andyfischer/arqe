@@ -16,20 +16,9 @@ export default class SocketConnection {
         this.ws.send(JSON.stringify(data))
     }
 
-    listenCommand(reqid: string, command: Command) {
-    }
-
     async handleCommand(reqid: string, command: Command) {
         command.respond = (result) => {
             this.send({reqid, result});
-        }
-
-        command.respondPart = (result) => {
-            this.send({reqid, result, more: true});
-        }
-
-        command.respondEnd = () => {
-            this.send({reqid});
         }
 
         await this.graphContext.handleCommand(command)
@@ -49,11 +38,6 @@ export default class SocketConnection {
 
             try {
                 const parsedCommand = parseCommand(command);
-
-                if (parsedCommand.command === 'listen') {
-                    this.listenCommand(reqid, parsedCommand);
-                }
-
                 this.handleCommand(reqid, parsedCommand);
 
             } catch (err) {

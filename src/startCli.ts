@@ -5,6 +5,30 @@ import ClientRepl from './ClientRepl'
 import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
 
+function waitUntilDone() {
+    let check;
+    let streaming = false;
+    let first = true;
+
+    const promise = new Promise((resolve, reject) => {
+
+        check = (msg) => {
+            if (first && msg === '#start') {
+                streaming = true;
+            }
+
+            first = false;
+
+            if (!streaming)
+                resolve();
+            if (msg === '#done')
+                resolve();
+        }
+    });
+
+    return { check, promise }
+}
+
 export default async function main() {
     const cliArgs = Minimist(process.argv.slice(2), {
     });
@@ -20,7 +44,6 @@ export default async function main() {
     if (cliArgs._.length > 0) {
         const command = cliArgs._.join(' ');
 
-        const result = await commandConnection.run(command);
         console.log(result);
         commandConnection.close();
         return;

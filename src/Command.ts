@@ -22,8 +22,6 @@ export default interface Command {
 
     // Execution context
     respond?: (msg: string) => void
-    respondPart?: (msg: string) => void
-    respondEnd?: () => void
 }
 
 export function newCommand(): Command {

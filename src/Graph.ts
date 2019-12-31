@@ -103,12 +103,13 @@ export default class Graph {
     }
 
     dump(command: Command) {
+        command.respond('#start');
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
-            command.respondPart(this.stringifyRelation(rel));
+            command.respond(this.stringifyRelation(rel));
         }
 
-        command.respondEnd();
+        command.respond('#done');
     }
 
     deleteCmd(command: Command) {
@@ -123,6 +124,13 @@ export default class Graph {
         }
 
         command.respond('#done');
+    }
+
+    listen(command: Command) {
+        command.respond('#start');
+        const listener = new GraphListener(this, command);
+        this.listeners.push(listener);
+        listener.addCallback(str => command.respond(str));
     }
 
     stringifyRelation(rel: Relation) {
@@ -174,6 +182,11 @@ export default class Graph {
             this.deleteCmd(command);
             return;
         }
+
+        case 'listen': {
+            this.listen(command);
+            return;
+        }
         
         }
 
@@ -190,37 +203,17 @@ export default class Graph {
             listener.onRelationDeleted(rel);
     }
 
-    handleCommandStr(str: string) {
-
-        try { 
-            let result = null;
-            const parsed = parseCommand(str);
-            parsed.respond = msg => { result = msg; }
-            this.handleCommand(parsed);
-            return result;
-
-        } catch (err) {
-            console.log('handleCommandStr error: ', err);
-            return '';
-        }
+    handleCommandStr(commandStr: string) {
+        let result = null;
+        const parsed = parseCommand(commandStr);
+        parsed.respond = msg => { result = msg; }
+        this.handleCommand(parsed);
+        return result;
     }
 
-    addListener(command: Command, callback: ListenerCallback) {
-        const listener = new GraphListener(this, command);
-        this.listeners.push(listener);
-        listener.addCallback(callback);
-    }
-
-    addStringListener(str: string, callback: ListenerCallback) {
-
-        try { 
-            const parsed = parseCommand(str);
-            this.addListener(parsed, callback);
-            return '#done';
-
-        } catch (err) {
-            console.log('error in addStringListener: ', err);
-            return '';
-        }
+    addListener(commandStr: string, callback: ListenerCallback) {
+        const parsed = parseCommand(commandStr);
+        parsed.respond = callback;
+        this.handleCommand(parsed);
     }
 }
