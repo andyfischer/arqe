@@ -11,8 +11,7 @@ async function runCommand(str: string): Promise<string> {
 
     return new Promise((resolve, reject) => {
         const command = parseCommand(str);
-        command.respond = resolve;
-        context.handleCommand(command);
+        context.handleCommand(command, resolve);
     });
 }
 

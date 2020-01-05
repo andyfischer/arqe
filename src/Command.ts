@@ -19,9 +19,6 @@ export default interface Command {
     flags: { [flag: string]: any }
     tags: CommandTag[]
     payloadStr: string
-
-    // Execution context
-    respond?: (msg: string) => void
 }
 
 export function newCommand(): Command {

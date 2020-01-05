@@ -73,7 +73,13 @@ export class TestSession {
     }
 
     async command(cmd: string): Promise<string> {
-        const result = await this.conn.run(cmd);
+        let result = await this.conn.runGetFullResponse(cmd);
+
+        console.log('runGetFullResponse responded: ', result);
+
+        if (Array.isArray(result))
+            result = JSON.stringify(result);
+
         this.log(`${cmd} -> ${result}`);
         return result;
     }

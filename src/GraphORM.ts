@@ -3,7 +3,7 @@ import parseCommand from './parseCommand'
 import Graph from './Graph'
 
 export function createUniqueEntity(graph: Graph, typename: string) {
-    const result = graph.handleCommandStr(`set ${typename}/#unique`);
+    const result = graph.runSync(`set ${typename}/#unique`);
 
     const parsed = parseCommand(result);
 

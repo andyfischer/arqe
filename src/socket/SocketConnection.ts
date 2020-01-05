@@ -17,11 +17,9 @@ export default class SocketConnection {
     }
 
     async handleCommand(reqid: string, command: Command) {
-        command.respond = (result) => {
+        await this.graphContext.handleCommand(command, (result) => {
             this.send({reqid, result});
-        }
-
-        await this.graphContext.handleCommand(command)
+        });
     }
 
     constructor(graph: Graph, ws: WebSocket) {
@@ -47,7 +45,7 @@ export default class SocketConnection {
         });
 
         ws.on('close', async (str) => {
-            this.graph.handleCommandStr(`delete connection/${id} *`)
+            this.graph.run(`delete connection/${id} *`)
             console.log(`server: closed connection/${id}`);
         });
     }

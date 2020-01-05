@@ -1,5 +1,8 @@
 
 import WebSocket from 'ws'
+import EventEmitter from 'events'
+
+import ResponseAccumulator from '../ResponseAccumulator'
 
 interface Listener {
     receive: (msg: string) => void
@@ -52,5 +55,10 @@ export default class CommandConnection {
         this.reqListeners[reqid] = {
             receive
         }
+    }
+
+    async runGetFullResponse(command: string): Promise<string | string[]> {
+        const accumulator = new ResponseAccumulator();
+        return await accumulator.waitUntilDone()
     }
 }

@@ -1,5 +1,5 @@
 
-import Graph from './Graph'
+import Graph, { RespondFunc } from './Graph'
 import Command, { CommandTag } from './Command'
 import parseCommand, { parsedCommandToString } from './parseCommand'
 
@@ -38,7 +38,7 @@ export default class GraphContext {
         this.refreshContextTypeMap()
     }
 
-    contextCommand(command: Command) {
+    contextCommand(command: Command, respond: RespondFunc) {
         for (const tag of command.tags) {
             if (tag.tagType === '/')
                 throw new Error("parsing error, found tagType of '/'");
@@ -56,10 +56,10 @@ export default class GraphContext {
         }
 
         this.refreshContextTypeMap()
-        command.respond('#done');
+        respond('#done');
     }
 
-    translateResponse(msg: string) {
+    _translateResponse(msg: string) {
         if (msg.startsWith('set ')) {
             const parsed = parseCommand(msg);
 
@@ -77,7 +77,7 @@ export default class GraphContext {
         return msg;
     }
 
-    async handleCommand(command: Command) {
+    async handleCommand(command: Command, respond: RespondFunc) {
 
         // Resolve any '?' tags that we know of.
         for (let i = 0; i < command.tags.length; i += 1) {
@@ -103,7 +103,7 @@ export default class GraphContext {
 
         switch (command.command) {
         case 'context':
-            this.contextCommand(command);
+            this.contextCommand(command, respond);
             return;
         }
 
@@ -114,11 +114,11 @@ export default class GraphContext {
             }
         }
 
-        const wrappedCommand = {
-            ...command,
-            respond: (msg) => command.respond(this.translateResponse(msg))
+        const wrappedRespond = (msg) => {
+            msg = this._translateResponse(msg);
+            respond(msg);
         }
-        
-        await this.graph.handleCommand(wrappedCommand);
+
+        await this.graph.handleCommand(command, wrappedRespond);
     }
 }

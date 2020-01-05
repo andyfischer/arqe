@@ -10,6 +10,7 @@ import GraphListener from './GraphListener'
 
 export type ListenerAction = 'set' | 'delete'
 export type ListenerCallback = (str: string) => void
+export type RespondFunc = (str: string) => void
 
 export default class Graph {
 
@@ -49,7 +50,7 @@ export default class Graph {
         }
     }
 
-    set(command: Command) {
+    set(command: Command, respond: RespondFunc) {
         //console.log('set: ', commandArgsToString(tags));
 
         let affectsTypeInfo = false;
@@ -84,35 +85,24 @@ export default class Graph {
         this.onRelationUpdated(relation);
 
         if (expectsEcho) {
-            command.respond(this.stringifyRelation(relation));
+            respond(this.stringifyRelation(relation));
         } else {
-            command.respond("#done");
+            respond("#done");
         }
     }
 
-    get(command: Command) {
-        try {
-            const get = new Get(this, command);
-            const result = get.formattedResult();
-            command.respond(result);
+    dump(command: Command, respond: RespondFunc) {
+        respond('#start');
 
-        } catch (err) {
-            console.log(err.stack || err);
-            command.respond("#internal_error");
-        }
-    }
-
-    dump(command: Command) {
-        command.respond('#start');
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
-            command.respond(this.stringifyRelation(rel));
+            respond(this.stringifyRelation(rel));
         }
 
-        command.respond('#done');
+        respond('#done');
     }
 
-    deleteCmd(command: Command) {
+    deleteCmd(command: Command, respond: RespondFunc) {
         const get = new Get(this, command);
         for (const rel of get.matchingRelations()) {
             if (rel.has('typeinfo'))
@@ -123,14 +113,14 @@ export default class Graph {
             this.onRelationDeleted(found);
         }
 
-        command.respond('#done');
+        respond('#done');
     }
 
-    listen(command: Command) {
-        command.respond('#start');
+    listen(command: Command, respond: RespondFunc) {
+        respond('#start');
         const listener = new GraphListener(this, command);
         this.listeners.push(listener);
-        listener.addCallback(str => command.respond(str));
+        listener.addCallback(respond);
     }
 
     stringifyRelation(rel: Relation) {
@@ -159,38 +149,45 @@ export default class Graph {
         return 'set ' + args.join(' ') + payload;
     }
 
-    handleCommand(command: Command) {
+    handleCommand(command: Command, respond: RespondFunc) {
 
-        switch (command.command) {
+        try {
+            switch (command.command) {
 
-        case 'set': {
-            this.set(command);
-            return;
+            case 'set': {
+                this.set(command, respond);
+                return;
+            }
+
+            case 'get': {
+                const get = new Get(this, command);
+                const result = get.formattedResult();
+                respond(result);
+                return;
+            }
+
+            case 'dump': {
+                this.dump(command, respond);
+                return;
+            }
+
+            case 'delete': {
+                this.deleteCmd(command, respond);
+                return;
+            }
+
+            case 'listen': {
+                this.listen(command, respond);
+                return;
+            }
+            
+            }
+
+            respond("unrecognized command: " + command.command);
+        } catch (err) {
+            console.log(err.stack || err);
+            respond("#internal_error");
         }
-
-        case 'get': {
-            this.get(command);
-            return;
-        }
-
-        case 'dump': {
-            this.dump(command);
-            return;
-        }
-
-        case 'delete': {
-            this.deleteCmd(command);
-            return;
-        }
-
-        case 'listen': {
-            this.listen(command);
-            return;
-        }
-        
-        }
-
-        command.respond("unrecognized command: " + command.command);
     }
 
     onRelationUpdated(rel: Relation) {
@@ -203,17 +200,31 @@ export default class Graph {
             listener.onRelationDeleted(rel);
     }
 
-    handleCommandStr(commandStr: string) {
-        let result = null;
+    run(commandStr: string, respond?: RespondFunc) {
+        respond = respond || (() => null);
         const parsed = parseCommand(commandStr);
-        parsed.respond = msg => { result = msg; }
-        this.handleCommand(parsed);
-        return result;
+        this.handleCommand(parsed, respond);
     }
 
-    addListener(commandStr: string, callback: ListenerCallback) {
+    // TODO: delete in favor of run() ?
+    addListener(commandStr: string, callback: RespondFunc) {
         const parsed = parseCommand(commandStr);
-        parsed.respond = callback;
-        this.handleCommand(parsed);
+        this.handleCommand(parsed, callback);
+    }
+
+    runSync(commandStr: string) {
+        let result = null;
+
+        this.run(commandStr, response => {
+            if (result !== null)
+                throw new Error("got multiple responses in runSync");
+
+            result = response;
+        });
+
+        if (result === null)
+            throw new Error("command didn't have sync response in runSync");
+
+        return result;
     }
 }
