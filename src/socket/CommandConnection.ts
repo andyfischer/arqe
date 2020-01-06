@@ -1,6 +1,7 @@
 
 import WebSocket from 'ws'
 import EventEmitter from 'events'
+import { RespondFunc } from '../Graph'
 
 import ResponseAccumulator from '../ResponseAccumulator'
 
@@ -20,7 +21,13 @@ export default class CommandConnection {
         this.ws = ws;
 
         ws.on('message', str => {
+
             const { reqid, msg } = JSON.parse(str);
+
+            if (msg === undefined) {
+                console.log('CommandConnection internal error: missing "msg" field');
+            }
+            
             const listener = this.reqListeners[reqid]
 
             if (!listener) {
@@ -32,6 +39,9 @@ export default class CommandConnection {
 
             if (msg === '#started')
                 listener.streaming = true;
+
+            if (msg === '#done')
+                listener.streaming = false;
 
             if (!listener.streaming) {
                 delete this.reqListeners[reqid];
@@ -46,7 +56,7 @@ export default class CommandConnection {
         this.ws.terminate();
     }
 
-    async run(command: string, receive: (msg: string) => void) {
+    async run(command: string, receive: RespondFunc) {
 
         const reqid = this.nextReqId;
         this.nextReqId += 1
@@ -59,6 +69,7 @@ export default class CommandConnection {
 
     async runGetFullResponse(command: string): Promise<string | string[]> {
         const accumulator = new ResponseAccumulator();
+        this.run(command, accumulator.receiveCallback());
         return await accumulator.waitUntilDone()
     }
 }

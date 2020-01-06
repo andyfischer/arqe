@@ -1,5 +1,6 @@
 
 import CommandConnection from '../socket/CommandConnection'
+import { timedOut } from '../utils'
 
 export type TestCase = (session: TestSession) => Promise<void>
 
@@ -73,9 +74,14 @@ export class TestSession {
     }
 
     async command(cmd: string): Promise<string> {
-        let result = await this.conn.runGetFullResponse(cmd);
 
-        console.log('runGetFullResponse responded: ', result);
+        let responsePromise = this.conn.runGetFullResponse(cmd);
+
+        if (await timedOut(responsePromise, 5000)) {
+            throw new Error('Timed out waiting for response: ' + cmd)
+        }
+
+        let result = await responsePromise;
 
         if (Array.isArray(result))
             result = JSON.stringify(result);

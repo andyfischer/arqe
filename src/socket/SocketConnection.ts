@@ -17,8 +17,8 @@ export default class SocketConnection {
     }
 
     async handleCommand(reqid: string, command: Command) {
-        await this.graphContext.handleCommand(command, (result) => {
-            this.send({reqid, result});
+        await this.graphContext.handleCommand(command, (msg) => {
+            this.send({reqid, msg});
         });
     }
 

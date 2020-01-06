@@ -31,6 +31,12 @@ function loadCasesFromFiles() {
 
 async function testSaveUnique(session: TestSession) {
     const result = await session.command('set uniquetype/#unique');
+
+    if (typeof result !== 'string') {
+        session.fail('expected string from "set uniquetype/#unique", got: ' + result);
+        return;
+    }
+
     if (!result.startsWith('set uniquetype/'))
         session.fail('expected "set uniquetype/...", saw: ' + result);
 
@@ -40,6 +46,11 @@ async function testSaveUnique(session: TestSession) {
 
 async function testGetConnectionId(session: TestSession) {
     const result = await session.command('get -x connection/?');
+
+    if (typeof result !== 'string') {
+        session.fail('expected string from "get -x connection/?", got: ' + result);
+        return;
+    }
 
     if (!result.startsWith('set connection/'))
         session.fail('expected set connection/..., saw: ' + result);
