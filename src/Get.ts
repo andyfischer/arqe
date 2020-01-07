@@ -4,91 +4,21 @@ import Graph from './Graph'
 import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
+import RelationPattern from './RelationPattern'
 
 export default class Get {
-
     graph: Graph;
     command: Command;
-    fixedArgs: CommandTag[] = []
-    fixedArgsIncludesType: { [typename:string]: true } = {}
-    starValueTags: CommandTag[] = []
-    tagTypes: TagType[] = []
-    hasInheritTags: boolean = false
-    hasStarTag: boolean
-    tagCount: number
+    pattern: RelationPattern
 
     constructor(graph: Graph, command: Command) {
         this.graph = graph;
         this.command = command;
-        this.tagCount = command.tags.length;
-
-        for (const tag of command.tags) {
-
-            const tagType = this.graph.findTagType(tag.tagType);
-            this.tagTypes.push(tagType)
-
-            if (tag.star) {
-                this.hasStarTag = true
-            } else if (tag.starValue) {
-                this.starValueTags.push(tag);
-            } else {
-                this.fixedArgs.push(tag);
-                this.fixedArgsIncludesType[tag.tagType] = true;
-            }
-
-            if (tagType.inherits) {
-                this.hasInheritTags = true
-                tag.tagTypeInherits = true;
-            }
-        }
-    }
-
-    relationMatches(rel: Relation) {
-
-        // For no star tag: Query must have equal number or more tags than the relation.
-        if (!this.hasStarTag && (rel.tagCount > this.tagCount)) {
-            return false;
-        }
-
-        // With star tag: Query must have fewer tags than the relation
-        if (this.hasStarTag && rel.tagCount < this.tagCount)
-            return false;
-
-        // For all fixed args: Check that each one is found in this relation.
-        for (const arg of this.fixedArgs) {
-
-            if (!rel.includesType(arg.tagType)) {
-                // The relation doesn't mention this type. If this is an 'inherits' type
-                // then that's fine, otherwise disqualify.
-                if (arg.tagTypeInherits) {
-                    continue;
-                } else {
-                    return false;
-                }
-            }
-                
-            if (!arg.tagValue) {
-                if (!rel.asMap[arg.tagType])
-                    return false;
-
-                continue;
-            }
-
-            if (rel.asMap[arg.tagType] !== arg.tagValue)
-                return false;
-        }
-
-        // For all star values: Check that the relation has a tag of this type.
-        for (const arg of this.starValueTags) {
-            if (!rel.asMap[arg.tagType])
-                return false;
-        }
-
-        return true;
+        this.pattern = new RelationPattern(graph, command)
     }
 
     hasListResult() {
-        return this.hasStarTag || (this.starValueTags.length > 0);
+        return this.pattern.hasStarTag || (this.pattern.starValueTags.length > 0);
     }
 
     *matchingFullSearch() {
@@ -96,7 +26,7 @@ export default class Get {
         for (const ntag in graph.relationsByNtag) {
             const rel = graph.relationsByNtag[ntag];
 
-            if (this.relationMatches(rel))
+            if (this.pattern.matches(rel))
                 yield rel;
         }
     }
@@ -113,7 +43,7 @@ export default class Get {
         if (found)
             return found;
 
-        if (this.hasInheritTags) {
+        if (this.pattern.hasInheritTags) {
             for (const match of this.matchingFullSearch()) {
                 return match;
             }
@@ -130,28 +60,14 @@ export default class Get {
         }
     }
 
-    formatRelation(rel: Relation) {
-        const outTags = [];
-
-        for (const tag of rel.eachTag()) {
-            if (this.fixedArgsIncludesType[tag.tagType])
-                continue;
-
-            outTags.push(commandTagToString(tag));
-        }
-
-        const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
-        return str;
-    }
-
     formattedListResult() {
-        const variedType = this.starValueTags[0];
+        const variedType = this.pattern.starValueTags[0];
 
         // Return results. Use shorthand, don't mention tags that were provided exactly.
         const formattedResults = [];
         
         for (const rel of this.matchingFullSearch()) {
-            formattedResults.push(this.formatRelation(rel))
+            formattedResults.push(this.pattern.formatRelation(rel))
         }
 
         return '[' + formattedResults.join(', ') + ']'
