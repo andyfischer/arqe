@@ -11,7 +11,7 @@ it("fires callbacks when a related item is saved", () => {
         return result;
     }
 
-    graph.addListener('listen a/*', (msg) => calls.push(msg));
+    graph.run('listen a/*', (msg) => calls.push(msg));
 
     expect(recentCalls()).toEqual(['#start']);
 

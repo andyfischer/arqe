@@ -33,12 +33,21 @@ export default class Graph {
         return this.tagTypes[name];
     }
 
+    get(command: Command, respond: RespondFunc) {
+        const get = new Get(this, command);
+        const result = get.formattedResult();
+        respond(result);
+        return;
+    }
+
     set(command: Command, respond: RespondFunc) {
 
         const set = new SetOperation(this, command, respond)
         set.resolveSpecialTags();
 
         const ntag = normalizeExactTag(command.tags);
+
+        // TODO: Custom storage
         let relation = this.relationsByNtag[ntag];
 
         if (relation) {
@@ -127,9 +136,7 @@ export default class Graph {
             }
 
             case 'get': {
-                const get = new Get(this, command);
-                const result = get.formattedResult();
-                respond(result);
+                this.get(command, respond);
                 return;
             }
 
@@ -173,12 +180,6 @@ export default class Graph {
         respond = respond || (() => null);
         const parsed = parseCommand(commandStr);
         this.handleCommand(parsed, respond);
-    }
-
-    // TODO: delete in favor of run() ?
-    addListener(commandStr: string, callback: RespondFunc) {
-        const parsed = parseCommand(commandStr);
-        this.handleCommand(parsed, callback);
     }
 
     runSync(commandStr: string) {
