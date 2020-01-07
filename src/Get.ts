@@ -108,20 +108,6 @@ export default class Get {
         return this.graph.relationsByNtag[ntag]
     }
 
-    /*
-    *variantsForInheritTags(startIndex: number) {
-        for (let index=startIndex; index < this.tagTypes.length; index += 1) {
-            const tagType = this.tagTypes[index];
-            if (tagType.inherits) {
-                console.log('found inherits tag: ', tagType.inherits);
-                const remainingArgs = this.command.tags.filter(arg => arg.tagType !== tagType.name);
-                yield remainingArgs;
-                yield *this.variantsForInheritTags(startIndex + 1);
-            }
-        }
-    }
-    */
-
     findOneMatch(): Relation { 
         const found = this.findExactMatch(this.command.tags);
         if (found)

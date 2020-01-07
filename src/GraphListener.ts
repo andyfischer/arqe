@@ -1,18 +1,18 @@
 
 import Get from './Get'
-import Graph, { ListenerCallback } from './Graph'
+import Graph, { RespondFunc } from './Graph'
 import Command from './Command'
 import Relation from './Relation'
 
 export default class GraphListener {
     get: Get
-    callbacks: ListenerCallback[] = []
+    callbacks: RespondFunc[] = []
 
     constructor(graph: Graph, command: Command) {
         this.get = new Get(graph, command);
     }
 
-    addCallback(callback: ListenerCallback) {
+    addCallback(callback: RespondFunc) {
         this.callbacks.push(callback);
     }
 

@@ -4,12 +4,13 @@ import parseCommand from './parseCommand'
 import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandArgsToString } from './parseCommand'
+import SetOperation from './SetOperation'
 import Get from './Get'
 import TagTypeOrdering from './TagTypeOrdering'
 import GraphListener from './GraphListener'
+import TypeInfoListener from './TypeInfoListener'
 
 export type ListenerAction = 'set' | 'delete'
-export type ListenerCallback = (str: string) => void
 export type RespondFunc = (str: string) => void
 
 export default class Graph {
@@ -18,6 +19,7 @@ export default class Graph {
     tagTypes: { [name: string]: TagType } = {}
     ordering = new TagTypeOrdering()
     listeners: GraphListener[] = []
+    typeInfoListener = new TypeInfoListener()
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
@@ -31,41 +33,10 @@ export default class Graph {
         return this.tagTypes[name];
     }
 
-    exists(tags: CommandTag[]) {
-        const ntag = normalizeExactTag(tags);
-        return !!this.relationsByNtag[ntag];
-    }
-
-    updateTypeInfo(rel: Relation) {
-        const tagType = this.findTagType(rel.get('typeinfo'))
-
-        if (rel.getOptional('option', null) === 'inherits') {
-            tagType.inherits = true;
-            return;
-        }
-        
-        if (rel.getOptional('option', null) === 'order') {
-            this.ordering.updateInfo(rel);
-            return;
-        }
-    }
-
     set(command: Command, respond: RespondFunc) {
-        //console.log('set: ', commandArgsToString(tags));
 
-        let affectsTypeInfo = false;
-        let expectsEcho = false;
-
-        // Resolve any special tags
-        for (const arg of command.tags) {
-            if (arg.tagValue === '#unique') {
-                arg.tagValue = this.findTagType(arg.tagType).getUniqueId()
-                expectsEcho = true;
-            }
-
-            if (arg.tagType === 'typeinfo')
-                affectsTypeInfo = true;
-        }
+        const set = new SetOperation(this, command, respond)
+        set.resolveSpecialTags();
 
         const ntag = normalizeExactTag(command.tags);
         let relation = this.relationsByNtag[ntag];
@@ -74,17 +45,12 @@ export default class Graph {
             relation.setPayload(command.payloadStr);
         } else {
             relation = new Relation(this, ntag, command.tags, command.payloadStr);
-
-            if (affectsTypeInfo) {
-                this.updateTypeInfo(relation);
-            }
-
             this.relationsByNtag[ntag] = relation;
         }
 
-        this.onRelationUpdated(relation);
+        this.onRelationUpdated(command, relation);
 
-        if (expectsEcho) {
+        if (set.replyWithEcho) {
             respond(this.stringifyRelation(relation));
         } else {
             respond("#done");
@@ -104,6 +70,7 @@ export default class Graph {
 
     deleteCmd(command: Command, respond: RespondFunc) {
         const get = new Get(this, command);
+
         for (const rel of get.matchingRelations()) {
             if (rel.has('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
@@ -190,7 +157,9 @@ export default class Graph {
         }
     }
 
-    onRelationUpdated(rel: Relation) {
+    onRelationUpdated(command: Command, rel: Relation) {
+        this.typeInfoListener.onRelationUpdated(command, rel);
+
         for (const listener of this.listeners)
             listener.onRelationUpdated(rel);
     }
