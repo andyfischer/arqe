@@ -5,13 +5,20 @@ import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandArgsToString } from './parseCommand'
 import SetOperation from './SetOperation'
-import Get from './Get'
+import GetOperation from './GetOperation'
 import TagTypeOrdering from './TagTypeOrdering'
 import GraphListener from './GraphListener'
 import TypeInfoListener from './TypeInfoListener'
+import StoragePlugin from './StoragePlugin'
+import RelationPattern from './RelationPattern'
 
 export type ListenerAction = 'set' | 'delete'
 export type RespondFunc = (str: string) => void
+
+interface MountedStoragePlugin {
+    pattern: RelationPattern
+    plugin: StoragePlugin
+}
 
 export default class Graph {
 
@@ -20,6 +27,7 @@ export default class Graph {
     ordering = new TagTypeOrdering()
     listeners: GraphListener[] = []
     typeInfoListener = new TypeInfoListener()
+    storagePlugins: MountedStoragePlugin[] = []
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
@@ -31,13 +39,6 @@ export default class Graph {
         }
 
         return this.tagTypes[name];
-    }
-
-    get(command: Command, respond: RespondFunc) {
-        const get = new Get(this, command);
-        const result = get.formattedResult();
-        respond(result);
-        return;
     }
 
     set(command: Command, respond: RespondFunc) {
@@ -78,9 +79,9 @@ export default class Graph {
     }
 
     deleteCmd(command: Command, respond: RespondFunc) {
-        const get = new Get(this, command);
+        const pattern = new RelationPattern(this, command);
 
-        for (const rel of get.matchingRelations()) {
+        for (const rel of pattern.allMatches()) {
             if (rel.has('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 
@@ -136,7 +137,8 @@ export default class Graph {
             }
 
             case 'get': {
-                this.get(command, respond);
+                const get = new GetOperation(this, command, respond);
+                get.perform();
                 return;
             }
 
@@ -196,5 +198,8 @@ export default class Graph {
             throw new Error("command didn't have sync response in runSync");
 
         return result;
+    }
+
+    installStorage(pattern: string, plugin: StoragePlugin) {
     }
 }

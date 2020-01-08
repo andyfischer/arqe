@@ -1,12 +1,10 @@
 
-import Get from './Get'
 import Graph, { RespondFunc } from './Graph'
 import Command from './Command'
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 
 export default class GraphListener {
-    get: Get
     pattern: RelationPattern
     callbacks: RespondFunc[] = []
 

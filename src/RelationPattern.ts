@@ -2,10 +2,12 @@
 import Command, { CommandTag } from './Command'
 import Relation from './Relation'
 import Graph from './Graph'
-import { commandTagToString } from './parseCommand'
+import parseCommand, { normalizeExactTag, commandTagToString } from './parseCommand'
 
 export default class RelationPattern {
 
+    graph: Graph
+    command: Command;
     hasStarTag: boolean
     starValueTags: CommandTag[] = []
     fixedArgs: CommandTag[] = []
@@ -14,6 +16,8 @@ export default class RelationPattern {
     tagCount: number
 
     constructor(graph: Graph, command: Command) {
+        this.graph = graph;
+        this.command = command;
         this.tagCount = command.tags.length;
 
         for (const tag of command.tags) {
@@ -80,6 +84,48 @@ export default class RelationPattern {
         return true;
     }
 
+    isMultiMatch() {
+        return this.hasStarTag || (this.starValueTags.length > 0);
+    }
+
+    *linearScan() {
+        const graph = this.graph;
+        for (const ntag in graph.relationsByNtag) {
+            const rel = graph.relationsByNtag[ntag];
+
+            if (this.matches(rel))
+                yield rel;
+        }
+    }
+
+    findExactMatch(args: CommandTag[]): Relation|null {
+        // Exact tag lookup.
+        const ntag = normalizeExactTag(args);
+        return this.graph.relationsByNtag[ntag]
+    }
+
+    findOneMatch(): Relation { 
+        const found = this.findExactMatch(this.command.tags);
+        if (found)
+            return found;
+
+        if (this.hasInheritTags) {
+            for (const match of this.linearScan()) {
+                return match;
+            }
+        }
+    }
+
+    *allMatches() {
+        if (this.isMultiMatch()) {
+            yield *this.linearScan();
+        } else {
+            const one = this.findOneMatch();
+            if (one)
+                yield one;
+        }
+    }
+
     formatRelation(rel: Relation) {
         const outTags = [];
 
@@ -93,4 +139,11 @@ export default class RelationPattern {
         const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
         return str;
     }
+
+
+}
+
+export function commandToRelationPattern(graph: Graph, str: string) {
+    const parsed = parseCommand(str);
+    return new RelationPattern(graph, parsed)
 }
