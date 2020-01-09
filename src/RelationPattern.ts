@@ -139,8 +139,6 @@ export default class RelationPattern {
         const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
         return str;
     }
-
-
 }
 
 export function commandToRelationPattern(graph: Graph, str: string) {

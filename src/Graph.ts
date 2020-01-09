@@ -10,7 +10,7 @@ import TagTypeOrdering from './TagTypeOrdering'
 import GraphListener from './GraphListener'
 import TypeInfoListener from './TypeInfoListener'
 import StoragePlugin from './StoragePlugin'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 
 export type ListenerAction = 'set' | 'delete'
 export type RespondFunc = (str: string) => void
@@ -41,30 +41,13 @@ export default class Graph {
         return this.tagTypes[name];
     }
 
-    set(command: Command, respond: RespondFunc) {
-
-        const set = new SetOperation(this, command, respond)
-        set.resolveSpecialTags();
-
-        const ntag = normalizeExactTag(command.tags);
-
-        // TODO: Custom storage
-        let relation = this.relationsByNtag[ntag];
-
-        if (relation) {
-            relation.setPayload(command.payloadStr);
-        } else {
-            relation = new Relation(this, ntag, command.tags, command.payloadStr);
-            this.relationsByNtag[ntag] = relation;
+    findStoragePlugin(relation: Relation): StoragePlugin {
+        for (const { plugin, pattern } of this.storagePlugins) {
+            if (pattern.matches(relation))
+                return plugin;
         }
 
-        this.onRelationUpdated(command, relation);
-
-        if (set.replyWithEcho) {
-            respond(this.stringifyRelation(relation));
-        } else {
-            respond("#done");
-        }
+        return null;
     }
 
     dump(command: Command, respond: RespondFunc) {
@@ -132,7 +115,8 @@ export default class Graph {
             switch (command.command) {
 
             case 'set': {
-                this.set(command, respond);
+                const set = new SetOperation(this, command, respond)
+                set.perform();
                 return;
             }
 
@@ -200,6 +184,8 @@ export default class Graph {
         return result;
     }
 
-    installStorage(pattern: string, plugin: StoragePlugin) {
+    installStorage(patternStr: string, plugin: StoragePlugin) {
+        const pattern = commandToRelationPattern(this, patternStr);
+        this.storagePlugins.push({ pattern, plugin });
     }
 }
