@@ -1,12 +1,23 @@
 
+import Fs from 'fs-extra'
 import StoragePlugin from './StoragePlugin'
 import SetOperation from './SetOperation'
 import GetOperation from './GetOperation'
 
 export default class FilesystemStorage implements StoragePlugin {
-    set(set: SetOperation) {
+    async setAsync(set: SetOperation) {
+        const { filename } = set.relation.asMap;
+        const contents = set.command.payloadStr;
+
+        try {
+            console.log('saving file: ', filename, ' -- ', contents);
+            await Fs.writeFile(filename, contents);
+        } catch (err) {
+            set.respond('#error ' + err);
+            set.needsReply = false;
+        }
     }
 
-    get(get: GetOperation) {
+    async getAsync(get: GetOperation) {
     }
 }
