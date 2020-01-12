@@ -19,17 +19,15 @@ export default class GetOperation {
         this.respond = respond;
     }
 
-    formattedListResult() {
+    *formattedResults() {
         const variedType = this.pattern.starValueTags[0];
 
         // Return results. Use shorthand, don't mention tags that were provided exactly.
         const formattedResults = [];
         
         for (const rel of this.pattern.allMatches()) {
-            formattedResults.push(this.pattern.formatRelation(rel))
+            yield this.pattern.formatRelation(rel);
         }
-
-        return '[' + formattedResults.join(', ') + ']'
     }
 
     extendedResult() {
@@ -49,14 +47,15 @@ export default class GetOperation {
         }
     }
 
-    formattedResult(): string {
-        if (this.pattern.isMultiMatch())
-            return this.formattedListResult();
-        else
-            return this.formattedSingleResult();
-    }
-    
     perform() {
-        this.respond(this.formattedResult());
+        if (this.pattern.isMultiMatch()) {
+            this.respond('#start');
+            for (const s of this.formattedResults()) {
+                this.respond(s);
+            }
+            this.respond('#done');
+        } else {
+            this.respond(this.formattedSingleResult());
+        }
     }
 }

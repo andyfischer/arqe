@@ -1,8 +1,0 @@
-
-get a *
-expect []
-
-set a 1
-
-get a *
-expect [1]

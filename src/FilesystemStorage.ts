@@ -10,7 +10,7 @@ export default class FilesystemStorage implements StoragePlugin {
         const contents = set.command.payloadStr;
 
         try {
-            console.log('saving file: ', filename, ' -- ', contents);
+            // console.log('saving file: ', filename, ' -- ', contents);
             await Fs.writeFile(filename, contents);
         } catch (err) {
             set.respond('#error ' + err);
@@ -19,5 +19,17 @@ export default class FilesystemStorage implements StoragePlugin {
     }
 
     async getAsync(get: GetOperation) {
+        /*
+        const { filename } = get.relation.asMap;
+
+        try {
+            const contents = await Fs.readFile(filename, 'utf8');
+            get.respond(contents);
+            // get.needsReply = false;
+        } catch (err) {
+            get.respond('#error ' + err);
+            // get.needsReply = false;
+        }
+        */
     }
 }

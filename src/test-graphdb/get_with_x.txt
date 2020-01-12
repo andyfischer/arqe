@@ -1,4 +1,0 @@
-
-set a
-get -x a
-expect set a

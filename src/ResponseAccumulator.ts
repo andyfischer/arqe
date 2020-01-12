@@ -26,7 +26,6 @@ export default class ResponseAccumulator {
 
     async waitUntilDone(): Promise<string | string[]> {
         await this.events.waitUntilDone();
-
         return this.out;
     }
 }
