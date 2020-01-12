@@ -18,16 +18,27 @@ export default class TestSuite {
         this.graph = new Graph();
     }
 
+    onRun(command: string) {
+        // test parse & stringify.
+        // test with added extra tags.
+        return command;
+    }
+
     describe(name: string, impl: (suite?: TestSuite) => void | Promise<any>) {
         describe(name, () => impl(this));
     }
 
     test = (name: string, impl: (suite?: TestSuite) => void | Promise<any>) => {
+
+        // create a new GraphContext for each test.
+
         it(name, () => impl(this));
     }
 
     run = (command) => {
         const { graph } = this;
+
+        command = this.onRun(command);
 
         const verifier = verifyRespondProtocol(command, (err) => {
             fail(`Protocol error: ${err.problem} (${JSON.stringify({ causedBy: err.causedBy })})`);
