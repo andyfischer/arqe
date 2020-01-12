@@ -1,5 +1,6 @@
 
-import { run } from './Setup'
+import { startSuite } from './TestSuite'
+const { test } = startSuite();
 
-it('get * works with extra tags', () => {
+test('get * works with extra tags', ({run}) => {
 });

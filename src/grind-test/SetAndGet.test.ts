@@ -1,12 +1,13 @@
 
-import { run } from './Setup'
+import { startSuite } from './TestSuite'
+const { test } = startSuite();
 
-it("initially doesn't have a value", () => {
+test("initially doesn't have a value", ({run}) => {
     const existing = run('get testval/1');
     expect(existing).toEqual('#null');
 });
 
-it("set and get #exists", () => {
+test("set and get #exists", ({run}) => {
     const existing = run('get testval/2');
     expect(existing).toEqual('#null');
 
@@ -15,7 +16,7 @@ it("set and get #exists", () => {
     expect(found).toEqual('#exists');
 });
 
-it("set and get payload", () => {
+test("set and get payload", ({run}) => {
     const existing = run('get testval/3');
     expect(existing).toEqual('#null');
 
@@ -24,7 +25,7 @@ it("set and get payload", () => {
     expect(found).toEqual('123');
 });
 
-it("overwrite set and get the value", () => {
+test("overwrite set and get the value", ({run}) => {
     const existing = run('get testval/4');
     expect(existing).toEqual('#null');
 
@@ -37,7 +38,7 @@ it("overwrite set and get the value", () => {
     expect(found2).toEqual('456');
 });
 
-it("overwrite value with #exists", () => {
+test("overwrite value with #exists", ({run}) => {
     const existing = run('get testval/5');
     expect(existing).toEqual('#null');
 
@@ -50,7 +51,7 @@ it("overwrite value with #exists", () => {
     expect(found2).toEqual('#exists');
 });
 
-it("overwrite #exists with value", () => {
+test("overwrite #exists with value", ({run}) => {
     const existing = run('get testval/6');
     expect(existing).toEqual('#null');
 

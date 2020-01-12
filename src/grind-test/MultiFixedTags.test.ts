@@ -1,7 +1,8 @@
 
-import { run } from './Setup'
+import { startSuite } from './TestSuite'
+const { test } = startSuite();
 
-it('correctly matches several exact tags', () => {
+test('correctly matches several exact tags', ({run}) => {
     run('set a b c');
     expect(run('get a b')).toEqual('#null');
     expect(run('get a b c')).toEqual('#exists');

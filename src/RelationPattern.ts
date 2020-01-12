@@ -8,7 +8,6 @@ export default class RelationPattern {
 
     graph: Graph
     command: Command;
-    hasStarTag: boolean
     starValueTags: CommandTag[] = []
     fixedArgs: CommandTag[] = []
     fixedArgsIncludesType: { [typename:string]: true } = {}
@@ -25,7 +24,7 @@ export default class RelationPattern {
             const tagType = graph.findTagType(tag.tagType);
 
             if (tag.star) {
-                this.hasStarTag = true
+                // this.hasStarTag = true
             } else if (tag.starValue) {
                 this.starValueTags.push(tag);
             } else {
@@ -42,14 +41,10 @@ export default class RelationPattern {
 
     matches(rel: Relation) {
 
-        // For no star tag: Query must have equal number or more tags than the relation.
-        if (!this.hasStarTag && (rel.tagCount > this.tagCount)) {
+        // Query must have equal number (or greater, for inherit) of tags as the relation.
+        if (rel.tagCount > this.tagCount) {
             return false;
         }
-
-        // With star tag: Query must have fewer tags than the relation
-        if (this.hasStarTag && rel.tagCount < this.tagCount)
-            return false;
 
         // For all fixed args: Check that each one is found in this relation.
         for (const arg of this.fixedArgs) {
@@ -85,7 +80,7 @@ export default class RelationPattern {
     }
 
     isMultiMatch() {
-        return this.hasStarTag || (this.starValueTags.length > 0);
+        return (this.starValueTags.length > 0);
     }
 
     *linearScan() {

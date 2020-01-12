@@ -1,25 +1,26 @@
 
-import { run } from './Setup'
+import { startSuite } from './TestSuite'
+const { test } = startSuite();
 
-it('get * works on no results', () => {
+test('get * works on no results', ({run}) => {
     const result = run('get multitest/*');
     expect(result).toEqual([]);
 });
 
-it('get * works on single result', () => {
+test('get * works on single result', ({run}) => {
     run('set multitest/1');
     const result = run('get multitest/*');
     expect(result).toEqual(['multitest/1']);
 });
 
-it('get * works on multiple results result', () => {
+test('get * works on multiple results result', ({run}) => {
     run('set multitest2/1');
     run('set multitest2/2');
     run('set multitest2/3');
     expect(run('get multitest2/*')).toEqual(['multitest2/1', 'multitest2/2', 'multitest2/3']);
 });
 
-it('get * works with additions and deletions', () => {
+test('get * works with additions and deletions', ({run}) => {
     run('set multitest3/1');
     run('set multitest3/2');
     run('set multitest3/3');

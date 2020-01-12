@@ -1,13 +1,14 @@
 
-import { run } from './Setup'
+import { startSuite } from './TestSuite'
+const { test } = startSuite();
 
-it('delete works', () => {
+test('delete works', ({run}) => {
     run('set deletetest/1');
     expect(run('delete deletetest/1')).toEqual('#done');
     expect(run('get deletetest/1')).toEqual('#null');
 });
 
-it('delete * works', () => {
+test('delete * works', ({run}) => {
     run('set deletetest/1');
     run('set deletetest/2');
     run('set deletetest/3');
