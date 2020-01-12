@@ -42,7 +42,8 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testMatch": [
-      "**/src/**/__tests__/**/*.test.(js|ts)"
+      "**/src/**/__tests__/**/*.test.(js|ts)",
+      "**/src/**/grind-test/*.test.(js|ts)"
     ],
     "moduleFileExtensions": [
       "ts",

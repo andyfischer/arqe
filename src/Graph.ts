@@ -11,6 +11,7 @@ import GraphListener from './GraphListener'
 import TypeInfoListener from './TypeInfoListener'
 import StoragePlugin from './StoragePlugin'
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
+import collectRespond from './collectRespond'
 
 export type ListenerAction = 'set' | 'delete'
 export type RespondFunc = (str: string) => void
@@ -171,12 +172,9 @@ export default class Graph {
     runSync(commandStr: string) {
         let result = null;
 
-        this.run(commandStr, response => {
-            if (result !== null)
-                throw new Error("got multiple responses in runSync");
-
-            result = response;
-        });
+        const collector = collectRespond(r => { result = r; });
+        
+        this.run(commandStr, collector);
 
         if (result === null)
             throw new Error("command didn't have sync response in runSync");

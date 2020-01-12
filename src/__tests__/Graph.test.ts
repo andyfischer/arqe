@@ -26,7 +26,7 @@ it('correctly deletes', () => {
 it('returns correct data for "get *"', () => {
     run('set a 1');
     const result = run('get *');
-    expect(result).toEqual('[a 1]');
+    expect(result).toEqual(['a 1']);
 });
 
 it('returns correct data for "get -x"', () => {
@@ -53,19 +53,19 @@ it("returns correct results for star values", () => {
     run("set a/1 b/1");
     run("set a/2 b/1");
     run("set a/3 b/2");
-    expect(run("get a/* b/1")).toEqual("[a/1, a/2]");
-    expect(run("get a/* b/2")).toEqual("[a/3]");
+    expect(run("get a/* b/1")).toEqual(['a/1', 'a/2']);
+    expect(run("get a/* b/2")).toEqual(['a/3']);
 });
 
 it(`"get *" skips relations with fewer tags`, () => {
     run('set a/1')
     run('set a/1 b/1 c == 1')
-    expect(run('get a/1 *')).toEqual('[b/1 c == 1]');
-    expect(run('get a/1 b/1 *')).toEqual('[c == 1]');
-    expect(run('get a/1 b/1 c *')).toEqual('[]');
+    expect(run('get a/1 *')).toEqual(['b/1 c == 1']);
+    expect(run('get a/1 b/1 *')).toEqual(['c == 1']);
+    expect(run('get a/1 b/1 c *')).toEqual([]);
 });
 
 it(`"get *" returns all nearby tags`, () => {
     run('set a 1')
-    expect(run('get *')).toEqual('[a 1]');
+    expect(run('get *')).toEqual(['a 1']);
 });
