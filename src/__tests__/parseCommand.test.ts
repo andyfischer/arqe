@@ -1,5 +1,5 @@
 
-import parseCommand from '../parseCommand'
+import parseCommand, { parsedCommandToString } from '../parseCommand'
 
 it('parses tags with no values', () => {
     const parsed = parseCommand('test a');
@@ -104,4 +104,16 @@ it('parses multiple grouped flags', () => {
     expect(parsed.command).toEqual('test')
     expect(parsed.flags).toEqual({a: true, b: true, c: true})
     expect(parsed.tags[0].tagType).toEqual('1');
+});
+
+describe("parsedCommandToString", () => {
+    it("works", () => {
+        const parsed = parseCommand('get x y');
+        expect(parsedCommandToString(parsed)).toEqual('get x y');
+    });
+
+    it("handles payloads", () => {
+        const parsed = parseCommand('set x y == 123');
+        expect(parsedCommandToString(parsed)).toEqual('set x y == 123');
+    });
 });

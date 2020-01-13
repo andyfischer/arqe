@@ -5,11 +5,6 @@ import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash } from './lexer'
 
-interface Clause {
-    str?: string
-    payload?: string
-}
-
 function acceptableTagValue(token: Token) {
     return token.match !== t_space && token.match !== t_newline;
 }
@@ -158,7 +153,7 @@ export function commandTagToString(tag: CommandTag) {
     if (tag.tagValue) {
         s += '/' + tag.tagValue;
     } else if (tag.starValue) {
-        s += '*';
+        s += '/*';
     } else if (tag.questionValue) {
         s += '?';
     }
@@ -171,7 +166,19 @@ export function commandArgsToString(tags: CommandTag[]) {
 }
 
 export function parsedCommandToString(command: Command) {
-    return command.command + ' ' + commandArgsToString(command.tags)
+    let str = command.command;
+
+    for (const flag in command.flags) {
+        str += ' -' + flag;
+    }
+    
+    str += ' ' + commandArgsToString(command.tags);
+
+    if (command.payloadStr) {
+        str += ' == ' + command.payloadStr;
+    }
+
+    return str;
 }
 
 export function parseAsSet(str: string) {

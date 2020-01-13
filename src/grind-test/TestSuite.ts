@@ -1,76 +1,37 @@
 
 import Graph from '../Graph'
-import verifyRespondProtocol from '../verifyRespondProtocol'
-import collectRespond from '../collectRespond'
-
-let _graph: Graph;
-
-function initializeGraph() {
-    const graph = new Graph();
-    _graph = graph;
-    return graph;
-}
+import ChaosFlags from './ChaosFlags'
+import TestRunner from './TestRunner'
 
 export default class TestSuite {
-    graph: Graph
+    testRunners: TestRunner[] = []
 
     constructor() {
-        this.graph = new Graph();
+        this.testRunners.push(new TestRunner(this))
+        this.testRunners.push(new TestRunner(this, { reparseCommand: true }, "reparse command" ))
     }
 
-    onRun(command: string) {
-        // test parse & stringify.
-        // test with added extra tags.
-        return command;
-    }
-
-    describe(name: string, impl: (suite?: TestSuite) => void | Promise<any>) {
+    describe(name: string, impl: (context?: any) => void | Promise<any>) {
         describe(name, () => impl(this));
     }
 
-    test = (name: string, impl: (suite?: TestSuite) => void | Promise<any>) => {
+    test = (name: string, impl: (context?: any) => void | Promise<any>) => {
 
-        // create a new GraphContext for each test.
+        // TODO create a new GraphContext for each test.
+        // const context = new GraphContext();
+        
+        for (const runner of this.testRunners) {
 
-        it(name, () => impl(this));
-    }
+            let testName = name; 
 
-    run = (command) => {
-        const { graph } = this;
-
-        command = this.onRun(command);
-
-        const verifier = verifyRespondProtocol(command, (err) => {
-            fail(`Protocol error: ${err.problem} (${JSON.stringify({ causedBy: err.causedBy })})`);
-        });
-
-        let response;
-        let responseFinished = false;
-        let resolveResponse;
-
-        const collector = collectRespond(finishedValue => {
-
-            responseFinished = true;
-
-            if (resolveResponse) {
-                // Async finish
-                resolveResponse(finishedValue);
-            } else {
-                // Sync finish
-                response = finishedValue;
+            if (runner.shortDescription) {
+                testName += ` (${runner.shortDescription})`;
             }
-        });
 
-        graph.run(command, msg => {
-            verifier(msg);
-            collector(msg);
-        });
-
-        if (responseFinished)
-            return response;
-
-        // Didn't finish synchronously, so turn this into a Promise.
-        return new Promise(r => { resolveResponse = r; });
+            it(testName, () => impl({
+                run: runner.run
+            }));
+        }
     }
 }
 
