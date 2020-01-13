@@ -1,14 +1,16 @@
 
 import Graph from '../Graph'
-import ChaosFlags from './ChaosFlags'
 import TestRunner from './TestRunner'
+
+import { ReparseCommand, InsertExtraTag } from './ChaosModes'
 
 export default class TestSuite {
     testRunners: TestRunner[] = []
 
     constructor() {
         this.testRunners.push(new TestRunner(this))
-        this.testRunners.push(new TestRunner(this, { reparseCommand: true }, "reparse command" ))
+        this.testRunners.push(new TestRunner(this, ReparseCommand));
+        this.testRunners.push(new TestRunner(this, InsertExtraTag));
     }
 
     describe(name: string, impl: (context?: any) => void | Promise<any>) {
@@ -24,8 +26,8 @@ export default class TestSuite {
 
             let testName = name; 
 
-            if (runner.shortDescription) {
-                testName += ` (${runner.shortDescription})`;
+            if (runner.chaosMode) {
+                testName += ` (${runner.chaosMode.shortDescription})`;
             }
 
             it(testName, () => impl({

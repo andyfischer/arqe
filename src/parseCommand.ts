@@ -181,6 +181,12 @@ export function parsedCommandToString(command: Command) {
     return str;
 }
 
+export function appendTagInCommand(str: string, tag: string) {
+    const parsed = parseCommand(str);
+    parsed.tags.push({tagType: tag});
+    return parsedCommandToString(parsed);
+}
+
 export function parseAsSet(str: string) {
     const command = parseCommand(str);
 

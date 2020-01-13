@@ -1,5 +1,5 @@
 
-import parseCommand, { parsedCommandToString } from '../parseCommand'
+import parseCommand, { parsedCommandToString, appendTagInCommand } from '../parseCommand'
 
 it('parses tags with no values', () => {
     const parsed = parseCommand('test a');
@@ -116,4 +116,9 @@ describe("parsedCommandToString", () => {
         const parsed = parseCommand('set x y == 123');
         expect(parsedCommandToString(parsed)).toEqual('set x y == 123');
     });
+});
+
+describe("appendTagInCommand", () => {
+    expect(appendTagInCommand('get x y', 'extra')).toEqual('get x y extra');
+    expect(appendTagInCommand('set x y == 1', 'extra')).toEqual('set x y extra == 1');
 });

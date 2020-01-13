@@ -1,40 +1,30 @@
 
 import TestSuite from './TestSuite'
-import ChaosFlags from './ChaosFlags'
 import collectRespond from '../collectRespond'
 import verifyRespondProtocol from '../verifyRespondProtocol'
 import Graph from '../Graph'
-import parseCommand, { parsedCommandToString } from '../parseCommand'
+
+export interface ChaosMode {
+    shortDescription: string
+    modifyRunCommand?: (command: string) => string
+}
 
 export default class TestRunner {
     suite: TestSuite
-    shortDescription: string
-    flags: ChaosFlags = {}
+    chaosMode?: ChaosMode
     graph: Graph
 
-    constructor(suite: TestSuite, flags: ChaosFlags = {}, shortDescription?: string) {
+    constructor(suite: TestSuite, chaosMode?: ChaosMode) {
         this.suite = suite;
         this.graph = new Graph();
-        this.flags = flags;
-        this.shortDescription = shortDescription;
-    }
-
-    modifyRunCommand(command: string) {
-        // test parse & stringify.
-        // test with added extra tags.
-
-        if (this.flags.reparseCommand) {
-            const parsed = parseCommand(command);
-            command = parsedCommandToString(parsed);
-        }
-
-        return command;
+        this.chaosMode = chaosMode;
     }
 
     run = (command) => {
         const { graph } = this;
 
-        command = this.modifyRunCommand(command);
+        if (this.chaosMode && this.chaosMode.modifyRunCommand)
+            command = this.chaosMode.modifyRunCommand(command);
 
         const verifier = verifyRespondProtocol(command, (err) => {
             fail(`Protocol error: ${err.problem} (${JSON.stringify({ causedBy: err.causedBy })})`);

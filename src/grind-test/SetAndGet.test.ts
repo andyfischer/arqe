@@ -1,5 +1,5 @@
 
-import { startSuite } from './TestSuite'
+import { startSuite } from '.'
 const { test } = startSuite();
 
 test("initially doesn't have a value", ({run}) => {

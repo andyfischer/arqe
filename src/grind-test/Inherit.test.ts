@@ -1,5 +1,5 @@
 
-import { startSuite } from './TestSuite'
+import { startSuite } from '.'
 const { test } = startSuite();
 
 test('returns correct data when inherit tags are used', ({run}) => {
