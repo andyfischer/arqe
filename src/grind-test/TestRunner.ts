@@ -6,6 +6,7 @@ import Graph from '../Graph'
 
 export interface ChaosMode {
     shortDescription: string
+    setupNewGraph?: (graph: Graph) => void
     modifyRunCommand?: (command: string) => string
 }
 
@@ -18,9 +19,14 @@ export default class TestRunner {
         this.suite = suite;
         this.graph = new Graph();
         this.chaosMode = chaosMode;
+
+        if (this.chaosMode && this.chaosMode.setupNewGraph) {
+            this.chaosMode.setupNewGraph(this.graph);
+        }
     }
 
     run = (command) => {
+
         const { graph } = this;
 
         if (this.chaosMode && this.chaosMode.modifyRunCommand)
@@ -52,8 +58,9 @@ export default class TestRunner {
             collector(msg);
         });
 
-        if (responseFinished)
+        if (responseFinished) {
             return response;
+        }
 
         // Didn't finish synchronously, so turn this into a Promise.
         return new Promise(r => { resolveResponse = r; });

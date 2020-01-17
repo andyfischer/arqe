@@ -23,11 +23,11 @@ Process-associated data..
 
 ----
 
- - Add pub/sub style listener
+ X Add pub/sub style listener
  - Add sync-to-dir tool
 
 ---
 
- - 'filename' tag saves to file
- - Set up a plugin-style processing list for special tags like FS-based
+ X 'filename' tag saves to file
+ X Set up a plugin-style processing list for special tags like FS-based
  - Set up Git-based saving

@@ -2,7 +2,7 @@
 import Graph from '../Graph'
 import TestRunner from './TestRunner'
 
-import { ReparseCommand, InsertExtraTag } from './ChaosModes'
+import { ReparseCommand, InsertExtraTag, GetInheritedBranch } from './ChaosModes'
 
 export default class TestSuite {
     testRunners: TestRunner[] = []
@@ -11,6 +11,7 @@ export default class TestSuite {
         this.testRunners.push(new TestRunner(this))
         this.testRunners.push(new TestRunner(this, ReparseCommand));
         this.testRunners.push(new TestRunner(this, InsertExtraTag));
+        // this.testRunners.push(new TestRunner(this, GetInheritedBranch));
     }
 
     describe(name: string, impl: (context?: any) => void | Promise<any>) {

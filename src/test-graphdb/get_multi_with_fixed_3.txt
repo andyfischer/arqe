@@ -1,8 +1,0 @@
-
-set a/1 b
-set a/2 b
-set a/3 c
-get a/* b
-expect [a/1, a/2]
-get a/* c
-expect [a/3]

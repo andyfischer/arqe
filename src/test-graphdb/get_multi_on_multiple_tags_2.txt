@@ -1,6 +1,0 @@
-
-set a/1 b c
-set a/2 b c
-
-get a/* b c
-expect [a/1, a/2]
