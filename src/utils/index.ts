@@ -1,20 +1,13 @@
 
 import ChildProcess from 'child_process'
 import Util from 'util'
-import { consoleColorizeOutput } from '../terminal/colorizeConsoleOutput'
 import { EventEmitter } from 'events'
 
 export const printEvents = new EventEmitter();
 
 export function print(...args: string[]) {
 
-    const str = consoleColorizeOutput(args.join(' '));
-
-    printEvents.emit('beforeLog', {});
-
-    console.log(str);
-
-    printEvents.emit('afterLog', {});
+    console.log(args);
 }
 
 export function printError(err) {

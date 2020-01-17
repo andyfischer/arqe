@@ -3,7 +3,7 @@ import Token from './Token'
 import TokenIterator from './TokenIterator'
 import unescape from './unescape'
 import { t_quoted_string } from './tokens'
-import SourcePos from '../types/SourcePos'
+import SourcePos from './SourcePos'
 
 export default class LexedText {
     tokens: Token[]

@@ -1,5 +1,4 @@
 
-import { parseAsOneSimple } from './parse-query/parseQueryV3'
 import Command, { newCommand, CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
