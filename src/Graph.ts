@@ -37,7 +37,7 @@ export default class Graph {
 
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
-            respond(this.stringifyRelation(rel));
+            respond(this.schema.stringifyRelation(rel));
         }
 
         respond('#done');
@@ -63,32 +63,6 @@ export default class Graph {
         const listener = new GraphListener(this, command);
         this.listeners.push(listener);
         listener.addCallback(respond);
-    }
-
-    stringifyRelation(rel: Relation) {
-        const keys = Object.keys(rel.asMap);
-        keys.sort((a,b) => this.schema.ordering.compareTagTypes(a, b));
-
-        const args = keys.map(key => {
-            const value = rel.asMap[key];
-            if (key === 'option')
-                return '.' + value;
-
-            let str = key;
-
-            if (value !== true)
-                str += `/${value}`
-
-            return str;
-        });
-
-        let payload = '';
-
-        if (rel.payloadStr !== '#exists') {
-            payload = ' == ' + rel.payloadStr;
-        }
-
-        return 'set ' + args.join(' ') + payload;
     }
 
     handleCommand(command: Command, respond: RespondFunc) {

@@ -57,4 +57,30 @@ export default class Schema {
     relationPattern(command: Command) {
         return new RelationPattern(this, command);
     }
+
+    stringifyRelation(rel: Relation) {
+        const keys = Object.keys(rel.asMap);
+        keys.sort((a,b) => this.ordering.compareTagTypes(a, b));
+
+        const args = keys.map(key => {
+            const value = rel.asMap[key];
+            if (key === 'option')
+                return '.' + value;
+
+            let str = key;
+
+            if (value !== true)
+                str += `/${value}`
+
+            return str;
+        });
+
+        let payload = '';
+
+        if (rel.payloadStr !== '#exists') {
+            payload = ' == ' + rel.payloadStr;
+        }
+
+        return 'set ' + args.join(' ') + payload;
+    }
 }

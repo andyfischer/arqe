@@ -80,7 +80,7 @@ export default class SetOperation {
 
         if (this.needsReply) {
             if (this.replyWithEcho) {
-                respond(this.graph.stringifyRelation(relation));
+                respond(this.graph.schema.stringifyRelation(relation));
             } else {
                 respond("#done");
             }
