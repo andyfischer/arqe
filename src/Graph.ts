@@ -44,7 +44,7 @@ export default class Graph {
     }
 
     deleteCmd(command: Command, respond: RespondFunc) {
-        const pattern = new RelationPattern(this.schema, command);
+        const pattern = this.schema.relationPattern(command);
 
         for (const rel of pattern.allMatches(this)) {
             if (rel.has('typeinfo'))

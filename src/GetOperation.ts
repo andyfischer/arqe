@@ -15,7 +15,7 @@ export default class GetOperation {
     constructor(graph: Graph, command: Command, respond: RespondFunc) {
         this.graph = graph;
         this.command = command;
-        this.pattern = new RelationPattern(graph.schema, command)
+        this.pattern = graph.schema.relationPattern(command);
         this.respond = respond;
     }
 

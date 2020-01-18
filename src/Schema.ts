@@ -24,6 +24,7 @@ import StoragePlugin from './StoragePlugin'
 import Relation from './Relation'
 import TagType from './TagType'
 import TagTypeOrdering from './TagTypeOrdering'
+import Command from './Command'
 
 interface MountedStoragePlugin {
     pattern: RelationPattern
@@ -53,4 +54,7 @@ export default class Schema {
         this.storagePlugins.push({ pattern, plugin });
     }
 
+    relationPattern(command: Command) {
+        return new RelationPattern(this, command);
+    }
 }
