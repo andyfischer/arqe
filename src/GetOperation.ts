@@ -15,7 +15,7 @@ export default class GetOperation {
     constructor(graph: Graph, command: Command, respond: RespondFunc) {
         this.graph = graph;
         this.command = command;
-        this.pattern = new RelationPattern(graph, command)
+        this.pattern = new RelationPattern(graph.schema, command)
         this.respond = respond;
     }
 
@@ -25,7 +25,7 @@ export default class GetOperation {
         // Return results. Use shorthand, don't mention tags that were provided exactly.
         const formattedResults = [];
         
-        for (const rel of this.pattern.allMatches()) {
+        for (const rel of this.pattern.allMatches(this.graph)) {
             yield this.pattern.formatRelation(rel);
         }
     }
@@ -35,7 +35,7 @@ export default class GetOperation {
     }
 
     formattedSingleResult() {
-        const found = this.pattern.findOneMatch();
+        const found = this.pattern.findOneMatch(this.graph);
 
         if (!found)
             return '#null'

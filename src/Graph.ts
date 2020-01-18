@@ -6,44 +6,25 @@ import Relation from './Relation'
 import { normalizeExactTag, commandArgsToString } from './parseCommand'
 import SetOperation from './SetOperation'
 import GetOperation from './GetOperation'
-import TagTypeOrdering from './TagTypeOrdering'
 import GraphListener from './GraphListener'
 import TypeInfoListener from './TypeInfoListener'
-import StoragePlugin from './StoragePlugin'
-import RelationPattern, { commandToRelationPattern } from './RelationPattern'
+import RelationPattern from './RelationPattern'
 import collectRespond from './collectRespond'
+import Schema from './Schema'
+import StoragePlugin from './StoragePlugin'
 
 export type ListenerAction = 'set' | 'delete'
 export type RespondFunc = (str: string) => void
 
-interface MountedStoragePlugin {
-    pattern: RelationPattern
-    plugin: StoragePlugin
-}
-
 export default class Graph {
 
     relationsByNtag: { [ ntag: string]: Relation } = {}
-    tagTypes: { [name: string]: TagType } = {}
-    ordering = new TagTypeOrdering()
     listeners: GraphListener[] = []
     typeInfoListener = new TypeInfoListener()
-    storagePlugins: MountedStoragePlugin[] = []
-
-    initTagType(name: string) {
-        this.tagTypes[name] = new TagType(name)
-    }
-
-    findTagType(name: string) {
-        if (!this.tagTypes[name]) {
-            this.initTagType(name);
-        }
-
-        return this.tagTypes[name];
-    }
+    schema = new Schema()
 
     findStoragePlugin(relation: Relation): StoragePlugin {
-        for (const { plugin, pattern } of this.storagePlugins) {
+        for (const { plugin, pattern } of this.schema.storagePlugins) {
             if (pattern.matches(relation))
                 return plugin;
         }
@@ -63,9 +44,9 @@ export default class Graph {
     }
 
     deleteCmd(command: Command, respond: RespondFunc) {
-        const pattern = new RelationPattern(this, command);
+        const pattern = new RelationPattern(this.schema, command);
 
-        for (const rel of pattern.allMatches()) {
+        for (const rel of pattern.allMatches(this)) {
             if (rel.has('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 
@@ -86,7 +67,7 @@ export default class Graph {
 
     stringifyRelation(rel: Relation) {
         const keys = Object.keys(rel.asMap);
-        keys.sort((a,b) => this.ordering.compareTagTypes(a, b));
+        keys.sort((a,b) => this.schema.ordering.compareTagTypes(a, b));
 
         const args = keys.map(key => {
             const value = rel.asMap[key];
@@ -182,8 +163,4 @@ export default class Graph {
         return result;
     }
 
-    installStorage(patternStr: string, plugin: StoragePlugin) {
-        const pattern = commandToRelationPattern(this, patternStr);
-        this.storagePlugins.push({ pattern, plugin });
-    }
 }

@@ -2,11 +2,12 @@
 import Command, { CommandTag } from './Command'
 import Relation from './Relation'
 import Graph from './Graph'
+import Schema from './Schema'
 import parseCommand, { normalizeExactTag, commandTagToString } from './parseCommand'
 
 export default class RelationPattern {
 
-    graph: Graph
+    schema: Schema
     command: Command;
     starValueTags: CommandTag[] = []
     fixedArgs: CommandTag[] = []
@@ -14,14 +15,14 @@ export default class RelationPattern {
     hasInheritTags: boolean = false
     tagCount: number
 
-    constructor(graph: Graph, command: Command) {
-        this.graph = graph;
+    constructor(schema: Schema, command: Command) {
+        this.schema = schema;
         this.command = command;
         this.tagCount = command.tags.length;
 
         for (const tag of command.tags) {
 
-            const tagType = graph.findTagType(tag.tagType);
+            const tagType = schema.findTagType(tag.tagType);
 
             if (tag.star) {
                 // this.hasStarTag = true
@@ -83,8 +84,7 @@ export default class RelationPattern {
         return (this.starValueTags.length > 0);
     }
 
-    *linearScan() {
-        const graph = this.graph;
+    *linearScan(graph: Graph) {
         for (const ntag in graph.relationsByNtag) {
             const rel = graph.relationsByNtag[ntag];
 
@@ -93,29 +93,29 @@ export default class RelationPattern {
         }
     }
 
-    findExactMatch(args: CommandTag[]): Relation|null {
+    findExactMatch(graph: Graph, args: CommandTag[]): Relation|null {
         // Exact tag lookup.
         const ntag = normalizeExactTag(args);
-        return this.graph.relationsByNtag[ntag]
+        return graph.relationsByNtag[ntag]
     }
 
-    findOneMatch(): Relation { 
-        const found = this.findExactMatch(this.command.tags);
+    findOneMatch(graph: Graph): Relation { 
+        const found = this.findExactMatch(graph, this.command.tags);
         if (found)
             return found;
 
         if (this.hasInheritTags) {
-            for (const match of this.linearScan()) {
+            for (const match of this.linearScan(graph)) {
                 return match;
             }
         }
     }
 
-    *allMatches() {
+    *allMatches(graph: Graph) {
         if (this.isMultiMatch()) {
-            yield *this.linearScan();
+            yield *this.linearScan(graph);
         } else {
-            const one = this.findOneMatch();
+            const one = this.findOneMatch(graph);
             if (one)
                 yield one;
         }
@@ -136,7 +136,7 @@ export default class RelationPattern {
     }
 }
 
-export function commandToRelationPattern(graph: Graph, str: string) {
+export function commandToRelationPattern(schema: Schema, str: string) {
     const parsed = parseCommand(str);
-    return new RelationPattern(graph, parsed)
+    return new RelationPattern(schema, parsed)
 }

@@ -9,5 +9,5 @@ export default function bootstrapGraph(graph: Graph) {
     graph.run('set typeinfo/typeinfo .order == before')
     graph.run('set typeinfo/branch .order == after')
 
-    graph.installStorage('listen filename/*', new FilesystemStorage())
+    graph.schema.installStorage('listen filename/*', new FilesystemStorage())
 }

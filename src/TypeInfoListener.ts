@@ -9,9 +9,9 @@ export default class TypeInfoPlugin {
         if (!rel.has('typeinfo'))
             return;
 
-        const graph = rel.graph;
+        const schema = rel.graph.schema;
 
-        const tagType = graph.findTagType(rel.get('typeinfo'))
+        const tagType = schema.findTagType(rel.get('typeinfo'))
 
         if (rel.getOptional('option', null) === 'inherits') {
             tagType.inherits = true;
@@ -19,7 +19,7 @@ export default class TypeInfoPlugin {
         }
         
         if (rel.getOptional('option', null) === 'order') {
-            graph.ordering.updateInfo(rel);
+            schema.ordering.updateInfo(rel);
             return;
         }
     }
