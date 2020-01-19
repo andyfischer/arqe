@@ -1,5 +1,5 @@
 
-import { Token, TokenDef, LexedText, t_space, t_newline } from '.'
+import { Token, TokenDef, LexedText, t_space, t_newline, t_ident } from '.'
 import SourcePos from './SourcePos'
 
 export default class TokenIterator {
@@ -63,6 +63,10 @@ export default class TokenIterator {
         return this.result.getTokenText(token);
     }
 
+    nextIsIdentifier(str: string, lookahead: number = 0): boolean {
+        return this.nextIs(t_ident, lookahead) && this.nextText(lookahead) === str;
+    }
+
     nextUnquotedText(lookahead: number = 0): string {
         const token = this.next(lookahead);
         return this.result.getUnquotedText(token);
@@ -84,6 +88,14 @@ export default class TokenIterator {
         this.position += 1;
     }
 
+    consumeIdentifier(s: string) {
+        if (!this.nextIsIdentifier(s)) {
+            throw new Error(`consume expected identifier: "${s}, found: ${this.nextText()}`);
+        }
+
+        this.position += 1;
+    }
+
     consumeNextText(lookahead: number = 0): string {
         const str = this.nextText(lookahead);
         this.consume();
@@ -95,6 +107,7 @@ export default class TokenIterator {
         this.consume();
         return str;
     }
+
 
     consumeTextWhile(condition: (next: Token) => boolean) {
         let str = '';
@@ -128,6 +141,16 @@ export default class TokenIterator {
     skipSpaces() {
         while (this.nextIs(t_space))
             this.consume(t_space);
+    }
+
+    consumeSpace() {
+        while (this.nextIs(t_space))
+            this.consume(t_space);
+    }
+
+    consumeWhitespace() {
+        while (this.nextIs(t_space) || this.nextIs(t_newline))
+            this.consume();
     }
 
     toSourcePos(firstToken: Token, lastToken: Token): SourcePos {

@@ -7,42 +7,42 @@ export interface TokenDef {
 
 }
 
-export const t_lparen = {
+export const t_lparen: TokenDef = {
     name: "lparen",
     str: "(",
     bracketPairsWith: 'rparen',
     bracketSide: 'left'
 }
 
-export const t_rparen = {
+export const t_rparen: TokenDef = {
     name: "rparen",
     str: ")",
     bracketPairsWith: 'lparen',
     bracketSide: 'right'
 }
 
-export const t_lbracket = {
+export const t_lbracket: TokenDef = {
     name: "lbracket",
     str: "[",
     bracketPairsWith: 'rbracket',
     bracketSide: 'left'
 }
 
-export const t_rbracket = {
+export const t_rbracket: TokenDef = {
     name: "rbracket",
     str: "]",
     bracketPairsWith: 'lbracket',
     bracketSide: 'right'
 }
 
-export const t_lbrace = {
+export const t_lbrace: TokenDef = {
     name: "lbrace",
     str: "{",
     bracketPairsWith: 'rbrace',
     bracketSide: 'left'
 }
 
-export const t_rbrace = {
+export const t_rbrace: TokenDef = {
     name: "rbrace",
     str: "}",
     bracketPairsWith: 'lbrace',
