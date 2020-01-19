@@ -1,5 +1,6 @@
 
-import { parseStringToGraphCommands } from '..'
+import { parseSourceIntoGraph } from '..'
+import Graph from '../../Graph'
 
 const testCode = `
 function f() {
@@ -8,8 +9,12 @@ function f() {
 }
 `;
 
-describe('parseStringToGraph', () => {
+describe('parseSourceIntoGraph', () => {
     it("works", () => {
-        console.log(parseStringToGraphCommands(testCode));
+        const graph = new Graph();
+        parseSourceIntoGraph(graph, testCode);
+
+        // No parse errors
+        expect(graph.runSync('get parseerror/*')).toEqual([]);
     });
 });
