@@ -10,13 +10,11 @@ export default class GetOperation {
     graph: Graph;
     command: Command;
     pattern: RelationPattern;
-    respond: RespondFunc;
 
-    constructor(graph: Graph, command: Command, respond: RespondFunc) {
+    constructor(graph: Graph, command: Command) {
         this.graph = graph;
         this.command = command;
         this.pattern = graph.schema.relationPattern(command);
-        this.respond = respond;
     }
 
     *formattedResults() {
@@ -47,15 +45,16 @@ export default class GetOperation {
         }
     }
 
-    perform() {
+    perform(respond: RespondFunc) {
         if (this.pattern.isMultiMatch()) {
-            this.respond('#start');
-            for (const s of this.formattedResults()) {
-                this.respond(s);
-            }
-            this.respond('#done');
+            respond('#start');
+
+            for (const s of this.formattedResults())
+                respond(s);
+            
+            respond('#done');
         } else {
-            this.respond(this.formattedSingleResult());
+            respond(this.formattedSingleResult());
         }
     }
 }

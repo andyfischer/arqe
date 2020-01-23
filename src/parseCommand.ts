@@ -14,6 +14,12 @@ function nextIsPayloadStart(it: TokenIterator) {
 
 function parseOneTag(it: TokenIterator): CommandTag {
     if (it.tryConsume(t_star)) {
+        if (it.tryConsume(t_star)) {
+            return {
+                doubleStar: true
+            };
+        }
+
         return {
             star: true
         };
@@ -68,11 +74,7 @@ function parseFlag(it: TokenIterator, command: Command) {
     }
 
     const str = it.consumeNextText();
-
-    for (const letter of str) {
-        command.flags[letter] = true;
-    }
-    
+    command.flags[str] = true;
     if (!it.finished() && !it.nextIs(t_space))
         throw new Error(`Expected space after -${str}`);
 }

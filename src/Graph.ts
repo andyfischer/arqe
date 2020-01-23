@@ -60,6 +60,19 @@ export default class Graph {
 
     listen(command: Command, respond: RespondFunc) {
         respond('#start');
+
+        if (command.flags.get) {
+            const get = new GetOperation(this, command);
+
+            for (let s of get.formattedResults()) {
+                // TODO maybe resolve this so that 'get' always responds with 'set'
+                if (!s.startsWith("set"))
+                    s = 'set ' + s;
+
+                respond(s);
+            }
+        }
+
         const listener = new GraphListener(this, command);
         this.listeners.push(listener);
         listener.addCallback(respond);
@@ -77,8 +90,8 @@ export default class Graph {
             }
 
             case 'get': {
-                const get = new GetOperation(this, command, respond);
-                get.perform();
+                const get = new GetOperation(this, command);
+                get.perform(respond);
                 return;
             }
 

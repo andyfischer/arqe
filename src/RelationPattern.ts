@@ -14,6 +14,8 @@ export default class RelationPattern {
     fixedArgsIncludesType: { [typename:string]: true } = {}
     hasInheritTags: boolean = false
     tagCount: number
+    error?: string
+    hasDoubleStar?: boolean
 
     constructor(schema: Schema, command: Command) {
         this.schema = schema;
@@ -26,6 +28,8 @@ export default class RelationPattern {
 
             if (tag.star) {
                 // this.hasStarTag = true
+            } else if (tag.doubleStar) {
+                this.hasDoubleStar = true;
             } else if (tag.starValue) {
                 this.starValueTags.push(tag);
             } else {
@@ -41,6 +45,9 @@ export default class RelationPattern {
     }
 
     matches(rel: Relation) {
+
+        if (this.hasDoubleStar)
+            return true;
 
         // Query must have equal number (or greater, for inherit) of tags as the relation.
         if (rel.tagCount > this.tagCount) {
@@ -81,7 +88,7 @@ export default class RelationPattern {
     }
 
     isMultiMatch() {
-        return (this.starValueTags.length > 0);
+        return this.hasDoubleStar || (this.starValueTags.length > 0);
     }
 
     *linearScan(graph: Graph) {

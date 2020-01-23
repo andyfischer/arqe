@@ -57,6 +57,12 @@ it('parses star', () => {
     expect(parsed.tags[0].star).toEqual(true)
 });
 
+it('parses doubleStar', () => {
+    const parsed = parseCommand('test **');
+    expect(parsed.command).toEqual('test')
+    expect(parsed.tags[0].doubleStar).toEqual(true)
+});
+
 it('parses question value', () => {
     const parsed = parseCommand('test type/?');
     expect(parsed.command).toEqual('test')
@@ -99,10 +105,10 @@ it('parses multiple flags', () => {
     expect(parsed.tags[0].tagType).toEqual('1');
 });
 
-it('parses multiple grouped flags', () => {
+it('parses multicharacter flag', () => {
     const parsed = parseCommand('test -abc 1');
     expect(parsed.command).toEqual('test')
-    expect(parsed.flags).toEqual({a: true, b: true, c: true})
+    expect(parsed.flags.abc).toEqual(true);
     expect(parsed.tags[0].tagType).toEqual('1');
 });
 
