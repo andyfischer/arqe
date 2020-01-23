@@ -8,3 +8,28 @@
 
  - Introduce schemas
    - 'schema' command?
+   - delayed
+
+---
+
+ - Real use case: Javascript parser
+ - Show visualized graph
+   - Set up CRA based graphical frontend
+   - Show box and lines view
+     - start with react-digraph
+ - Stringify from db
+
+---
+
+Build Container
+
+ - Filesystem mount
+ - Filesystem watch
+ - Filesystem synchronize
+
+---
+
+Node modules analysis
+
+ - Graph cloning
+ - Dashboard uses a cloned graph
