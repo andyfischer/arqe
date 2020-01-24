@@ -92,8 +92,8 @@ export default class RelationPattern {
     }
 
     *linearScan(graph: Graph) {
-        for (const ntag in graph.relationsByNtag) {
-            const rel = graph.relationsByNtag[ntag];
+        for (const ntag in graph.inMemory.relationsByNtag) {
+            const rel = graph.inMemory.relationsByNtag[ntag];
 
             if (this.matches(rel))
                 yield rel;
@@ -103,7 +103,7 @@ export default class RelationPattern {
     findExactMatch(graph: Graph, args: CommandTag[]): Relation|null {
         // Exact tag lookup.
         const ntag = normalizeExactTag(args);
-        return graph.relationsByNtag[ntag]
+        return graph.inMemory.relationsByNtag[ntag]
     }
 
     findOneMatch(graph: Graph): Relation { 

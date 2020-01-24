@@ -38,7 +38,7 @@ export default class SetOperation {
     findOrInitRelation() {
         const { command, ntag } = this;
 
-        const existingRelation = this.graph.relationsByNtag[ntag];
+        const existingRelation = this.graph.inMemory.relationsByNtag[ntag];
 
         if (existingRelation) {
             this.relation = existingRelation;
@@ -66,7 +66,7 @@ export default class SetOperation {
             }
 
         } else if (this.relationIsNew) {
-            this.graph.relationsByNtag[ntag] = relation;
+            this.graph.inMemory.relationsByNtag[ntag] = relation;
         } else {
             relation.setPayload(command.payloadStr);
         }

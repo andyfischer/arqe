@@ -11,13 +11,14 @@ import RelationPattern from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
 import StoragePlugin from './StoragePlugin'
+import InMemoryStorage from './InMemoryStorage'
 
 export type ListenerAction = 'set' | 'delete'
 export type RespondFunc = (str: string) => void
 
 export default class Graph {
 
-    relationsByNtag: { [ ntag: string]: Relation } = {}
+    inMemory = new InMemoryStorage()
     listeners: GraphListener[] = []
     schema = new Schema()
 
@@ -33,8 +34,7 @@ export default class Graph {
     dump(command: Command, respond: RespondFunc) {
         respond('#start');
 
-        for (const ntag in this.relationsByNtag) {
-            const rel = this.relationsByNtag[ntag];
+        for (const rel of this.inMemory.everyRelation()) {
             respond(this.schema.stringifyRelation(rel));
         }
 
@@ -48,9 +48,8 @@ export default class Graph {
             if (rel.has('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 
-            const found = this.relationsByNtag[rel.ntag];
-            delete this.relationsByNtag[rel.ntag];
-            this.onRelationDeleted(found);
+            this.inMemory.deleteRelation(rel);
+            this.onRelationDeleted(rel);
         }
 
         respond('#done');
