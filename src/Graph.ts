@@ -64,12 +64,8 @@ export default class Graph {
         if (command.flags.get) {
             const get = new GetOperation(this, command);
 
-            for (let s of get.formattedResults()) {
-                // TODO maybe resolve this so that 'get' always responds with 'set'
-                if (!s.startsWith("set"))
-                    s = 'set ' + s;
-
-                respond(s);
+            for (const s of get.formattedResults()) {
+                respond('set ' + s);
             }
         }
 
