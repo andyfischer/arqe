@@ -41,7 +41,10 @@ export default class GetOperation {
         if (this.extendedResult()) {
             return this.graph.schema.stringifyRelation(found);
         } else {
-            return found.payloadStr;
+            if (found.payloadStr)
+                return found.payloadStr;
+            else
+                return '#exists'
         }
     }
 

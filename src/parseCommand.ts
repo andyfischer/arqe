@@ -98,8 +98,10 @@ function parseArgs(it: TokenIterator, command: Command) {
 }
 
 function parsePayload(it: TokenIterator, command: Command) {
-    if (!nextIsPayloadStart(it))
+    if (!nextIsPayloadStart(it)) {
+        command.payloadStr = null;
         return;
+    }
 
     it.consume(t_double_equals);
     it.skipSpaces();
@@ -175,7 +177,7 @@ export function parsedCommandToString(command: Command) {
     
     str += ' ' + commandArgsToString(command.tags);
 
-    if (command.payloadStr) {
+    if (command.payloadStr != null) {
         str += ' == ' + command.payloadStr;
     }
 

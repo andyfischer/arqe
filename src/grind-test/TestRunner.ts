@@ -39,6 +39,7 @@ export default class TestRunner {
         let response;
         let responseFinished = false;
         let resolveResponse;
+        let rejectResponse;
 
         const collector = collectRespond(finishedValue => {
 
@@ -53,16 +54,30 @@ export default class TestRunner {
             }
         });
 
+        let error = null;
+
         graph.run(command, msg => {
+            if (!error && msg && msg.startsWith('#error')) {
+                error = msg;
+                if (rejectResponse)
+                    rejectResponse(error);
+            }
+
             verifier(msg);
             collector(msg);
         });
+
+        if (error)
+            throw error;
 
         if (responseFinished) {
             return response;
         }
 
         // Didn't finish synchronously, so turn this into a Promise.
-        return new Promise(r => { resolveResponse = r; });
+        return new Promise((resolve, reject) => {
+            resolveResponse = resolve;
+            rejectResponse = reject;
+        });
     }
 }

@@ -53,7 +53,7 @@ export default class Schema {
 
     installStorage(patternStr: string, plugin: StoragePlugin) {
         const pattern = commandToRelationPattern(this, patternStr);
-        this.storagePlugins.push({ pattern, plugin });
+        // this.storagePlugins.push({ pattern, plugin });
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
@@ -83,7 +83,7 @@ export default class Schema {
 
         let payload = '';
 
-        if (rel.payloadStr !== '#exists') {
+        if (rel.payloadStr !== null) {
             payload = ' == ' + rel.payloadStr;
         }
 

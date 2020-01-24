@@ -4,16 +4,23 @@ import Graph from './Graph'
 
 export default class Relation {
     ntag: string
-    payloadStr: any
+    payloadStr: string | null
     tags: CommandTag[]
     tagCount: number
     asMap: any = {}
     graph: Graph
 
-    constructor(graph: Graph, ntag: string, tags: CommandTag[], payloadStr: string) {
+    constructor(graph: Graph, ntag: string, tags: CommandTag[], payloadStr: string | null) {
         this.graph = graph;
         this.ntag = ntag;
-        this.payloadStr = payloadStr || '#exists';
+
+        if (typeof payloadStr !== 'string' && payloadStr !== null)
+            throw new Error('invalid value for payloadStr: ' + payloadStr)
+
+        if (payloadStr === '#exists')
+            payloadStr = null;
+
+        this.payloadStr = payloadStr;
         this.tags = tags;
         this.tagCount = tags.length;
 
@@ -23,7 +30,7 @@ export default class Relation {
     }
 
     hasPayload() {
-        return this.payloadStr !== '#exists'
+        return this.payloadStr != null;
     }
 
     *eachTag() {
@@ -31,8 +38,8 @@ export default class Relation {
             yield tag;
     }
 
-    setPayload(payloadStr: string) {
-        this.payloadStr = payloadStr || '#exists';
+    setPayload(payloadStr: string | null) {
+        this.payloadStr = payloadStr;
     }
     
     getOptional(typeName: string, defaultValue) {
