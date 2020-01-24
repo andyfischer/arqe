@@ -7,7 +7,6 @@ import { normalizeExactTag, commandArgsToString } from './parseCommand'
 import SetOperation from './SetOperation'
 import GetOperation from './GetOperation'
 import GraphListener from './GraphListener'
-import TypeInfoListener from './TypeInfoListener'
 import RelationPattern from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
@@ -20,7 +19,6 @@ export default class Graph {
 
     relationsByNtag: { [ ntag: string]: Relation } = {}
     listeners: GraphListener[] = []
-    typeInfoListener = new TypeInfoListener()
     schema = new Schema()
 
     findStoragePlugin(relation: Relation): StoragePlugin {
@@ -116,8 +114,7 @@ export default class Graph {
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
-        this.typeInfoListener.onRelationUpdated(command, rel);
-
+        this.schema.onRelationUpdated(command, rel);
         for (const listener of this.listeners)
             listener.onRelationUpdated(rel);
     }
