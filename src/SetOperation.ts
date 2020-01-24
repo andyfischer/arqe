@@ -44,7 +44,7 @@ export default class SetOperation {
             this.relation = existingRelation;
             this.relationIsNew = false;
         } else {
-            this.relation = new Relation(this.graph, ntag, command.tags, command.payloadStr);
+            this.relation = new Relation(ntag, command.tags, command.payloadStr);
             this.relationIsNew = true;
         }
     }

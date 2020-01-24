@@ -8,10 +8,8 @@ export default class Relation {
     tags: CommandTag[]
     tagCount: number
     asMap: any = {}
-    graph: Graph
 
-    constructor(graph: Graph, ntag: string, tags: CommandTag[], payloadStr: string | null) {
-        this.graph = graph;
+    constructor(ntag: string, tags: CommandTag[], payloadStr: string | null) {
         this.ntag = ntag;
 
         if (typeof payloadStr !== 'string' && payloadStr !== null)

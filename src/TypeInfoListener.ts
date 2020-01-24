@@ -1,17 +1,20 @@
 
 import Command from './Command'
 import Relation from './Relation'
+import Schema from './Schema'
 
 export default class TypeInfoPlugin {
-    name = 'TypeInfo'
+    schema: Schema
+
+    constructor(schema: Schema) {
+        this.schema = schema;
+    }
 
     onRelationUpdated(command: Command, rel: Relation) {
         if (!rel.has('typeinfo'))
             return;
 
-        const schema = rel.graph.schema;
-
-        const tagType = schema.findTagType(rel.get('typeinfo'))
+        const tagType = this.schema.findTagType(rel.get('typeinfo'))
 
         if (rel.getOptional('option', null) === 'inherits') {
             tagType.inherits = true;
@@ -19,7 +22,7 @@ export default class TypeInfoPlugin {
         }
         
         if (rel.getOptional('option', null) === 'order') {
-            schema.ordering.updateInfo(rel);
+            this.schema.ordering.updateInfo(rel);
             return;
         }
     }

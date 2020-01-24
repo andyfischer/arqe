@@ -37,7 +37,7 @@ export default class Schema {
     tagTypes: { [name: string]: TagType } = {}
     ordering = new TagTypeOrdering()
     storagePlugins: MountedStoragePlugin[] = []
-    typeInfoListener = new TypeInfoListener()
+    typeInfoListener = new TypeInfoListener(this)
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
