@@ -44,7 +44,13 @@ export default class SetOperation {
             this.relation = existingRelation;
             this.relationIsNew = false;
         } else {
-            this.relation = new Relation(ntag, command.tags, command.payloadStr);
+
+            const relationTags = command.tags.map(tag => ({
+                tagType: tag.tagType,
+                tagValue: tag.tagValue
+            }));
+
+            this.relation = new Relation(ntag, relationTags, command.payloadStr);
             this.relationIsNew = true;
         }
     }

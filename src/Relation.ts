@@ -1,15 +1,18 @@
 
-import { CommandTag } from './Command'
 import Graph from './Graph'
+
+interface RelationTag {
+    tagType: string
+    tagValue: string
+}
 
 export default class Relation {
     ntag: string
     payloadStr: string | null
-    tags: CommandTag[]
-    tagCount: number
+    tags: RelationTag[]
     asMap: any = {}
 
-    constructor(ntag: string, tags: CommandTag[], payloadStr: string | null) {
+    constructor(ntag: string, tags: RelationTag[], payloadStr: string | null) {
         this.ntag = ntag;
 
         if (typeof payloadStr !== 'string' && payloadStr !== null)
@@ -20,7 +23,6 @@ export default class Relation {
 
         this.payloadStr = payloadStr;
         this.tags = tags;
-        this.tagCount = tags.length;
 
         for (const arg of tags) {
             this.asMap[arg.tagType] = arg.tagValue || true;

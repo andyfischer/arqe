@@ -50,7 +50,7 @@ export default class RelationPattern {
             return true;
 
         // Query must have equal number (or greater, for inherit) of tags as the relation.
-        if (rel.tagCount > this.tagCount) {
+        if (rel.tags.length > this.tagCount) {
             return false;
         }
 
