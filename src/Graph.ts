@@ -146,4 +146,8 @@ export default class Graph {
         return new ExecutionPlan(this, command);
     }
 
+    relationPattern(commandStr: string) {
+        const parsed = parseCommand(commandStr);
+        return new RelationPattern(this.schema, parsed);
+    }
 }

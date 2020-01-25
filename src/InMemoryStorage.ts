@@ -1,7 +1,7 @@
 
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
-import Command, { CommandTag } from './Command'
+import Command from './Command'
 import { DataProvider } from './ExecutionPlan'
 import { normalizeExactTag } from './parseCommand'
 

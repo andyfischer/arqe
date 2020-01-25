@@ -11,7 +11,8 @@ export default class RelationPattern {
     command: Command;
     starValueTags: CommandTag[] = []
     fixedArgs: CommandTag[] = []
-    fixedArgsIncludesType: { [typename:string]: true } = {}
+    fixedArgForType: { [typename:string]: true } = {}
+    tagsForType: { [typename: string]: CommandTag[] } = {}
     hasInheritTags: boolean = false
     tagCount: number
     error?: string
@@ -24,8 +25,14 @@ export default class RelationPattern {
         this.tagCount = command.tags.length;
 
         for (const tag of command.tags) {
+            const { tagType } = tag;
 
-            const tagType = schema.findTagType(tag.tagType);
+            if (!this.tagsForType[tagType])
+                this.tagsForType[tagType] = [];
+
+            this.tagsForType[tagType].push(tag);
+
+            const tagInfo = schema.findTagType(tag.tagType);
 
             if (tag.star) {
                 // this.hasStarTag = true
@@ -35,10 +42,10 @@ export default class RelationPattern {
                 this.starValueTags.push(tag);
             } else {
                 this.fixedArgs.push(tag);
-                this.fixedArgsIncludesType[tag.tagType] = true;
+                this.fixedArgForType[tag.tagType] = true;
             }
 
-            if (tagType.inherits) {
+            if (tagInfo.inherits) {
                 this.hasInheritTags = true
                 tag.tagTypeInherits = true;
             }
@@ -99,7 +106,7 @@ export default class RelationPattern {
         const outTags = [];
 
         for (const tag of rel.eachTag()) {
-            if (this.fixedArgsIncludesType[tag.tagType])
+            if (this.fixedArgForType[tag.tagType])
                 continue;
 
             outTags.push(commandTagToString(tag));
@@ -107,6 +114,17 @@ export default class RelationPattern {
 
         const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
         return str;
+    }
+
+    getOneTagForType(typeName: string) {
+        const tags = this.tagsForType[typeName];
+        if (!tags)
+            return null;
+
+        if (tags.length > 1)
+            throw new Error("getOneTagForType - multiple tags found for: " + typeName);
+
+        return tags[0];
     }
 }
 
