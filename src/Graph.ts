@@ -12,6 +12,7 @@ import collectRespond from './collectRespond'
 import Schema from './Schema'
 import StoragePlugin from './StoragePlugin'
 import InMemoryStorage from './InMemoryStorage'
+import ExecutionPlan from './ExecutionPlan'
 
 export type RespondFunc = (str: string) => void
 
@@ -139,6 +140,10 @@ export default class Graph {
             throw new Error("command didn't have sync response in runSync");
 
         return result;
+    }
+
+    getExecutionPlan(command: Command) {
+        return new ExecutionPlan(this, command);
     }
 
 }

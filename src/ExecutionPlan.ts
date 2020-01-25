@@ -22,13 +22,30 @@
 
 import Command from './Command'
 import Schema from './Schema'
+import Relation from './Relation'
+import RelationPattern from './RelationPattern'
+import Graph from './Graph'
 
-type PlanType = 'in-memory'
+export interface DataProvider {
+    findAllMatches: (pattern: RelationPattern) => any
+}
+
+interface Step {
+    checkProvider: DataProvider
+}
 
 export default class ExecutionPlan {
-    planType: PlanType
+    steps: Step[]
 
-    constructor(command: Command, schema: Schema) {
-        this.planType = 'in-memory';
+    constructor(graph: Graph, command: Command) {
+        this.steps = [{
+            checkProvider: graph.inMemory
+        }]
+    }
+
+    *findAllMatches(pattern: RelationPattern) {
+        for (const step of this.steps) {
+            yield* step.checkProvider.findAllMatches(pattern);
+        }
     }
 }

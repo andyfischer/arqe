@@ -2,8 +2,9 @@
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Command, { CommandTag } from './Command'
+import { DataProvider } from './ExecutionPlan'
 
-export default class InMemoryStorage {
+export default class InMemoryStorage implements DataProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
 
     *everyRelation() {

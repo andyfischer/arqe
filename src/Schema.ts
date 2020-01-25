@@ -70,8 +70,4 @@ export default class Schema {
 
         return 'set ' + args.join(' ') + payload;
     }
-
-    getExecutionPlan(command: Command) {
-        return new ExecutionPlan(command, this);
-    }
 }
