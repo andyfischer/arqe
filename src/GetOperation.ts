@@ -20,44 +20,46 @@ export default class GetOperation {
         this.pattern = this.schema.relationPattern(command);
     }
 
-    *formattedResults() {
-        const variedType = this.pattern.starValueTags[0];
+    extendedResult() {
+        return this.command.flags.x;
+    }
 
+    *formattedResults() {
         for (const rel of this.graph.inMemory.findAllMatches(this.pattern)) {
             yield this.pattern.formatRelationRelative(rel);
         }
     }
 
-    extendedResult() {
-        return this.command.flags.x;
-    }
-
-    formattedSingleResult() {
-        const found = this.graph.inMemory.findOneMatch(this.pattern);
-
-        if (!found)
-            return '#null'
-
-        if (this.extendedResult()) {
-            return this.schema.stringifyRelation(found);
-        } else {
-            if (found.payloadStr)
-                return found.payloadStr;
-            else
-                return '#exists'
-        }
-    }
-
     perform(respond: RespondFunc) {
-        if (this.pattern.isMultiMatch()) {
+        const expectMultiResults = this.pattern.isMultiMatch();
+
+        if (expectMultiResults)
             respond('#start');
 
-            for (const s of this.formattedResults())
-                respond(s);
-            
-            respond('#done');
-        } else {
-            respond(this.formattedSingleResult());
+        let foundAny = false;
+
+        for (const rel of this.graph.inMemory.findAllMatches(this.pattern)) {
+            foundAny = true;
+
+            if (expectMultiResults) {
+                respond(this.pattern.formatRelationRelative(rel));
+            } else {
+                if (this.extendedResult()) {
+                    respond(this.schema.stringifyRelation(rel));
+                } else {
+                    if (rel.payloadStr) {
+                        respond(rel.payloadStr);
+                    } else {
+                        respond('#exists');
+                    }
+                }
+            }
         }
+
+        if (expectMultiResults)
+            respond('#done');
+
+        if (!expectMultiResults && !foundAny)
+            respond('#null');
     }
 }
