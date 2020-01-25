@@ -33,3 +33,4 @@ Node modules analysis
 
  - Graph cloning
  - Dashboard uses a cloned graph
+ - Set up the plugin system

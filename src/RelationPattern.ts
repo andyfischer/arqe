@@ -128,7 +128,7 @@ export default class RelationPattern {
         }
     }
 
-    formatRelation(rel: Relation) {
+    formatRelationRelative(rel: Relation) {
         const outTags = [];
 
         for (const tag of rel.eachTag()) {

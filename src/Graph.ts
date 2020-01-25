@@ -13,7 +13,6 @@ import Schema from './Schema'
 import StoragePlugin from './StoragePlugin'
 import InMemoryStorage from './InMemoryStorage'
 
-export type ListenerAction = 'set' | 'delete'
 export type RespondFunc = (str: string) => void
 
 export default class Graph {
@@ -105,7 +104,7 @@ export default class Graph {
             
             }
 
-            respond("unrecognized command: " + command.command);
+            respond("#error unrecognized command: " + command.command);
         } catch (err) {
             console.log(err.stack || err);
             respond("#internal_error");

@@ -28,13 +28,13 @@ export default class GraphListener {
 
     onRelationUpdated(rel: Relation) {
         if (this.pattern.matches(rel)) {
-            this.emit('set ' + this.pattern.formatRelation(rel));
+            this.emit('set ' + this.pattern.formatRelationRelative(rel));
         }
     }
 
     onRelationDeleted(rel: Relation) {
         if (this.pattern.matches(rel)) {
-            this.emit('delete ' + this.pattern.formatRelation(rel));
+            this.emit('delete ' + this.pattern.formatRelationRelative(rel));
         }
     }
 }

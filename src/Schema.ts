@@ -1,24 +1,4 @@
 
-// Schema patterns can be declared
-// Each pattern has identity
-// Patterns can have specified storage
-// Patterns can have storage-specific info (like filesystem directory, etc)
-// Patterns are ordered
-
-// declare-plain-relation type1/* type2/*
-
-// Access time:
-//  Every time a query comes in, find the matching pattern and resolve the query
-//  using that.
-
-
-// Schemas to support:
-//   in-memory
-//   filesystem
-//   in-memory object
-//   branch..?
-//   snapshot..?
-
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 import StoragePlugin from './StoragePlugin'
 import Relation from './Relation'
@@ -26,6 +6,7 @@ import TagType from './TagType'
 import TagTypeOrdering from './TagTypeOrdering'
 import Command from './Command'
 import TypeInfoListener from './TypeInfoListener'
+import ExecutionPlan from './ExecutionPlan'
 
 interface MountedStoragePlugin {
     pattern: RelationPattern
@@ -88,5 +69,9 @@ export default class Schema {
         }
 
         return 'set ' + args.join(' ') + payload;
+    }
+
+    getExecutionPlan(command: Command) {
+        return new ExecutionPlan(command, this);
     }
 }

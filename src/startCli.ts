@@ -27,8 +27,6 @@ export default async function main() {
 
     const repl = new ClientRepl(commandConnection);
     repl.start();
-
-    // TODO: gracefully close connection on exit
 }
 
 main()

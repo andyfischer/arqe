@@ -1,6 +1,7 @@
 
 import Command, { CommandTag } from './Command'
 import Graph, { RespondFunc } from './Graph'
+import Schema from './Schema'
 import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
@@ -8,23 +9,22 @@ import RelationPattern from './RelationPattern'
 
 export default class GetOperation {
     graph: Graph;
+    schema: Schema
     command: Command;
     pattern: RelationPattern;
 
     constructor(graph: Graph, command: Command) {
         this.graph = graph;
+        this.schema = graph.schema;
         this.command = command;
-        this.pattern = graph.schema.relationPattern(command);
+        this.pattern = this.schema.relationPattern(command);
     }
 
     *formattedResults() {
         const variedType = this.pattern.starValueTags[0];
 
-        // Return results. Use shorthand, don't mention tags that were provided exactly.
-        const formattedResults = [];
-        
         for (const rel of this.pattern.allMatches(this.graph)) {
-            yield this.pattern.formatRelation(rel);
+            yield this.pattern.formatRelationRelative(rel);
         }
     }
 
@@ -39,7 +39,7 @@ export default class GetOperation {
             return '#null'
 
         if (this.extendedResult()) {
-            return this.graph.schema.stringifyRelation(found);
+            return this.schema.stringifyRelation(found);
         } else {
             if (found.payloadStr)
                 return found.payloadStr;
