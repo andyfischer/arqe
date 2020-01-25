@@ -69,6 +69,10 @@ export default class Relation {
         return this.asMap[name] !== undefined;
     }
 
+    tagCount() {
+        return this.tags.length;
+    }
+
     getTagValue(typeName: string): string | true | null {
         const found = this.tagsForType[typeName];
         if (!found)

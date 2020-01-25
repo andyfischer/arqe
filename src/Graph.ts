@@ -45,7 +45,7 @@ export default class Graph {
         const pattern = this.schema.relationPattern(command);
 
         for (const rel of this.inMemory.findAllMatches(pattern)) {
-            if (rel.has('typeinfo'))
+            if (rel.includesType('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 
             this.inMemory.deleteRelation(rel);

@@ -61,7 +61,7 @@ export default class RelationPattern {
             return true;
 
         // Query must have equal number (or greater, for inherit) of tags as the relation.
-        if (rel.tags.length > this.tagCount) {
+        if (rel.tagCount() > this.tagCount) {
             return false;
         }
 
@@ -79,19 +79,19 @@ export default class RelationPattern {
             }
                 
             if (!arg.tagValue) {
-                if (!rel.asMap[arg.tagType])
+                if (!rel.includesType(arg.tagType))
                     return false;
 
                 continue;
             }
 
-            if (rel.asMap[arg.tagType] !== arg.tagValue)
+            if (rel.getTagValue(arg.tagType) !== arg.tagValue)
                 return false;
         }
 
         // For all star values: Check that the relation has a tag of this type.
         for (const arg of this.starValueTags) {
-            if (!rel.asMap[arg.tagType])
+            if (!rel.includesType(arg.tagType))
                 return false;
         }
 
