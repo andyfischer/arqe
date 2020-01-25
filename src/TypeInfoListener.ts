@@ -11,10 +11,10 @@ export default class TypeInfoPlugin {
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
-        if (!rel.has('typeinfo'))
+        if (!rel.includesType('typeinfo'))
             return;
 
-        const tagType = this.schema.findTagType(rel.get('typeinfo'))
+        const tagType = this.schema.findTagType(rel.getTagValue('typeinfo') as string)
 
         if (rel.getOptional('option', null) === 'inherits') {
             tagType.inherits = true;
