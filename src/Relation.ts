@@ -11,6 +11,7 @@ export default class Relation {
     payloadStr: string | null
     tags: RelationTag[]
     asMap: any = {}
+    tagsForType: { [typeName: string]: RelationTag[] } = {}
 
     constructor(ntag: string, tags: RelationTag[], payloadStr: string | null) {
         this.ntag = ntag;
@@ -26,6 +27,10 @@ export default class Relation {
 
         for (const arg of tags) {
             this.asMap[arg.tagType] = arg.tagValue || true;
+
+            if (!this.tagsForType[arg.tagType])
+                this.tagsForType[arg.tagType] = [];
+            this.tagsForType[arg.tagType].push(arg);
         }
     }
 
@@ -62,5 +67,16 @@ export default class Relation {
 
     includesType(name: string) {
         return this.asMap[name] !== undefined;
+    }
+
+    getTagValue(typeName: string): string | true | null {
+        const found = this.tagsForType[typeName];
+        if (!found)
+            throw new Error("type not found: " + typeName);
+
+        if (!found[0].tagValue)
+            return true;
+
+        return found[0].tagValue;
     }
 }

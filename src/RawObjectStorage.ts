@@ -1,9 +1,9 @@
 
-import { DataProvider } from './ExecutionPlan'
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
 import { commandArgsToString } from './parseCommand'
+import DataProvider from './DataProvider'
 
 export default class RawObjectStorage implements DataProvider {
     linkedPattern: RelationPattern
@@ -23,9 +23,12 @@ export default class RawObjectStorage implements DataProvider {
     *findAllMatches(pattern: RelationPattern) {
         const tag = pattern.getOneTagForType(this.variedType);
         if (tag.starValue) {
+            for (const k in this.value) {
+                // yield new Relation
+            }
         } else {
+            // yield new Relation
         }
-        // Respond with all the key/value pairs
     }
 
     save(command: Command) {

@@ -10,10 +10,10 @@ export default class TagTypeOrdering {
     section = {}
 
     updateInfo(rel: Relation) {
-        if (!rel.has('typeinfo'))
+        if (!rel.includesType('typeinfo'))
             throw new Error('expected "typeinfo" relation');
 
-        const typeName = rel.get('typeinfo');
+        const typeName = rel.getTagValue('typeinfo') as string;
         const value = rel.payloadStr;
 
         if (value === 'before') {

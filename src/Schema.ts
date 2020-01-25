@@ -46,11 +46,11 @@ export default class Schema {
     }
 
     stringifyRelation(rel: Relation) {
-        const keys = Object.keys(rel.asMap);
+        const keys = rel.tags.map(t => t.tagType);
         keys.sort((a,b) => this.ordering.compareTagTypes(a, b));
 
         const args = keys.map(key => {
-            const value = rel.asMap[key];
+            const value = rel.getTagValue(key);
             if (key === 'option')
                 return '.' + value;
 

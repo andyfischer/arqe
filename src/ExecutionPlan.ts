@@ -25,11 +25,8 @@ import Schema from './Schema'
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Graph from './Graph'
+import DataProvider from './DataProvider'
 
-export interface DataProvider {
-    findAllMatches: (pattern: RelationPattern) => any
-    save: (command: Command) => Relation
-}
 
 interface Step {
     provider: DataProvider

@@ -2,8 +2,8 @@
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
-import { DataProvider } from './ExecutionPlan'
 import { normalizeExactTag } from './parseCommand'
+import DataProvider from './DataProvider'
 
 export default class InMemoryStorage implements DataProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
