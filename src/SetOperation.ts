@@ -4,28 +4,19 @@ import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
 import { normalizeExactTag } from './parseCommand'
 import StoragePlugin from './StoragePlugin'
+import ExecutionPlan from './ExecutionPlan'
 
 export default class SetOperation {
     replyWithEcho = false
-    needsReply = true
     graph: Graph
     command: Command
-    respond: RespondFunc
-    ntag: string
-    customStorage: boolean
-    storagePlugin: StoragePlugin
     relation: Relation
-    relationIsNew: boolean
-    savePromise: Promise<void>
+    plan: ExecutionPlan;
 
-    constructor(graph: Graph, command: Command, respond: RespondFunc) {
+    constructor(graph: Graph, command: Command) {
         this.graph = graph;
         this.command = command;
-        this.respond = respond;
-    }
-
-    resolveSpecialTags() {
-        const command = this.command;
+        this.plan = graph.getExecutionPlan(command);
 
         for (const arg of command.tags) {
             if (arg.tagValue === '#unique') {
@@ -35,78 +26,17 @@ export default class SetOperation {
         }
     }
 
-    findOrInitRelation() {
-        const { command, ntag } = this;
+    perform(respond: RespondFunc) {
+        const { command } = this;
 
-        const existingRelation = this.graph.inMemory.relationsByNtag[ntag];
-
-        if (existingRelation) {
-            this.relation = existingRelation;
-            this.relationIsNew = false;
-        } else {
-
-            const relationTags = command.tags.map(tag => ({
-                tagType: tag.tagType,
-                tagValue: tag.tagValue
-            }));
-
-            this.relation = new Relation(ntag, relationTags, command.payloadStr);
-            this.relationIsNew = true;
-        }
-    }
-
-    findStoragePlugin() {
-        this.storagePlugin = this.graph.findStoragePlugin(this.relation);
-    }
-
-    save() {
-        const { storagePlugin, ntag, relation, command } = this;
-
-        if (storagePlugin) {
-
-            if (storagePlugin.setAsync) {
-
-                this.savePromise = storagePlugin.setAsync(this);
-            } else {
-                storagePlugin.set(this);
-            }
-
-        } else if (this.relationIsNew) {
-            this.graph.inMemory.relationsByNtag[ntag] = relation;
-        } else {
-            relation.setPayload(command.payloadStr);
-        }
-    }
-
-    finish() {
-
-        const { respond, command, relation } = this;
+        const relation = this.plan.save(command);
 
         this.graph.onRelationUpdated(command, relation);
 
-        if (this.needsReply) {
-            if (this.replyWithEcho) {
-                respond(this.graph.schema.stringifyRelation(relation));
-            } else {
-                respond("#done");
-            }
-        }
-    }
-
-    perform() {
-
-        const { command } = this;
-
-        this.resolveSpecialTags();
-        this.ntag = normalizeExactTag(command.tags);
-        this.findOrInitRelation();
-        this.findStoragePlugin();
-        this.save();
-
-        if (this.savePromise) {
-            this.savePromise.then(() => this.finish());
+        if (this.replyWithEcho) {
+            respond(this.graph.schema.stringifyRelation(relation));
         } else {
-            this.finish();
+            respond("#done");
         }
     }
 }

@@ -3,6 +3,7 @@ import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Command, { CommandTag } from './Command'
 import { DataProvider } from './ExecutionPlan'
+import { normalizeExactTag } from './parseCommand'
 
 export default class InMemoryStorage implements DataProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
@@ -50,6 +51,25 @@ export default class InMemoryStorage implements DataProvider {
             const one = this.findOneMatch(pattern);
             if (one)
                 yield one;
+        }
+    }
+
+    save(command: Command) {
+        const ntag = normalizeExactTag(command.tags);
+
+        const existing = this.relationsByNtag[ntag];
+
+        if (existing) {
+            existing.setPayload(command.payloadStr);
+            return existing;
+        } else {
+            const relationTags = command.tags.map(tag => ({
+                tagType: tag.tagType,
+                tagValue: tag.tagValue
+            }));
+
+            this.relationsByNtag[ntag] = new Relation(ntag, relationTags, command.payloadStr);
+            return this.relationsByNtag[ntag];
         }
     }
 }

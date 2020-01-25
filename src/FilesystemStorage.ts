@@ -6,6 +6,7 @@ import GetOperation from './GetOperation'
 
 export default class FilesystemStorage implements StoragePlugin {
     async setAsync(set: SetOperation) {
+        /*
         const { filename } = set.relation.asMap;
         const contents = set.command.payloadStr;
 
@@ -16,6 +17,7 @@ export default class FilesystemStorage implements StoragePlugin {
             set.respond('#error ' + err);
             set.needsReply = false;
         }
+        */
     }
 
     async getAsync(get: GetOperation) {

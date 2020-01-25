@@ -28,10 +28,11 @@ import Graph from './Graph'
 
 export interface DataProvider {
     findAllMatches: (pattern: RelationPattern) => any
+    save: (command: Command) => Relation
 }
 
 interface Step {
-    checkProvider: DataProvider
+    provider: DataProvider
 }
 
 export default class ExecutionPlan {
@@ -39,13 +40,19 @@ export default class ExecutionPlan {
 
     constructor(graph: Graph, command: Command) {
         this.steps = [{
-            checkProvider: graph.inMemory
+            provider: graph.inMemory
         }]
     }
 
     *findAllMatches(pattern: RelationPattern) {
         for (const step of this.steps) {
-            yield* step.checkProvider.findAllMatches(pattern);
+            yield* step.provider.findAllMatches(pattern);
+        }
+    }
+
+    save(command: Command) {
+        for (const step of this.steps) {
+            return step.provider.save(command);
         }
     }
 }
