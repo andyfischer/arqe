@@ -43,7 +43,7 @@ export default class Graph {
     deleteCmd(command: Command, respond: RespondFunc) {
         const pattern = this.schema.relationPattern(command);
 
-        for (const rel of pattern.allMatches(this)) {
+        for (const rel of this.inMemory.findAllMatches(pattern)) {
             if (rel.has('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 

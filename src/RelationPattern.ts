@@ -16,6 +16,7 @@ export default class RelationPattern {
     tagCount: number
     error?: string
     hasDoubleStar?: boolean
+    ntag?: string
 
     constructor(schema: Schema, command: Command) {
         this.schema = schema;
@@ -42,6 +43,9 @@ export default class RelationPattern {
                 tag.tagTypeInherits = true;
             }
         }
+
+        if (!this.isMultiMatch())
+            this.ntag = normalizeExactTag(command.tags);
     }
 
     matches(rel: Relation) {
@@ -89,43 +93,6 @@ export default class RelationPattern {
 
     isMultiMatch() {
         return this.hasDoubleStar || (this.starValueTags.length > 0);
-    }
-
-    *linearScan(graph: Graph) {
-        for (const ntag in graph.inMemory.relationsByNtag) {
-            const rel = graph.inMemory.relationsByNtag[ntag];
-
-            if (this.matches(rel))
-                yield rel;
-        }
-    }
-
-    findExactMatch(graph: Graph, args: CommandTag[]): Relation|null {
-        // Exact tag lookup.
-        const ntag = normalizeExactTag(args);
-        return graph.inMemory.relationsByNtag[ntag]
-    }
-
-    findOneMatch(graph: Graph): Relation { 
-        const found = this.findExactMatch(graph, this.command.tags);
-        if (found)
-            return found;
-
-        if (this.hasInheritTags) {
-            for (const match of this.linearScan(graph)) {
-                return match;
-            }
-        }
-    }
-
-    *allMatches(graph: Graph) {
-        if (this.isMultiMatch()) {
-            yield *this.linearScan(graph);
-        } else {
-            const one = this.findOneMatch(graph);
-            if (one)
-                yield one;
-        }
     }
 
     formatRelationRelative(rel: Relation) {

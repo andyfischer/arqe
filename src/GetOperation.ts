@@ -23,7 +23,7 @@ export default class GetOperation {
     *formattedResults() {
         const variedType = this.pattern.starValueTags[0];
 
-        for (const rel of this.pattern.allMatches(this.graph)) {
+        for (const rel of this.graph.inMemory.findAllMatches(this.pattern)) {
             yield this.pattern.formatRelationRelative(rel);
         }
     }
@@ -33,7 +33,7 @@ export default class GetOperation {
     }
 
     formattedSingleResult() {
-        const found = this.pattern.findOneMatch(this.graph);
+        const found = this.graph.inMemory.findOneMatch(this.pattern);
 
         if (!found)
             return '#null'
