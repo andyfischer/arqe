@@ -1,5 +1,7 @@
 
 import Graph from './Graph'
+import { CommandTag } from './Command'
+import { normalizeExactTag } from './parseCommand'
 
 interface RelationTag {
     tagType: string
@@ -25,13 +27,12 @@ export default class Relation {
         this.tags = tags;
 
         for (const arg of tags) {
-
             if (!this.tagsForType[arg.tagType])
                 this.tagsForType[arg.tagType] = [];
             this.tagsForType[arg.tagType].push(arg);
         }
     }
-
+    
     hasPayload() {
         return this.payloadStr != null;
     }
@@ -72,4 +73,15 @@ export default class Relation {
 
         return found[0].tagValue;
     }
+}
+
+export function commandTagsToRelation(tags: CommandTag[], payload: string): Relation {
+    const ntag = normalizeExactTag(tags);
+
+    const relationTags = tags.map(t => ({
+        tagType: t.tagType,
+        tagValue: t.tagValue
+    }));
+
+    return new Relation(ntag, relationTags, payload);
 }

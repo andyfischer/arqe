@@ -132,3 +132,4 @@ export function commandToRelationPattern(schema: Schema, str: string) {
     const parsed = parseCommand(str);
     return new RelationPattern(schema, parsed)
 }
+

@@ -1,5 +1,5 @@
 
-import Relation from './Relation'
+import Relation, { commandTagsToRelation } from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
 import { commandArgsToString } from './parseCommand'
@@ -7,7 +7,7 @@ import DataProvider from './DataProvider'
 
 export default class RawObjectStorage implements DataProvider {
     linkedPattern: RelationPattern
-    value = {}
+    value: any = {}
     variedType: string
 
     constructor(pattern: RelationPattern) {
@@ -21,13 +21,25 @@ export default class RawObjectStorage implements DataProvider {
     }
 
     *findAllMatches(pattern: RelationPattern) {
-        const tag = pattern.getOneTagForType(this.variedType);
-        if (tag.starValue) {
-            for (const k in this.value) {
-                // yield new Relation
+        const variedTag = pattern.getOneTagForType(this.variedType);
+        const otherTags = pattern.command.tags.filter(tag => tag.tagType !== variedTag.tagType);
+
+        if (variedTag.starValue) {
+            for (const key in this.value) {
+                yield commandTagsToRelation(otherTags.concat({
+                    tagType: variedTag.tagType,
+                    tagValue: key
+                }), this.value[key]);
             }
         } else {
-            // yield new Relation
+            const key = variedTag.tagValue;
+
+            if (this.value[key] !== undefined) {
+                yield commandTagsToRelation(otherTags.concat({
+                    tagType: variedTag.tagType,
+                    tagValue: key
+                }), this.value[key]);
+            }
         }
     }
 
@@ -35,3 +47,24 @@ export default class RawObjectStorage implements DataProvider {
         return new Relation('', [], '');
     }
 }
+
+
+
+/*
+
+todo
+
+
+function patternToRelation(pattern: RelationPattern, fillValue: (typeName: string) => string): Relation {
+
+    const tags: CommandTag[] = [];
+    for (const tag of pattern.fixedArgs)
+        tags.push(tag);
+    for (const tag of pattern.starValueTags)
+        tags.push(tag);
+    const tags = pattern.command.tags.map((tag: CommandTag) => {
+    });
+
+    return new Relation()
+}
+*/
