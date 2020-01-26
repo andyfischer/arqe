@@ -3,9 +3,9 @@ import Relation, { commandTagsToRelation } from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
 import { commandArgsToString } from './parseCommand'
-import DataProvider from './DataProvider'
+import StorageProvider from './StorageProvider'
 
-export default class RawObjectStorage implements DataProvider {
+export default class RawObjectStorage implements StorageProvider {
     linkedPattern: RelationPattern
     value: any = {}
     variedType: string

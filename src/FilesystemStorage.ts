@@ -1,11 +1,11 @@
 
-import Fs from 'fs-extra'
-import StoragePlugin from './StoragePlugin'
-import SetOperation from './SetOperation'
-import GetOperation from './GetOperation'
+//import Fs from 'fs-extra'
+//import StoragePlugin from './StoragePlugin'
+//import SetOperation from './SetOperation'
+//import GetOperation from './GetOperation'
 
-export default class FilesystemStorage implements StoragePlugin {
-    async setAsync(set: SetOperation) {
+//export default class FilesystemStorage implements StoragePlugin {
+    //async setAsync(set: SetOperation) {
         /*
         const { filename } = set.relation.asMap;
         const contents = set.command.payloadStr;
@@ -18,9 +18,9 @@ export default class FilesystemStorage implements StoragePlugin {
             set.needsReply = false;
         }
         */
-    }
+    //}
 
-    async getAsync(get: GetOperation) {
+    //async getAsync(get: GetOperation) {
         /*
         const { filename } = get.relation.asMap;
 
@@ -33,5 +33,5 @@ export default class FilesystemStorage implements StoragePlugin {
             // get.needsReply = false;
         }
         */
-    }
-}
+    //}
+//}

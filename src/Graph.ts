@@ -10,7 +10,6 @@ import GraphListener from './GraphListener'
 import RelationPattern from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
-import StoragePlugin from './StoragePlugin'
 import InMemoryStorage from './InMemoryStorage'
 import ExecutionPlan from './ExecutionPlan'
 
@@ -21,15 +20,6 @@ export default class Graph {
     inMemory = new InMemoryStorage()
     listeners: GraphListener[] = []
     schema = new Schema()
-
-    findStoragePlugin(relation: Relation): StoragePlugin {
-        for (const { plugin, pattern } of this.schema.storagePlugins) {
-            if (pattern.matches(relation))
-                return plugin;
-        }
-
-        return null;
-    }
 
     dump(command: Command, respond: RespondFunc) {
         respond('#start');

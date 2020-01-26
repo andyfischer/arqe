@@ -3,9 +3,9 @@ import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
 import { normalizeExactTag } from './parseCommand'
-import DataProvider from './DataProvider'
+import StorageProvider from './StorageProvider'
 
-export default class InMemoryStorage implements DataProvider {
+export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
 
     *everyRelation() {

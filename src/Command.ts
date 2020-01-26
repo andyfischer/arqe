@@ -15,18 +15,19 @@ export interface CommandTag {
     tagTypeInherits?: boolean
 }
 
-export default interface Command {
+type FlagMap = { [flag: string]: any }
+
+export default class Command {
     command: string
-    flags: { [flag: string]: any }
     tags: CommandTag[]
     payloadStr: string
-}
+    flags: FlagMap
 
-export function newCommand(): Command {
-    return {
-        flags: {},
-        command: '',
-        payloadStr: '',
-        tags: []
+    constructor(command: string, tags: CommandTag[], payload: string, flags: FlagMap) {
+        this.command = command;
+        this.tags = tags;
+        this.payloadStr = payload;
+        this.flags = flags;
     }
 }
+

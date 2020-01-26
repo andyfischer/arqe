@@ -3,7 +3,6 @@ import Command from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
 import { normalizeExactTag } from './parseCommand'
-import StoragePlugin from './StoragePlugin'
 import ExecutionPlan from './ExecutionPlan'
 
 export default class SetOperation {

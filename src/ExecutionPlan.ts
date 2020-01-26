@@ -25,11 +25,14 @@ import Schema from './Schema'
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Graph from './Graph'
-import DataProvider from './DataProvider'
-
+import StorageProvider from './StorageProvider'
 
 interface Step {
-    provider: DataProvider
+    storage: StorageProvider
+}
+
+function findStoragePlugin(schema: Schema, command: Command) {
+    // TODO
 }
 
 export default class ExecutionPlan {
@@ -37,19 +40,19 @@ export default class ExecutionPlan {
 
     constructor(graph: Graph, command: Command) {
         this.steps = [{
-            provider: graph.inMemory
+            storage: graph.inMemory
         }]
     }
 
     *findAllMatches(pattern: RelationPattern) {
         for (const step of this.steps) {
-            yield* step.provider.findAllMatches(pattern);
+            yield* step.storage.findAllMatches(pattern);
         }
     }
 
     save(command: Command) {
         for (const step of this.steps) {
-            return step.provider.save(command);
+            return step.storage.save(command);
         }
     }
 }

@@ -1,5 +1,5 @@
 
-import Command, { newCommand, CommandTag } from './Command'
+import Command, { CommandTag } from './Command'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash } from './lexer'
@@ -10,6 +10,11 @@ function acceptableTagValue(token: Token) {
 
 function nextIsPayloadStart(it: TokenIterator) {
     return it.nextIs(t_double_equals);
+}
+
+interface InProgressQuery {
+    tags: CommandTag[]
+    flags: { [flag: string]: any }
 }
 
 function parseOneTag(it: TokenIterator): CommandTag {
@@ -66,7 +71,7 @@ function parseOneTag(it: TokenIterator): CommandTag {
     }
 }
 
-function parseFlag(it: TokenIterator, command: Command) {
+function parseFlag(it: TokenIterator, query: InProgressQuery) {
     it.consume(t_dash);
 
     if (!(it.nextIs(t_ident) || it.nextIs(t_integer))) {
@@ -74,12 +79,12 @@ function parseFlag(it: TokenIterator, command: Command) {
     }
 
     const str = it.consumeNextText();
-    command.flags[str] = true;
+    query.flags[str] = true;
     if (!it.finished() && !it.nextIs(t_space))
         throw new Error(`Expected space after -${str}`);
 }
 
-function parseArgs(it: TokenIterator, command: Command) {
+function parseArgs(it: TokenIterator, query: InProgressQuery) {
     while (true) {
         it.skipSpaces();
 
@@ -87,20 +92,19 @@ function parseArgs(it: TokenIterator, command: Command) {
             return;
 
         if (it.nextIs(t_dash)) {
-            parseFlag(it, command);
+            parseFlag(it, query);
             continue;
         }
 
         const tag = parseOneTag(it);
 
-        command.tags.push(tag);
+        query.tags.push(tag);
     }
 }
 
-function parsePayload(it: TokenIterator, command: Command) {
+function parsePayload(it: TokenIterator): string | null {
     if (!nextIsPayloadStart(it)) {
-        command.payloadStr = null;
-        return;
+        return null;
     }
 
     it.consume(t_double_equals);
@@ -111,31 +115,35 @@ function parsePayload(it: TokenIterator, command: Command) {
     while (!it.nextIs(t_newline) && !it.finished())
         str += it.consumeNextText();
 
-    command.payloadStr = str;
+    return str;
 }
 
-function parseCommandFromLexed(it: TokenIterator): Command {
-    const command = newCommand();
+function parseQueryFromLexed(it: TokenIterator): Command {
 
     // Parse main command
     it.skipSpaces();
     if (!it.nextIs(t_ident) && !it.nextIs(t_quoted_string))
         throw new Error("expected identifier, saw: " + it.nextText());
 
-    command.command = it.consumeNextUnquotedText();
+    const command = it.consumeNextUnquotedText();
+
+    const query: InProgressQuery = {
+        tags: [],
+        flags: {}
+    }
 
     // Parse tag args
-    parseArgs(it, command);
+    parseArgs(it, query);
 
     // Parse payload
-    parsePayload(it, command);
+    const payload = parsePayload(it);
 
-    return command;
+    return new Command(command, query.tags, payload, query.flags);
 }
 
-export default function parseCommand(str: string) {
+export default function parseCommand(str: string): Command {
     const it = lexStringToIterator(str);
-    const command = parseCommandFromLexed(it);
+    const command = parseQueryFromLexed(it);
 
     // Validate
     for (const tag of command.tags) {

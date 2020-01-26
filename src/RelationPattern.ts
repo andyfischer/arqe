@@ -55,6 +55,10 @@ export default class RelationPattern {
             this.ntag = normalizeExactTag(command.tags);
     }
 
+    matchesCommand(command: Command) {
+        // TODO
+    }
+
     matches(rel: Relation) {
 
         if (this.hasDoubleStar)
