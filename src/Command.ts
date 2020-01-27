@@ -35,7 +35,3 @@ export default class Command {
         return new RelationPattern(this.tags);
     }
 }
-
-// todo:
-//   Implement 'inherit' using ExecutionPlan
-//   RelationPattern no longer has schema

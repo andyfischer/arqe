@@ -32,10 +32,6 @@ interface Step {
     subtractTypes?: string[]
 }
 
-function findStoragePlugin(schema: Schema, command: Command) {
-    // TODO
-}
-
 export default class ExecutionPlan {
     steps: Step[]
 
@@ -69,25 +65,6 @@ export default class ExecutionPlan {
     }
 
     *findAllMatches(pattern: RelationPattern) {
-        const expectOne = !pattern.isMultiMatch();
-
-        for (const step of this.steps) {
-
-            let stepPattern = pattern;
-
-            if (step.subtractTypes) {
-                for (const t of step.subtractTypes)
-                    stepPattern = stepPattern.patternWithoutType(t);
-            }
-
-            for (const rel of step.storage.findAllMatches(stepPattern)) {
-                yield rel;
-
-                if (expectOne) {
-                    return;
-                }
-            }
-        }
     }
 
     save(command: Command) {

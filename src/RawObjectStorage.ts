@@ -48,24 +48,3 @@ export default class RawObjectStorage implements StorageProvider {
         return new Relation('', [], '');
     }
 }
-
-
-
-/*
-
-todo
-
-
-function patternToRelation(pattern: RelationPattern, fillValue: (typeName: string) => string): Relation {
-
-    const tags: CommandTag[] = [];
-    for (const tag of pattern.fixedArgs)
-        tags.push(tag);
-    for (const tag of pattern.starValueTags)
-        tags.push(tag);
-    const tags = pattern.command.tags.map((tag: CommandTag) => {
-    });
-
-    return new Relation()
-}
-*/

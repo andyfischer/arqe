@@ -6,21 +6,19 @@ import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
 import RelationPattern from './RelationPattern'
-import ExecutionPlan from './ExecutionPlan'
+import findAllMatches from './findAllMatches'
 
 export default class GetOperation {
     graph: Graph;
     schema: Schema
     command: Command;
     pattern: RelationPattern;
-    plan: ExecutionPlan;
 
     constructor(graph: Graph, command: Command) {
         this.graph = graph;
         this.schema = graph.schema;
         this.command = command;
         this.pattern = command.toPattern();
-        this.plan = graph.getExecutionPlan(command);
     }
 
     extendedResult() {
@@ -28,7 +26,7 @@ export default class GetOperation {
     }
 
     *formattedResults() {
-        for (const rel of this.plan.findAllMatches(this.pattern)) {
+        for (const rel of findAllMatches(this.graph, this.pattern)) {
             yield this.pattern.formatRelationRelative(rel);
         }
     }
@@ -41,7 +39,7 @@ export default class GetOperation {
 
         let foundAny = false;
 
-        for (const rel of this.plan.findAllMatches(this.pattern)) {
+        for (const rel of findAllMatches(this.graph, this.pattern)) {
             foundAny = true;
 
             if (expectMultiResults) {
