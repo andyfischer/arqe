@@ -33,16 +33,12 @@ export default class Schema {
     }
 
     installStorage(patternStr: string, storage: StorageProvider) {
-        const pattern = commandToRelationPattern(this, patternStr);
+        const pattern = commandToRelationPattern(patternStr);
         // this.storagePlugins.push({ pattern, plugin });
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
         this.typeInfoListener.onRelationUpdated(command, rel);
-    }
-
-    relationPattern(command: Command) {
-        return new RelationPattern(this, command.tags);
     }
 
     stringifyRelation(rel: Relation) {

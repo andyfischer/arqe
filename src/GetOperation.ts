@@ -19,7 +19,7 @@ export default class GetOperation {
         this.graph = graph;
         this.schema = graph.schema;
         this.command = command;
-        this.pattern = this.schema.relationPattern(command);
+        this.pattern = command.toPattern();
         this.plan = graph.getExecutionPlan(command);
     }
 

@@ -9,7 +9,7 @@ export default class GraphListener {
     callbacks: RespondFunc[] = []
 
     constructor(graph: Graph, command: Command) {
-        this.pattern = graph.schema.relationPattern(command);
+        this.pattern = command.toPattern();
     }
 
     addCallback(callback: RespondFunc) {

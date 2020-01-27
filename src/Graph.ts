@@ -32,7 +32,7 @@ export default class Graph {
     }
 
     deleteCmd(command: Command, respond: RespondFunc) {
-        const pattern = this.schema.relationPattern(command);
+        const pattern = command.toPattern();
 
         for (const rel of this.inMemory.findAllMatches(pattern)) {
             if (rel.includesType('typeinfo'))
@@ -138,6 +138,6 @@ export default class Graph {
 
     relationPattern(commandStr: string) {
         const parsed = parseCommand(commandStr);
-        return new RelationPattern(this.schema, parsed.tags);
+        return parsed.toPattern();
     }
 }

@@ -7,7 +7,6 @@ import parseCommand, { normalizeExactTag, commandTagToString, commandArgsToStrin
 
 export default class RelationPattern {
 
-    schema: Schema
     tags: CommandTag[] = []
     starValueTags: CommandTag[] = []
     fixedArgs: CommandTag[] = []
@@ -19,8 +18,7 @@ export default class RelationPattern {
     hasDoubleStar?: boolean
     ntag?: string
 
-    constructor(schema: Schema, tags: CommandTag[]) {
-        this.schema = schema;
+    constructor(tags: CommandTag[]) {
         this.tags = tags;
         this.tagCount = tags.length;
 
@@ -32,8 +30,6 @@ export default class RelationPattern {
 
             this.tagsForType[tagType].push(tag);
 
-            const tagInfo = schema.findTagType(tag.tagType);
-
             if (tag.star) {
                 // this.hasStarTag = true
             } else if (tag.doubleStar) {
@@ -44,12 +40,6 @@ export default class RelationPattern {
                 this.fixedArgs.push(tag);
                 this.fixedArgForType[tag.tagType] = true;
             }
-
-            /*
-            if (tagInfo.inherits) {
-                this.hasInheritTags = true
-                tag.tagTypeInherits = true;
-            }*/
         }
 
         if (!this.isMultiMatch())
@@ -138,7 +128,7 @@ export default class RelationPattern {
     }
 
     patternWithoutType(typeName: string) {
-        return new RelationPattern(this.schema, this.tags.filter(tag => tag.tagType !== typeName));
+        return new RelationPattern(this.tags.filter(tag => tag.tagType !== typeName));
     }
 
     stringify() {
@@ -146,8 +136,8 @@ export default class RelationPattern {
     }
 }
 
-export function commandToRelationPattern(schema: Schema, str: string) {
+export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
-    return new RelationPattern(schema, parsed.tags)
+    return new RelationPattern(parsed.tags)
 }
 

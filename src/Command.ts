@@ -30,6 +30,10 @@ export default class Command {
         this.payloadStr = payload;
         this.flags = flags;
     }
+
+    toPattern() {
+        return new RelationPattern(this.tags);
+    }
 }
 
 // todo:
