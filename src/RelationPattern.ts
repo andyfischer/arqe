@@ -3,12 +3,12 @@ import Command, { CommandTag } from './Command'
 import Relation from './Relation'
 import Graph from './Graph'
 import Schema from './Schema'
-import parseCommand, { normalizeExactTag, commandTagToString } from './parseCommand'
+import parseCommand, { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
 
 export default class RelationPattern {
 
     schema: Schema
-    command: Command;
+    tags: CommandTag[] = []
     starValueTags: CommandTag[] = []
     fixedArgs: CommandTag[] = []
     fixedArgForType: { [typename:string]: true } = {}
@@ -19,12 +19,12 @@ export default class RelationPattern {
     hasDoubleStar?: boolean
     ntag?: string
 
-    constructor(schema: Schema, command: Command) {
+    constructor(schema: Schema, tags: CommandTag[]) {
         this.schema = schema;
-        this.command = command;
-        this.tagCount = command.tags.length;
+        this.tags = tags;
+        this.tagCount = tags.length;
 
-        for (const tag of command.tags) {
+        for (const tag of tags) {
             const { tagType } = tag;
 
             if (!this.tagsForType[tagType])
@@ -45,18 +45,24 @@ export default class RelationPattern {
                 this.fixedArgForType[tag.tagType] = true;
             }
 
+            /*
             if (tagInfo.inherits) {
                 this.hasInheritTags = true
                 tag.tagTypeInherits = true;
-            }
+            }*/
         }
 
         if (!this.isMultiMatch())
-            this.ntag = normalizeExactTag(command.tags);
+            this.ntag = normalizeExactTag(tags);
     }
 
-    matchesCommand(command: Command) {
-        // TODO
+    isSupersetOf(subPattern: RelationPattern) {
+        if (this.hasDoubleStar)
+            return true;
+
+        for (const subTag of subPattern.tags) {
+
+        }
     }
 
     matches(rel: Relation) {
@@ -130,10 +136,18 @@ export default class RelationPattern {
 
         return tags[0];
     }
+
+    patternWithoutType(typeName: string) {
+        return new RelationPattern(this.schema, this.tags.filter(tag => tag.tagType !== typeName));
+    }
+
+    stringify() {
+        return commandArgsToString(this.tags);
+    }
 }
 
 export function commandToRelationPattern(schema: Schema, str: string) {
     const parsed = parseCommand(str);
-    return new RelationPattern(schema, parsed)
+    return new RelationPattern(schema, parsed.tags)
 }
 

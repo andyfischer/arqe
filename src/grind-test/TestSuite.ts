@@ -9,9 +9,12 @@ export default class TestSuite {
 
     constructor() {
         this.testRunners.push(new TestRunner(this))
-        this.testRunners.push(new TestRunner(this, ReparseCommand));
-        this.testRunners.push(new TestRunner(this, InsertExtraTag));
-        // this.testRunners.push(new TestRunner(this, GetInheritedBranch));
+
+        if (!process.env.MIN_CHAOS) {
+            this.testRunners.push(new TestRunner(this, ReparseCommand));
+            this.testRunners.push(new TestRunner(this, InsertExtraTag));
+            // this.testRunners.push(new TestRunner(this, GetInheritedBranch));
+        }
     }
 
     describe(name: string, impl: (context?: any) => void | Promise<any>) {

@@ -1,5 +1,6 @@
 
 import { commandArgsToString } from './parseCommand'
+import RelationPattern from './RelationPattern'
 
 export interface CommandTag {
     // Syntax fields
@@ -31,3 +32,6 @@ export default class Command {
     }
 }
 
+// todo:
+//   Implement 'inherit' using ExecutionPlan
+//   RelationPattern no longer has schema

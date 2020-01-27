@@ -138,6 +138,6 @@ export default class Graph {
 
     relationPattern(commandStr: string) {
         const parsed = parseCommand(commandStr);
-        return new RelationPattern(this.schema, parsed);
+        return new RelationPattern(this.schema, parsed.tags);
     }
 }

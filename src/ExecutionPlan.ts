@@ -29,6 +29,7 @@ import StorageProvider from './StorageProvider'
 
 interface Step {
     storage: StorageProvider
+    subtractTypes?: string[]
 }
 
 function findStoragePlugin(schema: Schema, command: Command) {
@@ -41,12 +42,51 @@ export default class ExecutionPlan {
     constructor(graph: Graph, command: Command) {
         this.steps = [{
             storage: graph.inMemory
-        }]
+        }];
+
+        let inheritTagTypes: string[] = []
+
+        for (const tag of command.tags) {
+            const tagInfo = graph.schema.findTagType(tag.tagType);
+            
+            if (tagInfo.inherits) {
+
+                inheritTagTypes.push(tag.tagType);
+
+                this.steps.push({
+                    storage: graph.inMemory,
+                    subtractTypes: [tag.tagType]
+                });
+            }
+        }
+
+        if (inheritTagTypes.length >= 2) {
+            this.steps.push({
+                storage: graph.inMemory,
+                subtractTypes: inheritTagTypes
+            });
+        }
     }
 
     *findAllMatches(pattern: RelationPattern) {
+        const expectOne = !pattern.isMultiMatch();
+
         for (const step of this.steps) {
-            yield* step.storage.findAllMatches(pattern);
+
+            let stepPattern = pattern;
+
+            if (step.subtractTypes) {
+                for (const t of step.subtractTypes)
+                    stepPattern = stepPattern.patternWithoutType(t);
+            }
+
+            for (const rel of step.storage.findAllMatches(stepPattern)) {
+                yield rel;
+
+                if (expectOne) {
+                    return;
+                }
+            }
         }
     }
 

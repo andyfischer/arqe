@@ -2,6 +2,7 @@
 import Graph from './Graph'
 import { CommandTag } from './Command'
 import { normalizeExactTag } from './parseCommand'
+import Schema from './Schema'
 
 interface RelationTag {
     tagType: string
@@ -72,6 +73,34 @@ export default class Relation {
             return true;
 
         return found[0].tagValue;
+    }
+
+    stringify(schema?: Schema) {
+        const keys = this.tags.map(t => t.tagType);
+
+        if (schema)
+            keys.sort((a,b) => schema.ordering.compareTagTypes(a, b));
+
+        const args = keys.map(key => {
+            const value = this.getTagValue(key);
+            if (key === 'option')
+                return '.' + value;
+
+            let str = key;
+
+            if (value !== true)
+                str += `/${value}`
+
+            return str;
+        });
+
+        let payload = '';
+
+        if (this.payloadStr !== null) {
+            payload = ' == ' + this.payloadStr;
+        }
+
+        return 'set ' + args.join(' ') + payload;
     }
 }
 

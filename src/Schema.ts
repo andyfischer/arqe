@@ -42,32 +42,10 @@ export default class Schema {
     }
 
     relationPattern(command: Command) {
-        return new RelationPattern(this, command);
+        return new RelationPattern(this, command.tags);
     }
 
     stringifyRelation(rel: Relation) {
-        const keys = rel.tags.map(t => t.tagType);
-        keys.sort((a,b) => this.ordering.compareTagTypes(a, b));
-
-        const args = keys.map(key => {
-            const value = rel.getTagValue(key);
-            if (key === 'option')
-                return '.' + value;
-
-            let str = key;
-
-            if (value !== true)
-                str += `/${value}`
-
-            return str;
-        });
-
-        let payload = '';
-
-        if (rel.payloadStr !== null) {
-            payload = ' == ' + rel.payloadStr;
-        }
-
-        return 'set ' + args.join(' ') + payload;
+        return rel.stringify(this);
     }
 }

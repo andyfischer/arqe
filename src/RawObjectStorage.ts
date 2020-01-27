@@ -14,7 +14,8 @@ export default class RawObjectStorage implements StorageProvider {
         this.linkedPattern = pattern;
 
         if (pattern.starValueTags.length !== 1) {
-            throw new Error("RawObjectStorage expected to link with a single star value pattern, saw: " + commandArgsToString(pattern.command.tags));
+            throw new Error("RawObjectStorage expected to link with a single star value pattern, saw: "
+                            + commandArgsToString(pattern.tags));
         }
 
         this.variedType = pattern.starValueTags[0].tagType;
@@ -22,7 +23,7 @@ export default class RawObjectStorage implements StorageProvider {
 
     *findAllMatches(pattern: RelationPattern) {
         const variedTag = pattern.getOneTagForType(this.variedType);
-        const otherTags = pattern.command.tags.filter(tag => tag.tagType !== variedTag.tagType);
+        const otherTags = pattern.tags.filter(tag => tag.tagType !== variedTag.tagType);
 
         if (variedTag.starValue) {
             for (const key in this.value) {
