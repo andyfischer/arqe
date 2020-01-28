@@ -14,6 +14,11 @@ export default async function main() {
         ws.on('open', resolve);
     });
 
+    ws.on('close', () => {
+        console.log('Disconnected from server');
+        process.exit();
+    });
+
     const commandConnection = new CommandConnection(ws);
     await commandConnection.setup();
 

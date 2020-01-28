@@ -16,8 +16,9 @@ export default async function main() {
 
     const serverSocket = new SocketServer(wsServer, graph)
 
-    console.log(`Launching self client..`)
-    require('./test-graphdb/funcTestClient');
+    serverSocket.on('send', ({ socket, query, response, error }) => {
+        console.log(`  ${query} -> ${response || error}`);
+    });
 }
 
 main()

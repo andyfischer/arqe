@@ -10,6 +10,10 @@ export interface ChaosMode {
     modifyRunCommand?: (command: string) => string
 }
 
+interface RunOptions {
+    allowError?: true
+}
+
 export default class TestRunner {
     suite: TestSuite
     chaosMode?: ChaosMode
@@ -25,9 +29,10 @@ export default class TestRunner {
         }
     }
 
-    run = (command) => {
+    run = (command, opts?: RunOptions) => {
 
         const { graph } = this;
+        const allowError = opts && opts.allowError;
 
         if (this.chaosMode && this.chaosMode.modifyRunCommand)
             command = this.chaosMode.modifyRunCommand(command);
@@ -57,7 +62,7 @@ export default class TestRunner {
         let error = null;
 
         graph.run(command, msg => {
-            if (!error && msg && msg.startsWith('#error')) {
+            if (!error && msg && msg.startsWith('#error') && !allowError) {
                 error = msg;
                 if (rejectResponse)
                     rejectResponse(error);
@@ -67,7 +72,7 @@ export default class TestRunner {
             collector(msg);
         });
 
-        if (error)
+        if (error && !allowError)
             throw error;
 
         if (responseFinished) {

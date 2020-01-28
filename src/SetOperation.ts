@@ -17,16 +17,37 @@ export default class SetOperation {
         this.command = command;
         this.plan = graph.getExecutionPlan(command);
 
+
+    }
+
+    perform(respond: RespondFunc) {
+
+        const { command } = this;
+
+        // Validate
+        for (const tag of command.tags) {
+            if (tag.starValue) {
+                respond("#error can't use star pattern in 'set'")
+                return;
+            }
+
+            if (tag.star) {
+                respond("#error can't use star pattern in 'set'")
+                return;
+            }
+
+            if (tag.doubleStar) {
+                respond("#error can't use star pattern in 'set'")
+                return;
+            }
+        }
+
         for (const arg of command.tags) {
             if (arg.tagValue === '#unique') {
                 arg.tagValue = this.graph.schema.findTagType(arg.tagType).getUniqueId()
                 this.replyWithEcho = true;
             }
         }
-    }
-
-    perform(respond: RespondFunc) {
-        const { command } = this;
 
         const relation = this.plan.save(command);
 

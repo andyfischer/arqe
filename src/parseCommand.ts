@@ -167,6 +167,8 @@ export function commandTagToString(tag: CommandTag) {
         s += '/*';
     } else if (tag.questionValue) {
         s += '?';
+    } else if (tag.doubleStar) {
+        s += '**';
     }
 
     return s;

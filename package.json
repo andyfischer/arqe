@@ -7,8 +7,7 @@
     "build": "tsc -p .",
     "test": "jest --watch",
     "tsc-watch": "tsc -w",
-    "start": "concurrently -n server,jest 'yarn server-watch' 'yarn test'",
-    "server-watch": "tsc-watch --onSuccess 'node dist/startServer.js'",
+    "start": "tsc-watch --onSuccess 'node dist/startServer.js'",
     "cli": "node dist/startCli.js"
   },
   "dependencies": {

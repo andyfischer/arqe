@@ -15,25 +15,38 @@ export default class ClientRepl {
     conn: CommandConnection
     repl: any
 
+    waitingForDone: boolean
+
     constructor(conn: CommandConnection) {
         this.conn = conn;
+        this.waitingForDone = false;
     }
 
     receive(msg: string) {
+        if (msg === '#start') {
+            this.waitingForDone = true;
+            return;
+        }
+
+        if (msg === '#done') {
+            this.waitingForDone = false;
+            this.displayPrompt()
+            return;
+        }
+
         console.log(' > ' + msg);
+
+        if (!this.waitingForDone)
+            this.displayPrompt()
     }
 
     async eval(line) {
         line = trimEndline(line);
 
-        await new Promise((resolve, reject) => {
-            this.conn.run(line, response => {
-                this.receive(response);
-                resolve();
-            })
+        this.conn.run(line, response => {
+            this.receive(response);
         })
 
-        this.displayPrompt()
     }
 
     displayPrompt() {

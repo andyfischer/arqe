@@ -37,7 +37,7 @@ export default class CommandConnection {
 
             listener.receive(msg);
 
-            if (msg === '#started')
+            if (msg === '#start')
                 listener.streaming = true;
 
             if (msg === '#done')
