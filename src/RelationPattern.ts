@@ -50,9 +50,32 @@ export default class RelationPattern {
         if (this.hasDoubleStar)
             return true;
 
-        for (const subTag of subPattern.tags) {
+        if (this.tagCount !== subPattern.tagCount)
+            return false;
 
+        for (const tag of this.tags) {
+
+            let foundMatch = false;
+
+            for (const subTag of subPattern.tagsForType[tag.tagType]) {
+
+                if (!subTag)
+                    return false;
+
+                if (tag.starValue)
+                    foundMatch = true;
+                else if (subTag.starValue)
+                    return false;
+
+                if (tag.tagValue === subTag.tagValue)
+                    foundMatch = true;
+            }
+
+            if (!foundMatch)
+                return false;
         }
+
+        return true;
     }
 
     matches(rel: Relation) {

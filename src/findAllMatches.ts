@@ -81,3 +81,6 @@ export default function *findAllMatches(graph: Graph, pattern: RelationPattern) 
         }
     }
 }
+
+// next todo
+//   finish hooking up RawObjectStorage - be able to mount it
