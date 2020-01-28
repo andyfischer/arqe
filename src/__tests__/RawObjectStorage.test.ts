@@ -64,3 +64,8 @@ it('findAllMatches works with star key', () => {
         'set objectmount/123 .testkey2 == testval2'
     ]);
 });
+
+it("test when mounted in a graph", () => {
+    const graph = new Graph();
+    // graph.installStorage(
+});

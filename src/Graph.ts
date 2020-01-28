@@ -7,19 +7,32 @@ import { normalizeExactTag, commandArgsToString } from './parseCommand'
 import SetOperation from './SetOperation'
 import GetOperation from './GetOperation'
 import GraphListener from './GraphListener'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
+import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
 import ExecutionPlan from './ExecutionPlan'
 
 export type RespondFunc = (str: string) => void
+
+interface MountedStorage {
+    pattern: RelationPattern
+    storage: StorageProvider
+}
 
 export default class Graph {
 
     inMemory = new InMemoryStorage()
     listeners: GraphListener[] = []
     schema = new Schema()
+    mountedStorage: MountedStorage[] = []
+
+    installStorage(patternStr: string, storage: StorageProvider) {
+        const pattern = commandToRelationPattern(patternStr);
+        this.mountedStorage.push({ pattern, storage });
+    }
+
 
     dump(command: Command, respond: RespondFunc) {
         respond('#start');

@@ -16,8 +16,6 @@ export default class SetOperation {
         this.graph = graph;
         this.command = command;
         this.plan = graph.getExecutionPlan(command);
-
-
     }
 
     perform(respond: RespondFunc) {

@@ -1,6 +1,5 @@
 
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
-import StorageProvider from './StorageProvider'
 import Relation from './Relation'
 import TagType from './TagType'
 import TagTypeOrdering from './TagTypeOrdering'
@@ -8,16 +7,10 @@ import Command from './Command'
 import TypeInfoListener from './TypeInfoListener'
 import ExecutionPlan from './ExecutionPlan'
 
-interface MountedStorage {
-    pattern: RelationPattern
-    plugin: StorageProvider
-}
-
 export default class Schema {
 
     tagTypes: { [name: string]: TagType } = {}
     ordering = new TagTypeOrdering()
-    storagePlugins: MountedStorage[] = []
     typeInfoListener = new TypeInfoListener(this)
 
     initTagType(name: string) {
@@ -30,11 +23,6 @@ export default class Schema {
         }
 
         return this.tagTypes[name];
-    }
-
-    installStorage(patternStr: string, storage: StorageProvider) {
-        const pattern = commandToRelationPattern(patternStr);
-        // this.storagePlugins.push({ pattern, plugin });
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
