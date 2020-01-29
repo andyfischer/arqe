@@ -1,7 +1,7 @@
 
-import Graph from '../Graph'
+import Graph from '../../Graph'
 import { ChaosMode } from './TestRunner'
-import parseCommand, { parsedCommandToString, appendTagInCommand } from '../parseCommand'
+import parseCommand, { parsedCommandToString, appendTagInCommand } from '../../parseCommand'
 
 export const ReparseCommand: ChaosMode = {
     shortDescription: 'reparse command',

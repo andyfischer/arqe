@@ -1,6 +1,7 @@
 
-import { startSuite } from './TestSuite'
+import { startSuite } from '.'
 const { test } = startSuite();
+
 
 test('get * works with fixed valueless tags', async ({run}) => {
     await run('set a/1 b c')
@@ -14,6 +15,8 @@ test('get * works with fixed valueless tags 2', async ({run}) => {
     await run('set a/2 b c')
     expect(await run('get a/* b c')).toEqual(['a/1', 'a/2']);
 });
+
+/*
 
 test('get * works with fixed valueless tags 3', async ({run}) => {
     expect(await run('set a/1 b c')).toEqual('#done');
@@ -51,3 +54,4 @@ test('get * works with fixed value tag 3', async ({run}) => {
     expect(await run('get a/* b')).toEqual(['a/1', 'a/2'])
     expect(await run('get a/* c')).toEqual(['a/3'])
 });
+*/

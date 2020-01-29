@@ -1,5 +1,5 @@
 
-import Graph from '../Graph'
+import Graph from '../../Graph'
 import TestRunner from './TestRunner'
 
 import { ReparseCommand, InsertExtraTag, GetInheritedBranch } from './ChaosModes'

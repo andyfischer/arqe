@@ -1,8 +1,8 @@
 
 import TestSuite from './TestSuite'
-import collectRespond from '../collectRespond'
-import verifyRespondProtocol from '../verifyRespondProtocol'
-import Graph from '../Graph'
+import collectRespond from '../../collectRespond'
+import verifyRespondProtocol from '../../verifyRespondProtocol'
+import Graph from '../../Graph'
 
 export interface ChaosMode {
     shortDescription: string
