@@ -29,7 +29,7 @@ export default class TestRunner {
         }
     }
 
-    run = (command, opts?: RunOptions) => {
+    run = (command, opts?: RunOptions): Promise<string> => {
 
         const { graph } = this;
         const allowError = opts && opts.allowError;
@@ -41,48 +41,17 @@ export default class TestRunner {
             fail(`Protocol error: ${err.problem} (${JSON.stringify({ causedBy: err.causedBy })})`);
         });
 
-        let response;
-        let responseFinished = false;
-        let resolveResponse;
-        let rejectResponse;
-
-        const collector = collectRespond(finishedValue => {
-
-            responseFinished = true;
-
-            if (resolveResponse) {
-                // Async finish
-                resolveResponse(finishedValue);
-            } else {
-                // Sync finish
-                response = finishedValue;
-            }
-        });
-
-        let error = null;
-
-        graph.run(command, msg => {
-            if (!error && msg && msg.startsWith('#error') && !allowError) {
-                error = msg;
-                if (rejectResponse)
-                    rejectResponse(error);
-            }
-
-            verifier(msg);
-            collector(msg);
-        });
-
-        if (error && !allowError)
-            throw error;
-
-        if (responseFinished) {
-            return response;
-        }
-
-        // Didn't finish synchronously, so turn this into a Promise.
         return new Promise((resolve, reject) => {
-            resolveResponse = resolve;
-            rejectResponse = reject;
+            const collector = collectRespond(resolve);
+
+            graph.run(command, msg => {
+                if (msg && msg.startsWith('#error') && !allowError) {
+                    reject(msg);
+                }
+
+                verifier(msg);
+                collector(msg);
+            });
         });
     }
 }
