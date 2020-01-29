@@ -20,7 +20,6 @@ export default async function main() {
     });
 
     const commandConnection = new CommandConnection(ws);
-    await commandConnection.setup();
 
     if (cliArgs._.length > 0) {
         const command = cliArgs._.join(' ');

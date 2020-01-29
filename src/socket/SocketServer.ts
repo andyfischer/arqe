@@ -37,15 +37,20 @@ class Connection extends EventEmitter {
         this.graphContext = new GraphContext(this.graph);
         this.graphContext.addOptionalContextTag({ tagType: 'connection', tagValue: id });
 
-        ws.on('message', async (query) => {
+        ws.on('message', async (message) => {
 
-            this.emit('received', query);
+            this.emit('received', message);
 
-            const data = JSON.parse(query);
-            const { reqid, command } = data;
+            const data = JSON.parse(message);
+            const { reqid, query } = data;
+
+            if (!query) {
+                this.send(null, { reqid, err: "#error protocal error, missing 'query'" });
+                return;
+            }
 
             try {
-                this.handleCommand(reqid, command);
+                await this.handleCommand(reqid, query);
 
             } catch (err) {
                 logError(err);

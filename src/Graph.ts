@@ -14,7 +14,8 @@ import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
 import ExecutionPlan from './ExecutionPlan'
 
-export type RespondFunc = (str: string) => void
+export type RespondFunc = (msg: string) => void
+export type RunFunc = (query: string, respond: RespondFunc) => void
 
 interface MountedStorage {
     pattern: RelationPattern

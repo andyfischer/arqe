@@ -2,7 +2,8 @@
 import TestSuite from './TestSuite'
 import collectRespond from '../../collectRespond'
 import verifyRespondProtocol from '../../verifyRespondProtocol'
-import Graph from '../../Graph'
+import Graph, { RunFunc } from '../../Graph'
+import { connectToServer } from '../../socket/CommandConnection'
 
 export interface ChaosMode {
     shortDescription: string
@@ -17,21 +18,34 @@ interface RunOptions {
 export default class TestRunner {
     suite: TestSuite
     chaosMode?: ChaosMode
-    graph: Graph
+    runFunc: RunFunc
 
     constructor(suite: TestSuite, chaosMode?: ChaosMode) {
         this.suite = suite;
-        this.graph = new Graph();
         this.chaosMode = chaosMode;
 
-        if (this.chaosMode && this.chaosMode.setupNewGraph) {
-            this.chaosMode.setupNewGraph(this.graph);
+        this.setup();
+    }
+
+    setup() {
+        if (process.env.REMOTE_HOST) {
+            const connection = connectToServer(process.env.REMOTE_HOST);
+            this.runFunc = (m,r) => connection.run(m,r);
+            return;
         }
+
+        const graph = new Graph();
+
+        if (this.chaosMode && this.chaosMode.setupNewGraph) {
+            this.chaosMode.setupNewGraph(graph);
+        }
+
+        this.runFunc = (m,r) => graph.run(m,r);
     }
 
     run = (command, opts?: RunOptions): Promise<string> => {
 
-        const { graph } = this;
+        const runFunc = this.runFunc;
         const allowError = opts && opts.allowError;
 
         if (this.chaosMode && this.chaosMode.modifyRunCommand)
@@ -44,7 +58,7 @@ export default class TestRunner {
         return new Promise((resolve, reject) => {
             const collector = collectRespond(resolve);
 
-            graph.run(command, msg => {
+            runFunc(command, msg => {
                 if (msg && msg.startsWith('#error') && !allowError) {
                     reject(msg);
                 }

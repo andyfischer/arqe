@@ -6,8 +6,13 @@ import { RespondFunc } from '../Graph'
 import ResponseAccumulator from '../ResponseAccumulator'
 
 interface Listener {
-    receive: (msg: string) => void
+    respond: (msg: string) => void
     streaming?: boolean
+}
+
+interface PendingQuery {
+    query: string
+    respond: RespondFunc
 }
 
 export default class CommandConnection {
@@ -15,6 +20,7 @@ export default class CommandConnection {
     nextReqId: number = 1
     connectionId: string
 
+    pendingForConnection: PendingQuery[] = []
     reqListeners: { [id: string]: Listener } = {}
 
     constructor(ws: WebSocket) {
@@ -35,7 +41,7 @@ export default class CommandConnection {
                 return;
             }
 
-            listener.receive(msg);
+            listener.respond(msg);
 
             if (msg === '#start')
                 listener.streaming = true;
@@ -47,23 +53,38 @@ export default class CommandConnection {
                 delete this.reqListeners[reqid];
             }
         });
-    }
 
-    async setup() {
+        ws.on('open', str => {
+            const pending = this.pendingForConnection;
+            this.pendingForConnection = [];
+
+            for (const { query, respond } of pending) {
+                this.run(query, respond)
+                .catch(console.error);
+            }
+        });
     }
 
     async close() {
         this.ws.terminate();
     }
 
-    async run(command: string, receive: RespondFunc) {
+    async run(query: string, respond: RespondFunc) {
+
+        if (typeof query !== 'string')
+            throw new Error("expected string for query, got: " + query);
+
+        if (this.ws.readyState === WebSocket.CONNECTING) {
+            this.pendingForConnection.push({ query, respond });
+            return;
+        }
 
         const reqid = this.nextReqId;
         this.nextReqId += 1
 
-        this.ws.send(JSON.stringify({reqid, command}));
+        this.ws.send(JSON.stringify({reqid, query}));
         this.reqListeners[reqid] = {
-            receive
+            respond
         }
     }
 
@@ -72,4 +93,11 @@ export default class CommandConnection {
         this.run(command, accumulator.receiveCallback());
         return await accumulator.waitUntilDone()
     }
+}
+
+export function connectToServer(host: string): CommandConnection {
+
+    const ws = new WebSocket('http://localhost:42940');
+    const conn = new CommandConnection(ws);
+    return conn;
 }

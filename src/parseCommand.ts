@@ -142,6 +142,9 @@ function parseQueryFromLexed(it: TokenIterator): Command {
 }
 
 export default function parseCommand(str: string): Command {
+    if (typeof str !== 'string')
+        throw new Error('expected string');
+
     const it = lexStringToIterator(str);
     const command = parseQueryFromLexed(it);
 
