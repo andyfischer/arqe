@@ -12,7 +12,6 @@ import collectRespond from './collectRespond'
 import Schema from './Schema'
 import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
-import ExecutionPlan from './ExecutionPlan'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -144,10 +143,6 @@ export default class Graph {
             throw new Error("command didn't have sync response in runSync");
 
         return result;
-    }
-
-    getExecutionPlan(command: Command) {
-        return new ExecutionPlan(this, command);
     }
 
     relationPattern(commandStr: string) {

@@ -5,7 +5,6 @@ import TagType from './TagType'
 import TagTypeOrdering from './TagTypeOrdering'
 import Command from './Command'
 import TypeInfoListener from './TypeInfoListener'
-import ExecutionPlan from './ExecutionPlan'
 
 export default class Schema {
 

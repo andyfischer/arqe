@@ -3,19 +3,17 @@ import Command from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
 import { normalizeExactTag } from './parseCommand'
-import ExecutionPlan from './ExecutionPlan'
+import saveRelation from './saveRelation'
 
 export default class SetOperation {
     replyWithEcho = false
     graph: Graph
     command: Command
     relation: Relation
-    plan: ExecutionPlan;
 
     constructor(graph: Graph, command: Command) {
         this.graph = graph;
         this.command = command;
-        this.plan = graph.getExecutionPlan(command);
     }
 
     perform(respond: RespondFunc) {
@@ -47,7 +45,7 @@ export default class SetOperation {
             }
         }
 
-        const relation = this.plan.save(command);
+        const relation = saveRelation(this.graph, command);
 
         this.graph.onRelationUpdated(command, relation);
 
