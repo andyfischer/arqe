@@ -3,7 +3,7 @@ import Command, { CommandTag } from './Command'
 import Relation from './Relation'
 import Graph from './Graph'
 import Schema from './Schema'
-import parseCommand, { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
+import parseCommand, { normalizeExactTag, commandTagToString, commandTagsToString } from './parseCommand'
 
 export interface FixedTag {
     tagType: string
@@ -11,7 +11,6 @@ export interface FixedTag {
 }
 
 export default class RelationPattern {
-
     tags: CommandTag[] = []
     starValueTags: CommandTag[] = []
     fixedTags: FixedTag[] = []
@@ -96,10 +95,9 @@ export default class RelationPattern {
         // For all fixed args: Check that each one is found in this relation.
         for (const arg of this.fixedTags) {
 
-            if (!rel.includesType(arg.tagType)) {
+            if (!rel.includesType(arg.tagType))
                 return false;
-            }
-                
+            
             if (!arg.tagValue) {
                 if (!rel.includesType(arg.tagType))
                     return false;
@@ -150,7 +148,7 @@ export default class RelationPattern {
     }
 
     stringify() {
-        return commandArgsToString(this.tags);
+        return commandTagsToString(this.tags);
     }
 }
 

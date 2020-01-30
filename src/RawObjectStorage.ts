@@ -2,7 +2,7 @@
 import Relation, { commandTagsToRelation } from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
-import { commandArgsToString } from './parseCommand'
+import { commandTagsToString } from './parseCommand'
 import StorageProvider from './StorageProvider'
 import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'
@@ -17,7 +17,7 @@ export default class RawObjectStorage implements StorageProvider {
 
         if (pattern.starValueTags.length !== 1) {
             throw new Error("RawObjectStorage expected to link with a single star value pattern, saw: "
-                            + commandArgsToString(pattern.tags));
+                            + commandTagsToString(pattern.tags));
         }
 
         this.variedType = pattern.starValueTags[0].tagType;

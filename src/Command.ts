@@ -1,5 +1,4 @@
 
-import { commandArgsToString } from './parseCommand'
 import RelationPattern from './RelationPattern'
 
 export interface CommandTag {

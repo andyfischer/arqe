@@ -177,7 +177,7 @@ export function commandTagToString(tag: CommandTag) {
     return s;
 }
 
-export function commandArgsToString(tags: CommandTag[]) {
+export function commandTagsToString(tags: CommandTag[]) {
     return tags.map(commandTagToString).join(' ');
 }
 
@@ -188,7 +188,7 @@ export function parsedCommandToString(command: Command) {
         str += ' -' + flag;
     }
     
-    str += ' ' + commandArgsToString(command.tags);
+    str += ' ' + commandTagsToString(command.tags);
 
     if (command.payloadStr != null) {
         str += ' == ' + command.payloadStr;

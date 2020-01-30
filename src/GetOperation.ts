@@ -4,7 +4,6 @@ import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
 import TagType from './TagType'
 import Relation from './Relation'
-import { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
 import RelationPattern from './RelationPattern'
 import StorageProvider from './StorageProvider'
 
