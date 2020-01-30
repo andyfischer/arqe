@@ -5,6 +5,7 @@ import Command from './Command'
 import { normalizeExactTag } from './parseCommand'
 import StorageProvider from './StorageProvider'
 import GetOperation from './GetOperation'
+import SetOperation from './SetOperation'
 
 export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
@@ -67,23 +68,26 @@ export default class InMemoryStorage implements StorageProvider {
         get.finishSearch();
     }
 
-    save(command: Command) {
+    runSave(set: SetOperation) {
+        const command = set.command;
+
         const ntag = normalizeExactTag(command.tags);
 
         const existing = this.relationsByNtag[ntag];
 
         if (existing) {
             existing.setPayload(command.payloadStr);
-            return existing;
-        } else {
-            const relationTags = command.tags.map(tag => ({
-                tagType: tag.tagType,
-                tagValue: tag.tagValue
-            }));
-
-            this.relationsByNtag[ntag] = new Relation(ntag, relationTags, command.payloadStr);
-            return this.relationsByNtag[ntag];
+            set.saveFinished(existing);
+            return;
         }
+        
+        const relationTags = command.tags.map(tag => ({
+            tagType: tag.tagType,
+            tagValue: tag.tagValue
+        }));
+
+        this.relationsByNtag[ntag] = new Relation(ntag, relationTags, command.payloadStr);
+        set.saveFinished(this.relationsByNtag[ntag]);
     }
 }
 

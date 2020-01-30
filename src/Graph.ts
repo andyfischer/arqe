@@ -79,8 +79,8 @@ export default class Graph {
             switch (command.command) {
 
             case 'set': {
-                const set = new SetOperation(this, command)
-                set.perform(respond);
+                const set = new SetOperation(this, command, respond)
+                set.perform();
                 return;
             }
 

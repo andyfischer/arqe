@@ -5,6 +5,7 @@ import Command from './Command'
 import { commandArgsToString } from './parseCommand'
 import StorageProvider from './StorageProvider'
 import GetOperation from './GetOperation'
+import SetOperation from './SetOperation'
 
 export default class RawObjectStorage implements StorageProvider {
     linkedPattern: RelationPattern
@@ -55,7 +56,7 @@ export default class RawObjectStorage implements StorageProvider {
         get.finishSearch();
     }
 
-    save(command: Command) {
-        return new Relation('', [], '');
+    runSave(set: SetOperation) {
+        set.saveFinished(new Relation('', [], ''));
     }
 }

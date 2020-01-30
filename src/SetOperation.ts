@@ -3,22 +3,23 @@ import Command from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
 import { normalizeExactTag } from './parseCommand'
-import saveRelation from './saveRelation'
 
 export default class SetOperation {
     replyWithEcho = false
     graph: Graph
     command: Command
     relation: Relation
+    respond: RespondFunc;
 
-    constructor(graph: Graph, command: Command) {
+    constructor(graph: Graph, command: Command, respond: RespondFunc) {
         this.graph = graph;
         this.command = command;
+        this.respond = respond;
     }
 
-    perform(respond: RespondFunc) {
+    perform() {
 
-        const { command } = this;
+        const { command, respond } = this;
 
         // Validate
         for (const tag of command.tags) {
@@ -45,7 +46,15 @@ export default class SetOperation {
             }
         }
 
-        const relation = saveRelation(this.graph, command);
+        this.graph.inMemory.runSave(this);
+    }
+
+    saveFinished(relation?: Relation) {
+
+        const { command, respond } = this;
+
+        if (!relation)
+            respond("#error couldn't save");
 
         this.graph.onRelationUpdated(command, relation);
 

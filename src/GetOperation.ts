@@ -9,19 +9,32 @@ import RelationPattern from './RelationPattern'
 import StorageProvider from './StorageProvider'
 
 class ResponseFormatter {
-    extendedResult: boolean
-    asMultiResults: boolean
-    respond: RespondFunc
-    pattern: RelationPattern
+    // Context
     schema: Schema
+    pattern: RelationPattern
+    respond: RespondFunc
+
+    // Format options
+    extendedResult?: boolean
+    asMultiResults?: boolean
     asSetCommands?: boolean
     skipStartAndDone?: boolean
 
+    // Progress
     anyResults: boolean = false
 
+    // Protocol validation
+    hasStarted = false;
+    hasFinished = false;
+
     start() {
+        if (this.hasStarted)
+            throw new Error("ResponseFormatter protocol error: .start() called twice");
+
         if (this.asMultiResults && !this.skipStartAndDone)
             this.respond('#start');
+
+        this.hasStarted = true;
     }
 
     formatRelation(rel: Relation) {
@@ -32,6 +45,12 @@ class ResponseFormatter {
     }
 
     respondRelation(rel: Relation) {
+
+        if (!this.hasStarted)
+            throw new Error("ResponseFormatter protocol error: .respondRelation called before .start()");
+
+        if (this.hasFinished)
+            throw new Error("ResponseFormatter protocol error: .respondRelation called after .finish()");
 
         const { respond, pattern, extendedResult, asMultiResults } = this;
 
@@ -53,6 +72,13 @@ class ResponseFormatter {
     }
 
     finish() {
+        if (!this.hasStarted)
+            throw new Error("ResponseFormatter protocol error: .finish() called before .start()");
+        if (this.hasFinished)
+            throw new Error("ResponseFormatter protocol error: .finish() called twice");
+
+        this.hasFinished = true;
+
         if (!this.skipStartAndDone) {
             if (this.asMultiResults)
                 this.respond('#done');
@@ -165,14 +191,6 @@ export default class GetOperation {
         this.expectOne = !this.pattern.isMultiMatch();
     }
 
-    /*
-    *formattedResults() {
-        for (const rel of this.findAllMatches(this.graph, this.pattern)) {
-            yield this.pattern.formatRelationRelative(rel);
-        }
-    }
-    */
-
     foundRelation(rel: Relation) {
         if (this.done)
             return;
@@ -193,7 +211,7 @@ export default class GetOperation {
         this.startNextStep();
     }
 
-    startNextStep() {
+    private startNextStep() {
         if (this.currentStep >= this.steps.length) {
             this.finish();
             return;
