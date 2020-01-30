@@ -14,7 +14,7 @@ export default class TagTypeOrdering {
             throw new Error('expected "typeinfo" relation');
 
         const typeName = rel.getTagValue('typeinfo') as string;
-        const value = rel.payloadStr;
+        const value = rel.payload();
 
         if (value === 'before') {
             this.section[typeName] = beforeSection

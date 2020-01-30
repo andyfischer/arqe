@@ -62,8 +62,8 @@ class ResponseFormatter {
             if (extendedResult) {
                 respond(this.schema.stringifyRelation(rel));
             } else {
-                if (rel.payloadStr) {
-                    respond(rel.payloadStr);
+                if (rel.hasPayload()) {
+                    respond(rel.payload());
                 } else {
                     respond('#exists');
                 }

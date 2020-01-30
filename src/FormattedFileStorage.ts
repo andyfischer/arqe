@@ -6,10 +6,10 @@ import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'
 
 export default class FormattedFileStorage implements StorageProvider {
-    runSearch(get: GetOperation) {
+    async runSearch(get: GetOperation) {
         get.finishSearch();
     }
-    runSave(set: SetOperation) {
+    async runSave(set: SetOperation) {
         set.saveFinished(null);
     }
 }

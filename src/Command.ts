@@ -11,9 +11,6 @@ export interface CommandTag {
     doubleStar?: boolean
     starValue?: boolean
     questionValue?: boolean
-
-    // Semantic fields
-    tagTypeInherits?: boolean
 }
 
 type FlagMap = { [flag: string]: any }

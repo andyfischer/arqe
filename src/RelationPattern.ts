@@ -5,12 +5,17 @@ import Graph from './Graph'
 import Schema from './Schema'
 import parseCommand, { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
 
+export interface FixedTag {
+    tagType: string
+    tagValue: string
+}
+
 export default class RelationPattern {
 
     tags: CommandTag[] = []
     starValueTags: CommandTag[] = []
-    fixedArgs: CommandTag[] = []
-    fixedArgForType: { [typename:string]: true } = {}
+    fixedTags: FixedTag[] = []
+    fixedTagsForType: { [typename:string]: true } = {}
     tagsForType: { [typename: string]: CommandTag[] } = {}
     hasInheritTags: boolean = false
     tagCount: number
@@ -37,8 +42,8 @@ export default class RelationPattern {
             } else if (tag.starValue) {
                 this.starValueTags.push(tag);
             } else {
-                this.fixedArgs.push(tag);
-                this.fixedArgForType[tag.tagType] = true;
+                this.fixedTags.push(tag as FixedTag);
+                this.fixedTagsForType[tag.tagType] = true;
             }
         }
 
@@ -89,16 +94,10 @@ export default class RelationPattern {
         }
 
         // For all fixed args: Check that each one is found in this relation.
-        for (const arg of this.fixedArgs) {
+        for (const arg of this.fixedTags) {
 
             if (!rel.includesType(arg.tagType)) {
-                // The relation doesn't mention this type. If this is an 'inherits' type
-                // then that's fine, otherwise disqualify.
-                if (arg.tagTypeInherits) {
-                    continue;
-                } else {
-                    return false;
-                }
+                return false;
             }
                 
             if (!arg.tagValue) {
@@ -129,13 +128,13 @@ export default class RelationPattern {
         const outTags = [];
 
         for (const tag of rel.eachTag()) {
-            if (this.fixedArgForType[tag.tagType])
+            if (this.fixedTagsForType[tag.tagType])
                 continue;
 
             outTags.push(commandTagToString(tag));
         }
 
-        const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payloadStr}` : '');
+        const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payload()}` : '');
         return str;
     }
 

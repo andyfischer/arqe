@@ -4,14 +4,20 @@ import { CommandTag } from './Command'
 import { normalizeExactTag } from './parseCommand'
 import Schema from './Schema'
 
-interface RelationTag {
+export interface RelationTag {
     tagType: string
     tagValue: string
 }
 
 export default class Relation {
     ntag: string
-    payloadStr: string | null
+
+    private payloadStr: string | null
+
+    // 'payloadUnavailable' means that this relation might or might not have a payload,
+    // but we don't know what it is. With this enabled it's error to try to access the payload.
+    payloadUnavailable?: boolean
+
     tags: RelationTag[]
     tagsForType: { [typeName: string]: RelationTag[] } = {}
 
@@ -35,7 +41,17 @@ export default class Relation {
     }
     
     hasPayload() {
+        if (this.payloadUnavailable)
+            throw new Error("Payload is unavailable for this relation");
+
         return this.payloadStr != null;
+    }
+
+    payload() {
+        if (this.payloadUnavailable)
+            throw new Error("Payload is unavailable for this relation");
+
+        return this.payloadStr;
     }
 
     *eachTag() {
