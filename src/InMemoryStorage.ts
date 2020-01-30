@@ -4,6 +4,7 @@ import RelationPattern from './RelationPattern'
 import Command from './Command'
 import { normalizeExactTag } from './parseCommand'
 import StorageProvider from './StorageProvider'
+import GetOperation from './GetOperation'
 
 export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
@@ -46,12 +47,24 @@ export default class InMemoryStorage implements StorageProvider {
 
     *findAllMatches(pattern: RelationPattern) {
         if (pattern.isMultiMatch()) {
-            yield *this.linearScan(pattern);
+            for (const rel of this.linearScan(pattern)) {
+                yield rel;
+            }
         } else {
             const one = this.findOneMatch(pattern);
             if (one)
                 yield one;
         }
+    }
+
+    runSearch(get: GetOperation) {
+        for (const rel of this.findAllMatches(get.pattern)) {
+            get.foundRelation(rel);
+            if (get.done)
+                break;
+        }
+
+        get.finishSearch();
     }
 
     save(command: Command) {

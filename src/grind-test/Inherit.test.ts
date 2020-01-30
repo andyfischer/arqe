@@ -24,7 +24,7 @@ test('get works when accessing inherited tags', async ({run}) => {
     expect(await run('get tc22 branch/456')).toEqual('1')
 });
 
-test('works with double inherit tags', async ({run}) => {
+test('inherit works with double inherit tags', async ({run}) => {
     await run('set typeinfo/branch .inherits')
     await run('set typeinfo/branch2 .inherits')
 
@@ -42,7 +42,7 @@ test('works with double inherit tags', async ({run}) => {
     // expect(run('get tc21 branch/1 branch2/1')).toEqual('2'); // this might be poorly defined
 });
 
-test('works with valueless tags', async ({run}) => {
+test('inherit works with valueless tags', async ({run}) => {
     await run('set typeinfo/branch .inherits')
     await run('set typeinfo/branch2 .inherits')
 

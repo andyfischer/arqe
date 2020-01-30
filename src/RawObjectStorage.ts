@@ -4,6 +4,7 @@ import RelationPattern from './RelationPattern'
 import Command from './Command'
 import { commandArgsToString } from './parseCommand'
 import StorageProvider from './StorageProvider'
+import GetOperation from './GetOperation'
 
 export default class RawObjectStorage implements StorageProvider {
     linkedPattern: RelationPattern
@@ -42,6 +43,16 @@ export default class RawObjectStorage implements StorageProvider {
                 }), this.value[key]);
             }
         }
+    }
+
+    runSearch(get: GetOperation) {
+        for (const rel of this.findAllMatches(get.pattern)) {
+            get.foundRelation(rel);
+            if (get.done)
+                break;
+        }
+
+        get.finishSearch();
     }
 
     save(command: Command) {

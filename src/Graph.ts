@@ -16,7 +16,7 @@ import InMemoryStorage from './InMemoryStorage'
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
 
-interface MountedStorage {
+interface StorageMount {
     pattern: RelationPattern
     storage: StorageProvider
 }
@@ -26,13 +26,12 @@ export default class Graph {
     inMemory = new InMemoryStorage()
     listeners: GraphListener[] = []
     schema = new Schema()
-    mountedStorage: MountedStorage[] = []
+    mountedStorage: StorageMount[] = []
 
     installStorage(patternStr: string, storage: StorageProvider) {
         const pattern = commandToRelationPattern(patternStr);
         this.mountedStorage.push({ pattern, storage });
     }
-
 
     dump(command: Command, respond: RespondFunc) {
         respond('#start');
@@ -62,11 +61,11 @@ export default class Graph {
         respond('#start');
 
         if (command.flags.get) {
-            const get = new GetOperation(this, command);
-
-            for (const s of get.formattedResults()) {
-                respond('set ' + s);
-            }
+            const get = new GetOperation(this, command, respond);
+            get.formatter.skipStartAndDone = true;
+            get.formatter.asMultiResults = true;
+            get.formatter.asSetCommands = true;
+            get.perform();
         }
 
         const listener = new GraphListener(this, command);
@@ -86,8 +85,8 @@ export default class Graph {
             }
 
             case 'get': {
-                const get = new GetOperation(this, command);
-                get.perform(respond);
+                const get = new GetOperation(this, command, respond);
+                get.perform();
                 return;
             }
 

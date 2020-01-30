@@ -150,10 +150,6 @@ export default class RelationPattern {
         return tags[0];
     }
 
-    patternWithoutType(typeName: string) {
-        return new RelationPattern(this.tags.filter(tag => tag.tagType !== typeName));
-    }
-
     stringify() {
         return commandArgsToString(this.tags);
     }

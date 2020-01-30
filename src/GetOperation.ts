@@ -6,61 +6,214 @@ import TagType from './TagType'
 import Relation from './Relation'
 import { normalizeExactTag, commandTagToString, commandArgsToString } from './parseCommand'
 import RelationPattern from './RelationPattern'
-import findAllMatches from './findAllMatches'
+import StorageProvider from './StorageProvider'
 
-export default class GetOperation {
-    graph: Graph;
+class ResponseFormatter {
+    extendedResult: boolean
+    asMultiResults: boolean
+    respond: RespondFunc
+    pattern: RelationPattern
     schema: Schema
-    command: Command;
-    pattern: RelationPattern;
+    asSetCommands?: boolean
+    skipStartAndDone?: boolean
 
-    constructor(graph: Graph, command: Command) {
-        this.graph = graph;
-        this.schema = graph.schema;
-        this.command = command;
-        this.pattern = command.toPattern();
+    anyResults: boolean = false
+
+    start() {
+        if (this.asMultiResults && !this.skipStartAndDone)
+            this.respond('#start');
     }
 
-    extendedResult() {
-        return this.command.flags.x;
+    formatRelation(rel: Relation) {
+        let str = this.pattern.formatRelationRelative(rel);
+        if (this.asSetCommands)
+            str = 'set ' + str;
+        return str;
     }
 
-    *formattedResults() {
-        for (const rel of findAllMatches(this.graph, this.pattern)) {
-            yield this.pattern.formatRelationRelative(rel);
-        }
-    }
+    respondRelation(rel: Relation) {
 
-    perform(respond: RespondFunc) {
-        const expectMultiResults = this.pattern.isMultiMatch();
+        const { respond, pattern, extendedResult, asMultiResults } = this;
 
-        if (expectMultiResults)
-            respond('#start');
+        this.anyResults = true;
 
-        let foundAny = false;
-
-        for (const rel of findAllMatches(this.graph, this.pattern)) {
-            foundAny = true;
-
-            if (expectMultiResults) {
-                respond(this.pattern.formatRelationRelative(rel));
+        if (asMultiResults) {
+            respond(this.formatRelation(rel));
+        } else {
+            if (extendedResult) {
+                respond(this.schema.stringifyRelation(rel));
             } else {
-                if (this.extendedResult()) {
-                    respond(this.schema.stringifyRelation(rel));
+                if (rel.payloadStr) {
+                    respond(rel.payloadStr);
                 } else {
-                    if (rel.payloadStr) {
-                        respond(rel.payloadStr);
-                    } else {
-                        respond('#exists');
-                    }
+                    respond('#exists');
                 }
             }
         }
+    }
 
-        if (expectMultiResults)
-            respond('#done');
+    finish() {
+        if (!this.skipStartAndDone) {
+            if (this.asMultiResults)
+                this.respond('#done');
 
-        if (!expectMultiResults && !foundAny)
-            respond('#null');
+            if (!this.asMultiResults && !this.anyResults)
+                this.respond('#null');
+        }
+    }
+}
+
+interface Step {
+    storage: StorageProvider
+    pattern: RelationPattern
+}
+
+/**
+ * For the list 'items', iterate across every possible way to omit each item.
+ * Start by omitting them one at a time, then omit any two, etc.
+ *
+ * There's a few tweaks (compared to a plain powerSet)
+ *  - We skip over the [].
+ *  - We start by omitting the last items first.
+ *
+ * This is used to implement 'inherit' tags. We first search for relations
+ * with the inherit tag included, then we repeat the search with that tag
+ * omitted.
+ */
+export function* powerSet(keys: any[]) {
+
+    let max = 1 << keys.length;
+
+    for (let nth = 1; nth < max; nth++) {
+        let bits = nth;
+
+        const resultSet = {};
+
+        for (let keyIndex = keys.length - 1; keyIndex >= 0; keyIndex--) {
+            if (bits & 1)
+                resultSet[keys[keyIndex]] = true;
+
+            bits >>>= 1;
+        }
+
+        yield resultSet;
+    }
+}
+
+function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> {
+    yield {
+        storage: graph.inMemory,
+        pattern
+    };
+
+    // Handle inherit tags
+    const inheritTagIndexes: number[] = []
+    for (let i = 0; i < pattern.tags.length; i++) {
+        const tag = pattern.tags[i];
+        const tagInfo = graph.schema.findTagType(tag.tagType);
+        if (tagInfo.inherits) {
+            inheritTagIndexes.push(i);
+        }
+    }
+
+    if (inheritTagIndexes.length === 0)
+        return;
+
+    for (const skipIndexSet of powerSet(inheritTagIndexes)) {
+        const subTags = [];
+        for (let i = 0; i < pattern.tags.length; i++) {
+            if (!skipIndexSet[i])
+                subTags.push(pattern.tags[i]);
+        }
+
+        const subPattern = new RelationPattern(subTags);
+
+        yield {
+            storage: graph.inMemory,
+            pattern: subPattern
+        }
+    }
+}
+
+export default class GetOperation {
+    graph: Graph;
+    command: Command;
+    pattern: RelationPattern;
+    formatter: ResponseFormatter;
+    expectOne: boolean
+
+    steps: Step[]
+    currentStep: number = 0
+
+    done: boolean
+    onDone?: () => void
+
+    constructor(graph: Graph, command: Command, respond: RespondFunc) {
+        this.graph = graph;
+        this.command = command;
+        this.pattern = command.toPattern();
+
+        this.formatter = new ResponseFormatter();
+        this.formatter.extendedResult = this.command.flags.x;
+        this.formatter.asMultiResults = this.pattern.isMultiMatch();
+        this.formatter.respond = respond;
+        this.formatter.pattern = this.pattern;
+        this.formatter.schema = graph.schema;
+
+        this.steps = Array.from(steps(graph, this.pattern));
+
+        this.expectOne = !this.pattern.isMultiMatch();
+    }
+
+    /*
+    *formattedResults() {
+        for (const rel of this.findAllMatches(this.graph, this.pattern)) {
+            yield this.pattern.formatRelationRelative(rel);
+        }
+    }
+    */
+
+    foundRelation(rel: Relation) {
+        if (this.done)
+            return;
+        
+        this.formatter.respondRelation(rel);
+
+        if (this.expectOne) {
+            this.finish();
+            return;
+        }
+    }
+
+    finishSearch() {
+        if (this.done)
+            return;
+
+        this.currentStep += 1;
+        this.startNextStep();
+    }
+
+    startNextStep() {
+        if (this.currentStep >= this.steps.length) {
+            this.finish();
+            return;
+        }
+
+        const step = this.steps[this.currentStep];
+        this.pattern = step.pattern;
+        step.storage.runSearch(this);
+    }
+
+    perform() {
+        this.formatter.start();
+        this.startNextStep();
+    }
+
+    finish() {
+        if (this.done)
+            return;
+
+        this.formatter.finish();
+        this.done = true;
     }
 }
