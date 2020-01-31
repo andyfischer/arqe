@@ -5,7 +5,7 @@ import Command from './Command'
 import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'
 import Relation, { RelationTag } from './Relation'
-import { normalizeExactTag } from './parseCommand'
+import { normalizeExactTag } from './stringifyQuery'
 
 import Util from 'util'
 import Fs from 'fs'

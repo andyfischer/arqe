@@ -2,7 +2,7 @@
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
-import { normalizeExactTag } from './parseCommand'
+import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
 import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'

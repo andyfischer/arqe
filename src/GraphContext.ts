@@ -1,7 +1,8 @@
 
 import Graph, { RespondFunc } from './Graph'
 import Command, { CommandTag } from './Command'
-import parseCommand, { parsedCommandToString } from './parseCommand'
+import parseCommand from './parseCommand'
+import { parsedCommandToString } from './stringifyQuery'
 
 function containsTagType(tags: CommandTag[], tagType: string) {
     for (const tag of tags)

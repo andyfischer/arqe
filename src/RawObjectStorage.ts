@@ -2,7 +2,7 @@
 import Relation, { commandTagsToRelation } from './Relation'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
-import { commandTagsToString } from './parseCommand'
+import { commandTagsToString } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
 import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'

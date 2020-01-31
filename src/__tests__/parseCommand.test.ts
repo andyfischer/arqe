@@ -1,5 +1,5 @@
 
-import parseCommand, { parsedCommandToString, appendTagInCommand } from '../parseCommand'
+import parseCommand from '../parseCommand'
 
 it('parses tags with no values', () => {
     const parsed = parseCommand('test a');
@@ -28,6 +28,14 @@ it('parses multiple tags', () => {
     expect(parsed.tags[0].tagType).toEqual('a')
     expect(parsed.tags[1].tagType).toEqual('b')
     expect(parsed.tags[2].tagType).toEqual('c')
+});
+
+it('parses tag types with dashes', () => {
+    const parsed = parseCommand('test tag-type');
+    expect(parsed.tags[0].tagType).toEqual('tag-type');
+    const parsed2 = parseCommand('test tag-type/123');
+    expect(parsed2.tags[0].tagType).toEqual('tag-type');
+    expect(parsed2.tags[0].tagValue).toEqual('123');
 });
 
 it('parses tags with stars', () => {
@@ -110,21 +118,4 @@ it('parses multicharacter flag', () => {
     expect(parsed.command).toEqual('test')
     expect(parsed.flags.abc).toEqual(true);
     expect(parsed.tags[0].tagType).toEqual('1');
-});
-
-describe("parsedCommandToString", () => {
-    it("works", () => {
-        const parsed = parseCommand('get x y');
-        expect(parsedCommandToString(parsed)).toEqual('get x y');
-    });
-
-    it("handles payloads", () => {
-        const parsed = parseCommand('set x y == 123');
-        expect(parsedCommandToString(parsed)).toEqual('set x y == 123');
-    });
-});
-
-describe("appendTagInCommand", () => {
-    expect(appendTagInCommand('get x y', 'extra')).toEqual('get x y extra');
-    expect(appendTagInCommand('set x y == 1', 'extra')).toEqual('set x y extra == 1');
 });

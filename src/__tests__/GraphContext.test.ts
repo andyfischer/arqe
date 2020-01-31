@@ -1,7 +1,8 @@
 
 import Graph from '../Graph'
 import GraphContext from '../GraphContext'
-import parseCommand, { parsedCommandToString } from '../parseCommand'
+import parseCommand from '../parseCommand'
+import { parsedCommandToString } from '../stringifyQuery'
 
 let graph;
 let context;

@@ -1,7 +1,7 @@
 
  X Finish migration to grind-test
- - Mount a plain object in the graph
- - Start developing an easy API for declaring custom mounts
+ X Mount a plain object in the graph
+ X Start developing an easy API for declaring custom mounts
  - Proof of concept for derived data using custom mounts
 
 ---

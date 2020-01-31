@@ -2,7 +2,7 @@
 import Command from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
-import { normalizeExactTag } from './parseCommand'
+import { normalizeExactTag } from './stringifyQuery'
 
 export default class SetOperation {
     replyWithEcho = false

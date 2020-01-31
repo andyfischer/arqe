@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
 import { CommandTag } from './Command'
-import { normalizeExactTag } from './parseCommand'
+import { normalizeExactTag } from './stringifyQuery'
 import Schema from './Schema'
 
 export interface RelationTag {

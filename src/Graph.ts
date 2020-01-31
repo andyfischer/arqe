@@ -11,6 +11,7 @@ import collectRespond from './collectRespond'
 import Schema from './Schema'
 import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
+import FilesystemMounts from './FilesystemMounts'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -26,6 +27,11 @@ export default class Graph {
     listeners: GraphListener[] = []
     schema = new Schema()
     mountedStorage: StorageMount[] = []
+    filesystemMounts: FilesystemMounts
+
+    constructor() {
+        this.filesystemMounts = new FilesystemMounts(this)
+    }
 
     installStorage(patternStr: string, storage: StorageProvider) {
         const pattern = commandToRelationPattern(patternStr);

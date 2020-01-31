@@ -3,7 +3,9 @@ import Command, { CommandTag } from './Command'
 import Relation from './Relation'
 import Graph from './Graph'
 import Schema from './Schema'
-import parseCommand, { normalizeExactTag, commandTagToString, commandTagsToString } from './parseCommand'
+import parseCommand from './parseCommand'
+import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
+
 
 export interface FixedTag {
     tagType: string
