@@ -16,7 +16,7 @@ const writeFile = Util.promisify(Fs.writeFile);
 
 export default class PlainFileStorage implements StorageProvider {
     filenameType: 'filename'
-    directoryMount: string
+    directory: string
 
     async runSearch(get: GetOperation) {
         const { pattern } = get;
@@ -24,7 +24,7 @@ export default class PlainFileStorage implements StorageProvider {
 
         if (tag.starValue) {
             // Directory listing
-            const files = await readDir(this.directoryMount);
+            const files = await readDir(this.directory);
             for (const filename of files) {
                 const tags: RelationTag[] = pattern.fixedTags.concat([{
                     tagType: this.filenameType,

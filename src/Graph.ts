@@ -33,6 +33,12 @@ export default class Graph {
         this.filesystemMounts = new FilesystemMounts(this)
     }
 
+    *iterateMounts() {
+        if (this.filesystemMounts) {
+            yield* this.filesystemMounts.iterateMounts();
+        }
+    }
+
     installStorage(patternStr: string, storage: StorageProvider) {
         const pattern = commandToRelationPattern(patternStr);
         this.mountedStorage.push({ pattern, storage });

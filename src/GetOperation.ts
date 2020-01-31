@@ -130,6 +130,15 @@ export function* powerSet(keys: any[]) {
 }
 
 function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> {
+
+    // look for custom mounts
+    for (const mount of graph.iterateMounts()) {
+        if (mount.pattern.isSupersetOf(pattern)) {
+            yield mount;
+            return;
+        }
+    }
+
     yield {
         storage: graph.inMemory,
         pattern
