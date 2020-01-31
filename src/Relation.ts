@@ -21,8 +21,8 @@ export default class Relation {
     tags: RelationTag[]
     tagsForType: { [typeName: string]: RelationTag[] } = {}
 
-    constructor(ntag: string, tags: RelationTag[], payloadStr: string | null) {
-        this.ntag = ntag;
+    constructor(ntag: string | null, tags: RelationTag[], payloadStr: string | null) {
+        this.ntag = ntag || normalizeExactTag(tags);
 
         if (typeof payloadStr !== 'string' && payloadStr !== null)
             throw new Error('invalid value for payloadStr: ' + payloadStr)
@@ -121,12 +121,10 @@ export default class Relation {
 }
 
 export function commandTagsToRelation(tags: CommandTag[], payload: string): Relation {
-    const ntag = normalizeExactTag(tags);
-
     const relationTags = tags.map(t => ({
         tagType: t.tagType,
         tagValue: t.tagValue
     }));
 
-    return new Relation(ntag, relationTags, payload);
+    return new Relation(null, relationTags, payload);
 }

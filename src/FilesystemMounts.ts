@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
 import StorageProvider from './StorageProvider'
-import { getIntoObject } from './GraphORM'
+import parseCommand from './parseCommand'
 
 export default class FilesystemMounts {
     graph: Graph
@@ -19,12 +19,18 @@ export default class FilesystemMounts {
 
         const mounts = this.graph.runSync("get filesystem-mount/*");
 
-
         for (const mount of mounts) {
             if (!mount.startsWith("filesystem-mount"))
                 throw new Error("internal error, expected filesystem-mount: " + mount);
 
-            const options = getIntoObject(this.graph, `get ${mount} option/*`);
+            const options = {};
+            /*
+            for (const res of this.graph.get(`get ${mount} option/*`)) {
+                const command = parseCommand(res);
+
+                options[command.get
+            }
+            */
 
             console.log(`mount ${mount} has options: ${options}`)
         }

@@ -56,7 +56,11 @@ class ResponseFormatter {
         this.anyResults = true;
 
         if (asMultiResults) {
-            respond(this.formatRelation(rel));
+            if (extendedResult) {
+                respond(this.schema.stringifyRelation(rel));
+            } else {
+                respond(this.formatRelation(rel));
+            }
         } else {
             if (extendedResult) {
                 respond(this.schema.stringifyRelation(rel));

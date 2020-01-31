@@ -38,12 +38,6 @@ export default class InMemoryStorage implements StorageProvider {
         const found = this.findExactMatch(pattern);
         if (found)
             return found;
-
-        if (pattern.hasInheritTags) {
-            for (const match of this.linearScan(pattern)) {
-                return match;
-            }
-        }
     }
 
     *findAllMatches(pattern: RelationPattern) {

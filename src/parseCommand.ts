@@ -1,5 +1,6 @@
 
 import Command, { CommandTag } from './Command'
+import Relation, { RelationTag } from './Relation'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash } from './lexer'
@@ -15,6 +16,7 @@ function nextIsPayloadStart(it: TokenIterator) {
 interface InProgressQuery {
     tags: CommandTag[]
     flags: { [flag: string]: any }
+    payload: string | null
 }
 
 function parseOneTag(it: TokenIterator): CommandTag {
@@ -89,7 +91,7 @@ function parseArgs(it: TokenIterator, query: InProgressQuery) {
         it.skipSpaces();
 
         if (it.finished() || it.nextIs(t_newline) || nextIsPayloadStart(it))
-            return;
+            break;
 
         if (it.nextIs(t_dash)) {
             parseFlag(it, query);
@@ -100,9 +102,11 @@ function parseArgs(it: TokenIterator, query: InProgressQuery) {
 
         query.tags.push(tag);
     }
+
+    parsePayload(it, query);
 }
 
-function parsePayload(it: TokenIterator): string | null {
+function parsePayload(it: TokenIterator, query: InProgressQuery): string | null {
     if (!nextIsPayloadStart(it)) {
         return null;
     }
@@ -115,7 +119,7 @@ function parsePayload(it: TokenIterator): string | null {
     while (!it.nextIs(t_newline) && !it.finished())
         str += it.consumeNextText();
 
-    return str;
+    return query.payload = str;
 }
 
 function parseQueryFromLexed(it: TokenIterator): Command {
@@ -129,16 +133,33 @@ function parseQueryFromLexed(it: TokenIterator): Command {
 
     const query: InProgressQuery = {
         tags: [],
-        flags: {}
+        flags: {},
+        payload: null
     }
 
     // Parse tag args
     parseArgs(it, query);
 
-    // Parse payload
-    const payload = parsePayload(it);
+    return new Command(command, query.tags, query.payload, query.flags);
+}
 
-    return new Command(command, query.tags, payload, query.flags);
+export function parseRelation(str: string): Relation {
+    const it = lexStringToIterator(str);
+
+    const query: InProgressQuery = {
+        tags: [],
+        flags: {},
+        payload: null
+    }
+
+    parseArgs(it, query);
+
+    if (Object.keys(query.flags).length !== 0) {
+        throw new Error("didn't expect any flags in parseRelation(): " + str)
+    }
+
+    return new Relation(null, query.tags as RelationTag[], query.payload);
+
 }
 
 export default function parseCommand(str: string): Command {

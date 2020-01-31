@@ -18,9 +18,7 @@ export default class RelationPattern {
     fixedTags: FixedTag[] = []
     fixedTagsForType: { [typename:string]: true } = {}
     tagsForType: { [typename: string]: CommandTag[] } = {}
-    hasInheritTags: boolean = false
     tagCount: number
-    error?: string
     hasDoubleStar?: boolean
     ntag?: string
 
