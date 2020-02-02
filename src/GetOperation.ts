@@ -6,6 +6,7 @@ import TagType from './TagType'
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import StorageProvider from './StorageProvider'
+import { commandTagToString } from './stringifyQuery'
 
 class ResponseFormatter {
     // Context
@@ -18,6 +19,7 @@ class ResponseFormatter {
     asMultiResults?: boolean
     asSetCommands?: boolean
     skipStartAndDone?: boolean
+    listOnly?: boolean
 
     // Progress
     anyResults: boolean = false
@@ -37,9 +39,24 @@ class ResponseFormatter {
     }
 
     formatRelation(rel: Relation) {
-        let str = this.pattern.formatRelationRelative(rel);
+        const outTags = [];
+
+        for (const tag of rel.eachTag()) {
+            if (this.pattern.fixedTagsForType[tag.tagType])
+                continue;
+
+            outTags.push(commandTagToString(tag));
+        }
+
+        let str = outTags.join(' ');
+        
+        if (!this.listOnly) {
+            str += (rel.hasPayload() ? ` == ${rel.payload()}` : '');
+        }
+
         if (this.asSetCommands)
             str = 'set ' + str;
+
         return str;
     }
 
@@ -134,7 +151,10 @@ function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> 
     // look for custom mounts
     for (const mount of graph.iterateMounts()) {
         if (mount.pattern.isSupersetOf(pattern)) {
-            yield mount;
+            yield {
+                storage: mount.storage,
+                pattern
+            }
             return;
         }
     }
@@ -193,6 +213,7 @@ export default class GetOperation {
 
         this.formatter = new ResponseFormatter();
         this.formatter.extendedResult = this.command.flags.x;
+        this.formatter.listOnly = this.command.flags.list;
         this.formatter.asMultiResults = this.pattern.isMultiMatch();
         this.formatter.respond = respond;
         this.formatter.pattern = this.pattern;

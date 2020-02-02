@@ -9,6 +9,7 @@ import { normalizeExactTag } from './stringifyQuery'
 
 import Util from 'util'
 import Fs from 'fs'
+import Path from 'path'
 
 const readFile = Util.promisify(Fs.readFile);
 const readDir = Util.promisify(Fs.readdir);
@@ -39,7 +40,8 @@ export default class PlainFileStorage implements StorageProvider {
         } else {
             // File contents
             const filename = tag.tagValue;
-            const contents = await readFile(filename, 'utf8');
+            const fullFilename = Path.join(this.directory, filename);
+            const contents = await readFile(fullFilename, 'utf8');
 
             const ntag = normalizeExactTag(pattern.tags);
             const rel = new Relation(ntag, pattern.fixedTags, contents);
