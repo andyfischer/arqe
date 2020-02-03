@@ -43,11 +43,10 @@ export default class FilesystemMounts {
                 options[rel.getTagValue("option") as string] = rel.payload();
             }
 
-            if (!options.filenameType)
-                continue;
+            options.filenameType = options.filenameType || 'filename'
+
             if (!options.directory)
                 continue;
-
 
             const storage = new PlainFileStorage();
             storage.filenameType = options.filenameType;
@@ -59,8 +58,6 @@ export default class FilesystemMounts {
             }
 
             mounts[mountKey] = mount;
-
-            console.log('updated plain file mount: ' + mountKey);
         }
 
         return mounts;

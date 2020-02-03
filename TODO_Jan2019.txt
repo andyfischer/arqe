@@ -2,7 +2,7 @@
  X Finish migration to grind-test
  X Mount a plain object in the graph
  X Start developing an easy API for declaring custom mounts
- - Proof of concept for derived data using custom mounts
+ X Proof of concept for derived data using custom mounts
 
 ---
 
@@ -23,7 +23,7 @@
 
 Build Container
 
- - Filesystem mount
+ X Filesystem mount
  - Filesystem watch
  - Filesystem synchronize
 
@@ -33,4 +33,4 @@ Node modules analysis
 
  - Graph cloning
  - Dashboard uses a cloned graph
- - Set up the plugin system
+ X Set up the plugin system

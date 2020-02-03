@@ -34,8 +34,11 @@ export default class TestSuite {
                 testName += ` (${runner.chaosMode.shortDescription})`;
             }
 
+            const runFunc = runner.run;
+            runFunc['chaosMode'] = runner.chaosMode;
+
             it(testName, () => impl({
-                run: runner.run
+                run: runFunc
             }));
         }
     }

@@ -1,10 +1,11 @@
 
 import Graph from '../../Graph'
-import { ChaosMode } from './TestRunner'
+import ChaosMode from './ChaosMode'
 import parseCommand from '../../parseCommand'
 import { parsedCommandToString, appendTagInCommand } from '../../stringifyQuery'
 
 export const ReparseCommand: ChaosMode = {
+    name: 'reparseCommand',
     shortDescription: 'reparse command',
     modifyRunCommand(command: string) {
         const parsed = parseCommand(command);
@@ -14,6 +15,7 @@ export const ReparseCommand: ChaosMode = {
 }
 
 export const InsertExtraTag: ChaosMode = {
+    name: 'insertExtraTag',
     shortDescription: 'insert extra tag',
     modifyRunCommand(command: string) {
         return appendTagInCommand(command, 'extra');
@@ -21,6 +23,7 @@ export const InsertExtraTag: ChaosMode = {
 }
 
 export const GetInheritedBranch: ChaosMode = {
+    name: 'getInheritedBranch',
     shortDescription: 'get inherited branch',
     setupNewGraph(graph: Graph) {
         graph.run('set typeinfo/chaosbranch .inherits')

@@ -4,12 +4,7 @@ import collectRespond from '../../collectRespond'
 import verifyRespondProtocol from '../../verifyRespondProtocol'
 import Graph, { RunFunc } from '../../Graph'
 import { connectToServer } from '../../socket/CommandConnection'
-
-export interface ChaosMode {
-    shortDescription: string
-    setupNewGraph?: (graph: Graph) => void
-    modifyRunCommand?: (command: string) => string
-}
+import ChaosMode from './ChaosMode'
 
 interface RunOptions {
     allowError?: true

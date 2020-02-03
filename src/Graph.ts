@@ -26,7 +26,6 @@ export default class Graph {
     inMemory = new InMemoryStorage()
     listeners: GraphListener[] = []
     schema = new Schema()
-    mountedStorage: StorageMount[] = []
     filesystemMounts: FilesystemMounts
 
     constructor() {
@@ -37,11 +36,6 @@ export default class Graph {
         if (this.filesystemMounts) {
             yield* this.filesystemMounts.iterateMounts();
         }
-    }
-
-    installStorage(patternStr: string, storage: StorageProvider) {
-        const pattern = commandToRelationPattern(patternStr);
-        this.mountedStorage.push({ pattern, storage });
     }
 
     dump(command: Command, respond: RespondFunc) {
