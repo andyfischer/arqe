@@ -13,6 +13,7 @@ import Schema from './Schema'
 import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
 import FilesystemMounts from './FilesystemMounts'
+import SavedQuery from './SavedQuery'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -26,11 +27,18 @@ export default class Graph {
 
     inMemory = new InMemoryStorage()
     listeners: GraphListener[] = []
+    savedQueries: SavedQuery[] = []
     schema = new Schema()
     filesystemMounts: FilesystemMounts
 
     constructor() {
         this.filesystemMounts = new FilesystemMounts(this)
+    }
+
+    newSavedQuery(queryStr: string): SavedQuery {
+        const query = new SavedQuery(this, this.savedQueries.length, queryStr);
+        this.savedQueries.push(query);
+        return query;
     }
 
     *iterateMounts() {
@@ -127,11 +135,19 @@ export default class Graph {
         this.schema.onRelationUpdated(command, rel);
         for (const listener of this.listeners)
             listener.onRelationUpdated(rel);
+
+        for (const savedQuery of this.savedQueries) {
+            if (savedQuery.pattern.matches(rel))
+                savedQuery.changeToken += 1;
+        }
     }
 
     onRelationDeleted(rel: Relation) {
         for (const listener of this.listeners)
             listener.onRelationDeleted(rel);
+
+        for (const savedQuery of this.savedQueries) {
+        }
     }
 
     run(commandStr: string, respond?: RespondFunc) {

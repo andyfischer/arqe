@@ -80,6 +80,17 @@ export default class Relation {
         return this.tags.length;
     }
 
+    getTag(typeName: string): string | null {
+        const found = this.tagsForType[typeName];
+        if (!found)
+            throw new Error("type not found: " + typeName);
+
+        if (!found[0].tagValue)
+            return typeName;
+
+        return typeName + '/' + found[0].tagValue;
+    }
+
     getTagValue(typeName: string): string | true | null {
         const found = this.tagsForType[typeName];
         if (!found)

@@ -99,24 +99,22 @@ function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> 
     }
 }
 
-/*
-// Look for branch tags in the get pattern
-//   If any found
-//     Get results stored in that branch
-//     Modify search pattern to remove branch tag
-//
-// Look for custom storage
-//   If any found
-//     Get results from custom storage and then stop
-// 
-// Finally
-//   Get results from in-memory storage
-//
-// Need to make GetOperation take a pluggable formatter so that in-memory can receive
-// results as just Relation objects.
-*/
-
 function step1(get: GetOperation) {
+    // Fetch the list of inherit tags
+    // Check get.pattern to see if any inherit tags cover it
+    // For any found
+    //   Get results stored in that branch (use inMemory storage)
+    //   Modify search pattern to remove branch tag
+    // 
+    // Look for custom storage
+    //   If any found
+    //     Get results from custom storage and then stop
+    // 
+    // Finally
+    //   Get results from in-memory storage
+    //
+    // Need to make GetOperation take a pluggable formatter so that in-memory can receive
+    // results as just Relation objects.
 }
 
 export default class GetOperation {
