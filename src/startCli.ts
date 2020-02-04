@@ -24,9 +24,9 @@ export default async function main() {
     if (cliArgs._.length > 0) {
         const command = cliArgs._.join(' ');
 
-        const response = await commandConnection.runGetFullResponse(command);
-        console.log(response);
-        return;
+        //const response = await commandConnection.runGetFullResponse(command);
+        //console.log(response);
+        //return;
     }
 
     const repl = new ClientRepl(commandConnection);

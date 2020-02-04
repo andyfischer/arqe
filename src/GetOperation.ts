@@ -93,6 +93,23 @@ function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> 
     }
 }
 
+/*
+// Look for branch tags in the get pattern
+//   If any found
+//     Get results stored in that branch
+//     Modify search pattern to remove branch tag
+//
+// Look for custom storage
+//   If any found
+//     Get results from custom storage and then stop
+// 
+// Finally
+//   Get results from in-memory storage
+*/
+
+function step1(get: GetOperation) {
+}
+
 export default class GetOperation {
     graph: Graph;
     command: Command;

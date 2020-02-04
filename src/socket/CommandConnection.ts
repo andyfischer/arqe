@@ -3,7 +3,6 @@ import WebSocket from 'ws'
 import EventEmitter from 'events'
 import { RespondFunc } from '../Graph'
 
-
 interface Listener {
     respond: (msg: string) => void
     streaming?: boolean

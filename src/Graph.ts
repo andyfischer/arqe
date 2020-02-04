@@ -6,6 +6,7 @@ import Relation from './Relation'
 import SetOperation from './SetOperation'
 import GetOperation from './GetOperation'
 import GraphListener from './GraphListener'
+import GraphListenerToCallback from './GraphListenerToCallback'
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
@@ -73,9 +74,8 @@ export default class Graph {
             get.perform();
         }
 
-        const listener = new GraphListener(this, command);
+        const listener = new GraphListenerToCallback(this, command, respond);
         this.listeners.push(listener);
-        listener.addCallback(respond);
     }
 
     handleCommand(command: Command, respond: RespondFunc) {
