@@ -12,3 +12,4 @@ Query
 
 Refactor
  - Branches should work differently
+ - Dynamic lookup steps

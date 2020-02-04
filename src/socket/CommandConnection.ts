@@ -3,7 +3,6 @@ import WebSocket from 'ws'
 import EventEmitter from 'events'
 import { RespondFunc } from '../Graph'
 
-import ResponseAccumulator from '../ResponseAccumulator'
 
 interface Listener {
     respond: (msg: string) => void
@@ -86,12 +85,6 @@ export default class CommandConnection {
         this.reqListeners[reqid] = {
             respond
         }
-    }
-
-    async runGetFullResponse(command: string): Promise<string | string[]> {
-        const accumulator = new ResponseAccumulator();
-        this.run(command, accumulator.receiveCallback());
-        return await accumulator.waitUntilDone()
     }
 }
 
