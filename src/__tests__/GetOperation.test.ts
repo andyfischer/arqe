@@ -25,7 +25,8 @@ it("correctly looks down for inherit tags", () => {
         get.finishSearch();
     }
 
-    const get = new GetOperation(graph, parseCommand("get a b branch/1 branch/2"), (s) => null);
+    const get = new GetOperation(graph, parseCommand("get a b branch/1 branch/2"));
+    get.outputToStringRespond(s => null);
     get.perform();
 
     expect(get.done).toEqual(true);

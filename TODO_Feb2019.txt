@@ -1,15 +1,11 @@
-
-Web UI
- - More work on web UI
- - Watch an arbitrary query
- - Browse the graph
-
 Test
  X Add tests on the filesystem mounts
 
-Query
- - Add a way to 'browse' to see what relations exist
-
 Refactor
  - Branches should work differently
- - Dynamic lookup steps
+   - New dynamic pipeline
+     - ListenCache
+
+Web UI
+ - List all relations matching a query
+

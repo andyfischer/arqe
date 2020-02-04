@@ -14,6 +14,12 @@ interface Step {
     pattern: RelationPattern
 }
 
+export interface GetOperationOutput {
+    start: () => void
+    relation: (rel: Relation) => void
+    finish: () => void
+}
+
 /**
  * For the list 'items', iterate across every possible way to omit each item.
  * Start by omitting them one at a time, then omit any two, etc.
@@ -105,6 +111,9 @@ function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> 
 // 
 // Finally
 //   Get results from in-memory storage
+//
+// Need to make GetOperation take a pluggable formatter so that in-memory can receive
+// results as just Relation objects.
 */
 
 function step1(get: GetOperation) {
@@ -114,7 +123,6 @@ export default class GetOperation {
     graph: Graph;
     command: Command;
     pattern: RelationPattern;
-    formatter: GetResponseFormatter;
     expectOne: boolean
 
     steps: Step[]
@@ -123,29 +131,41 @@ export default class GetOperation {
     done: boolean
     onDone?: () => void
 
-    constructor(graph: Graph, command: Command, respond: RespondFunc) {
+    output: GetOperationOutput;
+
+    constructor(graph: Graph, command: Command) {
         this.graph = graph;
         this.command = command;
         this.pattern = command.toPattern();
-
-        this.formatter = new GetResponseFormatter();
-        this.formatter.extendedResult = this.command.flags.x;
-        this.formatter.listOnly = this.command.flags.list;
-        this.formatter.asMultiResults = this.pattern.isMultiMatch();
-        this.formatter.respond = respond;
-        this.formatter.pattern = this.pattern;
-        this.formatter.schema = graph.schema;
 
         this.steps = Array.from(steps(graph, this.pattern));
 
         this.expectOne = !this.pattern.isMultiMatch();
     }
 
+    outputToStringRespond(respond: RespondFunc, config?: (formatter: GetResponseFormatter) => void) {
+        if (this.output)
+            throw new Error("already have a configured output");
+
+        const formatter = new GetResponseFormatter(); 
+        formatter.extendedResult = this.command.flags.x;
+        formatter.listOnly = this.command.flags.list;
+        formatter.asMultiResults = this.pattern.isMultiMatch();
+        formatter.respond = respond;
+        formatter.pattern = this.pattern;
+        formatter.schema = this.graph.schema;
+
+        if (config)
+            config(formatter);
+
+        this.output = formatter;
+    }
+
     foundRelation(rel: Relation) {
         if (this.done)
             return;
         
-        this.formatter.respondRelation(rel);
+        this.output.relation(rel);
 
         if (this.expectOne) {
             this.finish();
@@ -173,7 +193,10 @@ export default class GetOperation {
     }
 
     perform() {
-        this.formatter.start();
+        if (!this.output)
+            throw new Error("no output was configured");
+
+        this.output.start();
         this.startNextStep();
     }
 
@@ -181,7 +204,7 @@ export default class GetOperation {
         if (this.done)
             return;
 
-        this.formatter.finish();
+        this.output.finish();
         this.done = true;
     }
 }

@@ -7,8 +7,9 @@ import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
+import { GetOperationOutput }  from './GetOperation'
 
-export default class GetResponseFormatter {
+export default class GetResponseFormatter implements GetOperationOutput {
     // Context
     schema: Schema
     pattern: RelationPattern
@@ -60,13 +61,13 @@ export default class GetResponseFormatter {
         return str;
     }
 
-    respondRelation(rel: Relation) {
+    relation(rel: Relation) {
 
         if (!this.hasStarted)
-            throw new Error("ResponseFormatter protocol error: .respondRelation called before .start()");
+            throw new Error("ResponseFormatter protocol error: .relation called before .start()");
 
         if (this.hasFinished)
-            throw new Error("ResponseFormatter protocol error: .respondRelation called after .finish()");
+            throw new Error("ResponseFormatter protocol error: .relation called after .finish()");
 
         const { respond, pattern, extendedResult, asMultiResults } = this;
 

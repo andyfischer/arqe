@@ -67,10 +67,13 @@ export default class Graph {
         respond('#start');
 
         if (command.flags.get) {
-            const get = new GetOperation(this, command, respond);
-            get.formatter.skipStartAndDone = true;
-            get.formatter.asMultiResults = true;
-            get.formatter.asSetCommands = true;
+            const get = new GetOperation(this, command);
+            get.outputToStringRespond(respond, formatter => {
+                formatter.skipStartAndDone = true;
+                formatter.asMultiResults = true;
+                formatter.asSetCommands = true;
+            });
+
             get.perform();
         }
 
@@ -90,7 +93,8 @@ export default class Graph {
             }
 
             case 'get': {
-                const get = new GetOperation(this, command, respond);
+                const get = new GetOperation(this, command);
+                get.outputToStringRespond(respond);
                 get.perform();
                 return;
             }
