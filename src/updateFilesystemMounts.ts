@@ -14,7 +14,7 @@ export default function updateFilesystemMounts(cxt: UpdateContext): StorageMount
 
         const mountKey = mount.getTag("filesystem-mount");
         
-        for (const option of cxt.getRelations(`get ${mountKey} option/*`)) {
+        for (const option of cxt.getRelations(`${mountKey} option/*`)) {
             options[option.getTagValue("option") as string] = option.payload();
         }
 

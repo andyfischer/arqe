@@ -4,7 +4,7 @@ import SavedQuery from '../SavedQuery'
 
 it('bumps the changeToken value when there are changes', () => {
     const graph = new Graph();
-    const query = graph.newSavedQuery('get tag/*');
+    const query = graph.savedQuery('get tag/*');
     const token = query.changeToken;
 
     graph.run('set othertag/1');

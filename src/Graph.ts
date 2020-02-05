@@ -15,6 +15,9 @@ import InMemoryStorage from './InMemoryStorage'
 import FilesystemMounts from './FilesystemMounts'
 import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
+import EagerValue from './EagerValue'
+import updateFilesystemMounts from './updateFilesystemMounts'
+import { UpdateFn } from './UpdateContext'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -23,27 +26,46 @@ export default class Graph {
 
     inMemory = new InMemoryStorage()
     listeners: GraphListener[] = []
+
     savedQueries: SavedQuery[] = []
+    savedQueryMap: { [queryStr:string]: SavedQuery } = {}
+
     schema = new Schema()
     filesystemMounts: FilesystemMounts
+    filesystemMounts2: EagerValue<StorageMount[]>
+
+    nextEagerValueId: number = 1
 
     constructor() {
         this.filesystemMounts = new FilesystemMounts(this)
+        this.filesystemMounts2 = this.eagerValue<StorageMount[]>(updateFilesystemMounts);
     }
 
-    newSavedQuery(queryStr: string): SavedQuery {
+    savedQuery(queryStr: string): SavedQuery {
+        if (this.savedQueryMap[queryStr])
+            return this.savedQueryMap[queryStr];
+
         if (this.savedQueries.length == 100)
             console.log('warning: more than 100 saved queries');
 
         const query = new SavedQuery(this, this.savedQueries.length, queryStr);
         this.savedQueries.push(query);
+        this.savedQueryMap[queryStr] = query;
 
         return query;
     }
 
+    eagerValue<T>(updateFn: UpdateFn<T>): EagerValue<T> {
+        const ev = new EagerValue<T>(this, updateFn);
+        ev.runUpdate();
+        return ev;
+    }
+
     *iterateMounts() {
-        if (this.filesystemMounts) {
-            yield* this.filesystemMounts.iterateMounts();
+        if (this.filesystemMounts2) {
+            const mounts = this.filesystemMounts2.get();
+            for (const mount of mounts)
+                yield mount;
         }
     }
 
@@ -133,12 +155,15 @@ export default class Graph {
 
     onRelationUpdated(command: Command, rel: Relation) {
         this.schema.onRelationUpdated(command, rel);
+
         for (const listener of this.listeners)
             listener.onRelationUpdated(rel);
 
         for (const savedQuery of this.savedQueries) {
-            if (savedQuery.pattern.matches(rel))
+            if (savedQuery.pattern.matches(rel)) {
                 savedQuery.changeToken += 1;
+                savedQuery.updateConnectedValues();
+            }
         }
     }
 
@@ -147,8 +172,10 @@ export default class Graph {
             listener.onRelationDeleted(rel);
 
         for (const savedQuery of this.savedQueries) {
-            if (savedQuery.pattern.matches(rel))
+            if (savedQuery.pattern.matches(rel)) {
                 savedQuery.changeToken += 1;
+                savedQuery.updateConnectedValues();
+            }
         }
     }
 

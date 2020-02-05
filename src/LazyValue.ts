@@ -23,10 +23,7 @@ export default class LazyValue<T> {
         this.value = this.updateFn(context);
         this.hasValue = true;
 
-        this.watchedQueries = [];
-        for (const sawSearch of context.sawSearches) {
-            this.watchedQueries.push(new SavedQueryWatch(this.graph.newSavedQuery('get ' + sawSearch)));
-        }
+        this.watchedQueries = context.watchesForUsedSearches();
     }
 
     get(): T {
