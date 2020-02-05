@@ -17,7 +17,7 @@ export default class SetOperation {
         this.respond = respond;
     }
 
-    perform() {
+    run() {
 
         const { command, respond } = this;
 

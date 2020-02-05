@@ -135,13 +135,11 @@ export default class GetOperation {
         this.graph = graph;
         this.command = command;
         this.pattern = command.toPattern();
-
-        this.steps = Array.from(steps(graph, this.pattern));
-
         this.expectOne = !this.pattern.isMultiMatch();
+        this.steps = Array.from(steps(graph, this.pattern));
     }
 
-    outputToStringRespond(respond: RespondFunc, config?: (formatter: GetResponseFormatter) => void) {
+    outputToStringRespond(respond: RespondFunc, configFormat?: (formatter: GetResponseFormatter) => void) {
         if (this.output)
             throw new Error("already have a configured output");
 
@@ -153,10 +151,24 @@ export default class GetOperation {
         formatter.pattern = this.pattern;
         formatter.schema = this.graph.schema;
 
-        if (config)
-            config(formatter);
+        if (configFormat)
+            configFormat(formatter);
 
         this.output = formatter;
+    }
+
+    outputToRelationList(onDone: (rels: Relation[]) => void) {
+        if (this.output)
+            throw new Error("already have a configured output");
+
+        const list: Relation[] = [];
+        this.output = {
+            start() {},
+            relation(rel) { list.push(rel) },
+            finish() {
+                onDone(list);
+            }
+        }
     }
 
     foundRelation(rel: Relation) {
@@ -190,7 +202,7 @@ export default class GetOperation {
         step.storage.runSearch(this);
     }
 
-    perform() {
+    run() {
         if (!this.output)
             throw new Error("no output was configured");
 

@@ -14,14 +14,10 @@ import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
 import FilesystemMounts from './FilesystemMounts'
 import SavedQuery from './SavedQuery'
+import StorageMount from './StorageMount'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
-
-interface StorageMount {
-    pattern: RelationPattern
-    storage: StorageProvider
-}
 
 export default class Graph {
 
@@ -82,7 +78,7 @@ export default class Graph {
                 formatter.asSetCommands = true;
             });
 
-            get.perform();
+            get.run();
         }
 
         const listener = new GraphListenerToCallback(this, command, respond);
@@ -96,14 +92,14 @@ export default class Graph {
 
             case 'set': {
                 const set = new SetOperation(this, command, respond)
-                set.perform();
+                set.run();
                 return;
             }
 
             case 'get': {
                 const get = new GetOperation(this, command);
                 get.outputToStringRespond(respond);
-                get.perform();
+                get.run();
                 return;
             }
 
