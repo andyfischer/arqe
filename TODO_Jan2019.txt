@@ -31,6 +31,6 @@ Build Container
 
 Node modules analysis
 
- - Graph cloning
- - Dashboard uses a cloned graph
+ - Graph synchronization
+ - Dashboard uses a synced graph
  X Set up the plugin system

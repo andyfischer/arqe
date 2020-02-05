@@ -18,7 +18,7 @@ beforeEach(() => {
 
         let strs = rels.map(r => r.payload());
 
-        // Delete strings from ignorestring/* tags.
+        // Just to add complication, delete strings from ignorestring/* tags.
         for (const ignore of cxt.getRelations("ignorestring/*")) {
             strs = strs.filter(s => s !== ignore.payload());
         }

@@ -3,8 +3,8 @@ Test
 
 Refactor
  - Branches should work differently
-   - New dynamic pipeline
-     - ListenCache
+   X New dynamic pipeline
+     X ListenCache
 
 Web UI
  - List all relations matching a query
