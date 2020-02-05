@@ -1,0 +1,17 @@
+
+import Graph from '../Graph'
+import SavedQuery from '../SavedQuery'
+
+it('bumps the changeToken value when there are changes', () => {
+    const graph = new Graph();
+    const query = graph.newSavedQuery('get tag/*');
+    const token = query.changeToken;
+
+    graph.run('set othertag/1');
+
+    expect(query.changeToken).toEqual(token);
+
+    graph.run('set tag/1');
+
+    expect(query.changeToken).not.toEqual(token);
+});

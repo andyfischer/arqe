@@ -32,8 +32,12 @@ export default class Graph {
     }
 
     newSavedQuery(queryStr: string): SavedQuery {
+        if (this.savedQueries.length == 100)
+            console.log('warning: more than 100 saved queries');
+
         const query = new SavedQuery(this, this.savedQueries.length, queryStr);
         this.savedQueries.push(query);
+
         return query;
     }
 
@@ -143,6 +147,8 @@ export default class Graph {
             listener.onRelationDeleted(rel);
 
         for (const savedQuery of this.savedQueries) {
+            if (savedQuery.pattern.matches(rel))
+                savedQuery.changeToken += 1;
         }
     }
 

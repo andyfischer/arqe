@@ -10,10 +10,10 @@ export default class UpdateContext {
 
     graph: Graph
 
-    sawSearches: string[]
+    sawSearches: string[] = []
 
-    start() {
-        this.sawSearches = [];
+    constructor(graph: Graph) {
+        this.graph = graph;
     }
 
     getRelations(tags: string): Relation[] {
@@ -21,12 +21,13 @@ export default class UpdateContext {
 
         this.sawSearches.push(tags);
 
-        const parsedCommand = parseCommand(tags);
+        const parsedCommand = parseCommand(commandStr);
         const get = new GetOperation(this.graph, parsedCommand);
 
         let rels: Relation[] = null;
 
         get.outputToRelationList(l => { rels = l });
+        get.run();
 
         if (rels === null)
             throw new Error("get didn't finish synchronously: " + commandStr);
