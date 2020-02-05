@@ -12,7 +12,6 @@ import collectRespond from './collectRespond'
 import Schema from './Schema'
 import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
-import FilesystemMounts from './FilesystemMounts'
 import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
 import EagerValue from './EagerValue'
@@ -31,14 +30,12 @@ export default class Graph {
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
     schema = new Schema()
-    filesystemMounts: FilesystemMounts
-    filesystemMounts2: EagerValue<StorageMount[]>
+    filesystemMounts: EagerValue<StorageMount[]>
 
     nextEagerValueId: number = 1
 
     constructor() {
-        this.filesystemMounts = new FilesystemMounts(this)
-        this.filesystemMounts2 = this.eagerValue<StorageMount[]>(updateFilesystemMounts);
+        this.filesystemMounts = this.eagerValue<StorageMount[]>(updateFilesystemMounts);
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -62,8 +59,8 @@ export default class Graph {
     }
 
     *iterateMounts() {
-        if (this.filesystemMounts2) {
-            const mounts = this.filesystemMounts2.get();
+        if (this.filesystemMounts) {
+            const mounts = this.filesystemMounts.get();
             for (const mount of mounts)
                 yield mount;
         }
