@@ -1,15 +1,16 @@
 
 import Graph from '../Graph'
-import CachedValue from '../CachedValue'
+import LazyValue from '../LazyValue'
 
 let graph;
-let cachedValue: CachedValue<string>
+let cachedValue: LazyValue<string>
 let callCount = 0;
 
 beforeEach(() => {
     graph = new Graph();
     callCount = 0;
-    cachedValue = new CachedValue(graph, cxt => {
+    cachedValue = new LazyValue(graph, cxt => {
+
         // Concatenate a bunch of strings
         callCount += 1;
         const rels = cxt.getRelations("string/*");

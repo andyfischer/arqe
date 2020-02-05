@@ -4,7 +4,7 @@ import SavedQuery from './SavedQuery'
 import UpdateContext, { UpdateFn } from './UpdateContext'
 import SavedQueryWatch from './SavedQueryWatch'
 
-export default class CachedValue<T> {
+export default class LazyValue<T> {
     graph: Graph
     updateFn: UpdateFn<T>
 
