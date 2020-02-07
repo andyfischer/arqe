@@ -43,6 +43,47 @@ test('inherit works with double inherit tags', async ({run}) => {
 });
 
 test('inherit correctly prioritizes multiple inherits', async ({run}) => {
+    await run('set typeinfo/a-branch .inherits')
+    await run('set typeinfo/b-branch .inherits')
+    await run('set typeinfo/c-branch .inherits')
+
+    // Branch order is a, b, c
+    // After trying a+b+c, the next thing to try is a+b, then a.
+
+    await run('set a-branch b-branch == ab')
+    await run('set b-branch c-branch == bc')
+    await run('set a-branch c-branch == ac')
+
+    expect(await run('get a-branch b-branch c-branch')).toEqual('ab');
+
+    await run('set bottom a-branch == a bottom')
+    await run('set bottom b-branch == b bottom')
+    await run('set bottom c-branch == c bottom')
+
+    expect(await run('get bottom a-branch b-branch c-branch')).toEqual('a bottom');
+});
+
+test('inherit respects tag ordering', async ({run}) => {
+    await run('set typeinfo/a-branch-2 .inherits')
+    await run('set typeinfo/b-branch-2 .inherits')
+    await run('set typeinfo/c-branch-2 .inherits')
+    await run('set typeinfo/b-branch-2 .order == after')
+    await run('set typeinfo/c-branch-2 .order == before')
+    
+    // Branch order is c, a, b
+    // After trying a+b+c, the next thing to try is a+c, then c.
+
+    await run('set a-branch-2 b-branch-2 == ab')
+    await run('set b-branch-2 c-branch-2 == bc')
+    await run('set a-branch-2 c-branch-2 == ac')
+
+    expect(await run('get a-branch-2 b-branch-2 c-branch-2')).toEqual('ac');
+
+    await run('set bottom a-branch-2 == a bottom')
+    await run('set bottom b-branch-2 == b bottom')
+    await run('set bottom c-branch-2 == c bottom')
+
+    expect(await run('get bottom a-branch-2 b-branch-2 c-branch-2')).toEqual('c bottom');
 });
 
 test('inherit works with valueless tags', async ({run}) => {
