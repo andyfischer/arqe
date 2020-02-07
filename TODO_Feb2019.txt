@@ -7,8 +7,14 @@ Refactor
      X ListenCache
 
 Test
- - Add an order-scambling chaos mode
+ X Add an order-scambling chaos mode
+ - More tests on listening
 
+Internal
+ - Optimization configs
+ 
 Web UI
  - List all relations matching a query
 
+More
+ - Store in database backend?

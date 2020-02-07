@@ -1,8 +1,9 @@
 
 import Graph from '../Graph'
 import GraphContext from '../GraphContext'
-import parseCommand from '../parseCommand'
+import Command from '../Command'
 import { parsedCommandToString } from '../stringifyQuery'
+import collectRespond from '../collectRespond'
 
 let graph;
 let context;
@@ -10,9 +11,9 @@ let graphCalls: string[];
 
 async function runCommand(str: string): Promise<string> {
 
-    return new Promise((resolve, reject) => {
-        const command = parseCommand(str);
-        context.handleCommand(command, resolve);
+    return new Promise(resolve => {
+        const collector = collectRespond(resolve);
+        context.run(str, collector);
     });
 }
 
@@ -28,8 +29,9 @@ function preHook(object, funcName, callback) {
 beforeEach(() => {
     graph = new Graph();
 
-    preHook(graph, 'handleCommand', (command) => {
-        graphCalls.push(parsedCommandToString(command));
+    preHook(graph, 'runParsed', (command: Command) => {
+        const str = parsedCommandToString(command);
+        graphCalls.push(str);
     })
 
     context = new GraphContext(graph)
@@ -66,4 +68,9 @@ it("removes context from 'set' responses", async () => {
 it("doesn't echo set if it doesn't need to", async () => {
     let response: string = await runCommand('set a/1 b/2');
     expect(response).toEqual('#done');
+});
+
+describe('Graph.context', () => {
+    it('works', () => {
+    });
 });

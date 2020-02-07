@@ -78,7 +78,15 @@ export default class GraphContext {
         return msg;
     }
 
-    async handleCommand(command: Command, respond: RespondFunc) {
+    run(query: string, respond: RespondFunc) {
+        if (typeof query !== 'string')
+            throw new Error("expected string: " + query);
+
+        const parsed = parseCommand(query);
+        this.runParsed(parsed, respond);
+    }
+
+    runParsed(command: Command, respond: RespondFunc) {
 
         // Resolve any '?' tags that we know of.
         for (let i = 0; i < command.tags.length; i += 1) {
@@ -120,6 +128,6 @@ export default class GraphContext {
             respond(msg);
         }
 
-        await this.graph.handleCommand(command, wrappedRespond);
+        this.graph.runParsed(command, wrappedRespond);
     }
 }

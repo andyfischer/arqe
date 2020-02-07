@@ -19,9 +19,7 @@ class Connection extends EventEmitter {
     }
 
     async handleCommand(reqid: string, query: string) {
-        const parsedCommand = parseCommand(query);
-
-        await this.graphContext.handleCommand(parsedCommand, (msg) => {
+        this.graphContext.run(query, (msg) => {
             this.send(query, {reqid, msg});
         });
     }

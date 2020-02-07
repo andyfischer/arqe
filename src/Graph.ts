@@ -17,6 +17,7 @@ import { UpdateFn } from './UpdateContext'
 import updateFilesystemMounts from './updateFilesystemMounts'
 import updateInheritTags from './updateInheritTags'
 import TypeInfo from './TypeInfo'
+import GraphContext from './GraphContext'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -40,6 +41,12 @@ export default class Graph {
         this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
         this.inheritTags = this.eagerValue(updateInheritTags);
         this.eagerValue(this.schema.ordering.update);
+    }
+
+    context(query: string) {
+        const cxt = new GraphContext(this);
+        cxt.run('context ' + query, () => null);
+        return cxt;
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -120,7 +127,7 @@ export default class Graph {
         this.listeners.push(listener);
     }
 
-    handleCommand(command: Command, respond: RespondFunc) {
+    runParsed(command: Command, respond: RespondFunc) {
 
         try {
             switch (command.command) {
@@ -190,7 +197,7 @@ export default class Graph {
     run(commandStr: string, respond?: RespondFunc) {
         respond = respond || (() => null);
         const parsed = parseCommand(commandStr);
-        this.handleCommand(parsed, respond);
+        this.runParsed(parsed, respond);
     }
 
     runSync(commandStr: string) {
