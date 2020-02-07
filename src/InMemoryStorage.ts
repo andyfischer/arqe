@@ -4,8 +4,8 @@ import RelationPattern from './RelationPattern'
 import Command from './Command'
 import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
-import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'
+import RelationSearch from './RelationSearch'
 
 export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
@@ -52,14 +52,14 @@ export default class InMemoryStorage implements StorageProvider {
         }
     }
 
-    runSearch(get: GetOperation) {
-        for (const rel of this.findAllMatches(get.pattern)) {
-            get.foundRelation(rel);
-            if (get.done)
+    runSearch(search: RelationSearch) {
+        for (const rel of this.findAllMatches(search.pattern)) {
+            search.foundRelation(rel);
+            if (search.done)
                 break;
         }
 
-        get.finishSearch();
+        search.finishSearch();
     }
 
     runSave(set: SetOperation) {

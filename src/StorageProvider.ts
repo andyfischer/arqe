@@ -4,8 +4,9 @@ import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'
+import RelationSearch from './RelationSearch'
 
 export default interface StorageProvider {
-    runSearch: (get: GetOperation) => void
+    runSearch: (search: RelationSearch) => void
     runSave: (set: SetOperation) => void
 }

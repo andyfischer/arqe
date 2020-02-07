@@ -8,6 +8,7 @@ import RelationPattern from './RelationPattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
 import GetResponseFormatter from './GetResponseFormatter'
+import RelationSearch from './RelationSearch'
 
 interface Step {
     storage: StorageProvider
@@ -113,12 +114,9 @@ function get_inherit(get: GetOperation) {
     // 
     // Finally
     //   Get results from in-memory storage
-    //
-    // Need to make GetOperation take a pluggable formatter so that in-memory can receive
-    // results as just Relation objects.
 }
 
-export default class GetOperation {
+export default class GetOperation implements RelationSearch {
     graph: Graph;
     flags: CommandFlags
     pattern: RelationPattern;
@@ -128,6 +126,7 @@ export default class GetOperation {
 
     expectOne: boolean
     done: boolean
+    onDone?: () => void
 
     output: GetOperationOutput;
 

@@ -2,9 +2,9 @@
 import StorageProvider from './StorageProvider'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
-import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'
 import Relation, { RelationTag } from './Relation'
+import RelationSearch from './RelationSearch'
 import { normalizeExactTag } from './stringifyQuery'
 
 import Util from 'util'
@@ -19,8 +19,8 @@ export default class PlainFileStorage implements StorageProvider {
     filenameType: 'filename'
     directory: string
 
-    async runSearch(get: GetOperation) {
-        const { pattern } = get;
+    async runSearch(search: RelationSearch) {
+        const { pattern } = search;
         const tag = pattern.getOneTagForType(this.filenameType);
 
         if (tag.starValue) {
@@ -34,7 +34,7 @@ export default class PlainFileStorage implements StorageProvider {
                 const ntag = normalizeExactTag(tags);
                 const rel = new Relation(ntag, tags, null);
                 rel.payloadUnavailable = true;
-                get.foundRelation(rel);
+                search.foundRelation(rel);
             }
 
         } else {
@@ -45,9 +45,10 @@ export default class PlainFileStorage implements StorageProvider {
 
             const ntag = normalizeExactTag(pattern.tags);
             const rel = new Relation(ntag, pattern.fixedTags, contents);
-            get.foundRelation(rel);
+            search.foundRelation(rel);
         }
-        get.finishSearch();
+
+        search.finishSearch();
     }
     async runSave(set: SetOperation) {
         set.saveFinished(null);
