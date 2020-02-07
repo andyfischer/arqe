@@ -2,9 +2,12 @@ Test
  X Add tests on the filesystem mounts
 
 Refactor
- - Branches should work differently
+ X Branches should work differently
    X New dynamic pipeline
      X ListenCache
+
+Test
+ - Add an order-scambling chaos mode
 
 Web UI
  - List all relations matching a query

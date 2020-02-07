@@ -21,32 +21,53 @@ export interface GetOperationOutput {
     finish: () => void
 }
 
+function inheritTagCompare(graph: Graph, a: CommandTag, b: CommandTag) {
+    const typeCompare = graph.schema.ordering.compareTagTypes(a.tagType, b.tagType);
+    if (typeCompare !== 0)
+        return typeCompare;
+
+    return (a.tagValue || '').localeCompare(b.tagValue);
+}
+
 function get_inherit(graph: Graph, search: RelationSearch) {
     const inheritTags = graph.inheritTags && graph.inheritTags.get();
 
     // Look for any inherit tags used in this search.
-    for (let tagIndex = search.pattern.tags.length - 1; tagIndex >= 0; tagIndex--) {
-        const tag = search.pattern.tags[tagIndex];
-        if (inheritTags && inheritTags[tag.tagType]) {
+    let foundInheritTagIndex = 0;
+    let foundInheritTag: CommandTag = null;
 
-            // Found an inherit tag.
-            
-            // Search for exact matches that include the inherit tag.
-            return get_after_inherit(graph, {
-                pattern: search.pattern,
-                foundRelation: search.foundRelation,
-                done: search.done,
-                finishSearch() {
+    if (inheritTags) {
+        for (let tagIndex = 0; tagIndex < search.pattern.tags.length; tagIndex++) {
+            const tag = search.pattern.tags[tagIndex];
+            if (inheritTags[tag.tagType]) {
 
-                    // Try dropping this tag and then restarting.
-                    get_inherit(graph, {
-                        pattern: search.pattern.dropTagIndex(tagIndex),
-                        foundRelation: search.foundRelation,
-                        finishSearch: search.finishSearch
-                    });
+                if (!foundInheritTag || inheritTagCompare(graph, foundInheritTag, tag) < 0) {
+                    foundInheritTagIndex = tagIndex;
+                    foundInheritTag = tag;
                 }
-            });
+            }
         }
+    }
+
+    if (foundInheritTag) {
+
+        // Found an inherit tag.
+        
+        // Search for exact matches that include the inherit tag.
+        return get_after_inherit(graph, {
+            pattern: search.pattern,
+            foundRelation: search.foundRelation,
+            done: search.done,
+            finishSearch() {
+
+                // Try dropping this tag and then restarting.
+                get_inherit(graph, {
+                    pattern: search.pattern.dropTagIndex(foundInheritTagIndex),
+                    foundRelation: search.foundRelation,
+                    finishSearch: search.finishSearch
+                });
+            }
+        });
     }
 
     get_after_inherit(graph, search);

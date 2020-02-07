@@ -36,3 +36,31 @@ it("correctly looks down for inherit tags", () => {
         "a b"
     ]);
 });
+
+it("correctly looks down for multiple inherit tag types", () => {
+    const graph = new Graph();
+    graph.run('set typeinfo/a-branch .inherits');
+    graph.run('set typeinfo/b-branch .inherits');
+    graph.run('set typeinfo/c-branch .inherits');
+    graph.run('set typeinfo/d-branch .inherits');
+
+    const sawSearches = [];
+    graph.inMemory.runSearch = (get) => {
+        sawSearches.push(get.pattern.stringify());
+        get.finishSearch();
+    }
+
+    const get = new GetOperation(graph, parseCommand("get a b a-branch b-branch c-branch/1 d-branch/2 d-branch/3"));
+    get.outputToStringRespond(s => null);
+    get.run();
+
+    expect(get.done).toEqual(true);
+    expect(sawSearches).toEqual([
+       "a b a-branch b-branch c-branch/1 d-branch/2 d-branch/3",
+       "a b a-branch b-branch c-branch/1 d-branch/2",
+       "a b a-branch b-branch c-branch/1",
+       "a b a-branch b-branch",
+       "a b a-branch",
+       "a b",
+    ]);
+});

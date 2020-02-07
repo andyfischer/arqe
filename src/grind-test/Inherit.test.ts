@@ -39,7 +39,10 @@ test('inherit works with double inherit tags', async ({run}) => {
     expect(await run('get tc21')).toEqual('1');
     expect(await run('get tc21 branch/1')).toEqual('2');
     expect(await run('get tc21 branch2/1')).toEqual('1');
-    // expect(run('get tc21 branch/1 branch2/1')).toEqual('2'); // this might be poorly defined
+    expect(await run('get tc21 branch/1 branch2/1')).toEqual('2');
+});
+
+test('inherit correctly prioritizes multiple inherits', async ({run}) => {
 });
 
 test('inherit works with valueless tags', async ({run}) => {
