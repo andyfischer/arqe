@@ -1,5 +1,6 @@
 
 import Relation from './Relation'
+import UpdateContext from './UpdateContext'
 
 const beforeSection = 1
 const unknownSection = 2
@@ -9,22 +10,6 @@ export default class TagTypeOrdering {
 
     section = {}
 
-    updateInfo(rel: Relation) {
-        if (!rel.includesType('typeinfo'))
-            throw new Error('expected "typeinfo" relation');
-
-        const typeName = rel.getTagValue('typeinfo') as string;
-        const value = rel.payload();
-
-        if (value === 'before') {
-            this.section[typeName] = beforeSection
-        } else if (value === 'after') {
-            this.section[typeName] = afterSection;
-        } else {
-            throw new Error('invalid typeinfo order: ' + value);
-        }
-    }
-
     compareTagTypes(a: string, b: string) {
         const aSection = this.section[a] || unknownSection;
         const bSection = this.section[b] || unknownSection;
@@ -33,5 +18,21 @@ export default class TagTypeOrdering {
             return (aSection < bSection) ? -1 : 1;
 
         return a.localeCompare(b);
+    }
+
+    update = (cxt: UpdateContext) => {
+        for (const rel of cxt.getRelations('typeinfo/* option/order')) {
+
+            const typeName = rel.getTagValue('typeinfo') as string;
+            const value = rel.payload();
+
+            if (value === 'before') {
+                this.section[typeName] = beforeSection
+            } else if (value === 'after') {
+                this.section[typeName] = afterSection;
+            } else {
+                throw new Error('invalid typeinfo order: ' + value);
+            }
+        }
     }
 }

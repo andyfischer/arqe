@@ -4,13 +4,11 @@ import Relation from './Relation'
 import TagType from './TagType'
 import TagTypeOrdering from './TagTypeOrdering'
 import Command from './Command'
-import TypeInfoListener from './TypeInfoListener'
 
 export default class Schema {
 
     tagTypes: { [name: string]: TagType } = {}
     ordering = new TagTypeOrdering()
-    typeInfoListener = new TypeInfoListener(this)
 
     initTagType(name: string) {
         this.tagTypes[name] = new TagType(name)
@@ -22,10 +20,6 @@ export default class Schema {
         }
 
         return this.tagTypes[name];
-    }
-
-    onRelationUpdated(command: Command, rel: Relation) {
-        this.typeInfoListener.onRelationUpdated(command, rel);
     }
 
     stringifyRelation(rel: Relation) {
