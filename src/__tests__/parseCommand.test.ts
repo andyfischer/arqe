@@ -114,8 +114,8 @@ it('parses multiple flags', () => {
 });
 
 it('parses multicharacter flag', () => {
-    const parsed = parseCommand('test -abc 1');
+    const parsed = parseCommand('test -list 1');
     expect(parsed.command).toEqual('test')
-    expect(parsed.flags.abc).toEqual(true);
+    expect(parsed.flags.list).toEqual(true);
     expect(parsed.tags[0].tagType).toEqual('1');
 });

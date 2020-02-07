@@ -14,11 +14,17 @@ export interface CommandTag {
 
 type FlagMap = { [flag: string]: any }
 
+export interface CommandFlags {
+    x?: true
+    list?: true
+    get?: true
+}
+
 export default class Command {
     command: string
     tags: CommandTag[]
+    flags: CommandFlags
     payloadStr: string
-    flags: FlagMap
 
     constructor(command: string, tags: CommandTag[], payload: string, flags: FlagMap) {
         this.command = command;

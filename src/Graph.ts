@@ -1,7 +1,6 @@
 
 import Command, { CommandTag } from './Command'
 import parseCommand from './parseCommand'
-import TagType from './TagType'
 import Relation from './Relation'
 import SetOperation from './SetOperation'
 import GetOperation from './GetOperation'
@@ -10,14 +9,13 @@ import GraphListenerToCallback from './GraphListenerToCallback'
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
-import StorageProvider from './StorageProvider'
 import InMemoryStorage from './InMemoryStorage'
 import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
 import EagerValue from './EagerValue'
+import { UpdateFn } from './UpdateContext'
 import updateFilesystemMounts from './updateFilesystemMounts'
 import updateInheritTags from './updateInheritTags'
-import { UpdateFn } from './UpdateContext'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void

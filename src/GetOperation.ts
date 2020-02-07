@@ -1,5 +1,5 @@
 
-import Command, { CommandTag } from './Command'
+import Command, { CommandTag, CommandFlags } from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
 import TagType from './TagType'
@@ -100,7 +100,7 @@ function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> 
     }
 }
 
-function step1(get: GetOperation) {
+function get_inherit(get: GetOperation) {
     // Fetch the list of inherit tags
     // Check get.pattern to see if any inherit tags cover it
     // For any found
@@ -120,21 +120,20 @@ function step1(get: GetOperation) {
 
 export default class GetOperation {
     graph: Graph;
-    command: Command;
+    flags: CommandFlags
     pattern: RelationPattern;
-    expectOne: boolean
 
     steps: Step[]
     currentStep: number = 0
 
+    expectOne: boolean
     done: boolean
-    onDone?: () => void
 
     output: GetOperationOutput;
 
     constructor(graph: Graph, command: Command) {
         this.graph = graph;
-        this.command = command;
+        this.flags = command.flags;
         this.pattern = command.toPattern();
         this.expectOne = !this.pattern.isMultiMatch();
         this.steps = Array.from(steps(graph, this.pattern));
@@ -145,8 +144,8 @@ export default class GetOperation {
             throw new Error("already have a configured output");
 
         const formatter = new GetResponseFormatter(); 
-        formatter.extendedResult = this.command.flags.x;
-        formatter.listOnly = this.command.flags.list;
+        formatter.extendedResult = this.flags.x;
+        formatter.listOnly = this.flags.list;
         formatter.asMultiResults = this.pattern.isMultiMatch();
         formatter.respond = respond;
         formatter.pattern = this.pattern;
