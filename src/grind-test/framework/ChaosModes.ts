@@ -43,6 +43,37 @@ export const GetInheritedBranch: ChaosMode = {
     }
 }
 
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+export const ScrambleTagOrder: ChaosMode = {
+    name: 'scrambleTagOrder',
+    shortDescription: 'scramble tag order',
+    modifyRunCommand(command: string) {
+        const parsed = parseCommand(command);
+        parsed.tags = shuffle(parsed.tags);
+        const modified = parsedCommandToString(parsed);
+        // console.log(`scramble: ${command} -> ${modified}`)
+        return modified;
+    }
+}
+
 // Modes to add:
 //  - Scramble tag order
 //  - Enable specific optimizations

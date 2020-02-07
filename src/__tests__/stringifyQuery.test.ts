@@ -2,6 +2,10 @@
 import parseCommand from '../parseCommand'
 import { parsedCommandToString, appendTagInCommand } from '../stringifyQuery'
 
+function testRestringify(str: string) {
+    const restringified = parsedCommandToString(parseCommand(str))
+    expect(restringified).toEqual(str);
+}
 
 describe("parsedCommandToString", () => {
     it("works", () => {
@@ -16,6 +20,13 @@ describe("parsedCommandToString", () => {
 });
 
 describe("appendTagInCommand", () => {
-    expect(appendTagInCommand('get x y', 'extra')).toEqual('get x y extra');
-    expect(appendTagInCommand('set x y == 1', 'extra')).toEqual('set x y extra == 1');
+    it("works", () => {
+        expect(appendTagInCommand('get x y', 'extra')).toEqual('get x y extra');
+        expect(appendTagInCommand('set x y == 1', 'extra')).toEqual('set x y extra == 1');
+    });
+});
+
+it("restringify tests", () => {
+    testRestringify("set *");
+    testRestringify("set **");
 });

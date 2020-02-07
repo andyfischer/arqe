@@ -15,7 +15,7 @@ export function commandTagToString(tag: CommandTag) {
     } else if (tag.questionValue) {
         s += '?';
     } else if (tag.doubleStar) {
-        s += '**';
+        s = '**';
     }
 
     return s;
