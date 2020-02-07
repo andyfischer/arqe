@@ -16,7 +16,7 @@ import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
 import updateFilesystemMounts from './updateFilesystemMounts'
 import updateInheritTags from './updateInheritTags'
-import TagTypeOrdering from './TagTypeOrdering'
+import TypeInfo from './TypeInfo'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -30,6 +30,7 @@ export default class Graph {
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
     schema = new Schema()
+    typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<{[tagname:string]: true}>
     filesystemMounts: EagerValue<StorageMount[]>
 
@@ -67,6 +68,14 @@ export default class Graph {
             for (const mount of mounts)
                 yield mount;
         }
+    }
+
+    getTypeInfo(name: string) {
+        if (!this.typeInfo[name]) {
+            this.typeInfo[name] = new TypeInfo();
+        }
+
+        return this.typeInfo[name];
     }
 
     dump(command: Command, respond: RespondFunc) {

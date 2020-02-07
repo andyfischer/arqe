@@ -2,7 +2,6 @@
 import Command, { CommandTag, CommandFlags } from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
-import TagType from './TagType'
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import StorageProvider from './StorageProvider'

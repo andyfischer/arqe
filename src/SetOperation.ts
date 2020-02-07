@@ -41,7 +41,7 @@ export default class SetOperation {
 
         for (const arg of command.tags) {
             if (arg.tagValue === '#unique') {
-                arg.tagValue = this.graph.schema.findTagType(arg.tagType).getUniqueId()
+                arg.tagValue = this.graph.getTypeInfo(arg.tagType).getUniqueId()
                 this.replyWithEcho = true;
             }
         }
