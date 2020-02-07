@@ -32,7 +32,6 @@ it("correctly looks down for inherit tags", () => {
     expect(get.done).toEqual(true);
     expect(sawSearches).toEqual([
         "a b branch/1 branch/2",
-        "a b branch/1",
         "a b branch/2",
         "a b"
     ]);

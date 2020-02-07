@@ -21,108 +21,53 @@ export interface GetOperationOutput {
     finish: () => void
 }
 
-/**
- * For the list 'items', iterate across every possible way to omit each item.
- * Start by omitting them one at a time, then omit any two, etc.
- *
- * There's a few tweaks (compared to a plain powerSet)
- *  - We skip over the [].
- *  - We start by omitting the last items first.
- *
- * This is used to implement 'inherit' tags. We first search for relations
- * with the inherit tag included, then we repeat the search with that tag
- * omitted.
- */
-export function* powerSet(keys: any[]) {
+function get_inherit(graph: Graph, search: RelationSearch) {
+    const inheritTags = graph.inheritTags && graph.inheritTags.get();
 
-    let max = 1 << keys.length;
+    // Look for any inherit tags used in this search.
+    for (let tagIndex=0; tagIndex < search.pattern.tags.length; tagIndex++) {
+        const tag = search.pattern.tags[tagIndex];
+        if (inheritTags && inheritTags[tag.tagType]) {
 
-    for (let nth = 1; nth < max; nth++) {
-        let bits = nth;
+            // Found an inherit tag.
+            
+            // Search for exact matches that include the inherit tag.
+            return get_after_inherit(graph, {
+                pattern: search.pattern,
+                foundRelation: search.foundRelation,
+                done: search.done,
+                finishSearch() {
 
-        const resultSet = {};
-
-        for (let keyIndex = keys.length - 1; keyIndex >= 0; keyIndex--) {
-            if (bits & 1)
-                resultSet[keys[keyIndex]] = true;
-
-            bits >>>= 1;
+                    // Try dropping this tag and then restarting.
+                    get_inherit(graph, {
+                        pattern: search.pattern.dropTagIndex(tagIndex),
+                        foundRelation: search.foundRelation,
+                        finishSearch: search.finishSearch
+                    });
+                }
+            });
         }
-
-        yield resultSet;
     }
+
+    get_after_inherit(graph, search);
 }
 
-function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> {
-
-    // look for custom mounts
+function get_after_inherit(graph: Graph, search: RelationSearch) {
+    
     for (const mount of graph.iterateMounts()) {
-        if (mount.pattern.isSupersetOf(pattern)) {
-            yield {
-                storage: mount.storage,
-                pattern
-            }
+        if (mount.pattern.isSupersetOf(search.pattern)) {
+            mount.storage.runSearch(search);
             return;
         }
     }
 
-    yield {
-        storage: graph.inMemory,
-        pattern
-    };
-
-    // Handle inherit tags
-    const inheritTagIndexes: number[] = []
-    for (let i = 0; i < pattern.tags.length; i++) {
-        const tag = pattern.tags[i];
-        const tagInfo = graph.schema.findTagType(tag.tagType);
-
-        if (graph.inheritTags && graph.inheritTags.get()[tag.tagType]) {
-            inheritTagIndexes.push(i);
-        }
-    }
-
-    if (inheritTagIndexes.length === 0)
-        return;
-
-    for (const skipIndexSet of powerSet(inheritTagIndexes)) {
-        const subTags = [];
-        for (let i = 0; i < pattern.tags.length; i++) {
-            if (!skipIndexSet[i])
-                subTags.push(pattern.tags[i]);
-        }
-
-        const subPattern = new RelationPattern(subTags);
-
-        yield {
-            storage: graph.inMemory,
-            pattern: subPattern
-        }
-    }
-}
-
-function get_inherit(get: GetOperation) {
-    // Fetch the list of inherit tags
-    // Check get.pattern to see if any inherit tags cover it
-    // For any found
-    //   Get results stored in that branch (use inMemory storage)
-    //   Modify search pattern to remove branch tag
-    // 
-    // Look for custom storage
-    //   If any found
-    //     Get results from custom storage and then stop
-    // 
-    // Finally
-    //   Get results from in-memory storage
+    graph.inMemory.runSearch(search);
 }
 
 export default class GetOperation implements RelationSearch {
     graph: Graph;
     flags: CommandFlags
     pattern: RelationPattern;
-
-    steps: Step[]
-    currentStep: number = 0
 
     expectOne: boolean
     done: boolean
@@ -135,7 +80,6 @@ export default class GetOperation implements RelationSearch {
         this.flags = command.flags;
         this.pattern = command.toPattern();
         this.expectOne = !this.pattern.isMultiMatch();
-        this.steps = Array.from(steps(graph, this.pattern));
     }
 
     outputToStringRespond(respond: RespondFunc, configFormat?: (formatter: GetResponseFormatter) => void) {
@@ -170,35 +114,16 @@ export default class GetOperation implements RelationSearch {
         }
     }
 
-    foundRelation(rel: Relation) {
+    foundRelation = (rel: Relation) => {
         if (this.done)
             return;
         
         this.output.relation(rel);
 
         if (this.expectOne) {
-            this.finish();
+            this.finishSearch();
             return;
         }
-    }
-
-    finishSearch() {
-        if (this.done)
-            return;
-
-        this.currentStep += 1;
-        this.startNextStep();
-    }
-
-    private startNextStep() {
-        if (this.currentStep >= this.steps.length) {
-            this.finish();
-            return;
-        }
-
-        const step = this.steps[this.currentStep];
-        this.pattern = step.pattern;
-        step.storage.runSearch(this);
     }
 
     run() {
@@ -206,10 +131,10 @@ export default class GetOperation implements RelationSearch {
             throw new Error("no output was configured");
 
         this.output.start();
-        this.startNextStep();
+        get_inherit(this.graph, this);
     }
 
-    finish() {
+    finishSearch = () => {
         if (this.done)
             return;
 

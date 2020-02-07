@@ -16,7 +16,7 @@ export default class RelationPattern {
     tags: CommandTag[] = []
     starValueTags: CommandTag[] = []
     fixedTags: FixedTag[] = []
-    fixedTagsForType: { [typename:string]: true } = {}
+    fixedTagsForType: { [typename: string]: true } = {}
     tagsForType: { [typename: string]: CommandTag[] } = {}
     tagCount: number
     hasDoubleStar?: boolean
@@ -149,6 +149,14 @@ export default class RelationPattern {
             throw new Error("getOneTagForType - multiple tags found for: " + typeName);
 
         return tags[0];
+    }
+
+    dropTagIndex(index: number) {
+        if (index >= this.tags.length)
+            throw new Error('index out of range: ' + index);
+
+        const newTags = this.tags.slice(0,index).concat(this.tags.slice(index + 1));
+        return new RelationPattern(newTags);
     }
 
     stringify() {
