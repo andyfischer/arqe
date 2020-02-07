@@ -136,6 +136,10 @@ export default class RelationPattern {
         return str;
     }
 
+    hasType(typeName: string) {
+        return !!this.tagsForType[typeName];
+    }
+
     getOneTagForType(typeName: string) {
         const tags = this.tagsForType[typeName];
         if (!tags)

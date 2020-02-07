@@ -16,6 +16,7 @@ import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
 import EagerValue from './EagerValue'
 import updateFilesystemMounts from './updateFilesystemMounts'
+import updateInheritTags from './updateInheritTags'
 import { UpdateFn } from './UpdateContext'
 
 export type RespondFunc = (msg: string) => void
@@ -30,12 +31,14 @@ export default class Graph {
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
     schema = new Schema()
+    inheritTags: EagerValue<{[tagname:string]: true}>
     filesystemMounts: EagerValue<StorageMount[]>
 
     nextEagerValueId: number = 1
 
     constructor() {
-        this.filesystemMounts = this.eagerValue<StorageMount[]>(updateFilesystemMounts);
+        this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
+        this.inheritTags = this.eagerValue(updateInheritTags);
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -151,6 +154,7 @@ export default class Graph {
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
+
         this.schema.onRelationUpdated(command, rel);
 
         for (const listener of this.listeners)

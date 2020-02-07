@@ -15,11 +15,6 @@ export default class TypeInfoPlugin {
             return;
 
         const tagType = this.schema.findTagType(rel.getTagValue('typeinfo') as string)
-
-        if (rel.getOptional('option', null) === 'inherits') {
-            tagType.inherits = true;
-            return;
-        }
         
         if (rel.getOptional('option', null) === 'order') {
             this.schema.ordering.updateInfo(rel);

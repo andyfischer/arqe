@@ -75,7 +75,8 @@ function* steps(graph: Graph, pattern: RelationPattern): IterableIterator<Step> 
     for (let i = 0; i < pattern.tags.length; i++) {
         const tag = pattern.tags[i];
         const tagInfo = graph.schema.findTagType(tag.tagType);
-        if (tagInfo.inherits) {
+
+        if (graph.inheritTags && graph.inheritTags.get()[tag.tagType]) {
             inheritTagIndexes.push(i);
         }
     }

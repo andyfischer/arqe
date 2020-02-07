@@ -20,8 +20,9 @@ export default class EagerValue<T> {
 
         this.value = this.updateFn(context);
 
-        for (const savedQuery of context.savedQueriesForUsedSearches())
+        for (const savedQuery of context.savedQueriesForUsedSearches()) {
             savedQuery.connectEagerValue(this);
+        }
     }
 
     get() {

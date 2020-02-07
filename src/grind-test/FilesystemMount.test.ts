@@ -5,12 +5,6 @@ const { test } = startSuite();
 
 test("filesystem mount works", async ({run}) => {
 
-    if (run.chaosMode && run.chaosMode.name === 'insertExtraTag')
-        return;
-
-    if (run.chaosMode && run.chaosMode.name === 'getInheritedBranch')
-        return;
-
     const id = 'filesystem-mount/124';
     const dir = path.resolve(__dirname, 'filesystem-mount-test');
 
