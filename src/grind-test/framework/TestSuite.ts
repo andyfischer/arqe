@@ -13,7 +13,7 @@ export default class TestSuite {
         if (!process.env.MIN_CHAOS) {
             this.testRunners.push(new TestRunner(this, ReparseCommand));
             this.testRunners.push(new TestRunner(this, InsertExtraTag));
-            // this.testRunners.push(new TestRunner(this, GetInheritedBranch));
+            this.testRunners.push(new TestRunner(this, GetInheritedBranch));
         }
     }
 

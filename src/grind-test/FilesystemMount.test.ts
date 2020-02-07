@@ -13,5 +13,8 @@ test("filesystem mount works", async ({run}) => {
 
     const list = await run(`get -list ${id} filename/*`);
 
-    expect(list).toEqual(['filename/file1.txt']);
+    expect(list).toEqual([
+        'filename/file1.txt',
+        'filename/file2.txt'
+    ]);
 });

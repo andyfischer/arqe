@@ -25,7 +25,7 @@ function get_inherit(graph: Graph, search: RelationSearch) {
     const inheritTags = graph.inheritTags && graph.inheritTags.get();
 
     // Look for any inherit tags used in this search.
-    for (let tagIndex=0; tagIndex < search.pattern.tags.length; tagIndex++) {
+    for (let tagIndex = search.pattern.tags.length - 1; tagIndex >= 0; tagIndex--) {
         const tag = search.pattern.tags[tagIndex];
         if (inheritTags && inheritTags[tag.tagType]) {
 
