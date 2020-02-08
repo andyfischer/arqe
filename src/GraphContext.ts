@@ -81,6 +81,8 @@ export default class GraphContext {
     run(query: string, respond: RespondFunc) {
         if (typeof query !== 'string')
             throw new Error("expected string: " + query);
+        if (typeof respond !== 'function')
+            throw new Error("expected function: " + respond);
 
         const parsed = parseCommand(query);
         this.runParsed(parsed, respond);

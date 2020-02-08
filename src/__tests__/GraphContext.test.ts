@@ -3,7 +3,7 @@ import Graph from '../Graph'
 import GraphContext from '../GraphContext'
 import Command from '../Command'
 import { parsedCommandToString } from '../stringifyQuery'
-import collectRespond from '../collectRespond'
+import collectRespond, { runSync } from '../collectRespond'
 
 let graph;
 let context;
@@ -72,5 +72,8 @@ it("doesn't echo set if it doesn't need to", async () => {
 
 describe('Graph.context', () => {
     it('works', () => {
+        const cxt = graph.context('cxttest2');
+        runSync(graph, 'set cxttest2 a == 5');
+        expect(runSync(cxt, 'get a')).toEqual('5');
     });
 });
