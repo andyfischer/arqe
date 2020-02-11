@@ -49,7 +49,6 @@ function get_inherit(graph: Graph, search: RelationSearch) {
     }
 
     if (foundInheritTag) {
-
         // Found an inherit tag.
         
         // Search for exact matches that include the inherit tag.

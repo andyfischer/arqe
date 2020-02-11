@@ -60,7 +60,10 @@ export default class RelationPattern {
 
             let foundMatch = false;
 
-            for (const subTag of subPattern.tagsForType[tag.tagType]) {
+            if (tag.star)
+                continue;
+
+            for (const subTag of (subPattern.tagsForType[tag.tagType] || [])) {
 
                 if (!subTag)
                     return false;
@@ -99,6 +102,9 @@ export default class RelationPattern {
             
             if (!arg.tagValue) {
                 if (!rel.includesType(arg.tagType))
+                    return false;
+
+                if (rel.hasValueForType(arg.tagType))
                     return false;
 
                 continue;
@@ -156,6 +162,10 @@ export default class RelationPattern {
 
         const newTags = this.tags.slice(0,index).concat(this.tags.slice(index + 1));
         return new RelationPattern(newTags);
+    }
+
+    toRelation() {
+        return new Relation(null, this.fixedTags, null);
     }
 
     stringify() {

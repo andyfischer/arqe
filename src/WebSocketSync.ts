@@ -19,7 +19,12 @@ export default class WebSocketSync {
 export function updateWebSocketSyncs(cxt: UpdateContext) {
     const syncs: WebSocketSync[] = [];
 
-    for (const key of cxt.getRelations('ws-sync/*')) {
+    // console.log('running updateWebSocketSyncs')
+
+    for (const rel of cxt.getRelations('* tag-definition provider/wssync')) {
+        console.log('saw rel: ', rel);
+
+        /*
         const options = cxt.getOptionsObject(key.getTag("ws-sync"));
 
         if (!options.host || !options.pattern)
@@ -28,6 +33,7 @@ export function updateWebSocketSyncs(cxt: UpdateContext) {
         const pattern = parsePattern(options.pattern);
 
         syncs.push(new WebSocketSync(options.host, pattern));
+        */
     }
 
     return syncs;

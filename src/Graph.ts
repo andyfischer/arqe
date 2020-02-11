@@ -18,7 +18,7 @@ import updateFilesystemMounts from './updateFilesystemMounts'
 import updateInheritTags from './updateInheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
-import WebSocketSync from './WebSocketSync'
+import WebSocketSync, { updateWebSocketSyncs } from './WebSocketSync'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -43,6 +43,10 @@ export default class Graph {
         this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
         this.inheritTags = this.eagerValue(updateInheritTags);
         this.eagerValue(this.schema.ordering.update);
+        this.wsSyncs = this.eagerValue(updateWebSocketSyncs);
+
+        // temp
+        // this.run('set wstest tag-definition provider/wssync')
     }
 
     context(query: string) {

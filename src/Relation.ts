@@ -76,6 +76,17 @@ export default class Relation {
         return this.tagsForType[name] !== undefined;
     }
 
+    hasValueForType(name: string) {
+        if (!this.tagsForType[name])
+            return false;
+
+        for (const tag of this.tagsForType[name])
+            if (tag.tagValue !== null)
+                return true;
+
+        return false;
+    }
+
     tagCount() {
         return this.tags.length;
     }
