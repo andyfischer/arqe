@@ -40,9 +40,19 @@ export default class UpdateContext {
         return rels;
     }
 
+    getOptionsObject(tags: string): any {
+        const out = {};
+
+        for (const option of this.getRelations(`${tags} option/*`)) {
+            out[option.getTagValue("option") as string] = option.payload();
+        }
+
+        return out;
+    }
+
     savedQueriesForUsedSearches(): SavedQuery[] {
         return this.usedSearches.map(sawSearch =>
-                                     this.graph.savedQuery('get ' + sawSearch))
+                                     this.graph.savedQuery(sawSearch))
     }
 
     watchesForUsedSearches(): SavedQueryWatch[] {

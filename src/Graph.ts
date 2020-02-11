@@ -18,6 +18,7 @@ import updateFilesystemMounts from './updateFilesystemMounts'
 import updateInheritTags from './updateInheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
+import WebSocketSync from './WebSocketSync'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -34,6 +35,7 @@ export default class Graph {
     typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<{[tagname:string]: true}>
     filesystemMounts: EagerValue<StorageMount[]>
+    wsSyncs: EagerValue<WebSocketSync[]>
 
     nextEagerValueId: number = 1
 

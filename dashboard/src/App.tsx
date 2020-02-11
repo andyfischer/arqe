@@ -3,6 +3,9 @@ import './App.css';
 import Graph from 'fs/Graph'
 
 const graph = new Graph();
+graph.run('set app ws-sync/1');
+graph.run('set app ws-sync/1 .host == http://localhost:42940');
+const data = graph.context('app');
 
 const App: React.FC = () => {
   return (

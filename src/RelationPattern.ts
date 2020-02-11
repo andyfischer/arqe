@@ -6,7 +6,6 @@ import Schema from './Schema'
 import parseCommand from './parseCommand'
 import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
 
-
 export interface FixedTag {
     tagType: string
     tagValue: string
@@ -166,6 +165,11 @@ export default class RelationPattern {
 
 export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
+    return new RelationPattern(parsed.tags)
+}
+
+export function parsePattern(query: string) {
+    const parsed = parseCommand('get ' + query);
     return new RelationPattern(parsed.tags)
 }
 

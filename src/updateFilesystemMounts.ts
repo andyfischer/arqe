@@ -7,21 +7,16 @@ import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 export default function updateFilesystemMounts(cxt: UpdateContext): StorageMount[] {
 
     const result = [];
-    const mounts = cxt.getRelations('filesystem-mount/*');
-
-    for (const mount of mounts) {
-        const options: any = {};
+    for (const mount of cxt.getRelations('filesystem-mount/*')) {
 
         const mountKey = mount.getTag("filesystem-mount");
         
-        for (const option of cxt.getRelations(`${mountKey} option/*`)) {
-            options[option.getTagValue("option") as string] = option.payload();
-        }
-
-        options.filenameType = options.filenameType || 'filename'
+        const options = cxt.getOptionsObject(mountKey);
 
         if (!options.directory)
             continue;
+
+        options.filenameType = options.filenameType || 'filename';
 
         const storage = new PlainFileStorage();
         storage.filenameType = options.filenameType;

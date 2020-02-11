@@ -17,15 +17,13 @@ export default class SavedQuery {
     connectedEagerValues: { [eagerValueId: string]: EagerValue<any> } = {}
 
     constructor(graph: Graph, id: number, queryStr: string) {
-        if (queryStr.startsWith('get get'))
-            throw new Error("SavedQuery queryStr should not start with 'get get': " + queryStr);
-        if (!queryStr.startsWith('get '))
-            throw new Error("SavedQuery queryStr should start with 'get': " + queryStr);
+        if (queryStr.startsWith('get '))
+            throw new Error("SavedQuery queryStr should not start with 'get': " + queryStr);
 
         this.graph = graph;
         this.id = id;
         this.queryStr = queryStr;
-        this.command = parseCommand(queryStr);
+        this.command = parseCommand('get ' + queryStr);
         this.pattern = this.command.toPattern();
     }
 
