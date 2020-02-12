@@ -83,12 +83,13 @@ export default class RelationPattern {
 
     matches(rel: Relation) {
 
-        if (this.hasDoubleStar)
-            return true;
-
-        // Query must have equal number (or greater, for inherit) of tags as the relation.
-        if (rel.tagCount() > this.tagCount) {
-            return false;
+        // Check tag count on this relatino.
+        if (this.hasDoubleStar) {
+            if (rel.tagCount() < this.tagCount)
+                return false;
+        } else {
+            if (rel.tagCount() !== this.tagCount)
+                return false;
         }
 
         // For all fixed args: Check that each one is found in this relation.

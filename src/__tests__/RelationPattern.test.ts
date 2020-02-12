@@ -63,7 +63,7 @@ describe("matches", () => {
                     'wstest tag-definition provider/wssync')).toEqual(true);
     });
 
-    xit('double star works', () => {
+    it('double star works', () => {
         expect(test('x **', 'x y')).toEqual(true);
         expect(test('x **', 'x y z')).toEqual(true);
         expect(test('x **', 'z')).toEqual(false);
