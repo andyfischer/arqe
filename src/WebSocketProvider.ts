@@ -21,7 +21,9 @@ export function updateWebSocketProviders(cxt: UpdateContext) {
 
     for (const rel of cxt.getRelations('tag-definition provider/wssync *')) {
 
-        const options = cxt.getOptionsObject(rel.pattern().addTag("options/*").stringify())
+        const options = cxt.getOptionsObject(rel.pattern().stringify());
+
+        console.log('mounting WS with options: ', options);
 
         /*
         if (!options.host || !options.pattern)

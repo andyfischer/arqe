@@ -36,21 +36,9 @@ export default class InMemoryStorage implements StorageProvider {
         return this.relationsByNtag[ntag]
     }
 
-    findOneMatch(pattern: RelationPattern): Relation { 
-        const found = this.findExactMatch(pattern);
-        if (found)
-            return found;
-    }
-
     *findAllMatches(pattern: RelationPattern) {
-        if (pattern.isMultiMatch()) {
-            for (const rel of this.linearScan(pattern)) {
-                yield rel;
-            }
-        } else {
-            const one = this.findOneMatch(pattern);
-            if (one)
-                yield one;
+        for (const rel of this.linearScan(pattern)) {
+            yield rel;
         }
     }
 
