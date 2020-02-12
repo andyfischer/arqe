@@ -51,11 +51,5 @@
       "js",
       "jsx"
     ]
-  },
-  "bin": {
-    "s": "dist/startup/main.js",
-    "s-discovery-agent": "dist/agents/discovery",
-    "tag-server": "dist/tags-db/startServer.js",
-    "encode-file": "dist/tools/encode-file.js"
   }
 }
