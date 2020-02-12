@@ -3,7 +3,7 @@ import Command, { CommandTag } from './Command'
 import Relation from './Relation'
 import Graph from './Graph'
 import Schema from './Schema'
-import parseCommand from './parseCommand'
+import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
 
 export interface FixedTag {
@@ -161,6 +161,11 @@ export default class RelationPattern {
 
         const newTags = this.tags.slice(0,index).concat(this.tags.slice(index + 1));
         return new RelationPattern(newTags);
+    }
+
+    addTag(s: string) {
+        const tag = parseTag(s);
+        return new RelationPattern(this.tags.concat([tag]));
     }
 
     toRelation() {

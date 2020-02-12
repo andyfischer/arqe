@@ -3,6 +3,7 @@ import Graph from './Graph'
 import { CommandTag } from './Command'
 import { normalizeExactTag } from './stringifyQuery'
 import Schema from './Schema'
+import RelationPattern from './RelationPattern'
 
 export interface RelationTag {
     tagType: string
@@ -139,6 +140,10 @@ export default class Relation {
         }
 
         return 'set ' + args.join(' ') + payload;
+    }
+
+    pattern() {
+        return new RelationPattern(this.tags);
     }
 }
 

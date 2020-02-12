@@ -3,7 +3,7 @@ import CommandConnection, { connectToServer } from './socket/CommandConnection'
 import RelationPattern, { parsePattern } from './RelationPattern'
 import UpdateContext from './UpdateContext'
 
-export default class WebSocketSync {
+export default class WebSocketProvider {
 
     host: string
     connection: CommandConnection
@@ -16,14 +16,14 @@ export default class WebSocketSync {
     }
 }
 
-export function updateWebSocketSyncs(cxt: UpdateContext) {
-    const syncs: WebSocketSync[] = [];
+export function updateWebSocketProviders(cxt: UpdateContext) {
+    const syncs: WebSocketProvider[] = [];
 
     for (const rel of cxt.getRelations('tag-definition provider/wssync *')) {
 
-        /*
-        const options = cxt.getOptionsObject(key.getTag("ws-sync"));
+        const options = cxt.getOptionsObject(rel.pattern().addTag("options/*").stringify())
 
+        /*
         if (!options.host || !options.pattern)
             continue;
 

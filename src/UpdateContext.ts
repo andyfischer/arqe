@@ -61,3 +61,8 @@ export default class UpdateContext {
         );
     }
 }
+
+export function runUpdateOnce<T>(graph: Graph, fn: UpdateFn<T>): T {
+    const cxt = new UpdateContext(graph);
+    return fn(cxt);
+}

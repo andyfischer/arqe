@@ -159,7 +159,11 @@ export function parseRelation(str: string): Relation {
     }
 
     return new Relation(null, query.tags as RelationTag[], query.payload);
+}
 
+export function parseTag(str: string): CommandTag {
+    const it = lexStringToIterator(str);
+    return parseOneTag(it);
 }
 
 export default function parseCommand(str: string): Command {

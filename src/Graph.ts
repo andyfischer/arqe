@@ -18,7 +18,7 @@ import updateFilesystemMounts from './updateFilesystemMounts'
 import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
-import WebSocketSync, { updateWebSocketSyncs } from './WebSocketSync'
+import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -35,7 +35,7 @@ export default class Graph {
     typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<InheritTags>
     filesystemMounts: EagerValue<StorageMount[]>
-    wsSyncs: EagerValue<WebSocketSync[]>
+    wsProviders: EagerValue<WebSocketProvider[]>
 
     nextEagerValueId: number = 1
 
@@ -43,7 +43,7 @@ export default class Graph {
         this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.schema.ordering.update);
-        this.wsSyncs = this.eagerValue(updateWebSocketSyncs);
+        this.wsProviders = this.eagerValue(updateWebSocketProviders);
 
         // this.run('set wstest tag-definition provider/wssync')
     }
