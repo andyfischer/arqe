@@ -21,7 +21,6 @@ export function updateWebSocketSyncs(cxt: UpdateContext) {
 
     for (const rel of cxt.getRelations('tag-definition provider/wssync *')) {
 
-        /*
         const options = cxt.getOptionsObject(key.getTag("ws-sync"));
 
         if (!options.host || !options.pattern)
@@ -30,7 +29,6 @@ export function updateWebSocketSyncs(cxt: UpdateContext) {
         const pattern = parsePattern(options.pattern);
 
         syncs.push(new WebSocketSync(options.host, pattern));
-        */
     }
 
     return syncs;
