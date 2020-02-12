@@ -20,7 +20,6 @@ export default class RelationPattern {
     tagCount: number
     hasStar?: boolean
     hasDoubleStar?: boolean
-    ntag?: string
 
     constructor(tags: CommandTag[]) {
         this.tags = tags;
@@ -47,9 +46,6 @@ export default class RelationPattern {
                 this.fixedTagsForType[tag.tagType] = true;
             }
         }
-
-        if (!this.isMultiMatch())
-            this.ntag = normalizeExactTag(tags);
     }
 
     isSupersetOf(subPattern: RelationPattern) {

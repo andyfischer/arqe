@@ -32,7 +32,8 @@ export default class InMemoryStorage implements StorageProvider {
 
     findExactMatch(pattern: RelationPattern): Relation|null {
         // Exact tag lookup.
-        return this.relationsByNtag[pattern.ntag]
+        const ntag = normalizeExactTag(pattern.tags);
+        return this.relationsByNtag[ntag]
     }
 
     findOneMatch(pattern: RelationPattern): Relation { 
