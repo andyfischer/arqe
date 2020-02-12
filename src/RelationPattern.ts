@@ -18,6 +18,7 @@ export default class RelationPattern {
     fixedTagsForType: { [typename: string]: true } = {}
     tagsForType: { [typename: string]: CommandTag[] } = {}
     tagCount: number
+    hasStar?: boolean
     hasDoubleStar?: boolean
     ntag?: string
 
@@ -37,6 +38,8 @@ export default class RelationPattern {
                 // this.hasStarTag = true
             } else if (tag.doubleStar) {
                 this.hasDoubleStar = true;
+            } else if (tag.star) {
+                this.hasStar = true;
             } else if (tag.starValue) {
                 this.starValueTags.push(tag);
             } else {
@@ -124,7 +127,7 @@ export default class RelationPattern {
     }
 
     isMultiMatch() {
-        return this.hasDoubleStar || (this.starValueTags.length > 0);
+        return this.hasStar || this.hasDoubleStar || (this.starValueTags.length > 0);
     }
 
     formatRelationRelative(rel: Relation) {

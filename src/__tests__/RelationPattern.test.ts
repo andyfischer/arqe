@@ -54,4 +54,12 @@ describe("matches", () => {
         expect(test('', 'x/1')).toEqual(false);
         expect(test('x/1', '')).toEqual(false);
     });
+
+    it('star type works', () => {
+        expect(test('x y *', 'x y z')).toEqual(true);
+        expect(test('x y *', 'x y y')).toEqual(true);
+        expect(test('x y *', 'x z z')).toEqual(false);
+        expect(test('* tag-definition provider/wssync',
+                    'wstest tag-definition provider/wssync')).toEqual(true);
+    });
 });

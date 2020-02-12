@@ -23,9 +23,10 @@ export default class InMemoryStorage implements StorageProvider {
     *linearScan(pattern: RelationPattern) {
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
-
-            if (pattern.matches(rel))
+ 
+            if (pattern.matches(rel)) {
                 yield rel;
+            }
         }
     }
 

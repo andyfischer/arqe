@@ -15,7 +15,7 @@ import StorageMount from './StorageMount'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
 import updateFilesystemMounts from './updateFilesystemMounts'
-import updateInheritTags from './updateInheritTags'
+import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
 import WebSocketSync, { updateWebSocketSyncs } from './WebSocketSync'
@@ -33,7 +33,7 @@ export default class Graph {
 
     schema = new Schema()
     typeInfo: { [typeName: string]: TypeInfo } = {}
-    inheritTags: EagerValue<{[tagname:string]: true}>
+    inheritTags: EagerValue<InheritTags>
     filesystemMounts: EagerValue<StorageMount[]>
     wsSyncs: EagerValue<WebSocketSync[]>
 
@@ -41,11 +41,10 @@ export default class Graph {
 
     constructor() {
         this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
-        this.inheritTags = this.eagerValue(updateInheritTags);
+        this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.schema.ordering.update);
         this.wsSyncs = this.eagerValue(updateWebSocketSyncs);
 
-        // temp
         // this.run('set wstest tag-definition provider/wssync')
     }
 
@@ -69,8 +68,8 @@ export default class Graph {
         return query;
     }
 
-    eagerValue<T>(updateFn: UpdateFn<T>): EagerValue<T> {
-        const ev = new EagerValue<T>(this, updateFn);
+    eagerValue<T>(updateFn: UpdateFn<T>, initialValue?: T): EagerValue<T> {
+        const ev = new EagerValue<T>(this, updateFn, initialValue);
         ev.runUpdate();
         return ev;
     }
@@ -181,10 +180,13 @@ export default class Graph {
             listener.onRelationUpdated(rel);
 
         for (const savedQuery of this.savedQueries) {
-            if (savedQuery.pattern.matches(rel)) {
-                savedQuery.changeToken += 1;
-                savedQuery.updateConnectedValues();
-            }
+            const matches = savedQuery.pattern.matches(rel);
+
+            if (!matches)
+                continue;
+
+            savedQuery.changeToken += 1;
+            savedQuery.updateConnectedValues();
         }
     }
 
@@ -201,7 +203,14 @@ export default class Graph {
     }
 
     run(commandStr: string, respond?: RespondFunc) {
-        respond = respond || (() => null);
+        if (!respond) {
+            respond = (msg) => {
+                if (msg.startsWith('#error')) {
+                    console.log(`Uncaught error when running '${commandStr}': ${msg}`);
+                }
+            }
+        }
+
         const parsed = parseCommand(commandStr);
         this.runParsed(parsed, respond);
     }

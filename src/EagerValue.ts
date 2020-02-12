@@ -8,8 +8,9 @@ export default class EagerValue<T> {
     updateFn: UpdateFn<T>
     value: T
 
-    constructor(graph: Graph, updateFn: UpdateFn<T>) {
+    constructor(graph: Graph, updateFn: UpdateFn<T>, initialValue?: T) {
         this.id = graph.nextEagerValueId;
+        this.value = initialValue;
         graph.nextEagerValueId += 1;
         this.graph = graph;
         this.updateFn = updateFn;

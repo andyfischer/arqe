@@ -2,7 +2,7 @@
   "name": "future-shell",
   "version": "1.0.0",
   "license": "UNLICENSED",
-  "main": "dist/index.js",
+  "main": "dist/startServer.js",
   "scripts": {
     "build": "tsc -p .",
     "test": "jest --watch",

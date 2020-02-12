@@ -35,10 +35,10 @@ function get_inherit(graph: Graph, search: RelationSearch) {
     let foundInheritTagIndex = 0;
     let foundInheritTag: CommandTag = null;
 
-    if (inheritTags) {
+    if (inheritTags && inheritTags.anyFound) {
         for (let tagIndex = 0; tagIndex < search.pattern.tags.length; tagIndex++) {
             const tag = search.pattern.tags[tagIndex];
-            if (inheritTags[tag.tagType]) {
+            if (inheritTags.byTypeName[tag.tagType]) {
 
                 if (!foundInheritTag || inheritTagCompare(graph, foundInheritTag, tag) < 0) {
                     foundInheritTagIndex = tagIndex;

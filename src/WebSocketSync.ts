@@ -19,10 +19,7 @@ export default class WebSocketSync {
 export function updateWebSocketSyncs(cxt: UpdateContext) {
     const syncs: WebSocketSync[] = [];
 
-    // console.log('running updateWebSocketSyncs')
-
-    for (const rel of cxt.getRelations('* tag-definition provider/wssync')) {
-        console.log('saw rel: ', rel);
+    for (const rel of cxt.getRelations('tag-definition provider/wssync *')) {
 
         /*
         const options = cxt.getOptionsObject(key.getTag("ws-sync"));
