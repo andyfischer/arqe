@@ -1,6 +1,6 @@
 
 import WebSocket from 'ws'
-import port from './defaultServerPort'
+import port from './serverPort'
 
 export default function createWebSocketServer() {
     return new WebSocket.Server({

@@ -1,5 +1,6 @@
 
 import RelationPattern from './RelationPattern'
+import { parsedCommandToString } from './stringifyQuery'
 
 export interface CommandTag {
     // Syntax fields
@@ -35,5 +36,9 @@ export default class Command {
 
     toPattern() {
         return new RelationPattern(this.tags);
+    }
+
+    stringify() {
+        return parsedCommandToString(this);
     }
 }

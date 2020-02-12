@@ -33,9 +33,7 @@ export default class RelationPattern {
 
             this.tagsForType[tagType].push(tag);
 
-            if (tag.star) {
-                // this.hasStarTag = true
-            } else if (tag.doubleStar) {
+            if (tag.doubleStar) {
                 this.hasDoubleStar = true;
             } else if (tag.star) {
                 this.hasStar = true;
@@ -161,6 +159,10 @@ export default class RelationPattern {
 
         const newTags = this.tags.slice(0,index).concat(this.tags.slice(index + 1));
         return new RelationPattern(newTags);
+    }
+
+    removeType(typeName: string) {
+        return new RelationPattern(this.tags.filter(tag => tag.tagType !== typeName));
     }
 
     addTag(s: string) {

@@ -44,8 +44,6 @@ export default class Graph {
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.schema.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
-
-        // this.run('set wstest tag-definition provider/wssync')
     }
 
     context(query: string) {
@@ -133,6 +131,17 @@ export default class Graph {
     }
 
     runParsed(command: Command, respond: RespondFunc) {
+
+        // Maybe divert to socket
+        const wsProviders = this.wsProviders && this.wsProviders.get();
+        if (wsProviders) {
+            for (const provider of wsProviders) {
+                if (provider.pattern.isSupersetOf(command.toPattern())) {
+                    provider.handle(command, respond);
+                    return;
+                }
+            }
+        }
 
         try {
             switch (command.command) {

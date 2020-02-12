@@ -4,7 +4,7 @@ import SocketServer from './socket/SocketServer'
 import Graph from './Graph'
 import bootstrapGraph from './bootstrapGraph'
 import createWebSocketServer from './socket/createWebSocketServer'
-import port from './socket/defaultServerPort'
+import port from './socket/serverPort'
 
 export default async function main() {
     const wsServer = createWebSocketServer();

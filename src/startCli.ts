@@ -6,8 +6,7 @@ import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
 
 export default async function main() {
-    const cliArgs = Minimist(process.argv.slice(2), {
-    });
+    const cliArgs = Minimist(process.argv.slice(2), {});
 
     const ws = new WebSocket('http://localhost:42940');
     await new Promise((resolve, reject) => {
@@ -20,6 +19,10 @@ export default async function main() {
     });
 
     const commandConnection = new CommandConnection(ws);
+    
+    // Temp
+    commandConnection.run('set wstest schema provider/wssync', () => null)
+    commandConnection.run('set wstest schema provider/wssync .host == http://localhost:42941', () => null)
 
     if (cliArgs._.length > 0) {
         const command = cliArgs._.join(' ');

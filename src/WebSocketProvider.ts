@@ -1,7 +1,9 @@
 
+import Command from './Command'
 import CommandConnection, { connectToServer } from './socket/CommandConnection'
 import RelationPattern, { parsePattern } from './RelationPattern'
 import UpdateContext from './UpdateContext'
+import { RespondFunc } from './Graph'
 
 export default class WebSocketProvider {
 
@@ -14,25 +16,26 @@ export default class WebSocketProvider {
         this.pattern = pattern;
         this.connection = connectToServer(host);
     }
+
+    handle(command: Command, respond: RespondFunc) {
+        console.log('ws handling command: ', command.stringify())
+        // provider.connection.run(command.stringify(), respond);
+    }
 }
 
 export function updateWebSocketProviders(cxt: UpdateContext) {
     const syncs: WebSocketProvider[] = [];
 
-    for (const rel of cxt.getRelations('tag-definition provider/wssync *')) {
+    for (const rel of cxt.getRelations('schema provider/wssync *')) {
 
         const options = cxt.getOptionsObject(rel.pattern().stringify());
+        const anchor = rel.pattern().removeType('provider').removeType('schema');
 
-        console.log('mounting WS with options: ', options);
-
-        /*
-        if (!options.host || !options.pattern)
+        if (!options.host)
             continue;
 
-        const pattern = parsePattern(options.pattern);
-
-        syncs.push(new WebSocketSync(options.host, pattern));
-        */
+        console.log('Mounting WS with options: ', options, ' on pattern: ', anchor.stringify());
+        syncs.push(new WebSocketProvider(options.host, anchor));
     }
 
     return syncs;
