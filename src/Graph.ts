@@ -237,8 +237,16 @@ export default class Graph {
         return result;
     }
 
+    runAsync(commandStr: string): Promise<string | string[]> {
+        return new Promise(resolve => {
+            const collector = collectRespond(resolve);
+            this.run(commandStr, collector);
+        })
+    }
+
     relationPattern(commandStr: string) {
         const parsed = parseCommand(commandStr);
         return parsed.toPattern();
     }
+
 }

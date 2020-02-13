@@ -154,6 +154,14 @@ export default class RelationPattern {
         return tags[0];
     }
 
+    getTagValue(typeName: string) {
+        const tag = this.getOneTagForType(typeName);
+        if (!tag)
+            throw new Error(`type "${typeName}" not found in pattern: ${this.stringify()}`);
+
+        return tag.tagValue;
+    }
+
     dropTagIndex(index: number) {
         if (index >= this.tags.length)
             throw new Error('index out of range: ' + index);

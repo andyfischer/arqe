@@ -19,6 +19,8 @@ export interface CommandFlags {
     x?: true
     list?: true
     get?: true
+    count?: true
+    exists?: true
 }
 
 export default class Command {

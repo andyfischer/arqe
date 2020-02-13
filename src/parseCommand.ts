@@ -166,6 +166,11 @@ export function parseTag(str: string): CommandTag {
     return parseOneTag(it);
 }
 
+export function parsePattern(str: string) {
+    // this is silly
+    return parseCommand('get ' + str).toPattern();
+}
+
 export default function parseCommand(str: string): Command {
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);

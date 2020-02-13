@@ -7,6 +7,8 @@ import RelationPattern from './RelationPattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
 import GetResponseFormatter from './GetResponseFormatter'
+import GetResponseFormatterCount from './GetResponseFormatterCount'
+import GetResponseFormatterExists from './GetResponseFormatterExists'
 import RelationSearch from './RelationSearch'
 
 interface Step {
@@ -98,12 +100,22 @@ export default class GetOperation implements RelationSearch {
         this.graph = graph;
         this.flags = command.flags;
         this.pattern = command.toPattern();
-        this.expectOne = !this.pattern.isMultiMatch();
+        this.expectOne = !this.pattern.isMultiMatch() || command.flags.exists;
     }
 
     outputToStringRespond(respond: RespondFunc, configFormat?: (formatter: GetResponseFormatter) => void) {
         if (this.output)
             throw new Error("already have a configured output");
+
+        if (this.flags.count) {
+            this.output = new GetResponseFormatterCount(respond);
+            return;
+        }
+
+        if (this.flags.exists) {
+            this.output = new GetResponseFormatterExists(respond);
+            return;
+        }
 
         const formatter = new GetResponseFormatter(); 
         formatter.extendedResult = this.flags.x;

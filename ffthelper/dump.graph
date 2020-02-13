@@ -1,0 +1,851 @@
+set skill/GilTaking skilltype/trap
+set skill/StealWeapon skilltype/trap
+set category/rez skill/Revive
+set category/rez skill/PhoenixDown
+set category/rez skill/Raise
+set category/rez skill/Raise2
+set team/bc63c
+set .name team/bc63c == black
+set unit/badbd
+set .Name unit/badbd == OmnibotGamma
+set .Gender unit/badbd == Female
+set .Sign unit/badbd == Aries
+set .Brave unit/badbd == 46
+set .Faith unit/badbd == 68
+set .Class unit/badbd == Squire
+set .ActionSkill unit/badbd == Jump
+set .ReactionSkill unit/badbd == Catch
+set .SupportSkill unit/badbd == Secret Hunt
+set .MoveSkill unit/badbd == Move-HP Up
+set .Mainhand unit/badbd == Blood Sword
+set .Offhand unit/badbd == 
+set .Head unit/badbd == Mythril Helmet
+set .Armor unit/badbd == Mythril Vest
+set .Accessory unit/badbd == Jade Armlet
+set has-skill/ThrowStone unit/badbd
+set has-skill/LevelJump2 unit/badbd
+set has-skill/VerticalJump8 unit/badbd
+set unit/06dac
+set .Name unit/06dac == Cloudycube
+set .Gender unit/06dac == Male
+set .Sign unit/06dac == Aquarius
+set .Brave unit/06dac == 44
+set .Faith unit/06dac == 53
+set .Class unit/06dac == Knight
+set .ActionSkill unit/06dac == Summon Magic
+set .ReactionSkill unit/06dac == Catch
+set .SupportSkill unit/06dac == Defend
+set .MoveSkill unit/06dac == Swim
+set .Mainhand unit/06dac == Defender
+set .Offhand unit/06dac == 
+set .Head unit/06dac == Leather Helmet
+set .Armor unit/06dac == Leather Armor
+set .Accessory unit/06dac == Leather Mantle
+set has-skill/SpeedBreak unit/06dac
+set has-skill/PowerBreak unit/06dac
+set has-skill/SurgingSword unit/06dac
+set has-skill/Shiva unit/06dac
+set has-skill/Titan unit/06dac
+set has-skill/Golem unit/06dac
+set has-skill/Bahamut unit/06dac
+set has-skill/Lich unit/06dac
+set has-skill/Cyclops unit/06dac
+set unit/bdbf4
+set .Name unit/bdbf4 == GetMad Gg
+set .Gender unit/bdbf4 == Male
+set .Sign unit/bdbf4 == Scorpio
+set .Brave unit/bdbf4 == 72
+set .Faith unit/bdbf4 == 37
+set .Class unit/bdbf4 == Monk
+set .ActionSkill unit/bdbf4 == Draw Out
+set .ReactionSkill unit/bdbf4 == Caution
+set .SupportSkill unit/bdbf4 == Maintenance
+set .MoveSkill unit/bdbf4 == Move+3
+set .Mainhand unit/bdbf4 == 
+set .Offhand unit/bdbf4 == 
+set .Head unit/bdbf4 == Triangle Hat
+set .Armor unit/bdbf4 == Brigandine
+set .Accessory unit/bdbf4 == Feather Mantle
+set has-skill/Pummel unit/bdbf4
+set has-skill/WaveFist unit/bdbf4
+set has-skill/Chakra unit/bdbf4
+set has-skill/Revive unit/bdbf4
+set has-skill/Koutetsu unit/bdbf4
+set has-skill/BizenBoat unit/bdbf4
+set has-skill/Murasame unit/bdbf4
+set has-skill/HeavensCloud unit/bdbf4
+set has-skill/Muramasa unit/bdbf4
+set unit/930c0
+set .Name unit/930c0 == Ominnous
+set .Gender unit/930c0 == Male
+set .Sign unit/930c0 == Capricorn
+set .Brave unit/930c0 == 59
+set .Faith unit/930c0 == 42
+set .Class unit/930c0 == Knight
+set .ActionSkill unit/930c0 == Draw Out
+set .ReactionSkill unit/930c0 == Brave Up
+set .SupportSkill unit/930c0 == Equip Knife
+set .MoveSkill unit/930c0 == Move+3
+set .Mainhand unit/930c0 == Save the Queen
+set .Offhand unit/930c0 == 
+set .Head unit/930c0 == Leather Helmet
+set .Armor unit/930c0 == Reflect Mail
+set .Accessory unit/930c0 == Battle Boots
+set has-skill/ShieldBreak unit/930c0
+set has-skill/SpeedBreak unit/930c0
+set has-skill/MindBreak unit/930c0
+set has-skill/StasisSword unit/930c0
+set has-skill/JusticeSword unit/930c0
+set has-skill/DarkSword unit/930c0
+set has-skill/NightSword unit/930c0
+set has-skill/Asura unit/930c0
+set has-skill/BizenBoat unit/930c0
+set has-skill/Muramasa unit/930c0
+set team/29346
+set .name team/29346 == blue
+set unit/9a894
+set .Name unit/9a894 == Toksu
+set .Gender unit/9a894 == Male
+set .Sign unit/9a894 == Scorpio
+set .Brave unit/9a894 == 66
+set .Faith unit/9a894 == 74
+set .Class unit/9a894 == Mediator
+set .ActionSkill unit/9a894 == Punch Art
+set .ReactionSkill unit/9a894 == Parry
+set .SupportSkill unit/9a894 == Defend
+set .MoveSkill unit/9a894 == Lava Walking
+set .Mainhand unit/9a894 == Romanda Gun
+set .Offhand unit/9a894 == 
+set .Head unit/9a894 == Holy Miter
+set .Armor unit/9a894 == Linen Robe
+set .Accessory unit/9a894 == Spike Shoes
+set has-skill/Praise unit/9a894
+set has-skill/Negotiate unit/9a894
+set has-skill/MimicDaravon unit/9a894
+set has-skill/Refute unit/9a894
+set has-skill/SecretFist unit/9a894
+set has-skill/Purification unit/9a894
+set has-skill/Chakra unit/9a894
+set has-skill/Revive unit/9a894
+set has-skill/SealEvil unit/9a894
+set unit/27056
+set .Name unit/27056 == CorpusCav
+set .Gender unit/27056 == Female
+set .Sign unit/27056 == Aquarius
+set .Brave unit/27056 == 62
+set .Faith unit/27056 == 63
+set .Class unit/27056 == Mediator
+set .ActionSkill unit/27056 == Battle Skill
+set .ReactionSkill unit/27056 == Speed Save
+set .SupportSkill unit/27056 == Dual Wield
+set .MoveSkill unit/27056 == Move+2
+set .Mainhand unit/27056 == Stone Gun
+set .Offhand unit/27056 == Stone Gun
+set .Head unit/27056 == Twist Headband
+set .Armor unit/27056 == Secret Clothes
+set .Accessory unit/27056 == Spike Shoes
+set has-skill/Insult unit/27056
+set has-skill/MimicDaravon unit/27056
+set has-skill/Refute unit/27056
+set has-skill/Rehabilitate unit/27056
+set has-skill/PowerBreak unit/27056
+set has-skill/MindBreak unit/27056
+set has-skill/DarkSword unit/27056
+set unit/6f597
+set .Name unit/6f597 == Ar Tactic
+set .Gender unit/6f597 == Female
+set .Sign unit/6f597 == Pisces
+set .Brave unit/6f597 == 70
+set .Faith unit/6f597 == 74
+set .Class unit/6f597 == Dancer
+set .ActionSkill unit/6f597 == Talk Skill
+set .ReactionSkill unit/6f597 == Abandon
+set .SupportSkill unit/6f597 == Monster Talk
+set .MoveSkill unit/6f597 == Ignore Height
+set .Mainhand unit/6f597 == Cute Bag
+set .Offhand unit/6f597 == 
+set .Head unit/6f597 == Red Hood
+set .Armor unit/6f597 == White Robe
+set .Accessory unit/6f597 == Magic Ring
+set has-skill/WitchHunt unit/6f597
+set has-skill/PolkaPolka unit/6f597
+set has-skill/LastDance unit/6f597
+set has-skill/ObsidianBlade unit/6f597
+set has-skill/VoidStorage unit/6f597
+set has-skill/Invitation unit/6f597
+set has-skill/Persuade unit/6f597
+set has-skill/Threaten unit/6f597
+set unit/c06f4
+set .Name unit/c06f4 == DarrenDinosaurs
+set .Gender unit/c06f4 == Monster
+set .Sign unit/c06f4 == Libra
+set .Brave unit/c06f4 == 66
+set .Faith unit/c06f4 == 45
+set .Class unit/c06f4 == Archaic Demon
+set .ActionSkill unit/c06f4 == 
+set .ReactionSkill unit/c06f4 == 
+set .SupportSkill unit/c06f4 == 
+set .MoveSkill unit/c06f4 == 
+set .Mainhand unit/c06f4 == 
+set .Offhand unit/c06f4 == 
+set .Head unit/c06f4 == 
+set .Armor unit/c06f4 == 
+set .Accessory unit/c06f4 == 
+set team/37e87
+set .name team/37e87 == brown
+set unit/eef2d
+set .Name unit/eef2d == Koryiaki
+set .Gender unit/eef2d == Monster
+set .Sign unit/eef2d == Capricorn
+set .Brave unit/eef2d == 74
+set .Faith unit/eef2d == 45
+set .Class unit/eef2d == Steel Giant
+set .ActionSkill unit/eef2d == 
+set .ReactionSkill unit/eef2d == 
+set .SupportSkill unit/eef2d == 
+set .MoveSkill unit/eef2d == 
+set .Mainhand unit/eef2d == 
+set .Offhand unit/eef2d == 
+set .Head unit/eef2d == 
+set .Armor unit/eef2d == 
+set .Accessory unit/eef2d == 
+set unit/837f4
+set .Name unit/837f4 == Coyowijuju
+set .Gender unit/837f4 == Female
+set .Sign unit/837f4 == Pisces
+set .Brave unit/837f4 == 71
+set .Faith unit/837f4 == 65
+set .Class unit/837f4 == Oracle
+set .ActionSkill unit/837f4 == Elemental
+set .ReactionSkill unit/837f4 == Sunken State
+set .SupportSkill unit/837f4 == Defend
+set .MoveSkill unit/837f4 == Ignore Height
+set .Mainhand unit/837f4 == Octagon Rod
+set .Offhand unit/837f4 == 
+set .Head unit/837f4 == Flash Hat
+set .Armor unit/837f4 == White Robe
+set .Accessory unit/837f4 == Elf Mantle
+set has-skill/Poison unit/837f4
+set has-skill/SpellAbsorb unit/837f4
+set has-skill/LifeDrain unit/837f4
+set has-skill/Zombie unit/837f4
+set has-skill/Foxbird unit/837f4
+set has-skill/DispelMagic unit/837f4
+set has-skill/Paralyze unit/837f4
+set has-skill/Pitfall unit/837f4
+set has-skill/HellIvy unit/837f4
+set has-skill/Will-O-Wisp unit/837f4
+set has-skill/Quicksand unit/837f4
+set has-skill/SandStorm unit/837f4
+set has-skill/Blizzard unit/837f4
+set has-skill/GustyWind unit/837f4
+set unit/923bc
+set .Name unit/923bc == SpencoJFrog
+set .Gender unit/923bc == Monster
+set .Sign unit/923bc == Aquarius
+set .Brave unit/923bc == 67
+set .Faith unit/923bc == 42
+set .Class unit/923bc == Floating Eye
+set .ActionSkill unit/923bc == 
+set .ReactionSkill unit/923bc == 
+set .SupportSkill unit/923bc == 
+set .MoveSkill unit/923bc == 
+set .Mainhand unit/923bc == 
+set .Offhand unit/923bc == 
+set .Head unit/923bc == 
+set .Armor unit/923bc == 
+set .Accessory unit/923bc == 
+set unit/1e440
+set .Name unit/1e440 == Sypheck
+set .Gender unit/1e440 == Female
+set .Sign unit/1e440 == Aries
+set .Brave unit/1e440 == 60
+set .Faith unit/1e440 == 78
+set .Class unit/1e440 == Geomancer
+set .ActionSkill unit/1e440 == Time Magic
+set .ReactionSkill unit/1e440 == MA Save
+set .SupportSkill unit/1e440 == Beastmaster
+set .MoveSkill unit/1e440 == Waterwalking
+set .Mainhand unit/1e440 == Coral Sword
+set .Offhand unit/1e440 == Escutcheon
+set .Head unit/1e440 == Thief Hat
+set .Armor unit/1e440 == Robe of Lords
+set .Accessory unit/1e440 == Reflect Ring
+set has-skill/Pitfall unit/1e440
+set has-skill/WaterBall unit/1e440
+set has-skill/HellIvy unit/1e440
+set has-skill/HallowedGround unit/1e440
+set has-skill/Will-O-Wisp unit/1e440
+set has-skill/Quicksand unit/1e440
+set has-skill/Blizzard unit/1e440
+set has-skill/LavaBall unit/1e440
+set has-skill/StabilizeTime unit/1e440
+set team/b47f7
+set .name team/b47f7 == champion
+set unit/d38db
+set .Name unit/d38db == Heyifoundawhistle
+set .Gender unit/d38db == Female
+set .Sign unit/d38db == Scorpio
+set .Brave unit/d38db == 46
+set .Faith unit/d38db == 40
+set .Class unit/d38db == Calculator
+set .ActionSkill unit/d38db == Yin Yang Magic
+set .ReactionSkill unit/d38db == Auto Potion
+set .SupportSkill unit/d38db == Defense UP
+set .MoveSkill unit/d38db == Jump+2
+set .Mainhand unit/d38db == Poison Rod
+set .Offhand unit/d38db == 
+set .Head unit/d38db == Green Beret
+set .Armor unit/d38db == Silk Robe
+set .Accessory unit/d38db == 108 Gems
+set has-skill/CT unit/d38db
+set has-skill/PrimeNumber unit/d38db
+set has-skill/4 unit/d38db
+set has-skill/3 unit/d38db
+set has-skill/Blind unit/d38db
+set has-skill/Poison unit/d38db
+set has-skill/DoubtFaith unit/d38db
+set has-skill/Foxbird unit/d38db
+set has-skill/Paralyze unit/d38db
+set has-skill/DarkHoly unit/d38db
+set unit/cefdc
+set .Name unit/cefdc == Sev Orion
+set .Gender unit/cefdc == Female
+set .Sign unit/cefdc == Cancer
+set .Brave unit/cefdc == 78
+set .Faith unit/cefdc == 48
+set .Class unit/cefdc == Thief
+set .ActionSkill unit/cefdc == Elemental
+set .ReactionSkill unit/cefdc == Abandon
+set .SupportSkill unit/cefdc == Doublehand
+set .MoveSkill unit/cefdc == Jump+3
+set .Mainhand unit/cefdc == Ice Brand
+set .Offhand unit/cefdc == 
+set .Head unit/cefdc == Red Hood
+set .Armor unit/cefdc == Adaman Vest
+set .Accessory unit/cefdc == Battle Boots
+set has-skill/ArmAim unit/cefdc
+set has-skill/Pitfall unit/cefdc
+set has-skill/WaterBall unit/cefdc
+set has-skill/HellIvy unit/cefdc
+set has-skill/Will-O-Wisp unit/cefdc
+set has-skill/Quicksand unit/cefdc
+set has-skill/Blizzard unit/cefdc
+set has-skill/GustyWind unit/cefdc
+set unit/01b3b
+set .Name unit/01b3b == Sinnyil2
+set .Gender unit/01b3b == Male
+set .Sign unit/01b3b == Aquarius
+set .Brave unit/01b3b == 40
+set .Faith unit/01b3b == 78
+set .Class unit/01b3b == Priest
+set .ActionSkill unit/01b3b == Draw Out
+set .ReactionSkill unit/01b3b == Hamedo
+set .SupportSkill unit/01b3b == Equip Knife
+set .MoveSkill unit/01b3b == Retreat
+set .Mainhand unit/01b3b == Flame Rod
+set .Offhand unit/01b3b == 
+set .Head unit/01b3b == Thief Hat
+set .Armor unit/01b3b == Earth Clothes
+set .Accessory unit/01b3b == N-Kai Armlet
+set has-skill/Cure unit/01b3b
+set has-skill/Cure3 unit/01b3b
+set has-skill/Cure4 unit/01b3b
+set has-skill/Raise unit/01b3b
+set has-skill/Reraise unit/01b3b
+set has-skill/Regen unit/01b3b
+set has-skill/Protect unit/01b3b
+set has-skill/Protect2 unit/01b3b
+set has-skill/Wall unit/01b3b
+set has-skill/Esuna unit/01b3b
+set has-skill/Koutetsu unit/01b3b
+set unit/d0113
+set .Name unit/d0113 == Clutchy42
+set .Gender unit/d0113 == Female
+set .Sign unit/d0113 == Aquarius
+set .Brave unit/d0113 == 73
+set .Faith unit/d0113 == 72
+set .Class unit/d0113 == Oracle
+set .ActionSkill unit/d0113 == Throw
+set .ReactionSkill unit/d0113 == Arrow Guard
+set .SupportSkill unit/d0113 == Short Charge
+set .MoveSkill unit/d0113 == Move-HP Up
+set .Mainhand unit/d0113 == Ivory Rod
+set .Offhand unit/d0113 == 
+set .Head unit/d0113 == Flash Hat
+set .Armor unit/d0113 == Adaman Vest
+set .Accessory unit/d0113 == Leather Mantle
+set has-skill/Blind unit/d0113
+set has-skill/Poison unit/d0113
+set has-skill/PrayFaith unit/d0113
+set has-skill/DoubtFaith unit/d0113
+set has-skill/Zombie unit/d0113
+set has-skill/SilenceSong unit/d0113
+set has-skill/BlindRage unit/d0113
+set has-skill/Foxbird unit/d0113
+set has-skill/ConfusionSong unit/d0113
+set has-skill/DispelMagic unit/d0113
+set has-skill/Paralyze unit/d0113
+set has-skill/Sleep unit/d0113
+set has-skill/DarkHoly unit/d0113
+set has-skill/Bomb unit/d0113
+set has-skill/NinjaSword unit/d0113
+set has-skill/Wand unit/d0113
+set team/0406c
+set .name team/0406c == green
+set unit/ee73a
+set .Name unit/ee73a == Bakuchi
+set .Gender unit/ee73a == Monster
+set .Sign unit/ee73a == Pisces
+set .Brave unit/ee73a == 78
+set .Faith unit/ee73a == 43
+set .Class unit/ee73a == Holy Dragon
+set .ActionSkill unit/ee73a == 
+set .ReactionSkill unit/ee73a == 
+set .SupportSkill unit/ee73a == 
+set .MoveSkill unit/ee73a == 
+set .Mainhand unit/ee73a == 
+set .Offhand unit/ee73a == 
+set .Head unit/ee73a == 
+set .Armor unit/ee73a == 
+set .Accessory unit/ee73a == 
+set unit/88589
+set .Name unit/88589 == Sinnyil2
+set .Gender unit/88589 == Male
+set .Sign unit/88589 == Cancer
+set .Brave unit/88589 == 44
+set .Faith unit/88589 == 43
+set .Class unit/88589 == Monk
+set .ActionSkill unit/88589 == Item
+set .ReactionSkill unit/88589 == Auto Potion
+set .SupportSkill unit/88589 == Magic Attack UP
+set .MoveSkill unit/88589 == Lava Walking
+set .Mainhand unit/88589 == 
+set .Offhand unit/88589 == 
+set .Head unit/88589 == Green Beret
+set .Armor unit/88589 == Judo Outfit
+set .Accessory unit/88589 == Cursed Ring
+set has-skill/EarthSlash unit/88589
+set has-skill/Purification unit/88589
+set has-skill/Ether unit/88589
+set has-skill/Hi-Ether unit/88589
+set has-skill/EchoGrass unit/88589
+set has-skill/MaidensKiss unit/88589
+set has-skill/HolyWater unit/88589
+set has-skill/PhoenixDown unit/88589
+set unit/80cf9
+set .Name unit/80cf9 == Marceleas
+set .Gender unit/80cf9 == Male
+set .Sign unit/80cf9 == Libra
+set .Brave unit/80cf9 == 67
+set .Faith unit/80cf9 == 52
+set .Class unit/80cf9 == Archer
+set .ActionSkill unit/80cf9 == Steal
+set .ReactionSkill unit/80cf9 == Hamedo
+set .SupportSkill unit/80cf9 == Dual Wield
+set .MoveSkill unit/80cf9 == Fly
+set .Mainhand unit/80cf9 == Poison Bow
+set .Offhand unit/80cf9 == Poison Bow
+set .Head unit/80cf9 == Twist Headband
+set .Armor unit/80cf9 == Adaman Vest
+set .Accessory unit/80cf9 == Rubber Shoes
+set has-skill/Charge+1 unit/80cf9
+set has-skill/Charge+3 unit/80cf9
+set has-skill/Charge+5 unit/80cf9
+set has-skill/Charge+7 unit/80cf9
+set has-skill/StealArmor unit/80cf9
+set has-skill/ArmAim unit/80cf9
+set unit/85e95
+set .Name unit/85e95 == KeienSlayer
+set .Gender unit/85e95 == Monster
+set .Sign unit/85e95 == Virgo
+set .Brave unit/85e95 == 44
+set .Faith unit/85e95 == 69
+set .Class unit/85e95 == Cockatrice
+set .ActionSkill unit/85e95 == 
+set .ReactionSkill unit/85e95 == 
+set .SupportSkill unit/85e95 == 
+set .MoveSkill unit/85e95 == 
+set .Mainhand unit/85e95 == 
+set .Offhand unit/85e95 == 
+set .Head unit/85e95 == 
+set .Armor unit/85e95 == 
+set .Accessory unit/85e95 == 
+set team/8d291
+set .name team/8d291 == purple
+set unit/dbe06
+set .Name unit/dbe06 == JollyGreenGiant82
+set .Gender unit/dbe06 == Male
+set .Sign unit/dbe06 == Taurus
+set .Brave unit/dbe06 == 71
+set .Faith unit/dbe06 == 78
+set .Class unit/dbe06 == Geomancer
+set .ActionSkill unit/dbe06 == Black Magic
+set .ReactionSkill unit/dbe06 == Brave Up
+set .SupportSkill unit/dbe06 == Long Status
+set .MoveSkill unit/dbe06 == Jump+3
+set .Mainhand unit/dbe06 == Giant Axe
+set .Offhand unit/dbe06 == Aegis Shield
+set .Head unit/dbe06 == Red Hood
+set .Armor unit/dbe06 == Silk Robe
+set .Accessory unit/dbe06 == Magic Ring
+set has-skill/Pitfall unit/dbe06
+set has-skill/HallowedGround unit/dbe06
+set has-skill/Quicksand unit/dbe06
+set has-skill/SandStorm unit/dbe06
+set has-skill/Blizzard unit/dbe06
+set has-skill/GustyWind unit/dbe06
+set has-skill/Fire unit/dbe06
+set has-skill/Bolt4 unit/dbe06
+set has-skill/Ice unit/dbe06
+set has-skill/Ice3 unit/dbe06
+set has-skill/Flare unit/dbe06
+set unit/c0a41
+set .Name unit/c0a41 == Kl0kwurk
+set .Gender unit/c0a41 == Male
+set .Sign unit/c0a41 == Scorpio
+set .Brave unit/c0a41 == 59
+set .Faith unit/c0a41 == 69
+set .Class unit/c0a41 == Summoner
+set .ActionSkill unit/c0a41 == Item
+set .ReactionSkill unit/c0a41 == Meatbone Slash
+set .SupportSkill unit/c0a41 == Equip Armor
+set .MoveSkill unit/c0a41 == Waterwalking
+set .Mainhand unit/c0a41 == Thunder Rod
+set .Offhand unit/c0a41 == 
+set .Head unit/c0a41 == Circlet
+set .Armor unit/c0a41 == Mystic Vest
+set .Accessory unit/c0a41 == Elf Mantle
+set has-skill/Moogle unit/c0a41
+set has-skill/Ifrit unit/c0a41
+set has-skill/Golem unit/c0a41
+set has-skill/Carbunkle unit/c0a41
+set has-skill/Bahamut unit/c0a41
+set has-skill/Odin unit/c0a41
+set has-skill/Leviathan unit/c0a41
+set has-skill/Silf unit/c0a41
+set has-skill/Lich unit/c0a41
+set has-skill/Zodiac unit/c0a41
+set has-skill/Potion unit/c0a41
+set has-skill/Hi-Potion unit/c0a41
+set has-skill/Ether unit/c0a41
+set has-skill/EyeDrop unit/c0a41
+set has-skill/EchoGrass unit/c0a41
+set has-skill/Soft unit/c0a41
+set has-skill/PhoenixDown unit/c0a41
+set unit/76ed9
+set .Name unit/76ed9 == Ggbroccoli
+set .Gender unit/76ed9 == Male
+set .Sign unit/76ed9 == Cancer
+set .Brave unit/76ed9 == 62
+set .Faith unit/76ed9 == 51
+set .Class unit/76ed9 == Knight
+set .ActionSkill unit/76ed9 == Summon Magic
+set .ReactionSkill unit/76ed9 == Damage Split
+set .SupportSkill unit/76ed9 == Equip Gun
+set .MoveSkill unit/76ed9 == Move+1
+set .Mainhand unit/76ed9 == Bestiary
+set .Offhand unit/76ed9 == Gold Shield
+set .Head unit/76ed9 == Leather Helmet
+set .Armor unit/76ed9 == Diamond Armor
+set .Accessory unit/76ed9 == N-Kai Armlet
+set has-skill/MagicBreak unit/76ed9
+set has-skill/DarkSword unit/76ed9
+set has-skill/Moogle unit/76ed9
+set has-skill/Titan unit/76ed9
+set has-skill/Carbunkle unit/76ed9
+set has-skill/Bahamut unit/76ed9
+set has-skill/Odin unit/76ed9
+set has-skill/Silf unit/76ed9
+set has-skill/Fairy unit/76ed9
+set unit/794e2
+set .Name unit/794e2 == De1337ed
+set .Gender unit/794e2 == Female
+set .Sign unit/794e2 == Taurus
+set .Brave unit/794e2 == 80
+set .Faith unit/794e2 == 72
+set .Class unit/794e2 == Ninja
+set .ActionSkill unit/794e2 == Draw Out
+set .ReactionSkill unit/794e2 == Absorb Used MP
+set .SupportSkill unit/794e2 == Defend
+set .MoveSkill unit/794e2 == Jump+2
+set .Mainhand unit/794e2 == Assassin Dagger
+set .Offhand unit/794e2 == Flame Whip
+set .Head unit/794e2 == Holy Miter
+set .Armor unit/794e2 == Wizard Outfit
+set .Accessory unit/794e2 == Reflect Ring
+set has-skill/Bomb unit/794e2
+set has-skill/Hammer unit/794e2
+set has-skill/Asura unit/794e2
+set has-skill/Koutetsu unit/794e2
+set has-skill/Muramasa unit/794e2
+set has-skill/Chirijiraden unit/794e2
+set team/68f85
+set .name team/68f85 == red
+set unit/57391
+set .Name unit/57391 == Lowlf
+set .Gender unit/57391 == Monster
+set .Sign unit/57391 == Sagittarius
+set .Brave unit/57391 == 65
+set .Faith unit/57391 == 57
+set .Class unit/57391 == Reaper
+set .ActionSkill unit/57391 == 
+set .ReactionSkill unit/57391 == 
+set .SupportSkill unit/57391 == 
+set .MoveSkill unit/57391 == 
+set .Mainhand unit/57391 == 
+set .Offhand unit/57391 == 
+set .Head unit/57391 == 
+set .Armor unit/57391 == 
+set .Accessory unit/57391 == 
+set unit/1b0a1
+set .Name unit/1b0a1 == Hzor
+set .Gender unit/1b0a1 == Male
+set .Sign unit/1b0a1 == Libra
+set .Brave unit/1b0a1 == 57
+set .Faith unit/1b0a1 == 79
+set .Class unit/1b0a1 == Ninja
+set .ActionSkill unit/1b0a1 == Jump
+set .ReactionSkill unit/1b0a1 == Critical Quick
+set .SupportSkill unit/1b0a1 == Attack UP
+set .MoveSkill unit/1b0a1 == Move+2
+set .Mainhand unit/1b0a1 == Spell Edge
+set .Offhand unit/1b0a1 == Main Gauche
+set .Head unit/1b0a1 == Golden Hairpin
+set .Armor unit/1b0a1 == Mystic Vest
+set .Accessory unit/1b0a1 == Rubber Shoes
+set has-skill/Shuriken unit/1b0a1
+set has-skill/LevelJump8 unit/1b0a1
+set has-skill/VerticalJump7 unit/1b0a1
+set unit/bd27d
+set .Name unit/bd27d == Lyner87
+set .Gender unit/bd27d == Male
+set .Sign unit/bd27d == Aries
+set .Brave unit/bd27d == 80
+set .Faith unit/bd27d == 75
+set .Class unit/bd27d == Summoner
+set .ActionSkill unit/bd27d == Charge
+set .ReactionSkill unit/bd27d == Brave Up
+set .SupportSkill unit/bd27d == Short Status
+set .MoveSkill unit/bd27d == Jump+1
+set .Mainhand unit/bd27d == Poison Rod
+set .Offhand unit/bd27d == 
+set .Head unit/bd27d == Thief Hat
+set .Armor unit/bd27d == Light Robe
+set .Accessory unit/bd27d == Reflect Ring
+set has-skill/Moogle unit/bd27d
+set has-skill/Carbunkle unit/bd27d
+set has-skill/Odin unit/bd27d
+set has-skill/Salamander unit/bd27d
+set has-skill/Silf unit/bd27d
+set has-skill/Zodiac unit/bd27d
+set has-skill/Charge+1 unit/bd27d
+set has-skill/Charge+2 unit/bd27d
+set has-skill/Charge+3 unit/bd27d
+set has-skill/Charge+7 unit/bd27d
+set unit/2407d
+set .Name unit/2407d == Wickslee
+set .Gender unit/2407d == Male
+set .Sign unit/2407d == Aries
+set .Brave unit/2407d == 54
+set .Faith unit/2407d == 58
+set .Class unit/2407d == Monk
+set .ActionSkill unit/2407d == Jump
+set .ReactionSkill unit/2407d == HP Restore
+set .SupportSkill unit/2407d == Equip Axe
+set .MoveSkill unit/2407d == Lava Walking
+set .Mainhand unit/2407d == White Staff
+set .Offhand unit/2407d == 
+set .Head unit/2407d == Flash Hat
+set .Armor unit/2407d == Adaman Vest
+set .Accessory unit/2407d == Bracer
+set has-skill/SpinFist unit/2407d
+set has-skill/Pummel unit/2407d
+set has-skill/EarthSlash unit/2407d
+set has-skill/Purification unit/2407d
+set has-skill/LevelJump5 unit/2407d
+set has-skill/VerticalJump8 unit/2407d
+set team/48b0e
+set .name team/48b0e == white
+set unit/9bbf6
+set .Name unit/9bbf6 == Otterpoop
+set .Gender unit/9bbf6 == Female
+set .Sign unit/9bbf6 == Aquarius
+set .Brave unit/9bbf6 == 51
+set .Faith unit/9bbf6 == 67
+set .Class unit/9bbf6 == Dancer
+set .ActionSkill unit/9bbf6 == Battle Skill
+set .ReactionSkill unit/9bbf6 == PA Save
+set .SupportSkill unit/9bbf6 == Equip Shield
+set .MoveSkill unit/9bbf6 == Ignore Height
+set .Mainhand unit/9bbf6 == Cashmere
+set .Offhand unit/9bbf6 == Crystal Shield
+set .Head unit/9bbf6 == Green Beret
+set .Armor unit/9bbf6 == Judo Outfit
+set .Accessory unit/9bbf6 == Defense Ring
+set has-skill/PolkaPolka unit/9bbf6
+set has-skill/NamelessDance unit/9bbf6
+set has-skill/DragonPit unit/9bbf6
+set has-skill/ArmorBreak unit/9bbf6
+set has-skill/WeaponBreak unit/9bbf6
+set has-skill/MagicBreak unit/9bbf6
+set has-skill/SpeedBreak unit/9bbf6
+set has-skill/MindBreak unit/9bbf6
+set has-skill/JusticeSword unit/9bbf6
+set unit/668a9
+set .Name unit/668a9 == Eleveneighteen
+set .Gender unit/668a9 == Monster
+set .Sign unit/668a9 == Gemini
+set .Brave unit/668a9 == 43
+set .Faith unit/668a9 == 56
+set .Class unit/668a9 == Ochu
+set .ActionSkill unit/668a9 == 
+set .ReactionSkill unit/668a9 == 
+set .SupportSkill unit/668a9 == 
+set .MoveSkill unit/668a9 == 
+set .Mainhand unit/668a9 == 
+set .Offhand unit/668a9 == 
+set .Head unit/668a9 == 
+set .Armor unit/668a9 == 
+set .Accessory unit/668a9 == 
+set unit/0cb43
+set .Name unit/0cb43 == Novapuppets
+set .Gender unit/0cb43 == Male
+set .Sign unit/0cb43 == Libra
+set .Brave unit/0cb43 == 57
+set .Faith unit/0cb43 == 66
+set .Class unit/0cb43 == Thief
+set .ActionSkill unit/0cb43 == Charge
+set .ReactionSkill unit/0cb43 == Brave Up
+set .SupportSkill unit/0cb43 == Short Status
+set .MoveSkill unit/0cb43 == Swim
+set .Mainhand unit/0cb43 == Blind Knife
+set .Offhand unit/0cb43 == 
+set .Head unit/0cb43 == Mythril Helmet
+set .Armor unit/0cb43 == Leather Outfit
+set .Accessory unit/0cb43 == Feather Boots
+set has-skill/GilTaking unit/0cb43
+set has-skill/StealHeart unit/0cb43
+set has-skill/StealAccessory unit/0cb43
+set has-skill/LegAim unit/0cb43
+set has-skill/Charge+2 unit/0cb43
+set has-skill/Charge+7 unit/0cb43
+set unit/686ba
+set .Name unit/686ba == BandsWithLegends
+set .Gender unit/686ba == Male
+set .Sign unit/686ba == Cancer
+set .Brave unit/686ba == 61
+set .Faith unit/686ba == 71
+set .Class unit/686ba == Samurai
+set .ActionSkill unit/686ba == Steal
+set .ReactionSkill unit/686ba == Dragon Spirit
+set .SupportSkill unit/686ba == Sicken
+set .MoveSkill unit/686ba == Swim
+set .Mainhand unit/686ba == Murasame
+set .Offhand unit/686ba == 
+set .Head unit/686ba == Genji Helmet
+set .Armor unit/686ba == White Robe
+set .Accessory unit/686ba == Feather Mantle
+set has-skill/Asura unit/686ba
+set has-skill/Muramasa unit/686ba
+set has-skill/Kikuichimoji unit/686ba
+set has-skill/GilTaking unit/686ba
+set has-skill/StealHeart unit/686ba
+set has-skill/StealArmor unit/686ba
+set has-skill/StealStatus unit/686ba
+set team/51e34
+set .name team/51e34 == yellow
+set unit/9aeb5
+set .Name unit/9aeb5 == Ubiquitous42
+set .Gender unit/9aeb5 == Female
+set .Sign unit/9aeb5 == Aquarius
+set .Brave unit/9aeb5 == 42
+set .Faith unit/9aeb5 == 52
+set .Class unit/9aeb5 == Archer
+set .ActionSkill unit/9aeb5 == Battle Skill
+set .ReactionSkill unit/9aeb5 == HP Restore
+set .SupportSkill unit/9aeb5 == Short Status
+set .MoveSkill unit/9aeb5 == Jump+2
+set .Mainhand unit/9aeb5 == Ice Bow
+set .Offhand unit/9aeb5 == 
+set .Head unit/9aeb5 == Leather Hat
+set .Armor unit/9aeb5 == Chain Vest
+set .Accessory unit/9aeb5 == Sprint Shoes
+set has-skill/Charge+2 unit/9aeb5
+set has-skill/Charge+3 unit/9aeb5
+set has-skill/Charge+4 unit/9aeb5
+set has-skill/Charge+7 unit/9aeb5
+set has-skill/HeadBreak unit/9aeb5
+set has-skill/ArmorBreak unit/9aeb5
+set has-skill/ShieldBreak unit/9aeb5
+set has-skill/StasisSword unit/9aeb5
+set unit/0eec9
+set .Name unit/0eec9 == Xnoticemesempaix
+set .Gender unit/0eec9 == Male
+set .Sign unit/0eec9 == Sagittarius
+set .Brave unit/0eec9 == 77
+set .Faith unit/0eec9 == 72
+set .Class unit/0eec9 == Oracle
+set .ActionSkill unit/0eec9 == Throw
+set .ReactionSkill unit/0eec9 == Speed Save
+set .SupportSkill unit/0eec9 == Short Status
+set .MoveSkill unit/0eec9 == Move-MP Up
+set .Mainhand unit/0eec9 == Battle Folio
+set .Offhand unit/0eec9 == 
+set .Head unit/0eec9 == Feather Hat
+set .Armor unit/0eec9 == Wizard Robe
+set .Accessory unit/0eec9 == Magic Gauntlet
+set has-skill/Blind unit/0eec9
+set has-skill/Poison unit/0eec9
+set has-skill/SpellAbsorb unit/0eec9
+set has-skill/LifeDrain unit/0eec9
+set has-skill/SilenceSong unit/0eec9
+set has-skill/BlindRage unit/0eec9
+set has-skill/Foxbird unit/0eec9
+set has-skill/DispelMagic unit/0eec9
+set has-skill/Paralyze unit/0eec9
+set has-skill/Sleep unit/0eec9
+set has-skill/Shuriken unit/0eec9
+set has-skill/NinjaSword unit/0eec9
+set unit/7057c
+set .Name unit/7057c == JohnDuggins
+set .Gender unit/7057c == Male
+set .Sign unit/7057c == Leo
+set .Brave unit/7057c == 72
+set .Faith unit/7057c == 43
+set .Class unit/7057c == Time Mage
+set .ActionSkill unit/7057c == Charge
+set .ReactionSkill unit/7057c == Distribute
+set .SupportSkill unit/7057c == Equip Bow
+set .MoveSkill unit/7057c == Jump+3
+set .Mainhand unit/7057c == Long Bow
+set .Offhand unit/7057c == 
+set .Head unit/7057c == Twist Headband
+set .Armor unit/7057c == Chameleon Robe
+set .Accessory unit/7057c == Power Wrist
+set has-skill/Haste unit/7057c
+set has-skill/Haste2 unit/7057c
+set has-skill/Slow unit/7057c
+set has-skill/Slow2 unit/7057c
+set has-skill/Immobilize unit/7057c
+set has-skill/Demi unit/7057c
+set has-skill/StabilizeTime unit/7057c
+set has-skill/Charge+1 unit/7057c
+set has-skill/Charge+4 unit/7057c
+set has-skill/Charge+20 unit/7057c
+set unit/b71d0
+set .Name unit/b71d0 == Da Aa Ve
+set .Gender unit/b71d0 == Monster
+set .Sign unit/b71d0 == Sagittarius
+set .Brave unit/b71d0 == 62
+set .Faith unit/b71d0 == 58
+set .Class unit/b71d0 == Ultima Demon
+set .ActionSkill unit/b71d0 == 
+set .ReactionSkill unit/b71d0 == 
+set .SupportSkill unit/b71d0 == 
+set .MoveSkill unit/b71d0 == 
+set .Mainhand unit/b71d0 == 
+set .Offhand unit/b71d0 == 
+set .Head unit/b71d0 == 
+set .Armor unit/b71d0 == 
+set .Accessory unit/b71d0 == 
