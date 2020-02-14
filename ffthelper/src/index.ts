@@ -19,7 +19,8 @@ graph.run('set skill/PhoenixDown category/rez')
 graph.run('set skill/Raise category/rez')
 graph.run('set skill/Raise2 category/rez')
 
-graph.run('set skill/FastCharge rank/strong')
+graph.run('set skill/FastCharge rank/verygood')
+graph.run('set skill/Doublehand rank/good')
 
 graph.run('set item/StoneGun rank/powerful')
 
@@ -28,6 +29,7 @@ graph.run('set class/Calculator rank/good')
 graph.run('set class/Summoner rank/good')
 graph.run('set class/Monk rank/good')
 graph.run('set class/Lancer rank/good')
+graph.run('set class/RedChocobo rank/good')
 
 graph.run('set class/Taiju rank/verygood')
 graph.run('set class/SteelGiant rank/verygood')

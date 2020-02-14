@@ -113,7 +113,7 @@ export default class GraphContext {
             }
         }
 
-        switch (command.command) {
+        switch (command.commandName) {
         case 'context':
             this.contextCommand(command, respond);
             return;

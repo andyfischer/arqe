@@ -144,7 +144,7 @@ export default class Graph {
         }
 
         try {
-            switch (command.command) {
+            switch (command.commandName) {
 
             case 'set': {
                 const set = new SetOperation(this, command, respond)
@@ -176,7 +176,7 @@ export default class Graph {
             
             }
 
-            respond("#error unrecognized command: " + command.command);
+            respond("#error unrecognized command: " + command.commandName);
         } catch (err) {
             console.log(err.stack || err);
             respond("#internal_error");

@@ -27,7 +27,7 @@ export function commandTagsToString(tags: PatternTag[]) {
 }
 
 export function parsedCommandToString(command: Command) {
-    let str = command.command;
+    let str = command.commandName;
 
     for (const flag in command.flags) {
         str += ' -' + flag;
@@ -51,7 +51,7 @@ export function appendTagInCommand(str: string, tag: string) {
 export function parseAsSet(str: string) {
     const command = parseCommand(str);
 
-    if (command.command !== 'set')
+    if (command.commandName !== 'set')
         throw new Error("Expected 'set' command: " + str);
 
     return command.tags;

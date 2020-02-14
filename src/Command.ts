@@ -14,13 +14,13 @@ export interface CommandFlags {
 }
 
 export default class Command {
-    command: string
+    commandName: string
     tags: PatternTag[]
     flags: CommandFlags
     payloadStr: string
 
-    constructor(command: string, tags: PatternTag[], payload: string, flags: FlagMap) {
-        this.command = command;
+    constructor(commandName: string, tags: PatternTag[], payload: string, flags: FlagMap) {
+        this.commandName = commandName;
         this.tags = tags;
         this.payloadStr = payload;
         this.flags = flags;
