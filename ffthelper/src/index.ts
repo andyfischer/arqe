@@ -19,6 +19,8 @@ graph.run('set skill/PhoenixDown category/rez')
 graph.run('set skill/Raise category/rez')
 graph.run('set skill/Raise2 category/rez')
 
+graph.run('set item/StoneGun rank/powerful')
+
 async function main() {
     const data = await (fetch('https://fftbg.com/api/tournament/latest').then(d => d.json()));
 

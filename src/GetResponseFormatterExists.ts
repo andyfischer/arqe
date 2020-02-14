@@ -11,8 +11,7 @@ export default class GetResponseFormatterExists implements GetOperationOutput {
         this.respond = respond;
     }
 
-    start() {
-    }
+    start() {}
 
     relation(rel: Relation) {
         if (this.hasReplied)
