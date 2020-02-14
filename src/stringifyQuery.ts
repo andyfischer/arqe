@@ -1,8 +1,9 @@
 
-import Command, { CommandTag } from './Command'
+import Command from './Command'
 import parseCommand from './parseCommand'
+import { PatternTag } from './RelationPattern'
 
-export function commandTagToString(tag: CommandTag) {
+export function commandTagToString(tag: PatternTag) {
     if (tag.star)
         return '*';
 
@@ -21,7 +22,7 @@ export function commandTagToString(tag: CommandTag) {
     return s;
 }
 
-export function commandTagsToString(tags: CommandTag[]) {
+export function commandTagsToString(tags: PatternTag[]) {
     return tags.map(commandTagToString).join(' ');
 }
 
@@ -56,7 +57,7 @@ export function parseAsSet(str: string) {
     return command.tags;
 }
 
-export function normalizeExactTag(tags: CommandTag[]) {
+export function normalizeExactTag(tags: PatternTag[]) {
     const argStrs = tags.map(arg => arg.tagType + '/' + arg.tagValue)
     argStrs.sort();
     return argStrs.join(' ');

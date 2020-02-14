@@ -1,9 +1,8 @@
 
 import Graph from './Graph'
-import { CommandTag } from './Command'
 import { normalizeExactTag } from './stringifyQuery'
 import Schema from './Schema'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { PatternTag } from './RelationPattern'
 
 export interface RelationTag {
     tagType: string
@@ -147,7 +146,7 @@ export default class Relation {
     }
 }
 
-export function commandTagsToRelation(tags: CommandTag[], payload: string): Relation {
+export function commandTagsToRelation(tags: PatternTag[], payload: string): Relation {
     const relationTags = tags.map(t => ({
         tagType: t.tagType,
         tagValue: t.tagValue

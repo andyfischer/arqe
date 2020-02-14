@@ -1,9 +1,9 @@
 
-import Command, { CommandTag } from './Command'
+import Command from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { PatternTag } from './RelationPattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
 import { GetOperationOutput }  from './GetOperation'

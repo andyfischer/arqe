@@ -1,10 +1,20 @@
 
-import Command, { CommandTag } from './Command'
+import Command from './Command'
 import Relation from './Relation'
 import Graph from './Graph'
 import Schema from './Schema'
 import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
+
+export interface PatternTag {
+    tagType?: string
+    tagValue?: string
+    negate?: boolean
+    star?: boolean
+    doubleStar?: boolean
+    starValue?: boolean
+    questionValue?: boolean
+}
 
 export interface FixedTag {
     tagType: string
@@ -12,16 +22,16 @@ export interface FixedTag {
 }
 
 export default class RelationPattern {
-    tags: CommandTag[] = []
-    starValueTags: CommandTag[] = []
+    tags: PatternTag[] = []
+    starValueTags: PatternTag[] = []
     fixedTags: FixedTag[] = []
     fixedTagsForType: { [typename: string]: true } = {}
-    tagsForType: { [typename: string]: CommandTag[] } = {}
+    tagsForType: { [typename: string]: PatternTag[] } = {}
     tagCount: number
     hasStar?: boolean
     hasDoubleStar?: boolean
 
-    constructor(tags: CommandTag[]) {
+    constructor(tags: PatternTag[]) {
         this.tags = tags;
         this.tagCount = tags.length;
 

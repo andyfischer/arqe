@@ -1,9 +1,9 @@
 
-import Command, { CommandTag, CommandFlags } from './Command'
+import Command, { CommandFlags } from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { PatternTag } from './RelationPattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
 import GetResponseFormatter from './GetResponseFormatter'
@@ -22,7 +22,7 @@ export interface GetOperationOutput {
     finish: () => void
 }
 
-function inheritTagCompare(graph: Graph, a: CommandTag, b: CommandTag) {
+function inheritTagCompare(graph: Graph, a: PatternTag, b: PatternTag) {
     const typeCompare = graph.schema.ordering.compareTagTypes(a.tagType, b.tagType);
     if (typeCompare !== 0)
         return typeCompare;
@@ -35,7 +35,7 @@ function get_inherit(graph: Graph, search: RelationSearch) {
 
     // Look for any inherit tags used in this search.
     let foundInheritTagIndex = 0;
-    let foundInheritTag: CommandTag = null;
+    let foundInheritTag: PatternTag = null;
 
     if (inheritTags && inheritTags.anyFound) {
         for (let tagIndex = 0; tagIndex < search.pattern.tags.length; tagIndex++) {

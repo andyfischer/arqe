@@ -1,6 +1,7 @@
 
-import Command, { CommandTag } from './Command'
+import Command from './Command'
 import Relation, { RelationTag } from './Relation'
+import { PatternTag } from './RelationPattern'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash } from './lexer'
@@ -14,12 +15,12 @@ function nextIsPayloadStart(it: TokenIterator) {
 }
 
 interface InProgressQuery {
-    tags: CommandTag[]
+    tags: PatternTag[]
     flags: { [flag: string]: any }
     payload: string | null
 }
 
-function parseOneTag(it: TokenIterator): CommandTag {
+function parseOneTag(it: TokenIterator): PatternTag {
     if (it.tryConsume(t_star)) {
         if (it.tryConsume(t_star)) {
             return {
@@ -161,7 +162,7 @@ export function parseRelation(str: string): Relation {
     return new Relation(null, query.tags as RelationTag[], query.payload);
 }
 
-export function parseTag(str: string): CommandTag {
+export function parseTag(str: string): PatternTag {
     const it = lexStringToIterator(str);
     return parseOneTag(it);
 }

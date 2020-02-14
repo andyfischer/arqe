@@ -1,5 +1,5 @@
 
-import Command, { CommandTag } from './Command'
+import Command from './Command'
 import parseCommand from './parseCommand'
 import Relation from './Relation'
 import SetOperation from './SetOperation'

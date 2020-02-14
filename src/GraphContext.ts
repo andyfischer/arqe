@@ -1,10 +1,11 @@
 
 import Graph, { RespondFunc } from './Graph'
-import Command, { CommandTag } from './Command'
+import Command from './Command'
 import parseCommand from './parseCommand'
 import { parsedCommandToString } from './stringifyQuery'
+import { PatternTag } from './RelationPattern'
 
-function containsTagType(tags: CommandTag[], tagType: string) {
+function containsTagType(tags: PatternTag[], tagType: string) {
     for (const tag of tags)
         if (tag.tagType === tagType)
             return true;
@@ -14,9 +15,9 @@ function containsTagType(tags: CommandTag[], tagType: string) {
 
 export default class GraphContext {
     graph: Graph
-    contextTags: CommandTag[] = []
-    contextTypeMap: { [typeName: string]: CommandTag } = {}
-    optionalContextTagMap: { [ typeName: string]: CommandTag } = {}
+    contextTags: PatternTag[] = []
+    contextTypeMap: { [typeName: string]: PatternTag } = {}
+    optionalContextTagMap: { [ typeName: string]: PatternTag } = {}
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -30,7 +31,7 @@ export default class GraphContext {
         this.contextTypeMap = map;
     }
 
-    addOptionalContextTag(tag: CommandTag) {
+    addOptionalContextTag(tag: PatternTag) {
         this.optionalContextTagMap[tag.tagType] = tag;
     }
 

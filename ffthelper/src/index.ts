@@ -19,7 +19,20 @@ graph.run('set skill/PhoenixDown category/rez')
 graph.run('set skill/Raise category/rez')
 graph.run('set skill/Raise2 category/rez')
 
+graph.run('set skill/FastCharge rank/strong')
+
 graph.run('set item/StoneGun rank/powerful')
+
+graph.run('set class/Ninja rank/good')
+graph.run('set class/Calculator rank/good')
+graph.run('set class/Summoner rank/good')
+graph.run('set class/Monk rank/good')
+graph.run('set class/Lancer rank/good')
+
+graph.run('set class/Taiju rank/verygood')
+graph.run('set class/SteelGiant rank/verygood')
+
+graph.run('set class/Dancer rank/bad')
 
 async function main() {
     const data = await (fetch('https://fftbg.com/api/tournament/latest').then(d => d.json()));
@@ -31,7 +44,11 @@ async function main() {
         const teamId = await saveObject(graph, 'team/#unique', { name: teamName });
 
         for (const unit of teamData.Units) {
+
+            const className = toTagName(unit.Class);
             const unitId = (await saveObject(graph, 'unit/#unique', unit)).stringify()
+
+            graph.runSync(`set ${unitId} ${className}`)
 
             for (const skill of unit.ClassSkills) {
                 await graph.runSync(`set ${unitId} has-skill/${toTagName(skill)}`)
