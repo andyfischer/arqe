@@ -1,7 +1,7 @@
 
 import Command from './Command'
-import Relation, { RelationTag } from './Relation'
-import { PatternTag } from './RelationPattern'
+import Relation from './Relation'
+import { PatternTag, FixedTag } from './RelationPattern'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash } from './lexer'
@@ -159,7 +159,7 @@ export function parseRelation(str: string): Relation {
         throw new Error("didn't expect any flags in parseRelation(): " + str)
     }
 
-    return new Relation(null, query.tags as RelationTag[], query.payload);
+    return new Relation(null, query.tags as FixedTag[], query.payload);
 }
 
 export function parseTag(str: string): PatternTag {

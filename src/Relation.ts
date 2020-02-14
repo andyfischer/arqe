@@ -2,12 +2,7 @@
 import Graph from './Graph'
 import { normalizeExactTag } from './stringifyQuery'
 import Schema from './Schema'
-import RelationPattern, { PatternTag } from './RelationPattern'
-
-export interface RelationTag {
-    tagType: string
-    tagValue: string
-}
+import RelationPattern, { PatternTag, FixedTag } from './RelationPattern'
 
 export default class Relation {
     ntag: string
@@ -18,10 +13,10 @@ export default class Relation {
     // but we don't know what it is. With this enabled it's error to try to access the payload.
     payloadUnavailable?: boolean
 
-    tags: RelationTag[]
-    tagsForType: { [typeName: string]: RelationTag[] } = {}
+    tags: FixedTag[]
+    tagsForType: { [typeName: string]: FixedTag[] } = {}
 
-    constructor(ntag: string | null, tags: RelationTag[], payloadStr: string | null) {
+    constructor(ntag: string | null, tags: FixedTag[], payloadStr: string | null) {
         this.ntag = ntag || normalizeExactTag(tags);
 
         if (typeof payloadStr !== 'string' && payloadStr !== null)

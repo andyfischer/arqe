@@ -3,7 +3,8 @@ import StorageProvider from './StorageProvider'
 import RelationPattern from './RelationPattern'
 import Command from './Command'
 import SetOperation from './SetOperation'
-import Relation, { RelationTag } from './Relation'
+import Relation from './Relation'
+import { FixedTag } from './RelationPattern'
 import RelationSearch from './RelationSearch'
 import { normalizeExactTag } from './stringifyQuery'
 
@@ -27,7 +28,7 @@ export default class PlainFileStorage implements StorageProvider {
             // Directory listing
             const files = await readDir(this.directory);
             for (const filename of files) {
-                const tags: RelationTag[] = pattern.fixedTags.concat([{
+                const tags: FixedTag[] = pattern.fixedTags.concat([{
                     tagType: this.filenameType,
                     tagValue: filename
                 }]);
