@@ -1,5 +1,6 @@
 
 import Command from './Command'
+import CommandChain from './CommandChain'
 import Relation from './Relation'
 import { PatternTag, FixedTag } from './RelationPattern'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
@@ -51,6 +52,9 @@ function parseOneTag(it: TokenIterator): PatternTag {
 
     const tagType = it.consumeNextUnquotedText();
 
+    if (tagType === '/')
+        throw new Error("syntax error, tagType was '/'");
+
     let tagValue = null;
     let starValue = false;
     let questionValue = false;
@@ -91,7 +95,7 @@ function parseArgs(it: TokenIterator, query: InProgressQuery) {
     while (true) {
         it.skipSpaces();
 
-        if (it.finished() || it.nextIs(t_newline) || nextIsPayloadStart(it))
+        if (it.finished() || it.nextIs(t_newline) || it.nextIs(t_bar) || nextIsPayloadStart(it))
             break;
 
         if (it.nextIs(t_dash)) {
@@ -123,7 +127,7 @@ function parsePayload(it: TokenIterator, query: InProgressQuery): string | null 
     return query.payload = str;
 }
 
-function parseQueryFromLexed(it: TokenIterator): Command {
+function parseOneCommand(it: TokenIterator): Command {
 
     // Parse main command
     it.skipSpaces();
@@ -142,6 +146,27 @@ function parseQueryFromLexed(it: TokenIterator): Command {
     parseArgs(it, query);
 
     return new Command(command, query.tags, query.payload, query.flags);
+}
+
+function parseOneCommandChain(it: TokenIterator): CommandChain {
+
+    const chain = new CommandChain();
+
+    while (!it.finished()) {
+        const command = parseOneCommand(it);
+
+        chain.commands.push(command);
+
+        it.skipSpaces();
+
+        if (it.finished())
+            break;
+
+        if (!it.tryConsume(t_bar))
+            throw new Error("expected: |");
+    }
+
+    return chain;
 }
 
 export function parseRelation(str: string): Relation {
@@ -180,15 +205,26 @@ export default function parseCommand(str: string): Command {
         throw new Error("command starts with 'get get': " + str);
 
     const it = lexStringToIterator(str);
-    const command = parseQueryFromLexed(it);
 
-    // Validate
-    for (const tag of command.tags) {
-        if (tag.tagType === '/') {
-            throw new Error("internal error, parsed a tagType of '/' from: " + str);
-        }
+    it.skipSpaces();
+    if (it.nextIs(t_bar)) {
+        throw new Error('parseCommand was called on a command chain: ' + str);
     }
+
+    const command = parseOneCommand(it);
 
     return command;
 }
 
+export function parseCommandChain(str: string): CommandChain {
+    if (typeof str !== 'string')
+        throw new Error('expected string, saw: ' + str);
+
+    if (str.startsWith('get get '))
+        throw new Error("command starts with 'get get': " + str);
+
+    const it = lexStringToIterator(str);
+    const chain = parseOneCommandChain(it);
+
+    return chain;
+}

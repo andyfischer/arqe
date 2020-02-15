@@ -21,6 +21,7 @@ graph.run('set skill/Raise2 category/rez')
 
 graph.run('set skill/FastCharge rank/verygood')
 graph.run('set skill/Doublehand rank/good')
+graph.run('set skill/DamageSplit rank/good')
 
 graph.run('set item/StoneGun rank/powerful')
 
