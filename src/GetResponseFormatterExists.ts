@@ -21,6 +21,10 @@ export default class GetResponseFormatterExists implements RelationReceiver {
         this.hasReplied = true;
     }
 
+    error(e) {
+        this.respond('#error ' + e);
+    }
+
     finish() {
         if (!this.hasReplied)
             this.respond('#null')

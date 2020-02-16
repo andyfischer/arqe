@@ -5,6 +5,7 @@ import CommandExecution from './CommandExecution'
 import parseCommand from './parseCommand'
 import Relation from './Relation'
 import SetOperation from './SetOperation'
+import SetResponseFormatter from './SetResponseFormatter'
 import GetOperation from './GetOperation'
 import GraphListener from './GraphListener'
 import GraphListenerToCallback from './GraphListenerToCallback'
@@ -149,20 +150,21 @@ export default class Graph {
             }
         }
 
-        // TODO: Move this code to runCommandExecution
+        const commandExec = new CommandExecution(this, command);
+        commandExec.outputToStringRespond(respond);
         
         try {
             switch (command.commandName) {
 
             case 'set': {
-                const set = new SetOperation(this, command, respond)
+                const set = new SetOperation(this, commandExec);
+                const formatter = new SetResponseFormatter(this, commandExec.command, respond);
+                commandExec.output = formatter;
                 set.run();
                 return;
             }
 
             case 'get': {
-                const commandExec = new CommandExecution(this, command);
-                commandExec.outputToStringRespond(respond);
                 const get = new GetOperation(this, commandExec);
                 get.run();
                 return;

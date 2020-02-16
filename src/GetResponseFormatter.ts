@@ -90,6 +90,13 @@ export default class GetResponseFormatter implements RelationReceiver {
             }
         }
     }
+    
+    error(e) {
+        if (this.hasFinished)
+            throw new Error("ResponseFormatter protocol error: .error() called after .finish");
+
+        this.respond('#error ' + e);
+    }
 
     finish() {
         if (!this.hasStarted)

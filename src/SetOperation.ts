@@ -1,48 +1,40 @@
 
 import Command from './Command'
+import CommandExecution from './CommandExecution'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
-import { normalizeExactTag } from './stringifyQuery'
 
 export default class SetOperation {
-    replyWithEcho = false
     graph: Graph
     command: Command
+    commandExec: CommandExecution
     relation: Relation
-    respond: RespondFunc;
 
-    constructor(graph: Graph, command: Command, respond: RespondFunc) {
+    constructor(graph: Graph, commandExec: CommandExecution) {
         this.graph = graph;
-        this.command = command;
-        this.respond = respond;
+        this.commandExec = commandExec;
+        this.command = commandExec.command;
     }
 
     run() {
 
-        const { command, respond } = this;
+        const { command } = this;
 
         // Validate
         for (const tag of command.tags) {
             if (tag.starValue) {
-                respond("#error can't use star pattern in 'set'")
+                this.commandExec.output.error("can't use star pattern in 'set'")
                 return;
             }
 
             if (tag.star) {
-                respond("#error can't use star pattern in 'set'")
+                this.commandExec.output.error("can't use star pattern in 'set'")
                 return;
             }
 
             if (tag.doubleStar) {
-                respond("#error can't use star pattern in 'set'")
+                this.commandExec.output.error("can't use star pattern in 'set'")
                 return;
-            }
-        }
-
-        for (const arg of command.tags) {
-            if (arg.tagValue === '#unique') {
-                arg.tagValue = this.graph.getTypeInfo(arg.tagType).getUniqueId()
-                this.replyWithEcho = true;
             }
         }
 
@@ -51,17 +43,16 @@ export default class SetOperation {
 
     saveFinished(relation?: Relation) {
 
-        const { command, respond } = this;
+        const { command } = this;
 
-        if (!relation)
-            respond("#error couldn't save");
+        if (!relation) {
+            this.commandExec.output.error("#error couldn't save");
+            return
+        }
 
         this.graph.onRelationUpdated(command, relation);
-
-        if (this.replyWithEcho) {
-            respond(this.graph.schema.stringifyRelation(relation));
-        } else {
-            respond("#done");
-        }
+        this.commandExec.output.start();
+        this.commandExec.output.relation(relation);
+        this.commandExec.output.finish();
     }
 }

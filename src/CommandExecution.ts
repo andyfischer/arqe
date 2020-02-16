@@ -58,6 +58,7 @@ export default class CommandExecution {
         this.output = {
             start() {},
             relation(rel) { list.push(rel) },
+            error(e) { console.log('unhandled error in outputToRelationList: ', e) },
             finish() {
                 onDone(list);
             }
