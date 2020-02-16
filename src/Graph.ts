@@ -101,8 +101,8 @@ export default class Graph {
         respond('#done');
     }
 
-    deleteCmd(command: Command, respond: RespondFunc) {
-        const pattern = command.toPattern();
+    deleteCmd(commandExec: CommandExecution) {
+        const pattern = commandExec.pattern;
 
         for (const rel of this.inMemory.findAllMatches(pattern)) {
             if (rel.includesType('typeinfo'))
@@ -112,7 +112,8 @@ export default class Graph {
             this.onRelationDeleted(rel);
         }
 
-        respond('#done');
+        commandExec.output.start();
+        commandExec.output.finish();
     }
 
     listen(command: Command, respond: RespondFunc) {
@@ -158,8 +159,6 @@ export default class Graph {
 
             case 'set': {
                 const set = new SetOperation(this, commandExec);
-                const formatter = new SetResponseFormatter(this, commandExec.command, respond);
-                commandExec.output = formatter;
                 set.run();
                 return;
             }
@@ -176,7 +175,7 @@ export default class Graph {
             }
 
             case 'delete': {
-                this.deleteCmd(command, respond);
+                this.deleteCmd(commandExec);
                 return;
             }
 

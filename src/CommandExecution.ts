@@ -7,6 +7,7 @@ import RelationReceiver from './RelationReceiver'
 import GetResponseFormatter from './GetResponseFormatter'
 import GetResponseFormatterExists from './GetResponseFormatterExists'
 import GetResponseFormatterCount from './GetResponseFormatterCount'
+import SetResponseFormatter from './SetResponseFormatter'
 
 export default class CommandExecution {
     graph: Graph
@@ -23,6 +24,21 @@ export default class CommandExecution {
     }
 
     outputToStringRespond(respond: RespondFunc, configFormat?: (formatter: GetResponseFormatter) => void) {
+        if (this.command.commandName === 'set') {
+            this.output = new SetResponseFormatter(this.graph, this.command, respond);
+            return;
+        }
+
+        if (this.command.commandName === 'delete') {
+            this.output = {
+                start() {},
+                error(e) { respond('#error ' + e); },
+                relation() {},
+                finish() { respond('#done') }
+            }
+            return;
+        }
+
         if (this.output)
             throw new Error("already have a configured output");
 
