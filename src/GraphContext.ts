@@ -86,10 +86,10 @@ export default class GraphContext {
             throw new Error("expected function: " + respond);
 
         const parsed = parseCommand(query);
-        this.runParsed(parsed, respond);
+        this.runCommandParsed(parsed, respond);
     }
 
-    runParsed(command: Command, respond: RespondFunc) {
+    runCommandParsed(command: Command, respond: RespondFunc) {
 
         // Resolve any '?' tags that we know of.
         for (let i = 0; i < command.tags.length; i += 1) {
@@ -131,6 +131,6 @@ export default class GraphContext {
             respond(msg);
         }
 
-        this.graph.runParsed(command, wrappedRespond);
+        this.graph.runCommandParsed(command, wrappedRespond);
     }
 }

@@ -1,6 +1,7 @@
 
 import Graph from '../Graph'
 import GetOperation from '../GetOperation'
+import CommandExecution from '../CommandExecution'
 import parseCommand from '../parseCommand'
 
 it('supports ** to match everything', () => {
@@ -25,8 +26,9 @@ it("correctly looks down for inherit tags", () => {
         get.finishSearch();
     }
 
-    const get = new GetOperation(graph, parseCommand("get a b branch/1 branch/2"));
-    get.outputToStringRespond(s => null);
+    const commandExec = new CommandExecution(graph, parseCommand("get a b branch/1 branch/2"));
+    commandExec.outputToStringRespond(s => null);
+    const get = new GetOperation(graph, commandExec);
     get.run();
 
     expect(get.done).toEqual(true);
@@ -50,8 +52,9 @@ it("correctly looks down for multiple inherit tag types", () => {
         get.finishSearch();
     }
 
-    const get = new GetOperation(graph, parseCommand("get a b a-branch b-branch c-branch/1 d-branch/2 d-branch/3"));
-    get.outputToStringRespond(s => null);
+    const commandExec = new CommandExecution(graph, parseCommand("get a b a-branch b-branch c-branch/1 d-branch/2 d-branch/3"));
+    const get = new GetOperation(graph, commandExec);
+    commandExec.outputToStringRespond(s => null);
     get.run();
 
     expect(get.done).toEqual(true);

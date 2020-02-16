@@ -6,9 +6,9 @@ import Relation from './Relation'
 import RelationPattern, { PatternTag } from './RelationPattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
-import { GetOperationOutput }  from './GetOperation'
+import RelationReceiver  from './RelationReceiver'
 
-export default class GetResponseFormatter implements GetOperationOutput {
+export default class GetResponseFormatter implements RelationReceiver {
     // Context
     schema: Schema
     pattern: RelationPattern

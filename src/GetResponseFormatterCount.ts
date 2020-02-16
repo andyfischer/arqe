@@ -1,9 +1,9 @@
 
-import { GetOperationOutput }  from './GetOperation'
+import RelationReceiver  from './RelationReceiver'
 import Relation from './Relation'
 import Graph, { RespondFunc } from './Graph'
 
-export default class GetResponseFormatterExists implements GetOperationOutput {
+export default class GetResponseFormatterExists implements RelationReceiver {
     count = 0
     respond: RespondFunc
 

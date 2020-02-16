@@ -29,7 +29,7 @@ function preHook(object, funcName, callback) {
 beforeEach(() => {
     graph = new Graph();
 
-    preHook(graph, 'runParsed', (command: Command) => {
+    preHook(graph, 'runCommandParsed', (command: Command) => {
         const str = parsedCommandToString(command);
         graphCalls.push(str);
     })

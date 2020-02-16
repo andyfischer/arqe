@@ -1,5 +1,7 @@
 
 import Command from './Command'
+import CommandChain from './CommandChain'
+import CommandExecution from './CommandExecution'
 import parseCommand from './parseCommand'
 import Relation from './Relation'
 import SetOperation from './SetOperation'
@@ -116,12 +118,13 @@ export default class Graph {
         respond('#start');
 
         if (command.flags.get) {
-            const get = new GetOperation(this, command);
-            get.outputToStringRespond(respond, formatter => {
+            const commandExec = new CommandExecution(this, command);
+            commandExec.outputToStringRespond(respond, formatter => {
                 formatter.skipStartAndDone = true;
                 formatter.asMultiResults = true;
                 formatter.asSetCommands = true;
             });
+            const get = new GetOperation(this, commandExec);
 
             get.run();
         }
@@ -130,7 +133,10 @@ export default class Graph {
         this.listeners.push(listener);
     }
 
-    runParsed(command: Command, respond: RespondFunc) {
+    runCommandExecution(command: CommandExecution) {
+    }
+
+    runCommandParsed(command: Command, respond: RespondFunc) {
 
         // Maybe divert to socket
         const wsProviders = this.wsProviders && this.wsProviders.get();
@@ -143,6 +149,8 @@ export default class Graph {
             }
         }
 
+        // TODO: Move this code to runCommandExecution
+        
         try {
             switch (command.commandName) {
 
@@ -153,8 +161,9 @@ export default class Graph {
             }
 
             case 'get': {
-                const get = new GetOperation(this, command);
-                get.outputToStringRespond(respond);
+                const commandExec = new CommandExecution(this, command);
+                commandExec.outputToStringRespond(respond);
+                const get = new GetOperation(this, commandExec);
                 get.run();
                 return;
             }
@@ -181,6 +190,13 @@ export default class Graph {
             console.log(err.stack || err);
             respond("#internal_error");
         }
+    }
+
+    runCommandChainParsed(chain: CommandChain, respond: RespondFunc) {
+        // TODO: Create CommandExecution objects for these.
+
+        if (chain.commands.length === 1)
+            return this.runCommandParsed(chain.commands[0], respond);
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
@@ -211,17 +227,20 @@ export default class Graph {
         }
     }
 
-    run(commandStr: string, respond?: RespondFunc) {
+    run(str: string, respond?: RespondFunc) {
         if (!respond) {
             respond = (msg) => {
                 if (msg.startsWith('#error')) {
-                    console.log(`Uncaught error when running '${commandStr}': ${msg}`);
+                    console.log(`Uncaught error when running '${str}': ${msg}`);
                 }
             }
         }
 
-        const parsed = parseCommand(commandStr);
-        this.runParsed(parsed, respond);
+        const parsed = parseCommand(str);
+
+        // TODO: Switch to runCommandExecution
+
+        this.runCommandParsed(parsed, respond);
     }
 
     runSync(commandStr: string) {

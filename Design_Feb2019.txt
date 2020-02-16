@@ -1,0 +1,4 @@
+
+In Unix, interprocess communication is text streams
+
+In FS, interprocess communication is relation streams

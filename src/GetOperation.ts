@@ -1,5 +1,6 @@
 
 import Command, { CommandFlags } from './Command'
+import CommandExecution from './CommandExecution'
 import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
 import Relation from './Relation'
@@ -10,16 +11,11 @@ import GetResponseFormatter from './GetResponseFormatter'
 import GetResponseFormatterCount from './GetResponseFormatterCount'
 import GetResponseFormatterExists from './GetResponseFormatterExists'
 import RelationSearch from './RelationSearch'
+import RelationReceiver from './RelationReceiver'
 
 interface Step {
     storage: StorageProvider
     pattern: RelationPattern
-}
-
-export interface GetOperationOutput {
-    start: () => void
-    relation: (rel: Relation) => void
-    finish: () => void
 }
 
 function inheritTagCompare(graph: Graph, a: PatternTag, b: PatternTag) {
@@ -88,68 +84,27 @@ function get_after_inherit(graph: Graph, search: RelationSearch) {
 export default class GetOperation implements RelationSearch {
     graph: Graph;
     flags: CommandFlags
+    commandExec: CommandExecution
     pattern: RelationPattern;
 
     expectOne: boolean
     done: boolean
     onDone?: () => void
 
-    output: GetOperationOutput;
-
-    constructor(graph: Graph, command: Command) {
+    constructor(graph: Graph, commandExec: CommandExecution) {
         this.graph = graph;
+        const command = commandExec.command;
         this.flags = command.flags;
         this.pattern = command.toPattern();
         this.expectOne = !this.pattern.isMultiMatch() || command.flags.exists;
-    }
-
-    outputToStringRespond(respond: RespondFunc, configFormat?: (formatter: GetResponseFormatter) => void) {
-        if (this.output)
-            throw new Error("already have a configured output");
-
-        if (this.flags.count) {
-            this.output = new GetResponseFormatterCount(respond);
-            return;
-        }
-
-        if (this.flags.exists) {
-            this.output = new GetResponseFormatterExists(respond);
-            return;
-        }
-
-        const formatter = new GetResponseFormatter(); 
-        formatter.extendedResult = this.flags.x;
-        formatter.listOnly = this.flags.list;
-        formatter.asMultiResults = this.pattern.isMultiMatch();
-        formatter.respond = respond;
-        formatter.pattern = this.pattern;
-        formatter.schema = this.graph.schema;
-
-        if (configFormat)
-            configFormat(formatter);
-
-        this.output = formatter;
-    }
-
-    outputToRelationList(onDone: (rels: Relation[]) => void) {
-        if (this.output)
-            throw new Error("already have a configured output");
-
-        const list: Relation[] = [];
-        this.output = {
-            start() {},
-            relation(rel) { list.push(rel) },
-            finish() {
-                onDone(list);
-            }
-        }
+        this.commandExec = commandExec;
     }
 
     foundRelation = (rel: Relation) => {
         if (this.done)
             return;
         
-        this.output.relation(rel);
+        this.commandExec.output.relation(rel);
 
         if (this.expectOne) {
             this.finishSearch();
@@ -158,10 +113,10 @@ export default class GetOperation implements RelationSearch {
     }
 
     run() {
-        if (!this.output)
+        if (!this.commandExec.output)
             throw new Error("no output was configured");
 
-        this.output.start();
+        this.commandExec.output.start();
         get_inherit(this.graph, this);
     }
 
@@ -169,7 +124,7 @@ export default class GetOperation implements RelationSearch {
         if (this.done)
             return;
 
-        this.output.finish();
+        this.commandExec.output.finish();
         this.done = true;
     }
 }

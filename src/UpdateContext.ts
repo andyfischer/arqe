@@ -5,6 +5,7 @@ import parseCommand from './parseCommand'
 import GetOperation from './GetOperation'
 import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
+import CommandExecution from './CommandExecution'
 
 export type UpdateFn<T> = (cxt: UpdateContext) => T
 
@@ -27,11 +28,13 @@ export default class UpdateContext {
         this.usedSearches.push(tags);
 
         const parsedCommand = parseCommand(commandStr);
-        const get = new GetOperation(this.graph, parsedCommand);
+        const commandExec = new CommandExecution(this.graph, parsedCommand);
+        commandExec.outputToRelationList(l => { rels = l });
+
+        const get = new GetOperation(this.graph, commandExec);
 
         let rels: Relation[] = null;
 
-        get.outputToRelationList(l => { rels = l });
         get.run();
 
         if (rels === null)

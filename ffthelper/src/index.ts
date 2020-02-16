@@ -11,31 +11,38 @@ function toTagName(str) {
         .replace(/\'/g, '');
 }
 
-graph.run('set skill/GilTaking skilltype/trap')
-graph.run('set skill/StealWeapon skilltype/trap')
+const bootstrap = `
+set skill/GilTaking skilltype/trap
 
-graph.run('set skill/Revive category/rez')
-graph.run('set skill/PhoenixDown category/rez')
-graph.run('set skill/Raise category/rez')
-graph.run('set skill/Raise2 category/rez')
+set skill/GilTaking skilltype/trap
+set skill/StealWeapon skilltype/trap
 
-graph.run('set skill/FastCharge rank/verygood')
-graph.run('set skill/Doublehand rank/good')
-graph.run('set skill/DamageSplit rank/good')
+set skill/Revive category/rez
+set skill/PhoenixDown category/rez
+set skill/Raise category/rez
+set skill/Raise2 category/rez
 
-graph.run('set item/StoneGun rank/powerful')
+set skill/FastCharge rank/verygood
+set skill/Doublehand rank/good
+set skill/DamageSplit rank/good
 
-graph.run('set class/Ninja rank/good')
-graph.run('set class/Calculator rank/good')
-graph.run('set class/Summoner rank/good')
-graph.run('set class/Monk rank/good')
-graph.run('set class/Lancer rank/good')
-graph.run('set class/RedChocobo rank/good')
+set item/StoneGun rank/powerful
 
-graph.run('set class/Taiju rank/verygood')
-graph.run('set class/SteelGiant rank/verygood')
+set class/Ninja rank/good
+set class/Calculator rank/good
+set class/Summoner rank/good
+set class/Monk rank/good
+set class/Lancer rank/good
+set class/RedChocobo rank/good
 
-graph.run('set class/Dancer rank/bad')
+set class/Taiju rank/verygood
+set class/SteelGiant rank/verygood
+
+set class/Dancer rank/bad
+`
+
+for (const command of bootstrap.split('\n'))
+    graph.run(command)
 
 async function main() {
     const data = await (fetch('https://fftbg.com/api/tournament/latest').then(d => d.json()));
