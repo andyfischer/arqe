@@ -16,6 +16,8 @@ set skill/GilTaking skilltype/trap
 
 set skill/GilTaking skilltype/trap
 set skill/StealWeapon skilltype/trap
+set skill/Wiznabius skilltype/trap
+set skill/NamelessSong skilltype/trap
 
 set skill/Revive category/rez
 set skill/PhoenixDown category/rez
@@ -23,6 +25,7 @@ set skill/Raise category/rez
 set skill/Raise2 category/rez
 
 set skill/FastCharge rank/verygood
+set skill/GalaxyStop rank/verygood
 set skill/Doublehand rank/good
 set skill/DamageSplit rank/good
 
@@ -38,6 +41,7 @@ set class/RedChocobo rank/good
 set class/Taiju rank/verygood
 set class/SteelGiant rank/verygood
 
+set class/TimeMage rank/bad
 set class/Dancer rank/bad
 `
 

@@ -8,7 +8,6 @@ import SetOperation from './SetOperation'
 import SetResponseFormatter from './SetResponseFormatter'
 import { runSearch } from './GetOperation'
 import GraphListener from './GraphListener'
-// import GraphListenerToCallback from './GraphListenerToCallback'
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
@@ -120,24 +119,9 @@ export default class Graph {
         commandExec.output.start();
 
         if (commandExec.flags.get) {
-            /*
-            runSearch(this, {
-                pattern: command.pattern,
-
-            });
-            */
-            /* FIXME
-            const commandExec = new CommandExecution(this, command);
-
-            commandExec.outputToStringRespond(respond, formatter => {
-                formatter.skipStartAndDone = true;
-                formatter.asMultiResults = true;
-                formatter.asSetCommands = true;
-            });
-            const get = new GetOperation(this, commandExec);
-
-            get.run();
-            */
+            const search = commandExec.toRelationSearch();
+            search.finish = () => null;
+            runSearch(this, search);
         }
 
         this.listeners.push({
@@ -183,7 +167,10 @@ export default class Graph {
             }
 
             case 'get': {
-                runSearch(this, commandExec.toRelationSearch());
+
+                const search = commandExec.toRelationSearch();
+                search.start();
+                runSearch(this, search);
                 return;
             }
 
