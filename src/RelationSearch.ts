@@ -1,10 +1,14 @@
 
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
+import RelationReceiver from './RelationReceiver'
 
-export default interface RelationSearch {
+export default interface RelationSearch extends RelationReceiver {
     pattern: RelationPattern;
-    foundRelation: (rel: Relation) => void
-    finishSearch: () => void
-    done?: boolean
+    start: () => void
+    relation: (rel: Relation) => void
+    deleteRelation: (rel: Relation) => void
+    error: (str: string) => void
+    finish: () => void
+    isDone: () => boolean
 }

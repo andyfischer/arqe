@@ -44,12 +44,12 @@ export default class InMemoryStorage implements StorageProvider {
 
     runSearch(search: RelationSearch) {
         for (const rel of this.findAllMatches(search.pattern)) {
-            search.foundRelation(rel);
-            if (search.done)
+            search.relation(rel);
+            if (search.isDone())
                 break;
         }
 
-        search.finishSearch();
+        search.finish();
     }
 
     runSave(set: SetOperation) {

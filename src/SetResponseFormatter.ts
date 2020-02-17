@@ -36,6 +36,9 @@ export default class SetResponseFormatter implements RelationReceiver {
         }
     }
 
-    finish() {
-    }
+    deleteRelation() {}
+
+    isDone() { return false }
+
+    finish() { }
 }

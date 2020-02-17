@@ -35,7 +35,7 @@ export default class PlainFileStorage implements StorageProvider {
                 const ntag = normalizeExactTag(tags);
                 const rel = new Relation(ntag, tags, null);
                 rel.payloadUnavailable = true;
-                search.foundRelation(rel);
+                search.relation(rel);
             }
 
         } else {
@@ -46,10 +46,10 @@ export default class PlainFileStorage implements StorageProvider {
 
             const ntag = normalizeExactTag(pattern.tags);
             const rel = new Relation(ntag, pattern.fixedTags, contents);
-            search.foundRelation(rel);
+            search.relation(rel);
         }
 
-        search.finishSearch();
+        search.finish();
     }
     async runSave(set: SetOperation) {
         set.saveFinished(null);

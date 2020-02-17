@@ -4,10 +4,11 @@ import RelationPattern from './RelationPattern'
 import Command from './Command'
 import GetOperation from './GetOperation'
 import SetOperation from './SetOperation'
+import RelationSearch from './RelationSearch'
 
 export default class FormattedFileStorage implements StorageProvider {
-    async runSearch(get: GetOperation) {
-        get.finishSearch();
+    async runSearch(search: RelationSearch) {
+        // get.finishSearch();
     }
     async runSave(set: SetOperation) {
         set.saveFinished(null);

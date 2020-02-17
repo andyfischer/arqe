@@ -6,9 +6,9 @@ import parseCommand from './parseCommand'
 import Relation from './Relation'
 import SetOperation from './SetOperation'
 import SetResponseFormatter from './SetResponseFormatter'
-import GetOperation from './GetOperation'
+import { runSearch } from './GetOperation'
 import GraphListener from './GraphListener'
-import GraphListenerToCallback from './GraphListenerToCallback'
+// import GraphListenerToCallback from './GraphListenerToCallback'
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 import collectRespond from './collectRespond'
 import Schema from './Schema'
@@ -116,11 +116,19 @@ export default class Graph {
         commandExec.output.finish();
     }
 
-    listen(command: Command, respond: RespondFunc) {
-        respond('#start');
+    listen(commandExec: CommandExecution) {
+        commandExec.output.start();
 
-        if (command.flags.get) {
+        if (commandExec.flags.get) {
+            /*
+            runSearch(this, {
+                pattern: command.pattern,
+
+            });
+            */
+            /* FIXME
             const commandExec = new CommandExecution(this, command);
+
             commandExec.outputToStringRespond(respond, formatter => {
                 formatter.skipStartAndDone = true;
                 formatter.asMultiResults = true;
@@ -129,10 +137,21 @@ export default class Graph {
             const get = new GetOperation(this, commandExec);
 
             get.run();
+            */
         }
 
-        const listener = new GraphListenerToCallback(this, command, respond);
-        this.listeners.push(listener);
+        this.listeners.push({
+            onRelationUpdated(rel: Relation) {
+                if (commandExec.pattern.matches(rel)) {
+                    commandExec.output.relation(rel);
+                }
+            },
+            onRelationDeleted(rel: Relation) {
+                if (commandExec.pattern.matches(rel)) {
+                    commandExec.output.deleteRelation(rel);
+                }
+            }
+        })
     }
 
     runCommandExecution(command: CommandExecution) {
@@ -164,8 +183,7 @@ export default class Graph {
             }
 
             case 'get': {
-                const get = new GetOperation(this, commandExec);
-                get.run();
+                runSearch(this, commandExec.toRelationSearch());
                 return;
             }
 
@@ -180,7 +198,7 @@ export default class Graph {
             }
 
             case 'listen': {
-                this.listen(command, respond);
+                this.listen(commandExec);
                 return;
             }
             

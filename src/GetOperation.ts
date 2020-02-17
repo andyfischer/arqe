@@ -52,15 +52,22 @@ function get_inherit(graph: Graph, search: RelationSearch) {
         // Search for exact matches that include the inherit tag.
         return get_after_inherit(graph, {
             pattern: search.pattern,
-            foundRelation: search.foundRelation,
-            done: search.done,
-            finishSearch() {
+            relation(rel) { search.relation(rel) },
+            start() {},
+            error(e) { search.error(e) },
+            deleteRelation() {},
+            isDone() { return search.isDone() },
+            finish() {
 
                 // Try dropping this tag and then restarting.
                 get_inherit(graph, {
                     pattern: search.pattern.dropTagIndex(foundInheritTagIndex),
-                    foundRelation: search.foundRelation,
-                    finishSearch: search.finishSearch
+                    start() {},
+                    relation(rel) { search.relation(rel) },
+                    finish() { search.finish() },
+                    deleteRelation() {},
+                    error(e) { search.error(e) },
+                    isDone() { return search.isDone() }
                 });
             }
         });
@@ -81,50 +88,7 @@ function get_after_inherit(graph: Graph, search: RelationSearch) {
     graph.inMemory.runSearch(search);
 }
 
-export default class GetOperation implements RelationSearch {
-    graph: Graph;
-    flags: CommandFlags
-    commandExec: CommandExecution
-    pattern: RelationPattern;
-
-    expectOne: boolean
-    done: boolean
-    onDone?: () => void
-
-    constructor(graph: Graph, commandExec: CommandExecution) {
-        this.graph = graph;
-        const command = commandExec.command;
-        this.flags = command.flags;
-        this.pattern = command.toPattern();
-        this.expectOne = !this.pattern.isMultiMatch() || command.flags.exists;
-        this.commandExec = commandExec;
-    }
-
-    foundRelation = (rel: Relation) => {
-        if (this.done)
-            return;
-        
-        this.commandExec.output.relation(rel);
-
-        if (this.expectOne) {
-            this.finishSearch();
-            return;
-        }
-    }
-
-    run() {
-        if (!this.commandExec.output)
-            throw new Error("no output was configured");
-
-        this.commandExec.output.start();
-        get_inherit(this.graph, this);
-    }
-
-    finishSearch = () => {
-        if (this.done)
-            return;
-
-        this.commandExec.output.finish();
-        this.done = true;
-    }
+export function runSearch(graph: Graph, search: RelationSearch) {
+    search.start();
+    get_inherit(graph, search);
 }

@@ -18,21 +18,21 @@ export default class GetResponseFormatter implements RelationReceiver {
     extendedResult?: boolean
     asMultiResults?: boolean
     asSetCommands?: boolean
-    skipStartAndDone?: boolean
     listOnly?: boolean
 
     // Progress
     anyResults: boolean = false
+    enoughResults: boolean = false
 
     // Protocol validation
     hasStarted = false;
-    hasFinished = false;
+    calledFinish = false;
 
     start() {
         if (this.hasStarted)
             throw new Error("ResponseFormatter protocol error: .start() called twice");
 
-        if (this.asMultiResults && !this.skipStartAndDone)
+        if (this.asMultiResults)
             this.respond('#start');
 
         this.hasStarted = true;
@@ -65,8 +65,11 @@ export default class GetResponseFormatter implements RelationReceiver {
         if (!this.hasStarted)
             throw new Error("ResponseFormatter protocol error: .relation called before .start()");
 
-        if (this.hasFinished)
+        if (this.calledFinish)
             throw new Error("ResponseFormatter protocol error: .relation called after .finish()");
+
+        if (this.enoughResults)
+            return;
 
         const { respond, pattern, extendedResult, asMultiResults } = this;
 
@@ -88,11 +91,17 @@ export default class GetResponseFormatter implements RelationReceiver {
                     respond('#exists');
                 }
             }
+
+            this.enoughResults = true;
         }
+    }
+
+    deleteRelation(rel: Relation) {
+        this.respond('delete ' + this.formatRelation(rel))
     }
     
     error(e) {
-        if (this.hasFinished)
+        if (this.calledFinish)
             throw new Error("ResponseFormatter protocol error: .error() called after .finish");
 
         this.respond('#error ' + e);
@@ -101,17 +110,21 @@ export default class GetResponseFormatter implements RelationReceiver {
     finish() {
         if (!this.hasStarted)
             throw new Error("ResponseFormatter protocol error: .finish() called before .start()");
-        if (this.hasFinished)
+        if (this.calledFinish)
             throw new Error("ResponseFormatter protocol error: .finish() called twice");
+        if (this.enoughResults)
+            return
 
-        this.hasFinished = true;
+        this.calledFinish = true;
 
-        if (!this.skipStartAndDone) {
-            if (this.asMultiResults)
-                this.respond('#done');
+        if (this.asMultiResults)
+            this.respond('#done');
 
-            if (!this.asMultiResults && !this.anyResults)
-                this.respond('#null');
-        }
+        if (!this.asMultiResults && !this.anyResults)
+            this.respond('#null');
+    }
+
+    isDone() {
+        return this.calledFinish || this.enoughResults;
     }
 }

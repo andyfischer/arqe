@@ -1,4 +1,5 @@
 
+/*
 import Graph, { RespondFunc } from './Graph'
 import Command from './Command'
 import Relation from './Relation'
@@ -6,10 +7,12 @@ import RelationPattern from './RelationPattern'
 import GraphListener from './GraphListener'
 
 export default class GraphListenerToCallback implements GraphListener {
+
+    commandExec: CommandExecution
     pattern: RelationPattern
     callback: RespondFunc
 
-    constructor(graph: Graph, command: Command, callback: RespondFunc) {
+    constructor(commandExec: CommandExecution) {
         this.pattern = command.toPattern();
         this.callback = callback;
     }
@@ -34,3 +37,4 @@ export default class GraphListenerToCallback implements GraphListener {
         }
     }
 }
+*/

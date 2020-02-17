@@ -8,6 +8,7 @@ import GetResponseFormatter from './GetResponseFormatter'
 import GetResponseFormatterExists from './GetResponseFormatterExists'
 import GetResponseFormatterCount from './GetResponseFormatterCount'
 import SetResponseFormatter from './SetResponseFormatter'
+import RelationSearch from './RelationSearch'
 
 export default class CommandExecution {
     graph: Graph
@@ -23,6 +24,24 @@ export default class CommandExecution {
         this.pattern = command.toPattern();
     }
 
+    toRelationSearch(): RelationSearch {
+
+        if (!this.output)
+            throw new Error('missing this.output');
+
+        const output = this.output;
+
+        return {
+            pattern: this.pattern,
+            isDone() { return output.isDone() },
+            start() { output.start() },
+            relation(r) { output.relation(r) },
+            deleteRelation(r) { output.deleteRelation(r) },
+            error(e) { output.error(e) },
+            finish() { output.finish() },
+        }
+    }
+
     outputToStringRespond(respond: RespondFunc, configFormat?: (formatter: GetResponseFormatter) => void) {
         if (this.command.commandName === 'set') {
             this.output = new SetResponseFormatter(this.graph, this.command, respond);
@@ -34,6 +53,10 @@ export default class CommandExecution {
                 start() {},
                 error(e) { respond('#error ' + e); },
                 relation() {},
+                deleteRelation() {
+                    respond('delete ...')
+                },
+                isDone() { return false; },
                 finish() { respond('#done') }
             }
             return;
@@ -53,7 +76,7 @@ export default class CommandExecution {
         }
 
         const formatter = new GetResponseFormatter(); 
-        formatter.extendedResult = this.flags.x;
+        formatter.extendedResult = this.flags.x || this.command.commandName === 'listen'
         formatter.listOnly = this.flags.list;
         formatter.asMultiResults = this.pattern.isMultiMatch();
         formatter.respond = respond;
@@ -74,7 +97,9 @@ export default class CommandExecution {
         this.output = {
             start() {},
             relation(rel) { list.push(rel) },
+            deleteRelation(rel) {},
             error(e) { console.log('unhandled error in outputToRelationList: ', e) },
+            isDone() { return false; },
             finish() {
                 onDone(list);
             }

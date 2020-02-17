@@ -21,8 +21,14 @@ export default class GetResponseFormatterExists implements RelationReceiver {
         this.hasReplied = true;
     }
 
+    deleteRelation() {}
+
     error(e) {
         this.respond('#error ' + e);
+    }
+
+    isDone() {
+        return this.hasReplied;
     }
 
     finish() {

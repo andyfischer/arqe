@@ -2,10 +2,10 @@
 import Graph from './Graph'
 import Relation from './Relation'
 import parseCommand from './parseCommand'
-import GetOperation from './GetOperation'
 import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
 import CommandExecution from './CommandExecution'
+import { runSearch } from './GetOperation'
 
 export type UpdateFn<T> = (cxt: UpdateContext) => T
 
@@ -31,11 +31,9 @@ export default class UpdateContext {
         const commandExec = new CommandExecution(this.graph, parsedCommand);
         commandExec.outputToRelationList(l => { rels = l });
 
-        const get = new GetOperation(this.graph, commandExec);
-
         let rels: Relation[] = null;
 
-        get.run();
+        runSearch(this.graph, commandExec.toRelationSearch());
 
         if (rels === null)
             throw new Error("get didn't finish synchronously: " + commandStr);

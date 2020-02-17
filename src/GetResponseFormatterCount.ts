@@ -18,11 +18,17 @@ export default class GetResponseFormatterExists implements RelationReceiver {
         this.count += 1;
     }
 
+    deleteRelation() {}
+
     error(e) {
         this.respond('#error ' + e);
     }
 
     finish() {
         this.respond('' + this.count);
+    }
+
+    isDone() {
+        return false;
     }
 }
