@@ -21,7 +21,10 @@ import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
-import { runJoin } from './JoinCommand'
+
+import { setupGetExecution } from './GetCommand'
+import { setupSetExecution } from './SetCommand'
+import { setupJoinExecution } from './JoinCommand'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -108,6 +111,7 @@ export default class Graph {
             if (rel.includesType('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 
+            rel.wasDeleted = true;
             this.inMemory.deleteRelation(rel);
             this.onRelationDeleted(rel);
         }
@@ -132,14 +136,32 @@ export default class Graph {
                 }
             },
             onRelationDeleted(rel: Relation) {
+                if (!rel.wasDeleted) {
+                    throw new Error('onRelationDeleted called but rel.wasDeleted is false');
+                }
+
                 if (commandExec.pattern.matches(rel)) {
-                    commandExec.output.deleteRelation(rel);
+                    commandExec.output.relation(rel);
                 }
             }
         })
     }
 
+    setupCommandExecution(commandExec: CommandExecution) {
+        switch (commandExec.commandName) {
+        case 'join':
+            setupJoinExecution(commandExec);
+            break;
+        }
+    }
+
     runCommandExecution(commandExec: CommandExecution) {
+
+        if (commandExec.start) {
+            commandExec.start(commandExec);
+            return;
+        }
+
         try {
             switch (commandExec.commandName) {
 
@@ -170,15 +192,16 @@ export default class Graph {
             }
 
             case 'join': {
-                runJoin(commandExec);
+                // handled in setupCommandExecution
+                return;
             }
             
             }
 
-            commandExec.output.error("#error unrecognized command: " + commandExec.commandName);
+            commandExec.output.error("unrecognized command: " + commandExec.commandName);
         } catch (err) {
             console.log(err.stack || err);
-            commandExec.output.error("#internal_error");
+            commandExec.output.error("internal error");
         }
     }
 
@@ -207,16 +230,16 @@ export default class Graph {
     }
 
     runCommandChainParsed(chain: CommandChain, respond: RespondFunc) {
-        // TODO: Create CommandExecution objects for these.
-
         if (chain.commands.length === 1)
             return this.runCommandParsed(chain.commands[0], respond);
 
-
+        // WIP
         console.log('saw chain: ', chain.stringify());
 
         const commandExecs = chain.commands.map(command => {
-            return new CommandExecution(this, command);
+            const exec = new CommandExecution(this, command);
+            this.setupCommandExecution(exec);
+            return exec;
         });
 
         // Link up commands
@@ -230,7 +253,10 @@ export default class Graph {
 
             if (!isLast) {
                 const next = commandExecs[index + 1];
-                commandExec.outputTo(next.getInputBuffer());
+                if (!next.input)
+                    throw new Error(`piped command '${next.command.commandName}' didn't expect input`);
+
+                commandExec.outputTo(next.input);
             }
         }
 

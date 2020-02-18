@@ -24,9 +24,6 @@ export default class TestSuite {
 
     test = (name: string, impl: (context?: any) => void | Promise<any>) => {
 
-        // TODO create a new GraphContext for each test.
-        // const context = new GraphContext();
-        
         for (const runner of this.testRunners) {
 
             let testName = name; 

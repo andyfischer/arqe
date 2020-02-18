@@ -58,8 +58,12 @@ export default class GetResponseFormatter implements RelationReceiver {
             str += (rel.hasPayload() ? ` == ${rel.payload()}` : '');
         }
 
-        if (this.asSetCommands)
+        if (rel.wasDeleted) {
+            str = 'delete ' + str;
+
+        } else if (this.asSetCommands) {
             str = 'set ' + str;
+        }
 
         return str;
     }
@@ -98,10 +102,6 @@ export default class GetResponseFormatter implements RelationReceiver {
 
             this.enoughResults = true;
         }
-    }
-
-    deleteRelation(rel: Relation) {
-        this.respond('delete ' + this.formatRelation(rel))
     }
     
     error(e) {

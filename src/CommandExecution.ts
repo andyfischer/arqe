@@ -19,6 +19,7 @@ export default class CommandExecution {
     pattern: RelationPattern
     input?: RelationBuffer
     output: RelationReceiver
+    start: (exec: CommandExecution) => void
 
     constructor (graph: Graph, command: Command) {
         this.graph = graph;
@@ -40,17 +41,9 @@ export default class CommandExecution {
             isDone() { return output.isDone() },
             start() { output.start() },
             relation(r) { output.relation(r) },
-            deleteRelation(r) { output.deleteRelation(r) },
             error(e) { output.error(e) },
             finish() { output.finish() },
         }
-    }
-
-    getInputBuffer(): RelationBuffer {
-        if (!this.input)
-            this.input = new RelationBuffer()
-
-        return this.input;
     }
 
     outputTo(receiver: RelationReceiver) {
@@ -68,9 +61,6 @@ export default class CommandExecution {
                 start() {},
                 error(e) { respond('#error ' + e); },
                 relation() {},
-                deleteRelation() {
-                    respond('delete ...')
-                },
                 isDone() { return false; },
                 finish() { respond('#done') }
             }

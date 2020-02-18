@@ -5,15 +5,23 @@ import RelationReceiver from './RelationReceiver'
 export default class RelationBuffer implements RelationReceiver {
     items: Relation[] = []
     done: boolean
-    onError: (e: string) => void
-    onDone?: () => void
+    downstream: RelationReceiver
 
-    start() {}
-    relation(rel: Relation) { this.items.push(rel) }
-    deleteRelation() { throw new Error('RelationBuffer doesnt support deleteRelation') }
-    
+    constructor(downstream: RelationReceiver) {
+        this.downstream = downstream;
+    }
+
+    start() {
+        this.downstream.start();
+    }
+
+    relation(rel: Relation) {
+        this.items.push(rel);
+    }
+
     finish() {
-        this.done = true
+        this.done = true;
+        this.downstream.finish();
     }
 
     isDone() {
@@ -21,7 +29,7 @@ export default class RelationBuffer implements RelationReceiver {
     }
 
     error(e) {
-        this.onError(e)
+        this.downstream.error(e);
     }
 
     take(): Relation[] {

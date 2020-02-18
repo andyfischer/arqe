@@ -16,6 +16,8 @@ export default class Relation {
     tags: FixedTag[]
     tagsForType: { [typeName: string]: FixedTag[] } = {}
 
+    wasDeleted?: boolean
+
     constructor(ntag: string | null, tags: FixedTag[], payloadStr: string | null) {
         this.ntag = ntag || normalizeExactTag(tags);
 
@@ -138,7 +140,12 @@ export default class Relation {
             payload = ' == ' + this.payloadStr;
         }
 
-        return 'set ' + this.stringifyPattern(schema) + payload;
+        let commandPrefix = 'set ';
+
+        if (this.wasDeleted)
+            commandPrefix = 'delete ';
+
+        return commandPrefix + this.stringifyPattern(schema) + payload;
     }
 
     pattern() {

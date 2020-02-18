@@ -55,7 +55,6 @@ function get_inherit(graph: Graph, search: RelationSearch) {
             relation(rel) { search.relation(rel) },
             start() {},
             error(e) { search.error(e) },
-            deleteRelation() {},
             isDone() { return search.isDone() },
             finish() {
 
@@ -65,7 +64,6 @@ function get_inherit(graph: Graph, search: RelationSearch) {
                     start() {},
                     relation(rel) { search.relation(rel) },
                     finish() { search.finish() },
-                    deleteRelation() {},
                     error(e) { search.error(e) },
                     isDone() { return search.isDone() }
                 });

@@ -55,7 +55,9 @@ export default class TestRunner {
 
             runFunc(command, msg => {
                 if (msg && msg.startsWith('#error') && !allowError) {
+                    fail(`Graph error: ${msg}`);
                     reject(msg);
+                    return;
                 }
 
                 verifier(msg);
