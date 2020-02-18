@@ -7,12 +7,4 @@ import Command from './Command'
 export default class Schema {
 
     ordering = new TagTypeOrdering()
-
-    stringifyRelation(rel: Relation) {
-        return rel.stringify(this);
-    }
-
-    stringifyRelationPattern(rel: Relation) {
-        return rel.stringifyPattern(this);
-    }
 }

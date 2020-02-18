@@ -94,16 +94,6 @@ export default class Graph {
         return this.typeInfo[name];
     }
 
-    dump(command: Command, respond: RespondFunc) {
-        respond('#start');
-
-        for (const rel of this.inMemory.everyRelation()) {
-            respond(this.schema.stringifyRelation(rel));
-        }
-
-        respond('#done');
-    }
-
     deleteCmd(commandExec: CommandExecution) {
         const pattern = commandExec.pattern;
 
@@ -179,6 +169,10 @@ export default class Graph {
             }
 
             case 'dump': {
+                for (const rel of this.inMemory.everyRelation()) {
+                    commandExec.output.relation(rel);
+                }
+                return;
             }
 
             case 'delete': {
@@ -216,11 +210,6 @@ export default class Graph {
                     return;
                 }
             }
-        }
-
-        if (command.commandName === 'dump') {
-            this.dump(command, respond);
-            return;
         }
 
         const commandExec = new CommandExecution(this, command);

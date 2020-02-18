@@ -22,7 +22,7 @@ function iteratorToList(it) {
 function search(command: string) {
     const pattern = graph.relationPattern(command);
     return iteratorToList(storage.findAllMatches(pattern))
-        .map(rel => graph.schema.stringifyRelation(rel));
+        .map(rel => rel.stringify(graph.schema));
 }
 
 it('findAllMatches works with fixed key', () => {

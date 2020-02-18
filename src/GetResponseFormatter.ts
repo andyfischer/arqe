@@ -40,7 +40,7 @@ export default class GetResponseFormatter implements RelationReceiver {
 
     formatRelation(rel: Relation) {
         const tags = rel.tags.filter(tag => {
-            if (this.pattern.fixedTagsForType[tag.tagType])
+            if (!this.extendedResult && this.pattern.fixedTagsForType[tag.tagType])
                 return false;
 
             return true;
@@ -61,7 +61,7 @@ export default class GetResponseFormatter implements RelationReceiver {
         if (rel.wasDeleted) {
             str = 'delete ' + str;
 
-        } else if (this.asSetCommands) {
+        } else if (this.asSetCommands || this.extendedResult) {
             str = 'set ' + str;
         }
 
@@ -84,14 +84,10 @@ export default class GetResponseFormatter implements RelationReceiver {
         this.anyResults = true;
 
         if (asMultiResults) {
-            if (extendedResult) {
-                respond(this.schema.stringifyRelation(rel));
-            } else {
-                respond(this.formatRelation(rel));
-            }
+            respond(this.formatRelation(rel));
         } else {
             if (extendedResult) {
-                respond(this.schema.stringifyRelation(rel));
+                respond(this.formatRelation(rel));
             } else {
                 if (rel.hasPayload()) {
                     respond(rel.payload());
