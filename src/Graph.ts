@@ -24,10 +24,6 @@ import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider
 import { receiveToStringRespond } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
 
-import { setupGetExecution } from './GetCommand'
-import { setupSetExecution } from './SetCommand'
-import { setupJoinExecution } from './JoinCommand'
-
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
 
@@ -139,18 +135,10 @@ export default class Graph {
         })
     }
 
-    setupCommandExecution(commandExec: CommandExecution) {
-        switch (commandExec.commandName) {
-        case 'join':
-            setupJoinExecution(commandExec);
-            break;
-        }
-    }
-
     runCommandExecution(commandExec: CommandExecution) {
 
         if (commandExec.start) {
-            commandExec.start(commandExec);
+            commandExec.start();
             return;
         }
 

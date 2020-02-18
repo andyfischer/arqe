@@ -3,6 +3,7 @@ import Graph from './Graph'
 import CommandExecution from './CommandExecution'
 import { runSearch } from './GetOperation'
 import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
+import Relation from './Relation'
 
 export function setupJoinExecution(commandExec: CommandExecution) {
     // run the search
@@ -10,30 +11,34 @@ export function setupJoinExecution(commandExec: CommandExecution) {
     // when both are done..
     // look for relations where the unbound item matches
 
-    let inputFinished = false;
-    let searchFinished = false;
     let triggeredOutput = false;
 
-    let searchRels = null;
+    let inputRels: Relation[] = null;
+    let searchRels: Relation[] = null;
 
-    /*
-    commandExec.input.on('done', () => {
-        inputFinished = true;
-        check();
-    })
-    */
-
-    const search = collectRelationReceiverOutput((rels) => {
-        searchRels = rels;
-        searchFinished = true;
+    commandExec.input = collectRelationReceiverOutput((rels) => {
+        console.log('join got input: ', rels)
+        inputRels = rels;
         check();
     });
+
+    const search = collectRelationReceiverOutput((rels) => {
+        console.log('join finished search: ', rels)
+        searchRels = rels;
+        check();
+    });
+
+    commandExec.start = () => {
+        commandExec.output.start();
+        const pattern = commandExec.command.toPattern();
+        runSearch(commandExec.graph, { pattern, ...search } );
+    }
 
     const check = () => {
         if (triggeredOutput)
             return;
 
-        if (inputFinished && searchFinished) {
+        if (inputRels !== null && searchRels !== null) {
             triggeredOutput = true;
             sendOutput();
         }
@@ -41,5 +46,6 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
     const sendOutput = () => {
         console.log('join has finished!')
+        commandExec.output.finish();
     }
 }

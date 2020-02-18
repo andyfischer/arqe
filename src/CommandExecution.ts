@@ -5,7 +5,6 @@ import Relation from './Relation'
 import RelationPattern from './RelationPattern'
 import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
 import RelationSearch from './RelationSearch'
-import RelationBuffer from './RelationBuffer'
 import { receiveToStringRespond } from './RelationReceiver'
 
 export default class CommandExecution {
@@ -14,9 +13,9 @@ export default class CommandExecution {
     command: Command
     commandName: string
     pattern: RelationPattern
-    input?: RelationBuffer
+    input?: RelationReceiver
     output: RelationReceiver
-    start: (exec: CommandExecution) => void
+    start?: () => void
 
     constructor (graph: Graph, command: Command) {
         this.graph = graph;
