@@ -5,7 +5,7 @@ import Relation from './Relation'
 import { PatternTag, FixedTag } from './RelationPattern'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question, t_integer, t_dash } from './lexer'
+    t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar } from './lexer'
 
 function acceptableTagValue(token: Token) {
     return token.match !== t_space && token.match !== t_newline;
@@ -49,6 +49,15 @@ function parseOneTag(it: TokenIterator): PatternTag {
             negate
         }
     }
+    
+    if (it.tryConsume(t_dollar)) {
+        const unboundVar = it.consumeNextUnquotedText();
+        return {
+            tagType: null,
+            unboundType: unboundVar,
+            star: true
+        }
+    }
 
     const tagType = it.consumeNextUnquotedText();
 
@@ -58,12 +67,16 @@ function parseOneTag(it: TokenIterator): PatternTag {
     let tagValue = null;
     let starValue = false;
     let questionValue = false;
+    let unboundValue = null;
 
     if (it.tryConsume(t_slash)) {
         if (it.tryConsume(t_star)) {
             starValue = true;
         } else if (it.tryConsume(t_question)) {
             questionValue = true;
+        } else if (it.tryConsume(t_dollar)) {
+            unboundValue = it.consumeNextUnquotedText();
+            starValue = true;
         } else {
             tagValue = it.consumeTextWhile(acceptableTagValue);
         }
@@ -74,7 +87,8 @@ function parseOneTag(it: TokenIterator): PatternTag {
         tagValue,
         negate,
         starValue,
-        questionValue
+        questionValue,
+        unboundValue
     }
 }
 

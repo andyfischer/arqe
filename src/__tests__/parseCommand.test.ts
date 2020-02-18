@@ -119,3 +119,21 @@ it('parses multicharacter flag', () => {
     expect(parsed.flags.list).toEqual(true);
     expect(parsed.tags[0].tagType).toEqual('1');
 });
+
+it('parses unbound variables', () => {
+    const parsed = parseCommand('test $a');
+    expect(parsed.commandName).toEqual('test')
+    expect(parsed.tags[0].tagType).toBeFalsy();
+    expect(parsed.tags[0].unboundType).toEqual('a');
+    expect(parsed.tags[0].star).toEqual(true);
+});
+
+it('parses unbound variables 2', () => {
+    const parsed = parseCommand('test tagtype/$a');
+    expect(parsed.commandName).toEqual('test')
+    expect(parsed.tags[0].tagType).toEqual('tagtype');
+    expect(parsed.tags[0].unboundType).toBeFalsy();
+    expect(parsed.tags[0].unboundValue).toEqual('a');
+    expect(parsed.tags[0].star).toBeFalsy();
+    expect(parsed.tags[0].starValue).toEqual(true);
+});
