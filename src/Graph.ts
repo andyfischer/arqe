@@ -21,6 +21,8 @@ import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
+import { receiveToStringRespond } from './RelationReceiver'
+import { runCommandChain } from './ChainedExecution'
 
 import { setupGetExecution } from './GetCommand'
 import { setupSetExecution } from './SetCommand'
@@ -223,34 +225,8 @@ export default class Graph {
             return this.runCommandParsed(chain.commands[0], respond);
 
         // WIP
-        console.log('saw chain: ', chain.stringify());
-
-        const commandExecs = chain.commands.map(command => {
-            const exec = new CommandExecution(this, command);
-            this.setupCommandExecution(exec);
-            return exec;
-        });
-
-        // Link up commands
-        for (let index = 0; index < commandExecs.length; index++) {
-            const isFirst = index == 0;
-            const isLast = index == commandExecs.length - 1;
-            const commandExec = commandExecs[index];
-
-            if (isLast)
-                commandExec.outputToStringRespond(respond);
-
-            if (!isLast) {
-                const next = commandExecs[index + 1];
-                if (!next.input)
-                    throw new Error(`piped command '${next.command.commandName}' didn't expect input`);
-
-                commandExec.outputTo(next.input);
-            }
-        }
-
-        for (const commandExec of commandExecs)
-            this.runCommandExecution(commandExec);
+        const output = receiveToStringRespond(this, chain.commands[0], respond);
+        runCommandChain(this, chain, output);
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
