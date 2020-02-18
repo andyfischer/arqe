@@ -30,6 +30,7 @@ set skill/Doublehand rank/good
 set skill/DamageSplit rank/good
 
 set item/StoneGun rank/powerful
+set item/Ribbon rank/powerful
 
 set class/Ninja rank/good
 set class/Calculator rank/good

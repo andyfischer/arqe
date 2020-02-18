@@ -3,23 +3,27 @@ import Command, { CommandFlags } from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
 import RelationPattern from './RelationPattern'
-import RelationReceiver from './RelationReceiver'
+import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
 import GetResponseFormatter from './GetResponseFormatter'
 import GetResponseFormatterExists from './GetResponseFormatterExists'
 import GetResponseFormatterCount from './GetResponseFormatterCount'
 import SetResponseFormatter from './SetResponseFormatter'
 import RelationSearch from './RelationSearch'
+import RelationBuffer from './RelationBuffer'
 
 export default class CommandExecution {
     graph: Graph
     flags: CommandFlags
     command: Command
+    commandName: string
     pattern: RelationPattern
+    input?: RelationBuffer
     output: RelationReceiver
 
     constructor (graph: Graph, command: Command) {
         this.graph = graph;
         this.command = command;
+        this.commandName = command.commandName;
         this.flags = command.flags;
         this.pattern = command.toPattern();
     }
@@ -40,6 +44,17 @@ export default class CommandExecution {
             error(e) { output.error(e) },
             finish() { output.finish() },
         }
+    }
+
+    getInputBuffer(): RelationBuffer {
+        if (!this.input)
+            this.input = new RelationBuffer()
+
+        return this.input;
+    }
+
+    outputTo(receiver: RelationReceiver) {
+        this.output = receiver;
     }
 
     outputToStringRespond(respond: RespondFunc, configFormat?: (formatter: GetResponseFormatter) => void) {
@@ -93,16 +108,6 @@ export default class CommandExecution {
         if (this.output)
             throw new Error("already have a configured output");
 
-        const list: Relation[] = [];
-        this.output = {
-            start() {},
-            relation(rel) { list.push(rel) },
-            deleteRelation(rel) {},
-            error(e) { console.log('unhandled error in outputToRelationList: ', e) },
-            isDone() { return false; },
-            finish() {
-                onDone(list);
-            }
-        }
+        this.output = collectRelationReceiverOutput(onDone);
     }
 }

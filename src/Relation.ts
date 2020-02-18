@@ -108,7 +108,7 @@ export default class Relation {
         return found[0].tagValue;
     }
 
-    stringify(schema?: Schema) {
+    stringifyPattern(schema?: Schema) {
         const keys = this.tags.map(t => t.tagType);
 
         if (schema)
@@ -127,13 +127,18 @@ export default class Relation {
             return str;
         });
 
+        return args.join(' ');
+    }
+
+    stringify(schema?: Schema) {
+
         let payload = '';
 
         if (this.payloadStr !== null) {
             payload = ' == ' + this.payloadStr;
         }
 
-        return 'set ' + args.join(' ') + payload;
+        return 'set ' + this.stringifyPattern(schema) + payload;
     }
 
     pattern() {

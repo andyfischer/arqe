@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import CommandExecution from './CommandExecution'
-import parseCommand from './parseCommand'
+import parseCommand, { parseCommandChain } from './parseCommand'
 import Relation from './Relation'
 import SetOperation from './SetOperation'
 import SetResponseFormatter from './SetResponseFormatter'
@@ -21,6 +21,7 @@ import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
+import { runJoin } from './JoinCommand'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -138,7 +139,47 @@ export default class Graph {
         })
     }
 
-    runCommandExecution(command: CommandExecution) {
+    runCommandExecution(commandExec: CommandExecution) {
+        try {
+            switch (commandExec.commandName) {
+
+            case 'set': {
+                const set = new SetOperation(this, commandExec);
+                set.run();
+                return;
+            }
+
+            case 'get': {
+                const search = commandExec.toRelationSearch();
+                search.start();
+                runSearch(this, search);
+                return;
+            }
+
+            case 'dump': {
+            }
+
+            case 'delete': {
+                this.deleteCmd(commandExec);
+                return;
+            }
+
+            case 'listen': {
+                this.listen(commandExec);
+                return;
+            }
+
+            case 'join': {
+                runJoin(commandExec);
+            }
+            
+            }
+
+            commandExec.output.error("#error unrecognized command: " + commandExec.commandName);
+        } catch (err) {
+            console.log(err.stack || err);
+            commandExec.output.error("#internal_error");
+        }
     }
 
     runCommandParsed(command: Command, respond: RespondFunc) {
@@ -154,48 +195,15 @@ export default class Graph {
             }
         }
 
+        if (command.commandName === 'dump') {
+            this.dump(command, respond);
+            return;
+        }
+
         const commandExec = new CommandExecution(this, command);
         commandExec.outputToStringRespond(respond);
         
-        try {
-            switch (command.commandName) {
-
-            case 'set': {
-                const set = new SetOperation(this, commandExec);
-                set.run();
-                return;
-            }
-
-            case 'get': {
-
-                const search = commandExec.toRelationSearch();
-                search.start();
-                runSearch(this, search);
-                return;
-            }
-
-            case 'dump': {
-                this.dump(command, respond);
-                return;
-            }
-
-            case 'delete': {
-                this.deleteCmd(commandExec);
-                return;
-            }
-
-            case 'listen': {
-                this.listen(commandExec);
-                return;
-            }
-            
-            }
-
-            respond("#error unrecognized command: " + command.commandName);
-        } catch (err) {
-            console.log(err.stack || err);
-            respond("#internal_error");
-        }
+        this.runCommandExecution(commandExec);
     }
 
     runCommandChainParsed(chain: CommandChain, respond: RespondFunc) {
@@ -203,6 +211,31 @@ export default class Graph {
 
         if (chain.commands.length === 1)
             return this.runCommandParsed(chain.commands[0], respond);
+
+
+        console.log('saw chain: ', chain.stringify());
+
+        const commandExecs = chain.commands.map(command => {
+            return new CommandExecution(this, command);
+        });
+
+        // Link up commands
+        for (let index = 0; index < commandExecs.length; index++) {
+            const isFirst = index == 0;
+            const isLast = index == commandExecs.length - 1;
+            const commandExec = commandExecs[index];
+
+            if (isLast)
+                commandExec.outputToStringRespond(respond);
+
+            if (!isLast) {
+                const next = commandExecs[index + 1];
+                commandExec.outputTo(next.getInputBuffer());
+            }
+        }
+
+        for (const commandExec of commandExecs)
+            this.runCommandExecution(commandExec);
     }
 
     onRelationUpdated(command: Command, rel: Relation) {
@@ -242,11 +275,8 @@ export default class Graph {
             }
         }
 
-        const parsed = parseCommand(str);
-
-        // TODO: Switch to runCommandExecution
-
-        this.runCommandParsed(parsed, respond);
+        const parsed = parseCommandChain(str);
+        this.runCommandChainParsed(parsed, respond);
     }
 
     runSync(commandStr: string) {

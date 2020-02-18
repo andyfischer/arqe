@@ -50,6 +50,8 @@ export default class GetResponseFormatter implements RelationReceiver {
 
         let str = outTags.join(' ');
         
+        //let str = this.schema.stringifyRelationPattern(rel);
+        
         if (!this.listOnly) {
             str += (rel.hasPayload() ? ` == ${rel.payload()}` : '');
         }

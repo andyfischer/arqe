@@ -12,3 +12,4 @@ export default interface RelationSearch extends RelationReceiver {
     finish: () => void
     isDone: () => boolean
 }
+

@@ -11,4 +11,8 @@ export default class Schema {
     stringifyRelation(rel: Relation) {
         return rel.stringify(this);
     }
+
+    stringifyRelationPattern(rel: Relation) {
+        return rel.stringifyPattern(this);
+    }
 }

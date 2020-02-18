@@ -9,3 +9,17 @@ export default interface RelationReceiver {
     finish: () => void
     isDone: () => boolean
 }
+
+export function collectRelationReceiverOutput(onDone: (rels: Relation[]) => void): RelationReceiver {
+    const list: Relation[] = [];
+    return {
+        start() {},
+        relation(rel) { list.push(rel) },
+        deleteRelation(rel) {},
+        error(e) { console.log('unhandled error in outputToRelationList: ', e) },
+        isDone() { return false; },
+        finish() {
+            onDone(list);
+        }
+    }
+}
