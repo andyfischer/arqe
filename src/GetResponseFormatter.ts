@@ -39,18 +39,20 @@ export default class GetResponseFormatter implements RelationReceiver {
     }
 
     formatRelation(rel: Relation) {
-        const outTags = [];
-
-        for (const tag of rel.eachTag()) {
+        const tags = rel.tags.filter(tag => {
             if (this.pattern.fixedTagsForType[tag.tagType])
-                continue;
+                return false;
 
-            outTags.push(commandTagToString(tag));
+            return true;
+        });
+
+        if (this.schema) {
+            this.schema.ordering.sortTags(tags);
         }
 
-        let str = outTags.join(' ');
-        
-        //let str = this.schema.stringifyRelationPattern(rel);
+        const tagStrs = tags.map(commandTagToString);
+
+        let str = tagStrs.join(' ');
         
         if (!this.listOnly) {
             str += (rel.hasPayload() ? ` == ${rel.payload()}` : '');

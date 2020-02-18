@@ -1,6 +1,7 @@
 
 import Relation from './Relation'
 import UpdateContext from './UpdateContext'
+import { PatternTag } from './RelationPattern'
 
 const beforeSection = 1
 const unknownSection = 2
@@ -18,6 +19,14 @@ export default class TagTypeOrdering {
             return (aSection < bSection) ? -1 : 1;
 
         return a.localeCompare(b);
+    }
+
+    sortTags(tags: PatternTag[]) {
+        tags.sort((a: PatternTag, b: PatternTag) => {
+            return this.compareTagTypes(a.tagType, b.tagType);
+        });
+
+        return tags;
     }
 
     update = (cxt: UpdateContext) => {
