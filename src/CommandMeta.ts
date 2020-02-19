@@ -12,7 +12,7 @@ export function emitCommandMeta(output: RelationReceiver, fields: any) {
         tags.push({tagType: k, tagValue: fields[k]});
     }
 
-    output.relation(new Relation(null, tags, null));
+    output.relation(new Relation(tags, null));
 }
 
 export function emitMetaInfoForUnboundVars(pattern: RelationPattern, output: RelationReceiver) {

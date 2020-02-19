@@ -152,7 +152,7 @@ export default class RelationPattern {
     formatRelationRelative(rel: Relation) {
         const outTags = [];
 
-        for (const tag of rel.eachTag()) {
+        for (const tag of rel.pattern.tags) {
             if (this.fixedTagsForType[tag.tagType])
                 continue;
 
@@ -232,7 +232,7 @@ export default class RelationPattern {
     }
 
     toRelation() {
-        return new Relation(null, this.fixedTags, null);
+        return new Relation(this.fixedTags, null);
     }
 
     stringify() {

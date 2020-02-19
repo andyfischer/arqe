@@ -18,7 +18,7 @@ export default class Relation {
 
     wasDeleted?: boolean
 
-    constructor(ntag: null, tags: FixedTag[], payloadStr: string | null) {
+    constructor(tags: FixedTag[], payloadStr: string | null) {
 
         if (typeof payloadStr !== 'string' && payloadStr !== null)
             throw new Error('invalid value for payloadStr: ' + payloadStr)
@@ -44,11 +44,6 @@ export default class Relation {
             throw new Error("Payload is unavailable for this relation");
 
         return this.payloadStr;
-    }
-
-    *eachTag() {
-        for (const tag of this.tags)
-            yield tag;
     }
 
     setPayload(payloadStr: string | null) {
@@ -100,5 +95,5 @@ export function commandTagsToRelation(tags: PatternTag[], payload: string): Rela
         tagValue: t.tagValue
     }));
 
-    return new Relation(null, relationTags, payload);
+    return new Relation(relationTags, payload);
 }

@@ -70,7 +70,7 @@ export default class InMemoryStorage implements StorageProvider {
             tagValue: tag.tagValue
         }));
 
-        this.relationsByNtag[ntag] = new Relation(null, relationTags, command.payloadStr);
+        this.relationsByNtag[ntag] = new Relation(relationTags, command.payloadStr);
         set.saveFinished(this.relationsByNtag[ntag]);
     }
 }

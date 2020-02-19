@@ -32,7 +32,7 @@ export default class PlainFileStorage implements StorageProvider {
                     tagType: this.filenameType,
                     tagValue: filename
                 }]);
-                const rel = new Relation(null, tags, null);
+                const rel = new Relation(tags, null);
                 rel.payloadUnavailable = true;
                 search.relation(rel);
             }
@@ -43,7 +43,7 @@ export default class PlainFileStorage implements StorageProvider {
             const fullFilename = Path.join(this.directory, filename);
             const contents = await readFile(fullFilename, 'utf8');
 
-            const rel = new Relation(null, pattern.fixedTags, contents);
+            const rel = new Relation(pattern.fixedTags, contents);
             search.relation(rel);
         }
 

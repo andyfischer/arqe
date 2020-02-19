@@ -57,6 +57,6 @@ export default class RawObjectStorage implements StorageProvider {
     }
 
     runSave(set: SetOperation) {
-        set.saveFinished(new Relation(null, [], ''));
+        set.saveFinished(new Relation([], ''));
     }
 }

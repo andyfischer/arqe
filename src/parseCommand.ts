@@ -198,7 +198,7 @@ export function parseRelation(str: string): Relation {
         throw new Error("didn't expect any flags in parseRelation(): " + str)
     }
 
-    return new Relation(null, query.tags as FixedTag[], query.payload);
+    return new Relation(query.tags as FixedTag[], query.payload);
 }
 
 export function parseTag(str: string): PatternTag {
