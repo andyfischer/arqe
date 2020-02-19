@@ -63,7 +63,7 @@ class RelationListWithMeta {
     add(rel: Relation) {
         if (rel.pattern.hasType('command-meta')) {
             if (rel.pattern.hasType('unboundValue'))
-                this.unboundValueTypes.push(rel.getTagValue('type') as string);
+                this.unboundValueTypes.push(rel.pattern.getTagValue('type') as string);
 
             return;
         }
@@ -83,12 +83,12 @@ class KeyedRelations {
     map: {[tag: string]: Relation } = {}
 
     add(rel: Relation) {
-        const tag = rel.getTag(this.keyByType);
+        const tag = rel.pattern.getTagString(this.keyByType);
         this.map[tag] = rel;
     }
 
     findForKey(rel: Relation) {
-        const tag = rel.getTag(this.keyByType);
+        const tag = rel.pattern.getTagString(this.keyByType);
         return this.map[tag];
     }
 }

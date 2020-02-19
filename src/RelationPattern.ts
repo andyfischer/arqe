@@ -189,10 +189,27 @@ export default class RelationPattern {
         return tags[0];
     }
 
+    getTagString(typeName: string) {
+        const tag = this.getOneTagForType(typeName);
+
+        if (!tag.tagValue)
+            return typeName;
+
+        return typeName + '/' + tag.tagValue;
+    }
+
     getTagValue(typeName: string) {
         const tag = this.getOneTagForType(typeName);
         if (!tag)
             throw new Error(`type "${typeName}" not found in pattern: ${this.stringify()}`);
+
+        return tag.tagValue;
+    }
+
+    getTagValueOptional(typeName: string, defaultValue) {
+        const tag = this.getOneTagForType(typeName);
+        if (!tag)
+            return defaultValue;
 
         return tag.tagValue;
     }

@@ -9,7 +9,7 @@ export default function updateFilesystemMounts(cxt: UpdateContext): StorageMount
     const result = [];
     for (const mount of cxt.getRelations('filesystem-mount/*')) {
 
-        const mountKey = mount.getTag("filesystem-mount");
+        const mountKey = mount.pattern.getTagString("filesystem-mount");
         
         const options = cxt.getOptionsObject(mountKey);
 

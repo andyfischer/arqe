@@ -13,7 +13,6 @@ export default class Relation {
     payloadUnavailable?: boolean
 
     tags: FixedTag[]
-    tagsForType: { [typeName: string]: FixedTag[] } = {}
 
     pattern: RelationPattern
 
@@ -31,12 +30,6 @@ export default class Relation {
 
         this.payloadStr = payloadStr;
         this.tags = tags;
-
-        for (const arg of tags) {
-            if (!this.tagsForType[arg.tagType])
-                this.tagsForType[arg.tagType] = [];
-            this.tagsForType[arg.tagType].push(arg);
-        }
     }
     
     hasPayload() {
@@ -61,41 +54,6 @@ export default class Relation {
     setPayload(payloadStr: string | null) {
         this.payloadStr = payloadStr;
     }
-    
-    getOptional(typeName: string, defaultValue) {
-        const found = this.tagsForType[typeName];
-
-        if (!found)
-            return defaultValue;
-
-        return found[0].tagValue;
-    }
-    
-    tagCount() {
-        return this.tags.length;
-    }
-
-    getTag(typeName: string): string | null {
-        const found = this.tagsForType[typeName];
-        if (!found)
-            throw new Error("type not found: " + typeName);
-
-        if (!found[0].tagValue)
-            return typeName;
-
-        return typeName + '/' + found[0].tagValue;
-    }
-
-    getTagValue(typeName: string): string | true | null {
-        const found = this.tagsForType[typeName];
-        if (!found)
-            throw new Error("type not found: " + typeName);
-
-        if (!found[0].tagValue)
-            return true;
-
-        return found[0].tagValue;
-    }
 
     stringifyPattern(schema?: Schema) {
         const keys = this.tags.map(t => t.tagType);
@@ -104,13 +62,13 @@ export default class Relation {
             keys.sort((a,b) => schema.ordering.compareTagTypes(a, b));
 
         const args = keys.map(key => {
-            const value = this.getTagValue(key);
+            const value: string | true = this.pattern.getTagValue(key);
             if (key === 'option')
-                return '.' + value;
+                return '.' + (value as string);
 
             let str = key;
 
-            if (value !== true)
+            if ((value as any) !== true)
                 str += `/${value}`
 
             return str;

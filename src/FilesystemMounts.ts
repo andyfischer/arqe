@@ -40,7 +40,7 @@ export default class FilesystemMounts {
             for (const res of this.graph.runSync(`get ${mountKey} option/*`)) {
                 const rel = parseRelation(res);
 
-                options[rel.getTagValue("option") as string] = rel.payload();
+                options[rel.pattern.getTagValue("option") as string] = rel.payload();
             }
 
             options.filenameType = options.filenameType || 'filename'
