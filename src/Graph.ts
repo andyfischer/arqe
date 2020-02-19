@@ -24,6 +24,7 @@ import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider
 import { receiveToStringRespond } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
 import { emitMetaInfoForUnboundVars } from './CommandMeta'
+import { parsedCommandToString } from './stringifyQuery'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -161,9 +162,11 @@ export default class Graph {
             }
 
             case 'dump': {
+                commandExec.output.start();
                 for (const rel of this.inMemory.everyRelation()) {
                     commandExec.output.relation(rel);
                 }
+                commandExec.output.finish();
                 return;
             }
 
@@ -211,10 +214,14 @@ export default class Graph {
     }
 
     runCommandChainParsed(chain: CommandChain, respond: RespondFunc) {
+        if (chain.commands.length === 0) {
+            respond('#done');
+            return;
+        }
+
         if (chain.commands.length === 1)
             return this.runCommandParsed(chain.commands[0], respond);
 
-        // WIP
         const output = receiveToStringRespond(this, chain.commands[0], respond);
         runCommandChain(this, chain, output);
     }
@@ -248,6 +255,7 @@ export default class Graph {
     }
 
     run(str: string, respond?: RespondFunc) {
+
         if (!respond) {
             respond = (msg) => {
                 if (msg.startsWith('#error')) {
@@ -256,8 +264,14 @@ export default class Graph {
             }
         }
 
-        const parsed = parseCommandChain(str);
-        this.runCommandChainParsed(parsed, respond);
+        const chain = parseCommandChain(str);
+
+        for (const command of chain.commands) {
+            if (!command.commandName)
+                throw new Error('no command name found: ' + parsedCommandToString(command));
+        }
+
+        this.runCommandChainParsed(chain, respond);
     }
 
     runSync(commandStr: string) {
@@ -285,4 +299,17 @@ export default class Graph {
         return parsed.toPattern();
     }
 
+    getRelationsSync(tags: string): Relation[] {
+        let rels: Relation[] = null;
+        const commandStr = 'get ' + tags;
+        const parsedCommand = parseCommand(commandStr);
+        const commandExec = new CommandExecution(this, parsedCommand);
+        commandExec.outputToRelationList(l => { rels = l });
+        const search = commandExec.toRelationSearch();
+        search.start();
+        runSearch(this, search);
+        if (rels === null)
+            throw new Error("getRelationsSync search didn't finish synchronously: " + tags);
+        return rels;
+    }
 }

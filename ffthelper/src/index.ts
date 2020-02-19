@@ -56,7 +56,8 @@ async function main() {
     for (const teamName in data.Teams) {
         const teamData = data.Teams[teamName];
 
-        const teamId = await saveObject(graph, 'team/#unique', { name: teamName });
+        const team = await saveObject(graph, 'team/#unique', { name: teamName });
+        const teamId = team.getTagValue('team');
 
         for (const unit of teamData.Units) {
 
@@ -64,6 +65,7 @@ async function main() {
             const unitId = (await saveObject(graph, 'unit/#unique', unit)).stringify()
 
             graph.runSync(`set ${unitId} ${className}`)
+            graph.runSync(`set ${teamId} ${unitId}`)
 
             for (const skill of unit.ClassSkills) {
                 await graph.runSync(`set ${unitId} has-skill/${toTagName(skill)}`)
@@ -76,6 +78,15 @@ async function main() {
     }
 
     await Fs.writeFile('dump.graph', (await graph.runAsync('dump') as string[]).join('\n'))
+
+    // Analyze
+    for (const team of graph.getRelationsSync('team/*')) {
+
+        const teamId = team.getTagValue('team');
+        console.log('analyzing team: ', teamId);
+
+        console.log(graph.runSync(`get ${teamId} unit/$a | join unit/$a has-skill/Revive`))
+    }
 }
 
 main()

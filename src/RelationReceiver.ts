@@ -44,6 +44,16 @@ export function receiveToStringRespond(graph: Graph, command: Command, respond: 
         }
     }
 
+    if (command.commandName === 'dump') {
+        return {
+            start() { respond('#start') },
+            error(e) { respond('#error ' + e); },
+            relation(rel) { respond(rel.stringify()) },
+            isDone() { return false; },
+            finish() { respond('#done') }
+        }
+    }
+
     if (command.flags.count) {
         return new GetResponseFormatterCount(respond);
     }
