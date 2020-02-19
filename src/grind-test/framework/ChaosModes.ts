@@ -36,18 +36,15 @@ export const InsertExtraTag: ChaosMode = {
 
         return withParsed(s, chain => {
 
-            if (chain.commands.length > 1)
-                return;
-
-            modifyCommand(chain, 0, command => {
+            for (const command of chain.commands) {
                 // Don't mess with certain relations.
                 const pattern = command.toPattern();
 
                 if (pattern.hasType('typeinfo') || pattern.hasType('filesystem-mount'))
-                    return null;
+                    return;
 
                 command.tags.push({tagType: 'extra'});
-            })
+            }
         });
     }
 }

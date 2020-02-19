@@ -17,9 +17,6 @@ function setupCommandExecution(commandExec: CommandExecution) {
 }
 
 export function runCommandChain(graph: Graph, chain: CommandChain, output: RelationReceiver) {
-    // WIP
-    console.log('saw chain: ', chain.stringify());
-
     // Set up commands
     const commandExecs = chain.commands.map(command => {
         const exec = new CommandExecution(graph, command);

@@ -19,13 +19,11 @@ export function setupJoinExecution(commandExec: CommandExecution) {
     const pattern = commandExec.command.toPattern();
 
     commandExec.input = collectRelationReceiverOutput((rels) => {
-        console.log('join got input: ', rels)
         inputRelations = rels;
         check();
     });
 
     const search = collectRelationReceiverOutput((rels) => {
-        console.log('join finished search: ', rels)
         searchRelations = rels;
         check();
     });
