@@ -5,7 +5,6 @@ import Schema from './Schema'
 import RelationPattern, { PatternTag, FixedTag } from './RelationPattern'
 
 export default class Relation {
-    ntag: string
 
     private payloadStr: string | null
 
@@ -20,9 +19,7 @@ export default class Relation {
 
     wasDeleted?: boolean
 
-    constructor(ntag: string | null, tags: FixedTag[], payloadStr: string | null) {
-
-        this.ntag = ntag || normalizeExactTag(tags);
+    constructor(ntag: null, tags: FixedTag[], payloadStr: string | null) {
 
         if (typeof payloadStr !== 'string' && payloadStr !== null)
             throw new Error('invalid value for payloadStr: ' + payloadStr)

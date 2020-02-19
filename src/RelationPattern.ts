@@ -31,6 +31,7 @@ export default class RelationPattern {
     tagsForType: { [typename: string]: PatternTag[] } = {}
     hasStar?: boolean
     hasDoubleStar?: boolean
+    ntag?: string
 
     constructor(tags: PatternTag[]) {
         this.tags = tags;
@@ -54,6 +55,13 @@ export default class RelationPattern {
                 this.fixedTagsForType[tag.tagType] = true;
             }
         }
+    }
+
+    getNtag() {
+        if (this.ntag == null)
+            this.ntag = normalizeExactTag(this.tags);
+
+        return this.ntag;
     }
 
     tagCount() {

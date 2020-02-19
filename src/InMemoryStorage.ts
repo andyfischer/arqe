@@ -17,7 +17,7 @@ export default class InMemoryStorage implements StorageProvider {
     }
 
     deleteRelation(rel: Relation) {
-        delete this.relationsByNtag[rel.ntag];
+        delete this.relationsByNtag[rel.pattern.getNtag()];
     }
 
     *linearScan(pattern: RelationPattern) {
@@ -70,7 +70,7 @@ export default class InMemoryStorage implements StorageProvider {
             tagValue: tag.tagValue
         }));
 
-        this.relationsByNtag[ntag] = new Relation(ntag, relationTags, command.payloadStr);
+        this.relationsByNtag[ntag] = new Relation(null, relationTags, command.payloadStr);
         set.saveFinished(this.relationsByNtag[ntag]);
     }
 }

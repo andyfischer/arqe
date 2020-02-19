@@ -32,8 +32,7 @@ export default class PlainFileStorage implements StorageProvider {
                     tagType: this.filenameType,
                     tagValue: filename
                 }]);
-                const ntag = normalizeExactTag(tags);
-                const rel = new Relation(ntag, tags, null);
+                const rel = new Relation(null, tags, null);
                 rel.payloadUnavailable = true;
                 search.relation(rel);
             }
@@ -44,8 +43,7 @@ export default class PlainFileStorage implements StorageProvider {
             const fullFilename = Path.join(this.directory, filename);
             const contents = await readFile(fullFilename, 'utf8');
 
-            const ntag = normalizeExactTag(pattern.tags);
-            const rel = new Relation(ntag, pattern.fixedTags, contents);
+            const rel = new Relation(null, pattern.fixedTags, contents);
             search.relation(rel);
         }
 
