@@ -5,7 +5,7 @@ import parseCommand from './parseCommand'
 import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
 import CommandExecution from './CommandExecution'
-import { runSearch } from './GetOperation'
+import { runSearch } from './Search'
 
 export type UpdateFn<T> = (cxt: UpdateContext) => T
 

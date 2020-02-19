@@ -29,4 +29,7 @@ describe("appendTagInCommand", () => {
 it("restringify tests", () => {
     testRestringify("set *");
     testRestringify("set **");
+    testRestringify("join $a")
+    testRestringify("join $a $b")
+    testRestringify("join a/$a $b")
 });

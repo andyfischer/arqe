@@ -6,7 +6,7 @@ import parseCommand, { parseCommandChain } from './parseCommand'
 import Relation from './Relation'
 import SetOperation from './SetOperation'
 import SetResponseFormatter from './SetResponseFormatter'
-import { runSearch } from './GetOperation'
+import { runSearch } from './Search'
 import GraphListener from './GraphListener'
 import RelationPattern, { commandToRelationPattern } from './RelationPattern'
 import collectRespond from './collectRespond'
@@ -23,6 +23,7 @@ import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import { receiveToStringRespond } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
+import { emitMetaInfoForUnboundVars } from './CommandMeta'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -154,6 +155,7 @@ export default class Graph {
             case 'get': {
                 const search = commandExec.toRelationSearch();
                 search.start();
+                emitMetaInfoForUnboundVars(commandExec.command.toPattern(), search);
                 runSearch(this, search);
                 return;
             }

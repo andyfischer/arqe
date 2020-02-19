@@ -1,9 +1,13 @@
 
 import Command from './Command'
+import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
 import { PatternTag } from './RelationPattern'
 
 export function commandTagToString(tag: PatternTag) {
+    if (tag.unboundType)
+        return '$' + tag.unboundType;
+
     if (tag.star)
         return '*';
 
@@ -11,6 +15,8 @@ export function commandTagToString(tag: PatternTag) {
 
     if (tag.tagValue) {
         s += '/' + tag.tagValue;
+    } else if (tag.unboundValue) {
+        s += '/$' + tag.unboundValue;
     } else if (tag.starValue) {
         s += '/*';
     } else if (tag.questionValue) {
@@ -40,6 +46,10 @@ export function parsedCommandToString(command: Command) {
     }
 
     return str;
+}
+
+export function stringifyCommandChain(chain: CommandChain) {
+    return chain.commands.map(parsedCommandToString).join(' | ');
 }
 
 export function appendTagInCommand(str: string, tag: string) {

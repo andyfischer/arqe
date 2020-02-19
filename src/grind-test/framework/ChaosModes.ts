@@ -1,31 +1,54 @@
 
 import Graph from '../../Graph'
 import ChaosMode from './ChaosMode'
-import parseCommand from '../../parseCommand'
-import { parsedCommandToString, appendTagInCommand } from '../../stringifyQuery'
+import Command from '../../Command'
+import CommandChain from '../../CommandChain'
+import { parseCommandChain } from '../../parseCommand'
+import { stringifyCommandChain, appendTagInCommand } from '../../stringifyQuery'
 
 export const ReparseCommand: ChaosMode = {
     name: 'reparseCommand',
     shortDescription: 'reparse command',
-    modifyRunCommand(command: string) {
-        const parsed = parseCommand(command);
-        command = parsedCommandToString(parsed);
-        return command;
+    modifyRunCommand(s: string) {
+        const chain = parseCommandChain(s);
+        s = stringifyCommandChain(chain);
+        return s;
     }
+}
+
+function withParsed(commandStr: string, callback: (chain: CommandChain) => CommandChain | void): string {
+    const parsed: CommandChain = parseCommandChain(commandStr);
+    const result: CommandChain = callback(parsed) || parsed;
+    return stringifyCommandChain(result);
+}
+
+function modifyCommand(chain: CommandChain, i: number, callback: (command: Command) => Command) {
+    const modified = callback(chain.commands[i]);
+
+    if (modified)
+        chain.commands[i] = modified;
 }
 
 export const InsertExtraTag: ChaosMode = {
     name: 'insertExtraTag',
     shortDescription: 'insert extra tag',
-    modifyRunCommand(command: string) {
-        const parsed = parseCommand(command);
-        const pattern = parsed.toPattern();
+    modifyRunCommand(s: string) {
 
-        // Don't mess with certain relations.
-        if (pattern.hasType('typeinfo') || pattern.hasType('filesystem-mount'))
-            return command;
+        return withParsed(s, chain => {
 
-        return appendTagInCommand(command, 'extra');
+            if (chain.commands.length > 1)
+                return;
+
+            modifyCommand(chain, 0, command => {
+                // Don't mess with certain relations.
+                const pattern = command.toPattern();
+
+                if (pattern.hasType('typeinfo') || pattern.hasType('filesystem-mount'))
+                    return null;
+
+                command.tags.push({tagType: 'extra'});
+            })
+        });
     }
 }
 
@@ -35,11 +58,13 @@ export const GetInheritedBranch: ChaosMode = {
     setupNewGraph(graph: Graph) {
         graph.run('set typeinfo/chaosbranch .inherits')
     },
-    modifyRunCommand(command: string) {
-        if (command.startsWith('get ')) {
-            command = appendTagInCommand(command, 'chaosbranch/123');
-        }
-        return command;
+    modifyRunCommand(s: string) {
+        return withParsed(s, chain => {
+            for (const command of chain.commands) {
+                if (command.commandName === 'get')
+                    command.tags.push({tagType: 'chaosbranch', tagValue: '123'});
+            }
+        })
     }
 }
 
@@ -66,14 +91,12 @@ export const ScrambleTagOrder: ChaosMode = {
     name: 'scrambleTagOrder',
     shortDescription: 'scramble tag order',
     modifyRunCommand(command: string) {
-        const parsed = parseCommand(command);
-        parsed.tags = shuffle(parsed.tags);
-        const modified = parsedCommandToString(parsed);
-        // console.log(`scramble: ${command} -> ${modified}`)
-        return modified;
+        return withParsed(command, chain => {
+            for (const command of chain.commands)
+                command.tags = shuffle(command.tags);
+        });
     }
 }
 
 // Modes to add:
-//  - Scramble tag order
 //  - Enable specific optimizations
