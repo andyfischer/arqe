@@ -43,6 +43,7 @@
     },
     "testMatch": [
       "**/src/**/__tests__/**/*.test.(js|ts)",
+      "**/src/**/real-world-test/*.test.(js|ts)",
       "**/src/**/grind-test/*.test.(js|ts)"
     ],
     "moduleFileExtensions": [

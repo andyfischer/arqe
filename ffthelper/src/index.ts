@@ -83,7 +83,6 @@ async function main() {
     for (const team of graph.getRelationsSync('team/*')) {
 
         const teamId = team.getTagValue('team');
-        console.log('analyzing team: ', teamId);
 
         console.log(graph.runSync(`get ${teamId} unit/$a | join unit/$a has-skill/Revive`))
     }
