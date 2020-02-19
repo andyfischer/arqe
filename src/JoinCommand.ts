@@ -61,8 +61,8 @@ class RelationListWithMeta {
     relations: Relation[] = []
 
     add(rel: Relation) {
-        if (rel.includesType('command-meta')) {
-            if (rel.includesType('unboundValue'))
+        if (rel.pattern.hasType('command-meta')) {
+            if (rel.pattern.hasType('unboundValue'))
                 this.unboundValueTypes.push(rel.getTagValue('type') as string);
 
             return;

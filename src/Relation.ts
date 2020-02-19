@@ -16,13 +16,18 @@ export default class Relation {
     tags: FixedTag[]
     tagsForType: { [typeName: string]: FixedTag[] } = {}
 
+    pattern: RelationPattern
+
     wasDeleted?: boolean
 
     constructor(ntag: string | null, tags: FixedTag[], payloadStr: string | null) {
+
         this.ntag = ntag || normalizeExactTag(tags);
 
         if (typeof payloadStr !== 'string' && payloadStr !== null)
             throw new Error('invalid value for payloadStr: ' + payloadStr)
+
+        this.pattern = new RelationPattern(tags);
 
         if (payloadStr === '#exists')
             payloadStr = null;
@@ -69,21 +74,6 @@ export default class Relation {
         return found[0].tagValue;
     }
     
-    includesType(name: string) {
-        return this.tagsForType[name] !== undefined;
-    }
-
-    hasValueForType(name: string) {
-        if (!this.tagsForType[name])
-            return false;
-
-        for (const tag of this.tagsForType[name])
-            if (tag.tagValue !== null)
-                return true;
-
-        return false;
-    }
-
     tagCount() {
         return this.tags.length;
     }
@@ -146,10 +136,6 @@ export default class Relation {
             commandPrefix = 'delete ';
 
         return commandPrefix + this.stringifyPattern(schema) + payload;
-    }
-
-    pattern() {
-        return new RelationPattern(this.tags);
     }
 }
 

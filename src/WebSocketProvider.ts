@@ -28,8 +28,8 @@ export function updateWebSocketProviders(cxt: UpdateContext) {
 
     for (const rel of cxt.getRelations('schema provider/wssync *')) {
 
-        const options = cxt.getOptionsObject(rel.pattern().stringify());
-        const anchor = rel.pattern().removeType('provider').removeType('schema');
+        const options = cxt.getOptionsObject(rel.pattern.stringify());
+        const anchor = rel.pattern.removeType('provider').removeType('schema');
 
         if (!options.host)
             continue;

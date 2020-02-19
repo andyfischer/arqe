@@ -29,13 +29,11 @@ export default class RelationPattern {
     fixedTags: FixedTag[] = []
     fixedTagsForType: { [typename: string]: true } = {}
     tagsForType: { [typename: string]: PatternTag[] } = {}
-    tagCount: number
     hasStar?: boolean
     hasDoubleStar?: boolean
 
     constructor(tags: PatternTag[]) {
         this.tags = tags;
-        this.tagCount = tags.length;
 
         for (const tag of tags) {
             const { tagType } = tag;
@@ -58,11 +56,15 @@ export default class RelationPattern {
         }
     }
 
+    tagCount() {
+        return this.tags.length;
+    }
+
     isSupersetOf(subPattern: RelationPattern) {
         if (this.hasDoubleStar)
             return true;
 
-        if (this.tagCount !== subPattern.tagCount)
+        if (this.tagCount() !== subPattern.tagCount())
             return false;
 
         for (const tag of this.tags) {
@@ -95,38 +97,40 @@ export default class RelationPattern {
 
     matches(rel: Relation) {
 
+        const matchPattern = rel.pattern;
+
         // Check tag count on this relatino.
         if (this.hasDoubleStar) {
-            if (rel.tagCount() < this.tagCount)
+            if (matchPattern.tagCount() < this.tagCount())
                 return false;
         } else {
-            if (rel.tagCount() !== this.tagCount)
+            if (matchPattern.tagCount() !== this.tagCount())
                 return false;
         }
 
         // For all fixed args: Check that each one is found in this relation.
         for (const arg of this.fixedTags) {
 
-            if (!rel.includesType(arg.tagType))
+            if (!matchPattern.hasType(arg.tagType))
                 return false;
             
             if (!arg.tagValue) {
-                if (!rel.includesType(arg.tagType))
+                if (!matchPattern.hasType(arg.tagType))
                     return false;
 
-                if (rel.hasValueForType(arg.tagType))
+                if (matchPattern.hasValueForType(arg.tagType))
                     return false;
 
                 continue;
             }
 
-            if (rel.getTagValue(arg.tagType) !== arg.tagValue)
+            if (matchPattern.getTagValue(arg.tagType) !== arg.tagValue)
                 return false;
         }
 
         // For all star values: Check that the relation has a tag of this type.
         for (const arg of this.starValueTags) {
-            if (!rel.includesType(arg.tagType))
+            if (!matchPattern.hasType(arg.tagType))
                 return false;
         }
 
@@ -153,6 +157,17 @@ export default class RelationPattern {
 
     hasType(typeName: string) {
         return !!this.tagsForType[typeName];
+    }
+
+    hasValueForType(typeName: string) {
+        if (!this.hasType(typeName))
+            return false;
+
+        for (const tag of this.tagsForType[typeName])
+            if (tag.tagValue != null)
+                return true;
+
+        return false;
     }
 
     getOneTagForType(typeName: string) {
