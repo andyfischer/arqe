@@ -178,7 +178,7 @@ function parseOneCommandChain(it: TokenIterator): CommandChain {
             break;
 
         if (!it.tryConsume(t_bar))
-            throw new Error("expected: |");
+            throw new Error("expected: |, saw: " + it.nextText());
     }
 
     return chain;

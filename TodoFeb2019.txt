@@ -1,0 +1,7 @@
+
+ - Keep working on tsc-runner until it supports autofixing of my errors
+ - Support multivariable/multistep join
+
+ - More tests on listening
+
+ - Web UI

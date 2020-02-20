@@ -19,7 +19,7 @@ export default class UpdateContext {
         this.graph = graph;
     }
 
-    getRelations(tags: string): Relation[] {
+    get(tags: string): Relation[] {
         if (tags.startsWith('get '))
             throw new Error("getRelations(tags) should not include 'get': " + tags);
 
@@ -41,6 +41,21 @@ export default class UpdateContext {
             throw new Error("get didn't finish synchronously: " + commandStr);
 
         return rels;
+    }
+
+    getOne(tags: string): Relation {
+        const rels = this.get(tags);
+        if (rels.length === 0)
+            throw new Error(`relation not found: ${tags}`);
+
+        if (rels.length > 1)
+            throw new Error(`expected one relation for: ${tags}`);
+
+        return rels[0];
+    }
+
+    getRelations(tags: string): Relation[] {
+        return this.get(tags);
     }
 
     getOptionsObject(tags: string): any {

@@ -84,11 +84,15 @@ export default class RelationPattern {
         return this.payload != null;
     }
 
-    getPayload() {
+    getValue() {
         if (this.payloadUnavailable)
             throw new Error("Payload is unavailable for this relation");
 
         return this.payload;
+    }
+
+    getPayload() {
+        return this.getValue();
     }
 
     setPayload(payload: string | null) {

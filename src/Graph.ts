@@ -25,6 +25,7 @@ import { receiveToStringRespond } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
 import { emitMetaInfoForUnboundVars } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
+import UpdateContext from './UpdateContext'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -311,5 +312,10 @@ export default class Graph {
         if (rels === null)
             throw new Error("getRelationsSync search didn't finish synchronously: " + tags);
         return rels;
+    }
+
+    runDerived(callback: (cxt: UpdateContext) => void) {
+        const cxt = new UpdateContext(this);
+        return callback(cxt);
     }
 }
