@@ -49,7 +49,7 @@ export function receiveToStringRespond(graph: Graph, command: Command, respond: 
         return {
             start() { respond('#start') },
             error(e) { respond('#error ' + e); },
-            relation(rel) { respond(rel.stringify()) },
+            relation(rel) { respond(rel.stringifyToCommand()) },
             isDone() { return false; },
             finish() { respond('#done') }
         }
