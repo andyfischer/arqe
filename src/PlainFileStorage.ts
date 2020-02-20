@@ -1,6 +1,6 @@
 
 import StorageProvider from './StorageProvider'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { commandTagsToRelation } from './RelationPattern'
 import Command from './Command'
 import SetOperation from './SetOperation'
 import Relation from './Relation'
@@ -32,7 +32,7 @@ export default class PlainFileStorage implements StorageProvider {
                     tagType: this.filenameType,
                     tagValue: filename
                 }]);
-                const rel = new Relation(tags, null);
+                const rel = commandTagsToRelation(tags, null);
                 rel.payloadUnavailable = true;
                 search.relation(rel);
             }
@@ -43,7 +43,7 @@ export default class PlainFileStorage implements StorageProvider {
             const fullFilename = Path.join(this.directory, filename);
             const contents = await readFile(fullFilename, 'utf8');
 
-            const rel = new Relation(pattern.fixedTags, contents);
+            const rel = commandTagsToRelation(pattern.fixedTags, contents);
             search.relation(rel);
         }
 

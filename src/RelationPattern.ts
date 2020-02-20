@@ -1,6 +1,5 @@
 
 import Command from './Command'
-import Relation from './Relation'
 import Graph from './Graph'
 import Schema from './Schema'
 import parseCommand, { parseTag } from './parseCommand'
@@ -24,7 +23,17 @@ export interface FixedTag {
 }
 
 export default class RelationPattern {
+    
     tags: PatternTag[] = []
+
+    // relation data
+    payload: string | null
+    payloadUnavailable?: true
+
+    // relation change
+    wasDeleted?: true
+
+    // derived data
     starValueTags: PatternTag[] = []
     fixedTags: FixedTag[] = []
     fixedTagsForType: { [typename: string]: true } = {}
@@ -68,6 +77,29 @@ export default class RelationPattern {
         return this.tags.length;
     }
 
+    hasPayload() {
+        if (this.payloadUnavailable)
+            throw new Error("Payload is unavailable for this relation");
+
+        return this.payload != null;
+    }
+
+    getPayload() {
+        if (this.payloadUnavailable)
+            throw new Error("Payload is unavailable for this relation");
+
+        return this.payload;
+    }
+
+    setPayload(payload: string | null) {
+        if (payload === '#exists') {
+            throw new Error("don't use #exists as payload");
+            payload = null;
+        }
+
+        this.payload = payload;
+    }
+
     isSupersetOf(subPattern: RelationPattern) {
         if (this.hasDoubleStar)
             return true;
@@ -103,42 +135,40 @@ export default class RelationPattern {
         return true;
     }
 
-    matches(rel: Relation) {
-
-        const matchPattern = rel.pattern;
+    matches(rel: RelationPattern) {
 
         // Check tag count on this relatino.
         if (this.hasDoubleStar) {
-            if (matchPattern.tagCount() < this.tagCount())
+            if (rel.tagCount() < this.tagCount())
                 return false;
         } else {
-            if (matchPattern.tagCount() !== this.tagCount())
+            if (rel.tagCount() !== this.tagCount())
                 return false;
         }
 
         // For all fixed args: Check that each one is found in this relation.
         for (const arg of this.fixedTags) {
 
-            if (!matchPattern.hasType(arg.tagType))
+            if (!rel.hasType(arg.tagType))
                 return false;
             
             if (!arg.tagValue) {
-                if (!matchPattern.hasType(arg.tagType))
+                if (!rel.hasType(arg.tagType))
                     return false;
 
-                if (matchPattern.hasValueForType(arg.tagType))
+                if (rel.hasValueForType(arg.tagType))
                     return false;
 
                 continue;
             }
 
-            if (matchPattern.getTagValue(arg.tagType) !== arg.tagValue)
+            if (rel.getTagValue(arg.tagType) !== arg.tagValue)
                 return false;
         }
 
         // For all star values: Check that the relation has a tag of this type.
         for (const arg of this.starValueTags) {
-            if (!matchPattern.hasType(arg.tagType))
+            if (!rel.hasType(arg.tagType))
                 return false;
         }
 
@@ -149,17 +179,17 @@ export default class RelationPattern {
         return this.hasStar || this.hasDoubleStar || (this.starValueTags.length > 0);
     }
 
-    formatRelationRelative(rel: Relation) {
+    formatRelationRelative(rel: RelationPattern) {
         const outTags = [];
 
-        for (const tag of rel.pattern.tags) {
+        for (const tag of rel.tags) {
             if (this.fixedTagsForType[tag.tagType])
                 continue;
 
             outTags.push(commandTagToString(tag));
         }
 
-        const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.payload()}` : '');
+        const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
         return str;
     }
 
@@ -231,18 +261,30 @@ export default class RelationPattern {
         return new RelationPattern(this.tags.concat([tag]));
     }
 
-    toRelation() {
-        return new Relation(this.fixedTags, null);
-    }
-
     stringify() {
         return commandTagsToString(this.tags);
+    }
+
+    stringifyToCommand() {
+        let commandPrefix = 'set ';
+
+        if (this.wasDeleted)
+            commandPrefix = 'delete ';
+
+        const payloadStr = (this.payload != null) ? (' == ' + this.payload) : '';
+        return commandPrefix + commandTagsToString(this.tags) + payloadStr;
     }
 }
 
 export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
     return new RelationPattern(parsed.tags)
+}
+
+export function commandTagsToRelation(tags: PatternTag[], payload: string): RelationPattern {
+    const pattern = new RelationPattern(tags)
+    pattern.setPayload(payload);
+    return pattern;
 }
 
 export function parsePattern(query: string) {

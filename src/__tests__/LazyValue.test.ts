@@ -14,14 +14,14 @@ beforeEach(() => {
         // Concatenate a bunch of strings
         callCount += 1;
         const rels = cxt.getRelations("string/*");
-        rels.sort((a,b) => (a.pattern.getTagValue('string') as string)
-                    .localeCompare(b.pattern.getTagValue('string') as string));
+        rels.sort((a,b) => (a.getTagValue('string') as string)
+                    .localeCompare(b.getTagValue('string') as string));
 
-        let strs = rels.map(r => r.payload());
+        let strs = rels.map(r => r.getPayload());
 
         // Just to add complication, delete strings from ignorestring/* tags.
         for (const ignore of cxt.getRelations("ignorestring/*")) {
-            strs = strs.filter(s => s !== ignore.payload());
+            strs = strs.filter(s => s !== ignore.getPayload());
         }
 
         return strs.join(' ');

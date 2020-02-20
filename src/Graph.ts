@@ -98,7 +98,7 @@ export default class Graph {
         const pattern = commandExec.pattern;
 
         for (const rel of this.inMemory.findAllMatches(pattern)) {
-            if (rel.pattern.hasType('typeinfo'))
+            if (rel.hasType('typeinfo'))
                 throw new Error("can't delete a typeinfo relation");
 
             rel.wasDeleted = true;

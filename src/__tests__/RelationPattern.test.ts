@@ -40,7 +40,7 @@ describe('isSupersetOf', () => {
 describe("matches", () => {
     function test(pattern: string, relation: string) {
         const p = parsePattern(pattern);
-        const rel = parsePattern(relation).toRelation();
+        const rel = parsePattern(relation);
         return p.matches(rel);
     }
 

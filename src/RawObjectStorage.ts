@@ -1,6 +1,6 @@
 
-import Relation, { commandTagsToRelation } from './Relation'
-import RelationPattern from './RelationPattern'
+import Relation from './Relation'
+import RelationPattern, { commandTagsToRelation } from './RelationPattern'
 import RelationSearch from './RelationSearch'
 import Command from './Command'
 import { commandTagsToString } from './stringifyQuery'
@@ -57,6 +57,6 @@ export default class RawObjectStorage implements StorageProvider {
     }
 
     runSave(set: SetOperation) {
-        set.saveFinished(new Relation([], ''));
+        set.saveFinished(commandTagsToRelation([], ''));
     }
 }

@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { commandTagsToRelation } from './RelationPattern'
 import Command from './Command'
 import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
@@ -17,7 +17,7 @@ export default class InMemoryStorage implements StorageProvider {
     }
 
     deleteRelation(rel: Relation) {
-        delete this.relationsByNtag[rel.pattern.getNtag()];
+        delete this.relationsByNtag[rel.getNtag()];
     }
 
     *linearScan(pattern: RelationPattern) {
@@ -70,7 +70,7 @@ export default class InMemoryStorage implements StorageProvider {
             tagValue: tag.tagValue
         }));
 
-        this.relationsByNtag[ntag] = new Relation(relationTags, command.payloadStr);
+        this.relationsByNtag[ntag] = commandTagsToRelation(relationTags, command.payloadStr);
         set.saveFinished(this.relationsByNtag[ntag]);
     }
 }

@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import RelationPattern, { commandTagsToRelation } from './RelationPattern'
 import RelationReceiver from './RelationReceiver'
 
 export function emitCommandMeta(output: RelationReceiver, fields: any) {
@@ -12,7 +12,7 @@ export function emitCommandMeta(output: RelationReceiver, fields: any) {
         tags.push({tagType: k, tagValue: fields[k]});
     }
 
-    output.relation(new Relation(tags, null));
+    output.relation(commandTagsToRelation(tags, null));
 }
 
 export function emitMetaInfoForUnboundVars(pattern: RelationPattern, output: RelationReceiver) {

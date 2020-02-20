@@ -55,7 +55,7 @@ export default class GetResponseFormatter implements RelationReceiver {
         let str = tagStrs.join(' ');
         
         if (!this.listOnly) {
-            str += (rel.hasPayload() ? ` == ${rel.payload()}` : '');
+            str += (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
         }
 
         if (rel.wasDeleted) {
@@ -79,7 +79,7 @@ export default class GetResponseFormatter implements RelationReceiver {
         if (this.enoughResults)
             return;
 
-        if (rel.pattern.hasType('command-meta'))
+        if (rel.hasType('command-meta'))
             return;
 
         const { respond, pattern, extendedResult, asMultiResults } = this;
@@ -93,7 +93,7 @@ export default class GetResponseFormatter implements RelationReceiver {
                 respond(this.formatRelation(rel));
             } else {
                 if (rel.hasPayload()) {
-                    respond(rel.payload());
+                    respond(rel.getPayload());
                 } else {
                     respond('#exists');
                 }

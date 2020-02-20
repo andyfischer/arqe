@@ -14,6 +14,9 @@ export function commandTagToString(tag: PatternTag) {
     let s = tag.tagType;
 
     if (tag.tagValue) {
+        if (tag.tagType === 'option')
+            return '.' + tag.tagValue;
+
         s += '/' + tag.tagValue;
     } else if (tag.unboundValue) {
         s += '/$' + tag.unboundValue;

@@ -30,7 +30,7 @@ export default class SetResponseFormatter implements RelationReceiver {
 
     relation(rel: Relation) {
         if (this.replyWithEcho) {
-            this.respond(rel.stringify(this.graph.schema));
+            this.respond(rel.stringifyToCommand());
         } else {
            this.respond("#done");
         }

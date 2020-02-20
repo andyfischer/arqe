@@ -3,7 +3,7 @@ import Graph from './Graph'
 import CommandExecution from './CommandExecution'
 import { runSearch } from './Search'
 import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
-import Relation from './Relation'
+import RelationPattern from './RelationPattern'
 import { emitMetaInfoForUnboundVars } from './CommandMeta'
 
 export function setupJoinExecution(commandExec: CommandExecution) {
@@ -14,8 +14,8 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
     let triggeredOutput = false;
 
-    let inputRelations: Relation[] = null;
-    let searchRelations: Relation[] = null;
+    let inputRelations: RelationPattern[] = null;
+    let searchRelations: RelationPattern[] = null;
     const pattern = commandExec.command.toPattern();
 
     commandExec.input = collectRelationReceiverOutput((rels) => {
@@ -58,12 +58,12 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
 class RelationListWithMeta {
     unboundValueTypes: string[] = []
-    relations: Relation[] = []
+    relations: RelationPattern[] = []
 
-    add(rel: Relation) {
-        if (rel.pattern.hasType('command-meta')) {
-            if (rel.pattern.hasType('unboundValue'))
-                this.unboundValueTypes.push(rel.pattern.getTagValue('type') as string);
+    add(rel: RelationPattern) {
+        if (rel.hasType('command-meta')) {
+            if (rel.hasType('unboundValue'))
+                this.unboundValueTypes.push(rel.getTagValue('type') as string);
 
             return;
         }
@@ -71,7 +71,7 @@ class RelationListWithMeta {
         this.relations.push(rel);
     }
 
-    addAll(rels: Relation[]) {
+    addAll(rels: RelationPattern[]) {
         for (const rel of rels)
             this.add(rel);
     }
@@ -80,15 +80,15 @@ class RelationListWithMeta {
 class KeyedRelations {
 
     keyByType: string
-    map: {[tag: string]: Relation } = {}
+    map: {[tag: string]: RelationPattern } = {}
 
-    add(rel: Relation) {
-        const tag = rel.pattern.getTagString(this.keyByType);
+    add(rel: RelationPattern) {
+        const tag = rel.getTagString(this.keyByType);
         this.map[tag] = rel;
     }
 
-    findForKey(rel: Relation) {
-        const tag = rel.pattern.getTagString(this.keyByType);
+    findForKey(rel: RelationPattern) {
+        const tag = rel.getTagString(this.keyByType);
         return this.map[tag];
     }
 }

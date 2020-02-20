@@ -47,7 +47,7 @@ export default class UpdateContext {
         const out = {};
 
         for (const option of this.getRelations(`${tags} option/*`)) {
-            out[option.pattern.getTagValue("option") as string] = option.payload();
+            out[option.getTagValue("option") as string] = option.getPayload();
         }
 
         return out;

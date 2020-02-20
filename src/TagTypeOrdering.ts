@@ -32,8 +32,8 @@ export default class TagTypeOrdering {
     update = (cxt: UpdateContext) => {
         for (const rel of cxt.getRelations('typeinfo/* option/order')) {
 
-            const typeName = rel.pattern.getTagValue('typeinfo') as string;
-            const value = rel.payload();
+            const typeName = rel.getTagValue('typeinfo') as string;
+            const value = rel.getPayload();
 
             if (value === 'before') {
                 this.section[typeName] = beforeSection

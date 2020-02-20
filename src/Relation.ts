@@ -3,81 +3,41 @@ import Graph from './Graph'
 import { normalizeExactTag } from './stringifyQuery'
 import Schema from './Schema'
 import RelationPattern, { PatternTag, FixedTag } from './RelationPattern'
+import { commandTagsToString } from './stringifyQuery'
 
-export default class Relation {
+type Relation = RelationPattern
+export default Relation;
 
-    private payloadStr: string | null
+/*
+export default class Relation extends RelationPattern {
 
-    // 'payloadUnavailable' means that this relation might or might not have a payload,
-    // but we don't know what it is. With this enabled it's error to try to access the payload.
-    payloadUnavailable?: boolean
+    constructor(tags: FixedTag[], payload: string | null) {
 
-    tags: FixedTag[]
+        super(tags);
 
-    pattern: RelationPattern
+        if (typeof payload !== 'string' && payload !== null)
+            throw new Error('invalid value for payload: ' + payload)
 
-    wasDeleted?: boolean
-
-    constructor(tags: FixedTag[], payloadStr: string | null) {
-
-        if (typeof payloadStr !== 'string' && payloadStr !== null)
-            throw new Error('invalid value for payloadStr: ' + payloadStr)
-
-        this.pattern = new RelationPattern(tags);
-
-        if (payloadStr === '#exists')
-            payloadStr = null;
-
-        this.payloadStr = payloadStr;
+        this.payload = payload;
         this.tags = tags;
-    }
-    
-    hasPayload() {
-        if (this.payloadUnavailable)
-            throw new Error("Payload is unavailable for this relation");
-
-        return this.payloadStr != null;
-    }
-
-    payload() {
-        if (this.payloadUnavailable)
-            throw new Error("Payload is unavailable for this relation");
-
-        return this.payloadStr;
-    }
-
-    setPayload(payloadStr: string | null) {
-        this.payloadStr = payloadStr;
     }
 
     stringifyPattern(schema?: Schema) {
-        const keys = this.tags.map(t => t.tagType);
+
+        const tags = this.tags.map(t => t);
 
         if (schema)
-            keys.sort((a,b) => schema.ordering.compareTagTypes(a, b));
+            schema.ordering.sortTags(tags);
 
-        const args = keys.map(key => {
-            const value: string | true = this.pattern.getTagValue(key);
-            if (key === 'option')
-                return '.' + (value as string);
-
-            let str = key;
-
-            if ((value as any) !== true)
-                str += `/${value}`
-
-            return str;
-        });
-
-        return args.join(' ');
+        return commandTagsToString(tags);
     }
 
     stringify(schema?: Schema) {
 
         let payload = '';
 
-        if (this.payloadStr !== null) {
-            payload = ' == ' + this.payloadStr;
+        if (this.payload !== null) {
+            payload = ' == ' + this.payload;
         }
 
         let commandPrefix = 'set ';
@@ -89,11 +49,4 @@ export default class Relation {
     }
 }
 
-export function commandTagsToRelation(tags: PatternTag[], payload: string): Relation {
-    const relationTags = tags.map(t => ({
-        tagType: t.tagType,
-        tagValue: t.tagValue
-    }));
-
-    return new Relation(relationTags, payload);
-}
+*/

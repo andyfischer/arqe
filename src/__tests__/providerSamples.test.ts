@@ -10,7 +10,7 @@ it('test with getRelations', () => {
     const result = runUpdateOnce(graph, cxt => {
         const out = []
         for (const rel of cxt.getRelations("a b/*")) {
-            out.push(rel.pattern.getTagValue("b"));
+            out.push(rel.getTagValue("b"));
         }
         return out;
     });
@@ -29,7 +29,8 @@ it('test with getOptionsObject', () => {
     const result = runUpdateOnce(graph, cxt => {
         const out = {}
         for (const rel of cxt.getRelations("a b/*")) {
-            out[rel.pattern.getTagValue("b") as string] = cxt.getOptionsObject(rel.pattern.stringify());
+            console.log('searching for options on: ', rel.stringify())
+            out[rel.getTagValue("b") as string] = cxt.getOptionsObject(rel.stringify());
         }
         return out;
     });
