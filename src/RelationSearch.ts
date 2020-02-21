@@ -7,7 +7,6 @@ export default interface RelationSearch extends RelationReceiver {
     pattern: RelationPattern;
     start: () => void
     relation: (rel: RelationPattern) => void
-    error: (str: string) => void
     finish: () => void
     isDone: () => boolean
 }

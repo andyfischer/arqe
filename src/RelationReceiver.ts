@@ -12,7 +12,6 @@ import SetResponseFormatter from './SetResponseFormatter'
 export default interface RelationReceiver {
     start: () => void
     relation: (rel: RelationPattern) => void
-    error: (str: string) => void
     finish: () => void
     isDone: () => boolean
 }
@@ -22,7 +21,6 @@ export function collectRelationReceiverOutput(onDone: (rels: RelationPattern[]) 
     return {
         start() {},
         relation(rel) { list.push(rel) },
-        error(e) { console.log('unhandled error in outputToRelationList: ', e) },
         isDone() { return false; },
         finish() {
             onDone(list);
@@ -38,7 +36,6 @@ export function receiveToStringRespond(graph: Graph, command: Command, respond: 
     if (command.commandName === 'delete') {
         return {
             start() {},
-            error(e) { respond('#error ' + e); },
             relation() {},
             isDone() { return false; },
             finish() { respond('#done') }
@@ -48,7 +45,6 @@ export function receiveToStringRespond(graph: Graph, command: Command, respond: 
     if (command.commandName === 'dump') {
         return {
             start() { respond('#start') },
-            error(e) { respond('#error ' + e); },
             relation(rel) { respond(rel.stringifyToCommand()) },
             isDone() { return false; },
             finish() { respond('#done') }

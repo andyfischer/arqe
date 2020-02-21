@@ -223,13 +223,17 @@ export default class RelationPattern {
         return tags[0];
     }
 
-    getTagString(typeName: string) {
+    getTag(typeName: string) {
         const tag = this.getOneTagForType(typeName);
 
         if (!tag.tagValue)
             return typeName;
 
         return typeName + '/' + tag.tagValue;
+    }
+
+    getTagString(typeName: string) {
+        return this.getTag(typeName);
     }
 
     getTagValue(typeName: string) {

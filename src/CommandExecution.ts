@@ -37,7 +37,6 @@ export default class CommandExecution {
             isDone() { return output.isDone() },
             start() { output.start() },
             relation(r) { output.relation(r) },
-            error(e) { output.error(e) },
             finish() { output.finish() },
         }
     }

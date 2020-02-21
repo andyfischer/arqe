@@ -24,11 +24,12 @@ export default class SetResponseFormatter implements RelationReceiver {
     start() {
     }
 
-    error(s: string) {
-        this.respond('#error ' + s)
-    }
-
     relation(rel: Relation) {
+        if (rel.hasType('command-meta') && rel.hasType('error')) {
+            this.respond('#error ' + rel.getValue())
+            return;
+        }
+
         if (this.replyWithEcho) {
             this.respond(rel.stringifyToCommand());
         } else {

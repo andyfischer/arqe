@@ -30,7 +30,7 @@ export default class GetResponseFormatter implements RelationReceiver {
 
     start() {
         if (this.hasStarted)
-            throw new Error("ResponseFormatter protocol error: .start() called twice");
+            return;
 
         if (this.asMultiResults)
             this.respond('#start');
@@ -39,6 +39,9 @@ export default class GetResponseFormatter implements RelationReceiver {
     }
 
     formatRelation(rel: Relation) {
+        if (rel.hasType('command-meta') && rel.hasType('error'))
+            return '#error ' + rel.getValue()
+
         const tags = rel.tags.filter(tag => {
             if (!this.extendedResult && this.pattern.fixedTagsForType[tag.tagType])
                 return false;
@@ -71,7 +74,7 @@ export default class GetResponseFormatter implements RelationReceiver {
     relation(rel: Relation) {
 
         if (!this.hasStarted)
-            throw new Error("ResponseFormatter protocol error: .relation called before .start()");
+            this.start();
 
         if (this.calledFinish)
             throw new Error("ResponseFormatter protocol error: .relation called after .finish()");
@@ -79,7 +82,7 @@ export default class GetResponseFormatter implements RelationReceiver {
         if (this.enoughResults)
             return;
 
-        if (rel.hasType('command-meta'))
+        if (rel.hasType('command-meta') && !rel.hasType('error'))
             return;
 
         const { respond, pattern, extendedResult, asMultiResults } = this;

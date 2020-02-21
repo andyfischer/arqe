@@ -3,6 +3,7 @@ import Command from './Command'
 import CommandExecution from './CommandExecution'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
+import { emitCommandError } from './CommandMeta'
 
 export default class SetOperation {
     graph: Graph
@@ -23,17 +24,17 @@ export default class SetOperation {
         // Validate
         for (const tag of command.tags) {
             if (tag.starValue) {
-                this.commandExec.output.error("can't use star pattern in 'set'")
+                emitCommandError(this.commandExec.output, "can't use star pattern in 'set'");
                 return;
             }
 
             if (tag.star) {
-                this.commandExec.output.error("can't use star pattern in 'set'")
+                emitCommandError(this.commandExec.output, "can't use star pattern in 'set'");
                 return;
             }
 
             if (tag.doubleStar) {
-                this.commandExec.output.error("can't use star pattern in 'set'")
+                emitCommandError(this.commandExec.output, "can't use star pattern in 'set'");
                 return;
             }
         }
@@ -46,7 +47,7 @@ export default class SetOperation {
         const { command } = this;
 
         if (!relation) {
-            this.commandExec.output.error("#error couldn't save");
+            emitCommandError(this.commandExec.output, "couldn't save");
             return
         }
 

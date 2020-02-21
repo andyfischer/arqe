@@ -49,6 +49,7 @@ export default class PlainFileStorage implements StorageProvider {
 
         search.finish();
     }
+
     async runSave(set: SetOperation) {
         set.saveFinished(null);
     }

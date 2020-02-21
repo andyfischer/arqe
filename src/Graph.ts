@@ -23,7 +23,7 @@ import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import { receiveToStringRespond } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
-import { emitMetaInfoForUnboundVars } from './CommandMeta'
+import { emitMetaInfoForUnboundVars, emitCommandError } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 
@@ -43,6 +43,7 @@ export default class Graph {
     inheritTags: EagerValue<InheritTags>
     filesystemMounts: EagerValue<StorageMount[]>
     wsProviders: EagerValue<WebSocketProvider[]>
+    derivedValueMounts: StorageMount[] = []
 
     nextEagerValueId: number = 1
 
@@ -188,10 +189,10 @@ export default class Graph {
             
             }
 
-            commandExec.output.error("unrecognized command: " + commandExec.commandName);
+            emitCommandError(commandExec.output, "#error unrecognized command: " + commandExec.commandName);
         } catch (err) {
             console.log(err.stack || err);
-            commandExec.output.error("internal error");
+            emitCommandError(commandExec.output, "internal error: " + (err.stack || err));
         }
     }
 

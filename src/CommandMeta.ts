@@ -15,6 +15,15 @@ export function emitCommandMeta(output: RelationReceiver, fields: any) {
     output.relation(commandTagsToRelation(tags, null));
 }
 
+export function emitCommandError(output: RelationReceiver, msg: string) {
+    const tags = [
+        {tagType: 'command-meta', tagValue: null},
+        {tagType: 'error', tagValue: null}
+    ];
+
+    output.relation(commandTagsToRelation(tags, msg));
+}
+
 export function emitMetaInfoForUnboundVars(pattern: RelationPattern, output: RelationReceiver) {
     for (const tag of pattern.tags) {
         if (tag.unboundType) {

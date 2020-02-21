@@ -57,7 +57,7 @@ async function main() {
         const teamData = data.Teams[teamName];
 
         const team = await saveObject(graph, 'team/#unique', { name: teamName });
-        const teamId = team.getTagValue('team');
+        const teamId = team.getTag('team');
 
         for (const unit of teamData.Units) {
 
@@ -77,15 +77,28 @@ async function main() {
         }
     }
 
+    for (const winner of data.Winners) {
+        console.log('saw winner: ', winner);
+    }
+
     await Fs.writeFile('dump.graph', (await graph.runAsync('dump') as string[]).join('\n'))
 
     // Analyze
-    for (const team of graph.getRelationsSync('team/*')) {
+    graph.runDerived(cxt => {
+        for (const team of cxt.get('team/*')) {
 
-        const teamId = team.getTagValue('team');
+            const teamId = team.getTag('team');
 
-        console.log(graph.runSync(`get ${teamId} unit/$a | join unit/$a has-skill/Revive`))
-    }
+            console.log('analyzing team: ', cxt.getOne(`${teamId} .name`).getValue())
+
+            const cmd = `get ${teamId} unit/$a | join unit/$a has-skill/Revive`
+            const result = graph.runSync(cmd);
+            console.log(' ran: ' + cmd);
+            console.log(' > ' + result);
+
+            // console.log(graph.runSync(`get -count ${teamId} unit/$a | join unit/$a has-skill/Revive`))
+        }
+    });
 }
 
 main()
