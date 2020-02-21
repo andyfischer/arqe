@@ -87,5 +87,9 @@ function get_after_inherit(graph: Graph, search: RelationSearch) {
 }
 
 export function runSearch(graph: Graph, search: RelationSearch) {
+    if (search.subSearchDepth > 100) {
+        throw new Error('subSearchDepth is over 100, possible infinite loop');
+    }
+
     get_inherit(graph, search);
 }

@@ -1,7 +1,10 @@
 
  X Keep working on tsc-runner until it supports autofixing of my errors
  - Easy mount a derived value
+ - Rename RelationPattern -> Pattern
+ - Refactor the immutability of RelationPattern
 
  - Support multivariable/multistep join
  - More tests on listening
  - Web UI
+

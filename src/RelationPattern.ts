@@ -95,13 +95,17 @@ export default class RelationPattern {
         return this.getValue();
     }
 
-    setPayload(payload: string | null) {
+    setValue(payload: string | null) {
         if (payload === '#exists') {
             throw new Error("don't use #exists as payload");
             payload = null;
         }
 
         this.payload = payload;
+    }
+
+    setPayload(payload: string | null) {
+        this.setValue(payload);
     }
 
     isSupersetOf(subPattern: RelationPattern) {
@@ -258,6 +262,10 @@ export default class RelationPattern {
 
         const newTags = this.tags.slice(0,index).concat(this.tags.slice(index + 1));
         return new RelationPattern(newTags);
+    }
+
+    copy() {
+        return new RelationPattern(this.tags);
     }
 
     removeType(typeName: string) {
