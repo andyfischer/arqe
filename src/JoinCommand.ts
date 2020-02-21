@@ -32,7 +32,7 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
     commandExec.start = () => {
         commandExec.output.start();
-        runSearch(commandExec.graph, { pattern, ...search } );
+        runSearch(commandExec.graph, { pattern, subSearchDepth: 0, ...search } );
     }
 
     const check = () => {

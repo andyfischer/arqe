@@ -5,7 +5,8 @@ import RelationReceiver from './RelationReceiver'
 
 export default interface RelationSearch extends RelationReceiver {
     pattern: RelationPattern;
-    start: () => void
+    subSearchDepth: number
+
     relation: (rel: RelationPattern) => void
     finish: () => void
     isDone: () => boolean

@@ -52,16 +52,18 @@ function get_inherit(graph: Graph, search: RelationSearch) {
         // Search for exact matches that include the inherit tag.
         return get_after_inherit(graph, {
             pattern: search.pattern,
+            subSearchDepth: search.subSearchDepth + 1,
             relation(rel) { search.relation(rel) },
-            start() {},
             isDone() { return search.isDone() },
+            start () {},
             finish() {
 
                 // Try dropping this tag and then restarting.
                 get_inherit(graph, {
                     pattern: search.pattern.dropTagIndex(foundInheritTagIndex),
-                    start() {},
+                    subSearchDepth: search.subSearchDepth + 1,
                     relation(rel) { search.relation(rel) },
+                    start () {},
                     finish() { search.finish() },
                     isDone() { return search.isDone() }
                 });
