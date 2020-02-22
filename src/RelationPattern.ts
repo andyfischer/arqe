@@ -42,6 +42,9 @@ export default class RelationPattern {
     hasDoubleStar?: boolean
     ntag?: string
 
+    // lifecycle
+    isFrozen: boolean = false;
+
     constructor(tags: PatternTag[]) {
         this.tags = tags;
 
@@ -64,6 +67,28 @@ export default class RelationPattern {
                 this.fixedTagsForType[tag.tagType] = true;
             }
         }
+    }
+
+    freeze() {
+        this.isFrozen = true;
+
+        for (const tag of this.tags)
+            Object.freeze(tag)
+        Object.freeze(this.tags);
+    }
+
+    copy() {
+        const pattern = new RelationPattern(this.tags.map(t => ({ ... t })));
+        pattern.payload = this.payload;
+        pattern.payloadUnavailable = this.payloadUnavailable;
+        return pattern;
+    }
+
+    copyWithNewTags(tags: PatternTag[]) {
+        const pattern = new RelationPattern(tags);
+        pattern.payload = this.payload;
+        pattern.payloadUnavailable = this.payloadUnavailable;
+        return pattern;
     }
 
     getNtag() {
@@ -95,7 +120,10 @@ export default class RelationPattern {
         return this.getValue();
     }
 
-    setValue(payload: string | null) {
+    setValue(payload: any) {
+        if (this.isFrozen)
+            throw new Error("can't setValue on frozen pattern");
+
         if (payload === '#exists') {
             throw new Error("don't use #exists as payload");
             payload = null;
@@ -260,21 +288,15 @@ export default class RelationPattern {
         if (index >= this.tags.length)
             throw new Error('index out of range: ' + index);
 
-        const newTags = this.tags.slice(0,index).concat(this.tags.slice(index + 1));
-        return new RelationPattern(newTags);
-    }
-
-    copy() {
-        return new RelationPattern(this.tags);
+        return this.copyWithNewTags(this.tags.slice(0,index).concat(this.tags.slice(index + 1)));
     }
 
     removeType(typeName: string) {
-        return new RelationPattern(this.tags.filter(tag => tag.tagType !== typeName));
+        return this.copyWithNewTags(this.tags.filter(tag => tag.tagType !== typeName));
     }
 
     addTag(s: string) {
-        const tag = parseTag(s);
-        return new RelationPattern(this.tags.concat([tag]));
+        return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
     }
 
     stringify() {

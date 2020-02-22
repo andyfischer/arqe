@@ -112,6 +112,8 @@ async function main() {
     proc.stdout.on('data', async data => {
         for (let tscMessage of data.toString('utf8').split('\n')) {
 
+            console.log(tscMessage);
+
             tscMessage = tscMessage.trim();
             if (tscMessage == '')
                 continue;
