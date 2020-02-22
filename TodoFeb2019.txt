@@ -1,11 +1,13 @@
 
  X Keep working on tsc-runner until it supports autofixing of my errors
  X Easy mount a derived value
+ - Refactor the immutability of RelationPattern
+ - RelationPattern should support names
+ - Join should output joined relations
  - Join test cases:
    - Join across two different types
    - Join with -exists
  - Rename RelationPattern -> Pattern
- - Refactor the immutability of RelationPattern
 
  - Support multivariable/multistep join
  - More tests on listening

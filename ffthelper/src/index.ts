@@ -57,10 +57,10 @@ function run(graph: Graph, cmd: string) {
     return result;
 }
 
-mountDerivedTag(graph, 'unit/* unit-has-rez', 'unit-has-rez', (cxt: UpdateContext, rel) => {
+mountDerivedTag(graph, 'unit/* unit-has-rez', (cxt: UpdateContext, search) => {
 
-    const result = graph.runSync(`get -exists ${rel.getTag('unit')} has-skill/$a | join skill/$a category/rez`)
-    return result === '#exists';
+    //const result = graph.runSync(`get -exists ${rel.getTag('unit')} has-skill/$a | join skill/$a category/rez`)
+    //return result === '#exists';
 })
 
 for (const command of bootstrap.split('\n'))
