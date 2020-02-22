@@ -7,6 +7,7 @@ import RelationPattern from './RelationPattern'
 import RelationSearch from './RelationSearch'
 import UpdateContext from './UpdateContext'
 import { runSearch } from './Search'
+import { parsePattern } from './parseCommand'
 
 type DeriveFunc = (cxt: UpdateContext, rel: RelationPattern) => any
 
@@ -17,17 +18,18 @@ export default class DerivedValueMount implements StorageProvider {
     callback: DeriveFunc
 
     constructor(graph: Graph, callback: DeriveFunc, mountTypename: string) {
+        this.graph = graph;
         this.mountTypename = mountTypename;
         this.callback = callback;
     }
 
-    async runSearch(search: RelationSearch) {
+    runSearch(search: RelationSearch) {
         
         const subSearch: RelationSearch = {
             pattern: search.pattern.removeType(this.mountTypename),
             subSearchDepth: search.subSearchDepth + 1,
             start() {},
-            relation(rel: Relation) {
+            relation: (rel: Relation) => {
                 
                 const cxt = new UpdateContext(this.graph);
                 const derivedValue = this.callback(cxt, rel);
@@ -54,5 +56,12 @@ export default class DerivedValueMount implements StorageProvider {
     }
 }
 
-export function mountDerivedTag(graph: Graph, pattern: string, keyTag: string, callback: DeriveFunc) {
+export function mountDerivedTag(graph: Graph, patternStr: string, keyTag: string, callback: DeriveFunc) {
+
+    const pattern = parsePattern(patternStr);
+
+    graph.derivedValueMounts.push({
+        pattern,
+        storage: new DerivedValueMount(graph, callback, keyTag)
+    });
 }

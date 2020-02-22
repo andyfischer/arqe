@@ -3,6 +3,8 @@ import fetch from 'node-fetch'
 import Graph from './fs/Graph'
 import { saveObject } from './fs/GraphORM'
 import Fs from 'fs-extra'
+import { mountDerivedTag } from './fs/DerivedValueMount'
+import UpdateContext from './fs/UpdateContext'
 
 const graph = new Graph()
 
@@ -44,7 +46,22 @@ set class/SteelGiant rank/verygood
 
 set class/TimeMage rank/bad
 set class/Dancer rank/bad
-`
+`;
+
+
+function run(graph: Graph, cmd: string) {
+
+    const result = graph.runSync(cmd);
+    console.log(' ran: ' + cmd);
+    console.log(' > ' + result);
+    return result;
+}
+
+mountDerivedTag(graph, 'unit/* unit-has-rez', 'unit-has-rez', (cxt: UpdateContext, rel) => {
+
+    const result = graph.runSync(`get -exists ${rel.getTag('unit')} has-skill/$a | join skill/$a category/rez`)
+    return result === '#exists';
+})
 
 for (const command of bootstrap.split('\n'))
     graph.run(command)
@@ -91,12 +108,17 @@ async function main() {
 
             console.log('analyzing team: ', cxt.getOne(`${teamId} .name`).getValue())
 
-            const cmd = `get ${teamId} unit/$a | join unit/$a has-skill/Revive`
-            const result = graph.runSync(cmd);
-            console.log(' ran: ' + cmd);
-            console.log(' > ' + result);
+            run(graph, `get ${teamId} unit/$a | join unit/$a has-skill/Revive`)
+
+            run(graph, `get ${teamId} unit/$a | join unit/$a unit-has-rez`)
 
             // console.log(graph.runSync(`get -count ${teamId} unit/$a | join unit/$a has-skill/Revive`))
+        }
+    });
+
+    graph.runDerived(cxt => {
+        for (const unit of cxt.get('unit/*')) {
+            run(graph, `get ${unit.getTag('unit')} unit-has-rez`);
         }
     });
 }

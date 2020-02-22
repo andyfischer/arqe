@@ -77,22 +77,6 @@ class RelationListWithMeta {
     }
 }
 
-class KeyedRelations {
-
-    keyByType: string
-    map: {[tag: string]: RelationPattern } = {}
-
-    add(rel: RelationPattern) {
-        const tag = rel.getTagString(this.keyByType);
-        this.map[tag] = rel;
-    }
-
-    findForKey(rel: RelationPattern) {
-        const tag = rel.getTagString(this.keyByType);
-        return this.map[tag];
-    }
-}
-
 function runJoin(inputs: RelationListWithMeta, searchResults: RelationListWithMeta, output: RelationReceiver) {
 
 
@@ -102,18 +86,19 @@ function runJoin(inputs: RelationListWithMeta, searchResults: RelationListWithMe
     if (inputs.unboundValueTypes.length !== 1)
         throw new Error('join only supports one unbound right now');
 
-    if (inputs.unboundValueTypes[0] !== searchResults.unboundValueTypes[0])
-        throw new Error('expected unbound types to be the same');
 
-    const keyedInputs = new KeyedRelations();
-    keyedInputs.keyByType = inputs.unboundValueTypes[0];
+    const keyed: {[key:string]: RelationPattern } = {}
 
-    for (const rel of inputs.relations)
-        keyedInputs.add(rel);
+    for (const rel of inputs.relations) {
+        const key = rel.getTagValue(inputs.unboundValueTypes[0])
+        keyed[key] = rel;
+    }
 
-    for (const rel of searchResults.relations)
-        if (keyedInputs.findForKey(rel))
+    for (const rel of searchResults.relations) {
+        const key = rel.getTagValue(searchResults.unboundValueTypes[0])
+        if (keyed[key])
             output.relation(rel);
+    }
 
     output.finish();
 }

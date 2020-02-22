@@ -86,6 +86,9 @@ export default class Graph {
             for (const mount of mounts)
                 yield mount;
         }
+
+        for (const mount of this.derivedValueMounts)
+            yield mount;
     }
 
     getTypeInfo(name: string) {

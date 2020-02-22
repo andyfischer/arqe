@@ -1,6 +1,9 @@
 
  X Keep working on tsc-runner until it supports autofixing of my errors
- - Easy mount a derived value
+ X Easy mount a derived value
+ - Join test cases:
+   - Join across two different types
+   - Join with -exists
  - Rename RelationPattern -> Pattern
  - Refactor the immutability of RelationPattern
 
