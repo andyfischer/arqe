@@ -9,12 +9,17 @@ const graph = new Graph();
 
 const bootstrap = `
 set launch-command == tsc -p .
-set cwd == /Users/afischer/bob/app
+set cwd == /Users/afischer/fs
 
 set fix/1
 set fix/1 replacement/1
 set fix/1 replacement/1 .from == clss
 set fix/1 replacement/1 .to == class
+
+set fix/2
+set fix/2 replacement/1
+set fix/2 replacement/1 .from == RelationPattern
+set fix/2 replacement/1 .to == Pattern
 `;
 
 for (const line of bootstrap.split('\n'))
@@ -48,7 +53,7 @@ class ReplacementsList {
                 continue;
 
             this.replacements.push({
-                pattern: new RegExp(details['from'], 'g'),
+                pattern: new RegExp('\\W' + details['from'] + '\\W', 'g'),
                 toStr: details.to
             });
         }
@@ -112,7 +117,7 @@ async function main() {
     proc.stdout.on('data', async data => {
         for (let tscMessage of data.toString('utf8').split('\n')) {
 
-            console.log(tscMessage);
+            console.log('tsc said: ', tscMessage);
 
             tscMessage = tscMessage.trim();
             if (tscMessage == '')
