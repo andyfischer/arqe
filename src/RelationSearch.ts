@@ -1,13 +1,13 @@
 
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import RelationReceiver from './RelationReceiver'
 
 export default interface RelationSearch extends RelationReceiver {
-    pattern: RelationPattern;
+    pattern: Pattern;
     subSearchDepth: number
 
-    relation: (rel: RelationPattern) => void
+    relation: (rel: Pattern) => void
     finish: () => void
     isDone: () => boolean
 }

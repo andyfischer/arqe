@@ -3,13 +3,13 @@ import Graph from './Graph'
 import Relation from './Relation'
 import StorageProvider from './StorageProvider'
 import SetOperation from './SetOperation'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import RelationSearch from './RelationSearch'
 import UpdateContext from './UpdateContext'
 import { runSearch } from './Search'
 import { parsePattern } from './parseCommand'
 
-type DeriveFunc = (cxt: UpdateContext, rel: RelationPattern) => any
+type DeriveFunc = (cxt: UpdateContext, rel: Pattern) => any
 
 export default class DerivedValueMount implements StorageProvider {
 

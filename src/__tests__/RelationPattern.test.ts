@@ -1,6 +1,6 @@
 
 import Schema from '../Schema'
-import { parsePattern } from '../RelationPattern'
+import { parsePattern } from '../Pattern'
 
 describe('isSupersetOf', () => {
 

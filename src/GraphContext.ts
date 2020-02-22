@@ -3,7 +3,7 @@ import Graph, { RespondFunc } from './Graph'
 import Command from './Command'
 import parseCommand from './parseCommand'
 import { parsedCommandToString } from './stringifyQuery'
-import { PatternTag } from './RelationPattern'
+import { PatternTag } from './Pattern'
 
 function containsTagType(tags: PatternTag[], tagType: string) {
     for (const tag of tags)

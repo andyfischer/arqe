@@ -1,6 +1,6 @@
 
 import StorageProvider from './StorageProvider'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import Command from './Command'
 import SetOperation from './SetOperation'
 import RelationSearch from './RelationSearch'

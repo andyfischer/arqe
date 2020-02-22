@@ -2,7 +2,7 @@
 import UpdateContext, { UpdateFn } from './UpdateContext'
 import StorageMount from './StorageMount'
 import PlainFileStorage from './PlainFileStorage'
-import RelationPattern, { commandToRelationPattern } from './RelationPattern'
+import Pattern, { commandToRelationPattern } from './Pattern'
 
 export default function updateFilesystemMounts(cxt: UpdateContext): StorageMount[] {
 

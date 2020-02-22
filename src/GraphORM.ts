@@ -1,7 +1,7 @@
 
 import parseCommand, { parsePattern } from './parseCommand'
 import Graph from './Graph'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 
 export function createUniqueEntity(graph: Graph, typename: string) {
     const result = graph.runSync(`set ${typename}/#unique`);
@@ -18,7 +18,7 @@ function isPrimitive(val) {
     return (val !== Object(val));
 };
 
-export async function saveObject(graph: Graph, patternStr: string, object: any): Promise<RelationPattern> {
+export async function saveObject(graph: Graph, patternStr: string, object: any): Promise<Pattern> {
     const parsed = parsePattern(patternStr);
 
     let unique = null;

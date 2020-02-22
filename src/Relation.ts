@@ -2,10 +2,10 @@
 import Graph from './Graph'
 import { normalizeExactTag } from './stringifyQuery'
 import Schema from './Schema'
-import RelationPattern, { PatternTag, FixedTag } from './RelationPattern'
+import Pattern, { PatternTag, FixedTag } from './Pattern'
 import { commandTagsToString } from './stringifyQuery'
 
-type Relation = RelationPattern
+type Relation = Pattern
 export default Relation;
 
 /*

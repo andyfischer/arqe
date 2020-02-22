@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import RelationPattern, { commandTagsToRelation } from './RelationPattern'
+import Pattern, { commandTagsToRelation } from './Pattern'
 import RelationReceiver from './RelationReceiver'
 
 export function emitCommandMeta(output: RelationReceiver, fields: any) {
@@ -24,7 +24,7 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
     output.relation(commandTagsToRelation(tags, msg));
 }
 
-export function emitMetaInfoForUnboundVars(pattern: RelationPattern, output: RelationReceiver) {
+export function emitMetaInfoForUnboundVars(pattern: Pattern, output: RelationReceiver) {
     for (const tag of pattern.tags) {
         if (tag.unboundType) {
             emitCommandMeta(output, { unboundType: null, var: tag.unboundType });

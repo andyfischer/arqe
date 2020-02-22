@@ -22,7 +22,7 @@ export interface FixedTag {
     tagValue: string
 }
 
-export default class RelationPattern {
+export default class Pattern {
     
     tags: PatternTag[] = []
 
@@ -78,14 +78,14 @@ export default class RelationPattern {
     }
 
     copy() {
-        const pattern = new RelationPattern(this.tags.map(t => ({ ... t })));
+        const pattern = new Pattern(this.tags.map(t => ({ ... t })));
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
     }
 
     copyWithNewTags(tags: PatternTag[]) {
-        const pattern = new RelationPattern(tags);
+        const pattern = new Pattern(tags);
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
@@ -136,7 +136,7 @@ export default class RelationPattern {
         this.setValue(payload);
     }
 
-    isSupersetOf(subPattern: RelationPattern) {
+    isSupersetOf(subPattern: Pattern) {
         if (this.hasDoubleStar)
             return true;
 
@@ -171,7 +171,7 @@ export default class RelationPattern {
         return true;
     }
 
-    matches(rel: RelationPattern) {
+    matches(rel: Pattern) {
 
         // Check tag count on this relatino.
         if (this.hasDoubleStar) {
@@ -215,7 +215,7 @@ export default class RelationPattern {
         return this.hasStar || this.hasDoubleStar || (this.starValueTags.length > 0);
     }
 
-    formatRelationRelative(rel: RelationPattern) {
+    formatRelationRelative(rel: Pattern) {
         const outTags = [];
 
         for (const tag of rel.tags) {
@@ -316,17 +316,17 @@ export default class RelationPattern {
 
 export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
-    return new RelationPattern(parsed.tags)
+    return new Pattern(parsed.tags)
 }
 
-export function commandTagsToRelation(tags: PatternTag[], payload: string): RelationPattern {
-    const pattern = new RelationPattern(tags)
+export function commandTagsToRelation(tags: PatternTag[], payload: string): Pattern {
+    const pattern = new Pattern(tags)
     pattern.setPayload(payload);
     return pattern;
 }
 
 export function parsePattern(query: string) {
     const parsed = parseCommand('get ' + query);
-    return new RelationPattern(parsed.tags)
+    return new Pattern(parsed.tags)
 }
 

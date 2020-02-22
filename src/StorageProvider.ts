@@ -1,7 +1,7 @@
 
 import Command from './Command'
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import SetOperation from './SetOperation'
 import RelationSearch from './RelationSearch'
 

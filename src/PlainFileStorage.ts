@@ -1,10 +1,10 @@
 
 import StorageProvider from './StorageProvider'
-import RelationPattern, { commandTagsToRelation } from './RelationPattern'
+import Pattern, { commandTagsToRelation } from './Pattern'
 import Command from './Command'
 import SetOperation from './SetOperation'
 import Relation from './Relation'
-import { FixedTag } from './RelationPattern'
+import { FixedTag } from './Pattern'
 import RelationSearch from './RelationSearch'
 import { normalizeExactTag } from './stringifyQuery'
 

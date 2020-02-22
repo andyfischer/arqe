@@ -1,7 +1,7 @@
 
 import Command from './Command'
 import CommandConnection, { connectToServer } from './socket/CommandConnection'
-import RelationPattern, { parsePattern } from './RelationPattern'
+import Pattern, { parsePattern } from './Pattern'
 import UpdateContext from './UpdateContext'
 import { RespondFunc } from './Graph'
 
@@ -9,9 +9,9 @@ export default class WebSocketProvider {
 
     host: string
     connection: CommandConnection
-    pattern: RelationPattern
+    pattern: Pattern
 
-    constructor(host: string, pattern: RelationPattern) {
+    constructor(host: string, pattern: Pattern) {
         this.host = host;
         this.pattern = pattern;
         this.connection = connectToServer(host);

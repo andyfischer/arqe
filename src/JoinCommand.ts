@@ -3,7 +3,7 @@ import Graph from './Graph'
 import CommandExecution from './CommandExecution'
 import { runSearch } from './Search'
 import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import { emitMetaInfoForUnboundVars } from './CommandMeta'
 
 export function setupJoinExecution(commandExec: CommandExecution) {
@@ -14,8 +14,8 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
     let triggeredOutput = false;
 
-    let inputRelations: RelationPattern[] = null;
-    let searchRelations: RelationPattern[] = null;
+    let inputRelations: Pattern[] = null;
+    let searchRelations: Pattern[] = null;
     const pattern = commandExec.command.toPattern();
 
     commandExec.input = collectRelationReceiverOutput((rels) => {
@@ -58,9 +58,9 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
 class RelationListWithMeta {
     unboundValueTypes: string[] = []
-    relations: RelationPattern[] = []
+    relations: Pattern[] = []
 
-    add(rel: RelationPattern) {
+    add(rel: Pattern) {
         if (rel.hasType('command-meta')) {
             if (rel.hasType('unboundValue'))
                 this.unboundValueTypes.push(rel.getTagValue('type') as string);
@@ -71,7 +71,7 @@ class RelationListWithMeta {
         this.relations.push(rel);
     }
 
-    addAll(rels: RelationPattern[]) {
+    addAll(rels: Pattern[]) {
         for (const rel of rels)
             this.add(rel);
     }
@@ -87,7 +87,7 @@ function runJoin(inputs: RelationListWithMeta, searchResults: RelationListWithMe
         throw new Error('join only supports one unbound right now');
 
 
-    const keyed: {[key:string]: RelationPattern } = {}
+    const keyed: {[key:string]: Pattern } = {}
 
     for (const rel of inputs.relations) {
         const key = rel.getTagValue(inputs.unboundValueTypes[0])

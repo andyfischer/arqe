@@ -1,7 +1,7 @@
 
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import { parsedCommandToString } from './stringifyQuery'
-import { PatternTag } from './RelationPattern'
+import { PatternTag } from './Pattern'
 
 type FlagMap = { [flag: string]: any }
 
@@ -27,7 +27,7 @@ export default class Command {
     }
 
     toPattern() {
-        return new RelationPattern(this.tags);
+        return new Pattern(this.tags);
     }
 
     stringify() {

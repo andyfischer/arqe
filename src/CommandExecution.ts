@@ -2,7 +2,7 @@
 import Command, { CommandFlags } from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
 import RelationSearch from './RelationSearch'
 import { receiveToStringRespond } from './RelationReceiver'
@@ -12,7 +12,7 @@ export default class CommandExecution {
     flags: CommandFlags
     command: Command
     commandName: string
-    pattern: RelationPattern
+    pattern: Pattern
     input?: RelationReceiver
     output: RelationReceiver
     start?: () => void

@@ -4,7 +4,7 @@ import CommandExecution from './CommandExecution'
 import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
 import Relation from './Relation'
-import RelationPattern, { PatternTag } from './RelationPattern'
+import Pattern, { PatternTag } from './Pattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
 import GetResponseFormatter from './GetResponseFormatter'
@@ -15,7 +15,7 @@ import RelationReceiver from './RelationReceiver'
 
 interface Step {
     storage: StorageProvider
-    pattern: RelationPattern
+    pattern: Pattern
 }
 
 function inheritTagCompare(graph: Graph, a: PatternTag, b: PatternTag) {

@@ -1,8 +1,8 @@
 
 import StorageProvider from './StorageProvider'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 
 export default interface StorageMount {
-    pattern: RelationPattern
+    pattern: Pattern
     storage: StorageProvider
 }

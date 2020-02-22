@@ -2,8 +2,8 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import Relation from './Relation'
-import RelationPattern, { commandTagsToRelation } from './RelationPattern'
-import { PatternTag, FixedTag } from './RelationPattern'
+import Pattern, { commandTagsToRelation } from './Pattern'
+import { PatternTag, FixedTag } from './Pattern'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar } from './lexer'

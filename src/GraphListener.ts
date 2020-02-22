@@ -2,7 +2,7 @@
 import Graph, { RespondFunc } from './Graph'
 import Command from './Command'
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 
 export default interface GraphListener {
     onRelationUpdated: (rel: Relation) => void

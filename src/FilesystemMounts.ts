@@ -3,10 +3,10 @@ import Graph from './Graph'
 import StorageProvider from './StorageProvider'
 import { parseRelation } from './parseCommand'
 import PlainFileStorage from './PlainFileStorage'
-import RelationPattern, { commandToRelationPattern } from './RelationPattern'
+import Pattern, { commandToRelationPattern } from './Pattern'
 
 export interface Mount {
-    pattern: RelationPattern
+    pattern: Pattern
     storage: StorageProvider
 }
 

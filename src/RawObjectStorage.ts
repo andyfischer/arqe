@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import RelationPattern, { commandTagsToRelation } from './RelationPattern'
+import Pattern, { commandTagsToRelation } from './Pattern'
 import RelationSearch from './RelationSearch'
 import Command from './Command'
 import { commandTagsToString } from './stringifyQuery'
@@ -8,11 +8,11 @@ import StorageProvider from './StorageProvider'
 import SetOperation from './SetOperation'
 
 export default class RawObjectStorage implements StorageProvider {
-    linkedPattern: RelationPattern
+    linkedPattern: Pattern
     value: any = {}
     variedType: string
 
-    constructor(pattern: RelationPattern) {
+    constructor(pattern: Pattern) {
         this.linkedPattern = pattern;
 
         if (pattern.starValueTags.length !== 1) {
@@ -23,7 +23,7 @@ export default class RawObjectStorage implements StorageProvider {
         this.variedType = pattern.starValueTags[0].tagType;
     }
 
-    *findAllMatches(pattern: RelationPattern) {
+    *findAllMatches(pattern: Pattern) {
         const variedTag = pattern.getOneTagForType(this.variedType);
         const otherTags = pattern.tags.filter(tag => tag.tagType !== variedTag.tagType);
 

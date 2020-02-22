@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
-import { PatternTag } from './RelationPattern'
+import { PatternTag } from './Pattern'
 
 export function commandTagToString(tag: PatternTag) {
     if (tag.unboundType)

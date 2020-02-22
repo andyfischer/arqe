@@ -3,7 +3,7 @@ import Command from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Schema from './Schema'
 import Relation from './Relation'
-import RelationPattern, { PatternTag } from './RelationPattern'
+import Pattern, { PatternTag } from './Pattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
 import RelationReceiver  from './RelationReceiver'
@@ -11,7 +11,7 @@ import RelationReceiver  from './RelationReceiver'
 export default class GetResponseFormatter implements RelationReceiver {
     // Context
     schema: Schema
-    pattern: RelationPattern
+    pattern: Pattern
     respond: RespondFunc
 
     // Format options

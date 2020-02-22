@@ -1,5 +1,5 @@
 
-import RelationPattern, { commandToRelationPattern } from './RelationPattern'
+import Pattern, { commandToRelationPattern } from './Pattern'
 import Relation from './Relation'
 import TagTypeOrdering from './TagTypeOrdering'
 import Command from './Command'

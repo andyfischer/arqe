@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import Command from './Command'
 import parseCommand from './parseCommand'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import EagerValue from './EagerValue'
 
 export default class SavedQuery {
@@ -11,7 +11,7 @@ export default class SavedQuery {
     queryStr: string
 
     command: Command
-    pattern: RelationPattern
+    pattern: Pattern
     changeToken: number = 0
 
     connectedEagerValues: { [eagerValueId: string]: EagerValue<any> } = {}

@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import RelationPattern, { commandTagsToRelation } from './RelationPattern'
+import Pattern, { commandTagsToRelation } from './Pattern'
 import Command from './Command'
 import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
@@ -20,7 +20,7 @@ export default class InMemoryStorage implements StorageProvider {
         delete this.relationsByNtag[rel.getNtag()];
     }
 
-    *linearScan(pattern: RelationPattern) {
+    *linearScan(pattern: Pattern) {
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
  
@@ -30,13 +30,13 @@ export default class InMemoryStorage implements StorageProvider {
         }
     }
 
-    findExactMatch(pattern: RelationPattern): Relation|null {
+    findExactMatch(pattern: Pattern): Relation|null {
         // Exact tag lookup.
         const ntag = normalizeExactTag(pattern.tags);
         return this.relationsByNtag[ntag]
     }
 
-    *findAllMatches(pattern: RelationPattern) {
+    *findAllMatches(pattern: Pattern) {
         for (const rel of this.linearScan(pattern)) {
             yield rel;
         }

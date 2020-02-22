@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import Command from './Command'
 import Relation from './Relation'
-import RelationPattern from './RelationPattern'
+import Pattern from './Pattern'
 import { RespondFunc } from './Graph'
 import GetResponseFormatter from './GetResponseFormatter'
 import GetResponseFormatterExists from './GetResponseFormatterExists'
@@ -11,13 +11,13 @@ import SetResponseFormatter from './SetResponseFormatter'
 
 export default interface RelationReceiver {
     start: () => void
-    relation: (rel: RelationPattern) => void
+    relation: (rel: Pattern) => void
     finish: () => void
     isDone: () => boolean
 }
 
-export function collectRelationReceiverOutput(onDone: (rels: RelationPattern[]) => void): RelationReceiver {
-    const list: RelationPattern[] = [];
+export function collectRelationReceiverOutput(onDone: (rels: Pattern[]) => void): RelationReceiver {
+    const list: Pattern[] = [];
     return {
         start() {},
         relation(rel) { list.push(rel) },
