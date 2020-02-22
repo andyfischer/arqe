@@ -7,7 +7,7 @@
  - Join test cases:
    - Join across two different types
    - Join with -exists
- - Rename RelationPattern -> Pattern
+ X Rename RelationPattern -> Pattern
 
  - Support multivariable/multistep join
  - More tests on listening

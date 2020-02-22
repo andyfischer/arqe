@@ -53,7 +53,7 @@ class ReplacementsList {
                 continue;
 
             this.replacements.push({
-                pattern: new RegExp('\\W' + details['from'] + '\\W', 'g'),
+                pattern: new RegExp('(\\W)(' + details['from'] + ')(\\W|$)', 'g'),
                 toStr: details.to
             });
         }
@@ -84,7 +84,9 @@ async function applyFixes() {
             let updatedLine = affectedLine;
 
             for (const replacement of replacementsList.replacements) {
-                updatedLine = updatedLine.replace(replacement.pattern, replacement.toStr);
+                updatedLine = updatedLine.replace(replacement.pattern, (m, pre, _, post) => {
+                    return pre + replacement.toStr + post;
+                });
             }
 
             if (affectedLine === updatedLine) {
