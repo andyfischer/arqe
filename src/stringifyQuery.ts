@@ -11,24 +11,42 @@ export function commandTagToString(tag: PatternTag) {
     if (tag.star)
         return '*';
 
-    let s = tag.tagType;
+    if (tag.doubleStar)
+        return '**'
 
-    if (tag.tagValue) {
-        if (tag.tagType === 'option')
-            return '.' + tag.tagValue;
-
-        s += '/' + tag.tagValue;
-    } else if (tag.starValue && tag.identifier) {
-        s += '/$' + tag.identifier;
-    } else if (tag.starValue) {
-        s += '/*';
-    } else if (tag.questionValue) {
-        s += '?';
-    } else if (tag.doubleStar) {
-        s = '**';
+    if (tag.starValue && tag.identifier) {
+        return tag.tagType + '/$' + tag.identifier;
     }
 
-    return s;
+    if (tag.tagValue) {
+
+        let s = '';
+
+        if (tag.identifier) {
+            s += `[from ${tag.identifier}] `
+        }
+
+        if (tag.tagType === 'option')
+            s += '.'
+        else
+            s += tag.tagType + '/';
+
+        s += tag.tagValue;
+
+        return s;
+    }
+
+    if (tag.starValue) {
+        return tag.tagType + '/*';
+    }
+
+    if (tag.tagType) {
+        return tag.tagType;
+    }
+    
+    throw new Error('unhandled case in commandTagToString');
+
+    return ''
 }
 
 export function commandTagsToString(tags: PatternTag[]) {

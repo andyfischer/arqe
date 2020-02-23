@@ -2,7 +2,7 @@
  X Keep working on tsc-runner until it supports autofixing of my errors
  X Easy mount a derived value
  X Refactor the immutability of RelationPattern
- - Pattern should support identifiers on tags
+ X Pattern should support identifiers on tags
  - Join should output joined relations
  - Join test cases:
    - Join across two different types
