@@ -73,11 +73,16 @@ export default class Pattern {
     }
 
     freeze() {
+        if (this.isFrozen)
+            return this;
+
         this.isFrozen = true;
 
         for (const tag of this.tags)
             Object.freeze(tag)
         Object.freeze(this.tags);
+
+        return this;
     }
 
     copy() {
@@ -92,6 +97,13 @@ export default class Pattern {
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
+    }
+
+    getWriteable() {
+        if (this.isFrozen)
+            return this.copy();
+
+        return this;
     }
 
     getNtag() {

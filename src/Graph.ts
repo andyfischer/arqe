@@ -23,7 +23,7 @@ import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import { receiveToStringRespond } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
-import { emitMetaInfoForUnboundVars, emitCommandError } from './CommandMeta'
+import { emitSearchPatternMeta, emitCommandError } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 
@@ -161,7 +161,7 @@ export default class Graph {
             case 'get': {
                 const search = commandExec.toRelationSearch();
                 search.start();
-                emitMetaInfoForUnboundVars(commandExec.command.toPattern(), search);
+                emitSearchPatternMeta(commandExec.command.toPattern(), search);
                 runSearch(this, search);
                 return;
             }

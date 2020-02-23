@@ -24,13 +24,17 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
     output.relation(commandTagsToRelation(tags, msg));
 }
 
-export function emitMetaInfoForUnboundVars(pattern: Pattern, output: RelationReceiver) {
-    for (const tag of pattern.tags) {
+export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver) {
 
-        if (tag.tagType && tag.identifier) {
-            emitCommandMeta(output, { unboundValue: null, 'type': tag.tagType, var: tag.identifier });
-        } else if (tag.identifier) {
-            emitCommandMeta(output, { unboundType: null, var: tag.identifier });
+    // Only emit if the pattern has any identifiers.
+
+    for (const tag of pattern.tags) {
+        if (tag.identifier) {
+            let metaPattern = pattern.copy()
+                .addTag('command-meta')
+                .addTag('search-pattern');
+            output.relation(metaPattern);
+            return
         }
     }
 }

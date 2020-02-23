@@ -3,8 +3,35 @@ import Graph from './Graph'
 import CommandExecution from './CommandExecution'
 import { runSearch } from './Search'
 import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
-import Pattern from './Pattern'
-import { emitMetaInfoForUnboundVars } from './CommandMeta'
+import Pattern, { PatternTag } from './Pattern'
+import { emitSearchPatternMeta } from './CommandMeta'
+
+function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
+    const identifierTags: PatternTag[] = []
+    for (const tag of searchPattern.tags)
+        if (tag.identifier)
+            identifierTags.push(tag);
+
+    rels = rels.map(rel => {
+
+        for (const tag of identifierTags) {
+            if (!rel.byIdentifier[tag.identifier]) {
+
+                if (!tag.tagType) {
+                    throw new Error("annotateRelationsWithMissingIdentifier doesn't know how "
+                                    +"to handle ident tag: " + searchPattern.stringify());
+                }
+
+                rel = rel.getWriteable();
+                rel.tagsForType[tag.tagType][0].identifier = tag.identifier;
+            }
+        }
+
+        return rel;
+    });
+
+    return rels;
+}
 
 export function setupJoinExecution(commandExec: CommandExecution) {
     // run the search
@@ -14,66 +41,77 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
     let triggeredOutput = false;
 
-    let inputRelations: Pattern[] = null;
-    let searchRelations: Pattern[] = null;
-    const pattern = commandExec.command.toPattern();
+    let inputRelations: Pattern[] = [];
+    let searchRelations: Pattern[] = [];
+    let inputDone = false;
+    let searchDone = false;
+    let inputSearchPattern: Pattern = null;
+
+    const searchPattern = commandExec.command.toPattern();
 
     commandExec.input = collectRelationReceiverOutput((rels) => {
-        inputRelations = rels;
+
+        for (const rel of rels) {
+            if (rel.hasType('command-meta')) {
+                if (rel.hasType('search-pattern')) {
+                    inputSearchPattern = rel.freeze();
+
+                    console.log('join saw inputSearchPattern: ', inputSearchPattern.stringify())
+                }
+                continue;
+            }
+
+            inputRelations.push(rel);
+        }
+
+        inputDone = true;
         check();
     });
 
     const search = collectRelationReceiverOutput((rels) => {
-        searchRelations = rels;
+        for (const rel of rels)
+            searchRelations.push(rel);
+
+        searchDone = true;
         check();
     });
 
-    emitMetaInfoForUnboundVars(pattern, search);
+    // emitSearchPatternMeta(searchPattern, search);
 
     commandExec.start = () => {
         commandExec.output.start();
-        runSearch(commandExec.graph, { pattern, subSearchDepth: 0, ...search } );
+        runSearch(commandExec.graph, { pattern: searchPattern, subSearchDepth: 0, ...search } );
     }
 
     const check = () => {
         if (triggeredOutput)
             return;
 
-        if (inputRelations !== null && searchRelations !== null) {
+        if (inputDone && searchDone) {
             triggeredOutput = true;
             sendOutput();
         }
     }
 
     const sendOutput = () => {
-        runJoin(inputRelations, searchRelations, commandExec.output);
+        inputRelations = annotateRelationsWithMissingIdentifier(inputSearchPattern, inputRelations);
+        searchRelations = annotateRelationsWithMissingIdentifier(searchPattern, searchRelations);
+        runJoin(inputSearchPattern, inputRelations, searchPattern, searchRelations, commandExec.output);
     }
 }
 
-/*
-class RelationListWithMeta {
-    unboundValueTypes: string[] = []
-    relations: Pattern[] = []
+function combineRelations(a: Pattern, b: Pattern) {
+    const saw = {}
+    const tags = [];
 
-    add(rel: Pattern) {
-        if (rel.hasType('command-meta')) {
-            if (rel.hasType('unboundValue'))
-                this.unboundValueTypes.push(rel.getTagValue('type') as string);
 
-            return;
-        }
-
-        this.relations.push(rel);
-    }
-
-    addAll(rels: Pattern[]) {
-        for (const rel of rels)
-            this.add(rel);
-    }
+    return new Pattern(a.tags.concat(b.tags));
 }
-*/
 
-function runJoin(inputs: Pattern[], searchResults: Pattern[], output: RelationReceiver) {
+function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: RelationReceiver) {
+
+    if (!inputSearchPattern)
+        throw new Error('missing inputSearchPattern');
 
     // For each search result
     //   Look at all unfilled identifiers in this search result
@@ -81,47 +119,50 @@ function runJoin(inputs: Pattern[], searchResults: Pattern[], output: RelationRe
     //     1) contains at least one of the same identifiers
     //     2) has the same tag in that identifier
 
+    const correspondingTags: { identifier: string, input: PatternTag, search: PatternTag }[] = [];
+    const unboundTags: PatternTag[] = []
 
-    for (const searchRel of searchResults) {
-        const unboundTags = [];
-
-        for (const identifier in searchRel.byIdentifier) {
-            const identSearchTag = searchRel.byIdentifier[identifier];
-
-            if (!identSearchTag.tagType) {
-                console.log('warning: join requires types on unbound');
-                continue;
-            }
-
-            unboundTags.push(identSearchTag);
-        }
-
-        if (unboundTags.length === 0) {
-            console.log("didn't find any unbound tags: ", searchRel.stringify())
+    for (const identifier in searchPattern.byIdentifier) {
+        const identifierKey = searchPattern.byIdentifier[identifier];
+        const inputKey = inputSearchPattern.byIdentifier[identifier];
+        if (!inputKey) {
+            unboundTags.push(identifierKey);
+        } else {
+            correspondingTags.push({identifier, search: identifierKey, input: inputKey });
         }
     }
 
-    /*
+    for (const input of inputs)
+        console.log('join looking at: ', input.stringify())
 
-    if (inputs.unboundValueTypes.length !== searchResults.unboundValueTypes.length)
-        throw new Error('mismatch on unbound types: ' + inputs.unboundValueTypes + ' compared to ' + searchResults.unboundValueTypes);
+    function getKeyForInput(pattern: Pattern) {
+        const key = {}
+        for (const correspondingTag of correspondingTags)
+            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.input.tagType);
 
-    if (inputs.unboundValueTypes.length !== 1)
-        throw new Error('join only supports one unbound right now, saw: ' + inputs.unboundValueTypes);
+        return JSON.stringify(key);
+    }
+    
+    function getKeyForSearch(pattern: Pattern) {
+        const key = {}
+        for (const correspondingTag of correspondingTags)
+            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.search.tagType);
 
-    const keyed: {[key:string]: Pattern } = {}
-
-    for (const rel of inputs.relations) {
-        const key = rel.getTagValue(inputs.unboundValueTypes[0])
-        keyed[key] = rel;
+        return JSON.stringify(key);
     }
 
-    for (const rel of searchResults.relations) {
-        const key = rel.getTagValue(searchResults.unboundValueTypes[0])
-        if (keyed[key])
-            output.relation(rel);
+    const keyed = {}
+    for (const input of inputs)
+        keyed[getKeyForInput(input)] = input;
+
+    for (const search of searchResults) {
+        const key = getKeyForSearch(search);
+        const relatedInput = keyed[key];
+        if (!relatedInput)
+            console.log('no related input: ', search.stringify())
+
+        output.relation(combineRelations(relatedInput, search));
     }
 
     output.finish();
-    */
 }
