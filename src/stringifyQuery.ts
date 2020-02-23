@@ -23,7 +23,7 @@ export function commandTagToString(tag: PatternTag) {
         let s = '';
 
         if (tag.identifier) {
-            s += `[from ${tag.identifier}] `
+            s += `[from \$${tag.identifier}] `
         }
 
         if (tag.tagType === 'option')
@@ -41,7 +41,12 @@ export function commandTagToString(tag: PatternTag) {
     }
 
     if (tag.tagType) {
-        return tag.tagType;
+        let s = '';
+        if (tag.identifier) {
+            s += `[from \$${tag.identifier}] `
+        }
+        s += tag.tagType;
+        return s;
     }
     
     throw new Error('unhandled case in commandTagToString');

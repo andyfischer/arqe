@@ -1,6 +1,7 @@
 
 import parseCommand from '../parseCommand'
 import { parsedCommandToString, appendTagInCommand } from '../stringifyQuery'
+import Pattern from '../Pattern'
 
 function testRestringify(str: string) {
     const restringified = parsedCommandToString(parseCommand(str))
@@ -32,4 +33,11 @@ it("restringify tests", () => {
     testRestringify("join $a")
     testRestringify("join $a $b")
     testRestringify("join a/$a $b")
+});
+
+it('stringifies tag identifiers', () => {
+    expect((new Pattern([{identifier: 'foo', star: true}])).stringify()).toEqual('$foo');
+    expect((new Pattern([{identifier: 'foo', tagType: 'type', starValue: true}])).stringify()).toEqual('type/$foo');
+    expect((new Pattern([{identifier: 'foo', tagType: 'type'}])).stringify()).toEqual('[from $foo] type');
+    expect((new Pattern([{identifier: 'foo', tagType: 'type', tagValue: 'value'}])).stringify()).toEqual('[from $foo] type/value');
 });
