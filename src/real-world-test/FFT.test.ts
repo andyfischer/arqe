@@ -12,7 +12,7 @@ beforeAll(() => {
         graph.run(cmd);
 });
 
-it('correctly joins with a has-skill', () => {
+xit('correctly joins with a has-skill', () => {
     let joinResults = []
     for (const team of graph.getRelationsSync('team/*')) {
 

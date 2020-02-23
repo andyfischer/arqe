@@ -46,16 +46,11 @@ export function setupJoinExecution(commandExec: CommandExecution) {
     }
 
     const sendOutput = () => {
-        const inputs = new RelationListWithMeta();
-        inputs.addAll(inputRelations);
-
-        const searchResults = new RelationListWithMeta();
-        searchResults.addAll(searchRelations);
-
-        runJoin(inputs, searchResults, commandExec.output);
+        runJoin(inputRelations, searchRelations, commandExec.output);
     }
 }
 
+/*
 class RelationListWithMeta {
     unboundValueTypes: string[] = []
     relations: Pattern[] = []
@@ -76,9 +71,37 @@ class RelationListWithMeta {
             this.add(rel);
     }
 }
+*/
 
-function runJoin(inputs: RelationListWithMeta, searchResults: RelationListWithMeta, output: RelationReceiver) {
+function runJoin(inputs: Pattern[], searchResults: Pattern[], output: RelationReceiver) {
 
+    // For each search result
+    //   Look at all unfilled identifiers in this search result
+    //   Check if there is an input relation that:
+    //     1) contains at least one of the same identifiers
+    //     2) has the same tag in that identifier
+
+
+    for (const searchRel of searchResults) {
+        const unboundTags = [];
+
+        for (const identifier in searchRel.byIdentifier) {
+            const identSearchTag = searchRel.byIdentifier[identifier];
+
+            if (!identSearchTag.tagType) {
+                console.log('warning: join requires types on unbound');
+                continue;
+            }
+
+            unboundTags.push(identSearchTag);
+        }
+
+        if (unboundTags.length === 0) {
+            console.log("didn't find any unbound tags: ", searchRel.stringify())
+        }
+    }
+
+    /*
 
     if (inputs.unboundValueTypes.length !== searchResults.unboundValueTypes.length)
         throw new Error('mismatch on unbound types: ' + inputs.unboundValueTypes + ' compared to ' + searchResults.unboundValueTypes);
@@ -100,4 +123,5 @@ function runJoin(inputs: RelationListWithMeta, searchResults: RelationListWithMe
     }
 
     output.finish();
+    */
 }

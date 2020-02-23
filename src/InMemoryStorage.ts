@@ -44,7 +44,9 @@ export default class InMemoryStorage implements StorageProvider {
 
     runSearch(search: RelationSearch) {
         for (const rel of this.findAllMatches(search.pattern)) {
+
             search.relation(rel);
+
             if (search.isDone())
                 break;
         }
@@ -60,8 +62,11 @@ export default class InMemoryStorage implements StorageProvider {
         const existing = this.relationsByNtag[ntag];
 
         if (existing) {
-            existing.setPayload(command.payloadStr);
-            set.saveFinished(existing);
+            let modified = existing.copy();
+            modified.setPayload(command.payloadStr);
+            modified.freeze();
+            this.relationsByNtag[ntag] = modified;
+            set.saveFinished(modified);
             return;
         }
         
@@ -70,7 +75,9 @@ export default class InMemoryStorage implements StorageProvider {
             tagValue: tag.tagValue
         }));
 
-        this.relationsByNtag[ntag] = commandTagsToRelation(relationTags, command.payloadStr);
+        const rel = commandTagsToRelation(relationTags, command.payloadStr);
+        rel.freeze();
+        this.relationsByNtag[ntag] = rel;
         set.saveFinished(this.relationsByNtag[ntag]);
     }
 }

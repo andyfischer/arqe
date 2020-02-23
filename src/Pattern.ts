@@ -40,6 +40,7 @@ export default class Pattern {
     hasStar?: boolean
     hasDoubleStar?: boolean
     ntag?: string
+    byIdentifier: { [identifier: string]: PatternTag } = {}
 
     // lifecycle
     isFrozen: boolean = false;
@@ -65,6 +66,9 @@ export default class Pattern {
                 this.fixedTags.push(tag as FixedTag);
                 this.fixedTagsForType[tag.tagType] = true;
             }
+
+            if (tag.identifier)
+                this.byIdentifier[tag.identifier] = tag;
         }
     }
 
