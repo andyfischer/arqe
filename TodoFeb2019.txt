@@ -3,6 +3,7 @@
  X Easy mount a derived value
  X Refactor the immutability of RelationPattern
  X Pattern should support identifiers on tags
+ - Parse pattern identifiers
  - Join should output joined relations
  - Join test cases:
    - Join across two different types

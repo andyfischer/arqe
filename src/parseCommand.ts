@@ -6,7 +6,7 @@ import Pattern, { commandTagsToRelation } from './Pattern'
 import { PatternTag, FixedTag } from './Pattern'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar } from './lexer'
+    t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket } from './lexer'
 
 function acceptableTagValue(token: Token) {
     return token.match !== t_space && token.match !== t_newline;
@@ -23,6 +23,26 @@ interface InProgressQuery {
 }
 
 function parseOneTag(it: TokenIterator): PatternTag {
+
+    let identifier;
+
+    if (it.tryConsume(t_lbracket)) {
+        if (!it.nextIs(t_ident) || it.nextText() !== 'from')
+            throw new Error("expected 'from', found: " + it.nextText());
+
+        it.consume();
+        it.skipSpaces();
+        if (!it.tryConsume(t_dollar))
+            throw new Error("expected '$', found: " + it.nextText());
+
+        identifier = it.consumeNextText();
+
+        if (!it.tryConsume(t_rbracket))
+            throw new Error("expected ']', found: " + it.nextText());
+
+        it.skipSpaces();
+    }
+
     if (it.tryConsume(t_star)) {
         if (it.tryConsume(t_star)) {
             return {
@@ -31,7 +51,8 @@ function parseOneTag(it: TokenIterator): PatternTag {
         }
 
         return {
-            star: true
+            star: true,
+            identifier
         };
     }
 
@@ -47,6 +68,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
         return {
             tagType: 'option',
             tagValue: optionValue,
+            identifier,
             negate
         }
     }
@@ -68,7 +90,6 @@ function parseOneTag(it: TokenIterator): PatternTag {
     let tagValue = null;
     let starValue = false;
     let questionValue = false;
-    let identifier = null;
 
     if (it.tryConsume(t_slash)) {
         if (it.tryConsume(t_star)) {
