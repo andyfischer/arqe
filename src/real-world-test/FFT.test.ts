@@ -12,7 +12,7 @@ beforeAll(() => {
         graph.run(cmd);
 });
 
-xit('correctly joins with a has-skill', () => {
+it('correctly joins with a has-skill', () => {
     let joinResults = []
     for (const team of graph.getRelationsSync('team/*')) {
 
@@ -23,8 +23,8 @@ xit('correctly joins with a has-skill', () => {
     }
 
     expect(joinResults).toEqual([
-       "has-skill/Revive unit/2d6dd",
-       "has-skill/Revive unit/56330",
-       "has-skill/Revive unit/ce769",
+       "has-skill/Revive [from $a] unit/2d6dd",
+       "has-skill/Revive [from $a] unit/56330",
+       "has-skill/Revive [from $a] unit/ce769",
     ])
 });

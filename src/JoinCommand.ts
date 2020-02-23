@@ -5,6 +5,7 @@ import { runSearch } from './Search'
 import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
 import Pattern, { PatternTag } from './Pattern'
 import { emitSearchPatternMeta } from './CommandMeta'
+import { commandTagToString } from './stringifyQuery'
 
 function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
     const identifierTags: PatternTag[] = []
@@ -55,8 +56,6 @@ export function setupJoinExecution(commandExec: CommandExecution) {
             if (rel.hasType('command-meta')) {
                 if (rel.hasType('search-pattern')) {
                     inputSearchPattern = rel.freeze();
-
-                    console.log('join saw inputSearchPattern: ', inputSearchPattern.stringify())
                 }
                 continue;
             }
@@ -102,10 +101,19 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
 function combineRelations(a: Pattern, b: Pattern) {
     const saw = {}
-    const tags = [];
+    const tags = a.tags;
 
+    for (const tag of a.tags)
+        saw[commandTagToString(tag)] = true;
 
-    return new Pattern(a.tags.concat(b.tags));
+    for (const tag of b.tags) {
+        const str = commandTagToString(tag);
+        if (saw[str])
+            continue;
+        tags.push(tag);
+    }
+
+    return new Pattern(tags);
 }
 
 function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: RelationReceiver) {
@@ -132,9 +140,6 @@ function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: 
         }
     }
 
-    for (const input of inputs)
-        console.log('join looking at: ', input.stringify())
-
     function getKeyForInput(pattern: Pattern) {
         const key = {}
         for (const correspondingTag of correspondingTags)
@@ -159,8 +164,7 @@ function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: 
         const key = getKeyForSearch(search);
         const relatedInput = keyed[key];
         if (!relatedInput)
-            console.log('no related input: ', search.stringify())
-
+            continue;
         output.relation(combineRelations(relatedInput, search));
     }
 
