@@ -26,12 +26,11 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
 
 export function emitMetaInfoForUnboundVars(pattern: Pattern, output: RelationReceiver) {
     for (const tag of pattern.tags) {
-        if (tag.unboundType) {
-            emitCommandMeta(output, { unboundType: null, var: tag.unboundType });
-        }
 
-        if (tag.unboundValue) {
-            emitCommandMeta(output, { unboundValue: null, 'type': tag.tagType, var: tag.unboundValue });
+        if (tag.tagType && tag.identifier) {
+            emitCommandMeta(output, { unboundValue: null, 'type': tag.tagType, var: tag.identifier });
+        } else if (tag.identifier) {
+            emitCommandMeta(output, { unboundType: null, var: tag.identifier });
         }
     }
 }

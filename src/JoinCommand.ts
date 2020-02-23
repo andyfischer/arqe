@@ -84,8 +84,7 @@ function runJoin(inputs: RelationListWithMeta, searchResults: RelationListWithMe
         throw new Error('mismatch on unbound types: ' + inputs.unboundValueTypes + ' compared to ' + searchResults.unboundValueTypes);
 
     if (inputs.unboundValueTypes.length !== 1)
-        throw new Error('join only supports one unbound right now');
-
+        throw new Error('join only supports one unbound right now, saw: ' + inputs.unboundValueTypes);
 
     const keyed: {[key:string]: Pattern } = {}
 

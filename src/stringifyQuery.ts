@@ -5,8 +5,8 @@ import parseCommand from './parseCommand'
 import { PatternTag } from './Pattern'
 
 export function commandTagToString(tag: PatternTag) {
-    if (tag.unboundType)
-        return '$' + tag.unboundType;
+    if (tag.star && tag.identifier)
+        return '$' + tag.identifier;
 
     if (tag.star)
         return '*';
@@ -18,8 +18,8 @@ export function commandTagToString(tag: PatternTag) {
             return '.' + tag.tagValue;
 
         s += '/' + tag.tagValue;
-    } else if (tag.unboundValue) {
-        s += '/$' + tag.unboundValue;
+    } else if (tag.starValue && tag.identifier) {
+        s += '/$' + tag.identifier;
     } else if (tag.starValue) {
         s += '/*';
     } else if (tag.questionValue) {

@@ -55,7 +55,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
         const unboundVar = it.consumeNextUnquotedText();
         return {
             tagType: null,
-            unboundType: unboundVar,
+            identifier: unboundVar,
             star: true
         }
     }
@@ -68,7 +68,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
     let tagValue = null;
     let starValue = false;
     let questionValue = false;
-    let unboundValue = null;
+    let identifier = null;
 
     if (it.tryConsume(t_slash)) {
         if (it.tryConsume(t_star)) {
@@ -76,7 +76,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
         } else if (it.tryConsume(t_question)) {
             questionValue = true;
         } else if (it.tryConsume(t_dollar)) {
-            unboundValue = it.consumeNextUnquotedText();
+            identifier = it.consumeNextUnquotedText();
             starValue = true;
         } else {
             tagValue = it.consumeTextWhile(acceptableTagValue);
@@ -89,7 +89,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
         negate,
         starValue,
         questionValue,
-        unboundValue
+        identifier
     }
 }
 

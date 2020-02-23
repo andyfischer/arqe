@@ -13,8 +13,7 @@ export interface PatternTag {
     doubleStar?: boolean
     starValue?: boolean
     questionValue?: boolean
-    unboundType?: string
-    unboundValue?: string
+    identifier?: string
 }
 
 export interface FixedTag {
