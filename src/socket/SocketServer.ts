@@ -1,17 +1,14 @@
 
 import WebSocket from 'ws'
 import Graph from '../Graph'
-import GraphContext from '../GraphContext'
 import { createUniqueEntity } from '../GraphORM'
 import Command from '../Command'
-import parseCommand from '../parseCommand'
 import logError from '../logError'
 import EventEmitter from 'events'
 
 class Connection extends EventEmitter {
     ws: WebSocket
     graph: Graph
-    graphContext: GraphContext
 
     send(query, data) {
         this.emit('send', { query, response: data.msg, error: data.err });
@@ -19,7 +16,7 @@ class Connection extends EventEmitter {
     }
 
     async handleCommand(reqid: string, query: string) {
-        this.graphContext.run(query, (msg) => {
+        this.graph.run(query, (msg) => {
             this.send(query, {reqid, msg});
         });
     }
@@ -32,8 +29,8 @@ class Connection extends EventEmitter {
 
         const id = createUniqueEntity(graph, 'connection');
 
-        this.graphContext = new GraphContext(this.graph);
-        this.graphContext.addOptionalContextTag({ tagType: 'connection', tagValue: id });
+        // this.graphContext = new GraphContext(this.graph);
+        // this.graphContext.addOptionalContextTag({ tagType: 'connection', tagValue: id });
 
         ws.on('message', async (message) => {
 

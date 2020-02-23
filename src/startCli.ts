@@ -19,10 +19,6 @@ export default async function main() {
     });
 
     const commandConnection = new CommandConnection(ws);
-    
-    // Temp
-    commandConnection.run('set wstest schema provider/wssync', () => null)
-    commandConnection.run('set wstest schema provider/wssync .host == http://localhost:42941', () => null)
 
     if (cliArgs._.length > 0) {
         const command = cliArgs._.join(' ');
