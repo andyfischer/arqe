@@ -1,13 +1,12 @@
 
 import 'source-map-support'
+import Graph from './Graph'
 import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
 import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
 
-export default async function main() {
-    const cliArgs = Minimist(process.argv.slice(2), {});
-
+async function connectToSocketServer() {
     const ws = new WebSocket('http://localhost:42940');
     await new Promise((resolve, reject) => {
         ws.on('open', resolve);
@@ -20,16 +19,27 @@ export default async function main() {
 
     const commandConnection = new CommandConnection(ws);
 
-    if (cliArgs._.length > 0) {
-        const command = cliArgs._.join(' ');
-
-        //const response = await commandConnection.runGetFullResponse(command);
-        //console.log(response);
-        //return;
-    }
-
     const repl = new ClientRepl(commandConnection);
     repl.start();
+}
+
+function loadFromDumpFile(filename: string) {
+    const graph = new Graph();
+    graph.loadDumpFile(filename);
+
+    const repl = new ClientRepl(graph);
+    repl.start();
+}
+
+export default async function main() {
+    const cliArgs = Minimist(process.argv.slice(2), {});
+
+    if (cliArgs.f) {
+        loadFromDumpFile(cliArgs.f);
+        return;
+    }
+
+    await connectToSocketServer();
 }
 
 main()

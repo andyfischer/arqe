@@ -1,0 +1,9 @@
+
+ - Work on the API
+   - Add Graph.get returning structured results
+   - Improve DX for relation results / UpdateContext
+   - Separate class for Relation
+
+COURSE CORRECTIONS:
+ - Allow tag values to act like real values. (Update syntax to allow quotes)
+ - Allow 'payload' to be accessed with the 'value' tag type.

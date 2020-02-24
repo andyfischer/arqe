@@ -11,14 +11,18 @@ function trimEndline(str) {
     return str;
 }
 
+interface Runnable {
+    run: (msg: string, callback: (response: string) => void) => void
+}
+
 export default class ClientRepl {
-    conn: CommandConnection
+    graph: Runnable
     repl: any
 
     waitingForDone: boolean
 
-    constructor(conn: CommandConnection) {
-        this.conn = conn;
+    constructor(graph: Runnable) {
+        this.graph = graph;
         this.waitingForDone = false;
     }
 
@@ -43,10 +47,9 @@ export default class ClientRepl {
     async eval(line) {
         line = trimEndline(line);
 
-        this.conn.run(line, response => {
+        this.graph.run(line, response => {
             this.receive(response);
         })
-
     }
 
     displayPrompt() {

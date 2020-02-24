@@ -5,6 +5,7 @@ import { saveObject } from './fs/GraphORM'
 import Fs from 'fs-extra'
 import { mountDerivedTag } from './fs/DerivedValueMount'
 import UpdateContext from './fs/UpdateContext'
+import { parsePattern } from './fs/parseCommand'
 
 const graph = new Graph()
 
@@ -31,8 +32,8 @@ set skill/GalaxyStop rank/verygood
 set skill/Doublehand rank/good
 set skill/DamageSplit rank/good
 
-set item/StoneGun rank/powerful
-set item/Ribbon rank/powerful
+set item/StoneGun rank/verygood
+set item/Ribbon rank/verygood
 
 set class/Ninja rank/good
 set class/Calculator rank/good
@@ -46,8 +47,26 @@ set class/SteelGiant rank/verygood
 
 set class/TimeMage rank/bad
 set class/Dancer rank/bad
-`;
 
+set team/red
+set team/blue
+set team/green
+set team/yellow
+set team/white
+set team/black
+set team/purple
+set team/brown
+
+set match/1 .teams == team/red team/blue
+set match/2 .teams == team/green team/yellow
+set match/3 .teams == team/white team/black
+set match/4 .teams == team/purple team/brown
+set match/5 .teams == (winner match/1) (winner match/2)
+set match/6 .teams == (winner match/3) (winner match/4)
+set match/7 .teams == (winner match/5) (winner match/6)
+set match/8 .teams == (winner match/7) champ
+
+`;
 
 function run(graph: Graph, cmd: string) {
 
@@ -57,11 +76,13 @@ function run(graph: Graph, cmd: string) {
     return result;
 }
 
+/*
 mountDerivedTag(graph, 'unit/* unit-has-rez', (cxt: UpdateContext, search) => {
 
     //const result = graph.runSync(`get -exists ${rel.getTag('unit')} has-skill/$a | join skill/$a category/rez`)
     //return result === '#exists';
 })
+*/
 
 for (const command of bootstrap.split('\n'))
     graph.run(command)
@@ -73,8 +94,8 @@ async function main() {
     for (const teamName in data.Teams) {
         const teamData = data.Teams[teamName];
 
-        const team = await saveObject(graph, 'team/#unique', { name: teamName });
-        const teamId = team.getTag('team');
+        const teamId = `team/${teamName}`
+        const team = graph.runSync(`save ${teamId}`)
 
         for (const unit of teamData.Units) {
 
@@ -85,42 +106,77 @@ async function main() {
             graph.runSync(`set ${teamId} ${unitId}`)
 
             for (const skill of unit.ClassSkills) {
-                await graph.runSync(`set ${unitId} has-skill/${toTagName(skill)}`)
+                graph.runSync(`set ${unitId} has-skill/${toTagName(skill)}`)
             }
 
             for (const extraSkill of unit.ExtraSkills) {
-                await graph.runSync(`set ${unitId} has-skill/${toTagName(extraSkill)}`)
+                graph.runSync(`set ${unitId} has-skill/${toTagName(extraSkill)}`)
             }
         }
     }
 
-    for (const winner of data.Winners) {
-        console.log('saw winner: ', winner);
-    }
-
-    await Fs.writeFile('dump.graph', (await graph.runAsync('dump') as string[]).join('\n'))
-
-    // Analyze
+    // Figure out who is playing
+    let firstUnfinishedMatch = null;
     graph.runDerived(cxt => {
-        for (const team of cxt.get('team/*')) {
+        for (const match of cxt.get('match/* .teams')) {
+            const num = parseInt(match.getTagValue('match'))
 
-            const teamId = team.getTag('team');
-
-            console.log('analyzing team: ', cxt.getOne(`${teamId} .name`).getValue())
-
-            run(graph, `get ${teamId} unit/$a | join unit/$a has-skill/Revive`)
-
-            run(graph, `get ${teamId} unit/$a | join unit/$a unit-has-rez`)
-
-            // console.log(graph.runSync(`get -count ${teamId} unit/$a | join unit/$a has-skill/Revive`))
+            const foundWinner = data.Winners[num - 1]
+            if (foundWinner) {
+                graph.runSync(`set ${match.getTag('match')} .winner == team/${foundWinner}`)
+            } else {
+                if (!firstUnfinishedMatch)
+                    firstUnfinishedMatch = match;
+            }
         }
     });
+
+    if (!firstUnfinishedMatch) {
+        console.log('No unfinished match found (tourny over?)');
+        return;
+    }
+
+    console.log('Next unfinished match is: ', firstUnfinishedMatch.stringifyRelation())
+
+    const fightingTeams = firstUnfinishedMatch.getValue().split(' ');
+
+    for (const team of fightingTeams) {
+        graph.runDerived(cxt => {
+            console.log(`Analyzing team: ${team}`)
+
+            function formatRezzes(matches) {
+                if (matches.length === 0)
+                    return '(none)'
+
+                return matches.map(match => {
+                    match = parsePattern(match)
+                    const name = cxt.getOne(`${match.getTag('unit')} .Name`).getValue();
+                    return `${name} (${match.getTagValue('skill')})`
+                }).join(', ');
+            }
+
+            console.log('Rezzes: ', formatRezzes(
+                graph.runSync(`get ${team} unit/$a | join unit/$a has-skill/$s | join skill/$s category/rez`)
+            ));
+
+            for (const unit of cxt.get(`${team} unit/*`)) {
+                console.log('Unit: ', cxt.getOne(unit.getTag('unit') + ' .Name').getValue())
+            }
+        });
+    }
+
+
+    // Analyze
+    
 
     graph.runDerived(cxt => {
         for (const unit of cxt.get('unit/*')) {
-            run(graph, `get ${unit.getTag('unit')} unit-has-rez`);
+            graph.run(`get ${unit.getTag('unit')} unit-has-rez`);
         }
     });
+
+    graph.saveDumpFile('dump.graph');
+    graph.startRepl();
 }
 
 main()

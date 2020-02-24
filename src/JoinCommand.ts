@@ -101,10 +101,12 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
 function combineRelations(a: Pattern, b: Pattern) {
     const saw = {}
-    const tags = a.tags;
+    const tags = [];
 
-    for (const tag of a.tags)
+    for (const tag of a.tags) {
+        tags.push(tag);
         saw[commandTagToString(tag)] = true;
+    }
 
     for (const tag of b.tags) {
         const str = commandTagToString(tag);
@@ -120,6 +122,9 @@ function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: 
 
     if (!inputSearchPattern)
         throw new Error('missing inputSearchPattern');
+
+
+    emitSearchPatternMeta(combineRelations(inputSearchPattern, searchPattern), output)
 
     // For each search result
     //   Look at all unfilled identifiers in this search result

@@ -26,6 +26,8 @@ import { runCommandChain } from './ChainedExecution'
 import { emitSearchPatternMeta, emitCommandError } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
+import Fs from 'fs'
+import ClientRepl from './ClientRepl'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -138,6 +140,9 @@ export default class Graph {
                 if (commandExec.pattern.matches(rel)) {
                     commandExec.output.relation(rel);
                 }
+            },
+            finish() {
+                commandExec.output.finish();
             }
         })
     }
@@ -321,6 +326,23 @@ export default class Graph {
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
+    }
+    
+    loadDumpFile(filename: string) {
+        const lines = Fs.readFileSync(filename, 'utf8').split('\n');
+        for (const line of lines)
+            this.run(line);
+    }
+    
+    saveDumpFile(filename: string) {
+        const contents = (this.runSync('dump') as string[]).join('\n');
+        Fs.writeFileSync(filename, contents);
+    }
+
+    startRepl() {
+        const repl = new ClientRepl(this);
+        repl.start();
+        return repl;
     }
 }
 

@@ -273,6 +273,9 @@ export default class Pattern {
     getTag(typeName: string) {
         const tag = this.getOneTagForType(typeName);
 
+        if (!tag)
+            throw new Error('tag not found for type: ' + typeName);
+
         if (!tag.tagValue)
             return typeName;
 
@@ -318,14 +321,18 @@ export default class Pattern {
         return commandTagsToString(this.tags);
     }
 
+    stringifyRelation() {
+        const payloadStr = (this.payload != null) ? (' == ' + this.payload) : '';
+        return this.stringify() + payloadStr;
+    }
+
     stringifyToCommand() {
         let commandPrefix = 'set ';
 
         if (this.wasDeleted)
             commandPrefix = 'delete ';
 
-        const payloadStr = (this.payload != null) ? (' == ' + this.payload) : '';
-        return commandPrefix + commandTagsToString(this.tags) + payloadStr;
+        return commandPrefix + this.stringifyRelation();
     }
 }
 

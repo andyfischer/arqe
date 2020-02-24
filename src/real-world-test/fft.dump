@@ -66,7 +66,6 @@ set unit/a2f52 .Head == Platinum Helmet
 set unit/a2f52 .Armor == Chain Mail
 set unit/a2f52 .Accessory == 108 Gems
 set unit/a2f52 Lancer
-set 986 dd unit/a2f52
 set unit/a2f52 has-skill/LevelJump8
 set unit/a2f52 has-skill/VerticalJump2
 set unit/a2f52 has-skill/WitchHunt
@@ -91,7 +90,6 @@ set unit/93385 .Head == Flash Hat
 set unit/93385 .Armor == Adaman Vest
 set unit/93385 .Accessory == Genji Gauntlet
 set unit/93385 Oracle
-set 986 dd unit/93385
 set unit/93385 has-skill/DoubtFaith
 set unit/93385 has-skill/Foxbird
 set unit/93385 has-skill/DispelMagic
@@ -126,7 +124,6 @@ set unit/0036e .Head == Cross Helmet
 set unit/0036e .Armor == Platinum Armor
 set unit/0036e .Accessory == Rubber Shoes
 set unit/0036e Knight
-set 986 dd unit/0036e
 set unit/0036e has-skill/HeadBreak
 set unit/0036e has-skill/PowerBreak
 set unit/0036e has-skill/DarkSword
@@ -152,7 +149,6 @@ set unit/7756b .Head ==
 set unit/7756b .Armor == 
 set unit/7756b .Accessory == 
 set unit/7756b Ochu
-set 3 d687 unit/7756b
 set unit/73408
 set unit/73408 .Name == Teg88
 set unit/73408 .Gender == Male
@@ -189,7 +185,6 @@ set unit/583d2 .Head == Bronze Helmet
 set unit/583d2 .Armor == Linen Robe
 set unit/583d2 .Accessory == Cursed Ring
 set unit/583d2 Mime
-set 3 d687 unit/583d2
 set unit/583d2 has-skill/Mimic
 set unit/db20a
 set unit/db20a .Name == Sect Cor
@@ -208,7 +203,6 @@ set unit/db20a .Head == Black Hood
 set unit/db20a .Armor == Wizard Robe
 set unit/db20a .Accessory == Red Shoes
 set unit/db20a Priest
-set 3 d687 unit/db20a
 set unit/db20a has-skill/Cure
 set unit/db20a has-skill/Cure2
 set unit/db20a has-skill/Cure3
@@ -947,5 +941,4 @@ set unit/9528e .Head == Leather Hat
 set unit/9528e .Armor == Power Sleeve
 set unit/9528e .Accessory == Sprint Shoes
 set unit/9528e Mime
-set 69 d3f unit/9528e
 set unit/9528e has-skill/Mimic
