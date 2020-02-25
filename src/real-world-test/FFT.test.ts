@@ -1,15 +1,13 @@
 
 import Fs from 'fs'
+import Path from 'path'
 import Graph from '../Graph'
 
 let graph: Graph;
 
-beforeAll(() => {
+beforeAll(async () => {
     graph = new Graph();
-    const dumpContents = Fs.readFileSync(__dirname + '/fft.dump', 'utf8');
-
-    for (const cmd of dumpContents.split('\n'))
-        graph.run(cmd);
+    await graph.loadDumpFile(Path.join(__dirname, 'fft.dump'));
 });
 
 it('correctly joins with a has-skill', () => {

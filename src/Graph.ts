@@ -28,6 +28,7 @@ import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
 import ClientRepl from './ClientRepl'
+import Readline from 'readline'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -328,10 +329,17 @@ export default class Graph {
         return callback(cxt);
     }
     
-    loadDumpFile(filename: string) {
-        const lines = Fs.readFileSync(filename, 'utf8').split('\n');
-        for (const line of lines)
+    async loadDumpFile(filename: string) {
+        const fileStream = Fs.createReadStream(filename);
+
+        const rl = Readline.createInterface({
+          input: fileStream,
+          crlfDelay: Infinity
+        });
+      
+        for await (const line of rl) {
             this.run(line);
+        }
     }
     
     saveDumpFile(filename: string) {

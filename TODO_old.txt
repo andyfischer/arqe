@@ -19,6 +19,12 @@
 
 # Feb 2019 #
 
+### Notes ###
+
+In Unix, interprocess communication is text streams
+
+In FS, interprocess communication is relation streams
+
 Test
  X Add tests on the filesystem mounts
 
