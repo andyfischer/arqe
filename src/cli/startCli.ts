@@ -1,9 +1,9 @@
 
 import 'source-map-support'
-import Graph from './Graph'
+import Graph from '../Graph'
 import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
-import CommandConnection from './socket/CommandConnection'
+import CommandConnection from '../socket/CommandConnection'
 import Minimist from 'minimist'
 
 async function connectToSocketServer() {

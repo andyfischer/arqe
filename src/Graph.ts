@@ -27,7 +27,7 @@ import { emitSearchPatternMeta, emitCommandError } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
-import ClientRepl from './ClientRepl'
+import ClientRepl from './cli/ClientRepl'
 import Readline from 'readline'
 
 export type RespondFunc = (msg: string) => void
