@@ -59,14 +59,13 @@ export function receiveToStringRespond(graph: Graph, command: Command, respond: 
         return new GetResponseFormatterExists(respond);
     }
 
-    const formatter = new GetResponseFormatter(); 
+    const formatter = new GetResponseFormatter(graph); 
     const pattern = command.toPattern();
     formatter.extendedResult = command.flags.x || command.commandName === 'listen'
     formatter.listOnly = command.flags.list;
     formatter.asMultiResults = pattern.isMultiMatch();
     formatter.respond = respond;
     formatter.pattern = pattern;
-    formatter.schema = graph.schema;
 
     return formatter;
 }

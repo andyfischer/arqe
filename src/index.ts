@@ -5,7 +5,7 @@ export { print, printError, randomHex } from './utils'
 // export { AgentFramework } from './agents'
 // export { parseQueryInput } from './parse-query'
 // export { Query, runQueryInput } from './query'
-export { appendToLog } from './storage'
+//export { appendToLog } from './storage'
 // export { error, performedAction, done } from './rich-value'
 
 if (require.main === module) {

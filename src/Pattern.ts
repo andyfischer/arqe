@@ -1,7 +1,6 @@
 
 import Command from './Command'
 import Graph from './Graph'
-import Schema from './Schema'
 import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
 

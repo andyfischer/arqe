@@ -10,7 +10,6 @@ import { runSearch } from './Search'
 import GraphListener from './GraphListener'
 import Pattern, { commandToRelationPattern } from './Pattern'
 import collectRespond from './collectRespond'
-import Schema from './Schema'
 import InMemoryStorage from './InMemoryStorage'
 import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
@@ -29,6 +28,7 @@ import UpdateContext from './UpdateContext'
 import Fs from 'fs'
 import ClientRepl from './cli/ClientRepl'
 import Readline from 'readline'
+import TagTypeOrdering from './TagTypeOrdering'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -41,7 +41,7 @@ export default class Graph {
     savedQueries: SavedQuery[] = []
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
-    schema = new Schema()
+    ordering = new TagTypeOrdering()
     typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<InheritTags>
     filesystemMounts: EagerValue<StorageMount[]>
@@ -53,7 +53,7 @@ export default class Graph {
     constructor() {
         this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
-        this.eagerValue(this.schema.ordering.update);
+        this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
     }
 

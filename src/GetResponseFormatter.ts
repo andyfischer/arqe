@@ -1,7 +1,6 @@
 
 import Command from './Command'
 import Graph, { RespondFunc } from './Graph'
-import Schema from './Schema'
 import Relation from './Relation'
 import Pattern, { PatternTag } from './Pattern'
 import StorageProvider from './StorageProvider'
@@ -10,7 +9,7 @@ import RelationReceiver  from './RelationReceiver'
 
 export default class GetResponseFormatter implements RelationReceiver {
     // Context
-    schema: Schema
+    graph: Graph
     pattern: Pattern
     respond: RespondFunc
 
@@ -27,6 +26,10 @@ export default class GetResponseFormatter implements RelationReceiver {
     // Protocol validation
     hasStarted = false;
     calledFinish = false;
+
+    constructor(graph: Graph) {
+        this.graph = graph;
+    }
 
     start() {
         if (this.hasStarted)
@@ -49,9 +52,7 @@ export default class GetResponseFormatter implements RelationReceiver {
             return true;
         });
 
-        if (this.schema) {
-            this.schema.ordering.sortTags(tags);
-        }
+        this.graph.ordering.sortTags(tags);
 
         const tagStrs = tags.map(commandTagToString);
 

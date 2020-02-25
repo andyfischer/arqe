@@ -2,7 +2,6 @@
 import Command, { CommandFlags } from './Command'
 import CommandExecution from './CommandExecution'
 import Graph, { RespondFunc } from './Graph'
-import Schema from './Schema'
 import Relation from './Relation'
 import Pattern, { PatternTag } from './Pattern'
 import StorageProvider from './StorageProvider'
@@ -19,7 +18,7 @@ interface Step {
 }
 
 function inheritTagCompare(graph: Graph, a: PatternTag, b: PatternTag) {
-    const typeCompare = graph.schema.ordering.compareTagTypes(a.tagType, b.tagType);
+    const typeCompare = graph.ordering.compareTagTypes(a.tagType, b.tagType);
     if (typeCompare !== 0)
         return typeCompare;
 
