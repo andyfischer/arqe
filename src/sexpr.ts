@@ -1,6 +1,6 @@
 
 import { lexStringToIterator, TokenIterator, Token, t_lparen, t_rparen,
-    t_ident, t_integer} from './lexer';
+    t_ident, t_integer, t_slash } from './lexer';
 
 function expr(it: TokenIterator) {
     if (it.tryConsume(t_lparen)) {
@@ -20,9 +20,13 @@ function expr(it: TokenIterator) {
         return result;
     }
 
-    if (it.nextIs(t_ident) || it.nextIs(t_integer)) {
-        return it.consumeNextText();
+    let text = '';
+    while (it.nextIs(t_ident) || it.nextIs(t_integer) || it.nextIs(t_slash)) {
+        text += it.consumeNextText();
     }
+
+    if (text !== '')
+        return text;
 
     throw new Error('unexpected s-expr atom: ' + it.nextText());
 }

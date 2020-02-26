@@ -229,6 +229,9 @@ export function parseTag(str: string): PatternTag {
 }
 
 export function parsePattern(str: string) {
+    if (typeof str !== 'string')
+        throw new Error('expected string, saw: ' + str);
+
     // this is silly
     return parseCommand('get ' + str).toPattern();
 }

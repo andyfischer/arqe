@@ -3,7 +3,7 @@ import Command, { CommandFlags } from './Command'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'
-import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
+import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import RelationSearch from './RelationSearch'
 import { receiveToStringRespond } from './RelationReceiver'
 
@@ -60,6 +60,6 @@ export default class CommandExecution {
         if (this.output)
             throw new Error("already have a configured output");
 
-        this.output = collectRelationReceiverOutput(onDone);
+        this.output = receiveToRelationList(onDone);
     }
 }

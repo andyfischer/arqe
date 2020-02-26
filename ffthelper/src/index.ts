@@ -7,6 +7,7 @@ import { mountDerivedTag } from './fs/DerivedValueMount'
 import UpdateContext from './fs/UpdateContext'
 import { parsePattern } from './fs/parseCommand'
 import { parseSexprFromString, evalSexpr } from './fs/sexpr'
+import Pattern from './fs/Pattern'
 
 const graph = new Graph()
 
@@ -32,6 +33,8 @@ set skill/FastCharge rank/verygood
 set skill/GalaxyStop rank/verygood
 set skill/Doublehand rank/good
 set skill/DamageSplit rank/good
+set skill/StealHeart rank/good
+set skill/Murasame rank/good
 
 set item/StoneGun rank/verygood
 set item/Ribbon rank/verygood
@@ -45,6 +48,9 @@ set class/RedChocobo rank/good
 
 set class/Taiju rank/verygood
 set class/SteelGiant rank/verygood
+set class/UltimaDemon rank/verygood
+set class/Vampire rank/good
+set class/BlueDragon rank/good
 
 set class/TimeMage rank/bad
 set class/Dancer rank/bad
@@ -57,7 +63,7 @@ set team/white
 set team/black
 set team/purple
 set team/brown
-set team/champ
+set team/champion
 
 set match/1 .teams == team/red team/blue
 set match/2 .teams == team/green team/yellow
@@ -66,9 +72,11 @@ set match/4 .teams == team/purple team/brown
 set match/5 .teams == (list (winner match/1) (winner match/2))
 set match/6 .teams == (list (winner match/3) (winner match/4))
 set match/7 .teams == (list (winner match/5) (winner match/6))
-set match/8 .teams == (list (winner match/7) team/champ)
+set match/8 .teams == (list (winner match/7) team/champion)
 
 `;
+
+const api = graph.relationSyncApi();
 
 function run(graph: Graph, cmd: string) {
 
@@ -77,14 +85,6 @@ function run(graph: Graph, cmd: string) {
     console.log(' > ' + result);
     return result;
 }
-
-/*
-mountDerivedTag(graph, 'unit/* unit-has-rez', (cxt: UpdateContext, search) => {
-
-    //const result = graph.runSync(`get -exists ${rel.getTag('unit')} has-skill/$a | join skill/$a category/rez`)
-    //return result === '#exists';
-})
-*/
 
 for (const command of bootstrap.split('\n'))
     graph.run(command)
@@ -97,22 +97,22 @@ async function main() {
         const teamData = data.Teams[teamName];
 
         const teamId = `team/${teamName}`
-        const team = graph.runSync(`save ${teamId}`)
+        const team = api.run(`set ${teamId}`)
 
         for (const unit of teamData.Units) {
 
             const className = toTagName(unit.Class);
             const unitId = (await saveObject(graph, 'unit/#unique', unit)).stringify()
 
-            graph.runSync(`set ${unitId} ${className}`)
-            graph.runSync(`set ${teamId} ${unitId}`)
+            api.run(`set ${unitId} class/${className}`)
+            api.run(`set ${teamId} ${unitId}`)
 
             for (const skill of unit.ClassSkills) {
-                graph.runSync(`set ${unitId} has-skill/${toTagName(skill)}`)
+                api.run(`set ${unitId} has-skill/${toTagName(skill)}`)
             }
 
             for (const extraSkill of unit.ExtraSkills) {
-                graph.runSync(`set ${unitId} has-skill/${toTagName(extraSkill)}`)
+                api.run(`set ${unitId} has-skill/${toTagName(extraSkill)}`)
             }
         }
     }
@@ -125,7 +125,7 @@ async function main() {
 
             const foundWinner = data.Winners[num - 1]
             if (foundWinner) {
-                graph.runSync(`set ${match.getTag('match')} winner == team/${foundWinner}`)
+                api.run(`set ${match.getTag('match')} winner == team/${foundWinner}`)
             } else {
                 if (!firstUnfinishedMatch)
                     firstUnfinishedMatch = match;
@@ -138,48 +138,58 @@ async function main() {
         return;
     }
 
-    console.log('Next unfinished match is: ', firstUnfinishedMatch.stringifyRelation());
+    // console.log('Next match is: ', firstUnfinishedMatch.stringifyRelation());
 
     function getFightingTeams() {
         const val = firstUnfinishedMatch.getValue();
         if (val[0] === '(') {
-            const expr = parseSexprFromString(val);
+            const expr = parseSexprFromString(val) as string[];
             return evalSexpr({
                 winner(inputs: string[]) {
+                    // console.log('computing winner: ', JSON.stringify(inputs));
                     const match = inputs[0];
-                    return graph.runSync(`get ${match} winner`).getValue()
+                    return api.getOne(`${match} winner`).getValue()
                 }
             }, expr)
         } else {
-            return val;
+            return val.split(' ')
         }
     }
 
-    const fightingTeams = getFightingTeams()
-
-    console.log("Teams playing are: " + fightingTeams)
+    const fightingTeams = getFightingTeams().map(t => parsePattern(t))
 
     for (const team of fightingTeams) {
         graph.runDerived(cxt => {
-            console.log(`Analyzing team: ${team}`)
+            console.log(`Team: ${team.getTagValue('team')}`)
+
+            const teamId = team.getTag('team')
 
             function formatRezzes(matches) {
                 if (matches.length === 0)
                     return '(none)'
 
                 return matches.map(match => {
-                    match = parsePattern(match)
                     const name = cxt.getOne(`${match.getTag('unit')} .Name`).getValue();
                     return `${name} (${match.getTagValue('skill')})`
                 }).join(', ');
             }
 
-            console.log('Rez abilities: ', formatRezzes(
-                graph.runSync(`get ${team} unit/$a | join unit/$a has-skill/$s | join skill/$s category/rez`)
+            console.log('  Rez abilities: ' + formatRezzes(
+                api.run(`get ${teamId} unit/$a | join unit/$a has-skill/$s | join skill/$s category/rez`)
             ));
 
-            for (const unit of cxt.get(`${team} unit/*`)) {
-                console.log('Unit: ', cxt.getOne(unit.getTag('unit') + ' .Name').getValue())
+            for (const unit of api.get(`${teamId} unit/*`)) {
+                console.log('  Unit: ' + api.getOne(unit.getTag('unit') + ' .Name').getValue());
+                // console.log(' Class: ' + api.getOne(`${unit.getTag('unit')} class/*`).getTagValue('class'))
+
+                //for (const skill of api.get(`${unit.getTag('unit')} has-skill/$s`))
+                //    console.log(`  Skill: ${skill.getTagValue('has-skill')}`)
+
+                for (const clss of api.get(`${unit.getTag('unit')} class/$s | join class/$s rank/*`))
+                    console.log(`    Noteworthy class: ${clss.getTagValue('class')} (${clss.getTagValue('rank')})`)
+
+                for (const skill of api.get(`${unit.getTag('unit')} has-skill/$s | join skill/$s rank/*`))
+                    console.log(`    Noteworthy skill: ${skill.getTagValue('skill')} (${skill.getTagValue('rank')})`)
             }
         });
     }

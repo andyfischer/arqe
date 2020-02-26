@@ -16,7 +16,7 @@ export default interface RelationReceiver {
     isDone: () => boolean
 }
 
-export function collectRelationReceiverOutput(onDone: (rels: Pattern[]) => void): RelationReceiver {
+export function receiveToRelationList(onDone: (rels: Pattern[]) => void): RelationReceiver {
     const list: Pattern[] = [];
     return {
         start() {},

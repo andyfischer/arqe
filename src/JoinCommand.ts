@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import CommandExecution from './CommandExecution'
 import { runSearch } from './Search'
-import RelationReceiver, { collectRelationReceiverOutput } from './RelationReceiver'
+import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import Pattern, { PatternTag } from './Pattern'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { commandTagToString } from './stringifyQuery'
@@ -50,7 +50,7 @@ export function setupJoinExecution(commandExec: CommandExecution) {
 
     const searchPattern = commandExec.command.toPattern();
 
-    commandExec.input = collectRelationReceiverOutput((rels) => {
+    commandExec.input = receiveToRelationList((rels) => {
 
         for (const rel of rels) {
             if (rel.hasType('command-meta')) {
@@ -67,15 +67,13 @@ export function setupJoinExecution(commandExec: CommandExecution) {
         check();
     });
 
-    const search = collectRelationReceiverOutput((rels) => {
+    const search = receiveToRelationList((rels) => {
         for (const rel of rels)
             searchRelations.push(rel);
 
         searchDone = true;
         check();
     });
-
-    // emitSearchPatternMeta(searchPattern, search);
 
     commandExec.start = () => {
         commandExec.output.start();

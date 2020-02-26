@@ -29,6 +29,7 @@ import Fs from 'fs'
 import ClientRepl from './cli/ClientRepl'
 import Readline from 'readline'
 import TagTypeOrdering from './TagTypeOrdering'
+import GraphRelationSyncAPI from './GraphRelationSyncAPI'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -146,6 +147,10 @@ export default class Graph {
                 commandExec.output.finish();
             }
         })
+    }
+
+    relationSyncApi() {
+        return new GraphRelationSyncAPI(this);
     }
 
     runCommandExecution(commandExec: CommandExecution) {

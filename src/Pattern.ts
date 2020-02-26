@@ -312,8 +312,12 @@ export default class Pattern {
         return this.copyWithNewTags(this.tags.filter(tag => tag.tagType !== typeName));
     }
 
-    addTag(s: string) {
+    add(s: string) {
         return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
+    }
+
+    addTag(s: string) {
+        return this.add(s);
     }
 
     stringify() {
