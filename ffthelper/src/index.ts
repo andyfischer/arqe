@@ -6,6 +6,7 @@ import Fs from 'fs-extra'
 import { mountDerivedTag } from './fs/DerivedValueMount'
 import UpdateContext from './fs/UpdateContext'
 import { parsePattern } from './fs/parseCommand'
+import { parseSexprFromString, evalSexpr } from './fs/sexpr'
 
 const graph = new Graph()
 
@@ -137,9 +138,26 @@ async function main() {
         return;
     }
 
-    console.log('Next unfinished match is: ', firstUnfinishedMatch.stringifyRelation())
+    console.log('Next unfinished match is: ', firstUnfinishedMatch.stringifyRelation());
 
-    const fightingTeams = firstUnfinishedMatch.getValue().split(' ');
+    function getFightingTeams() {
+        const val = firstUnfinishedMatch.getValue();
+        if (val[0] === '(') {
+            const expr = parseSexprFromString(val);
+            return evalSexpr({
+                winner(inputs: string[]) {
+                    const match = inputs[0];
+                    return graph.runSync(`get ${match} winner`).getValue()
+                }
+            }, expr)
+        } else {
+            return val;
+        }
+    }
+
+    const fightingTeams = getFightingTeams()
+
+    console.log("Teams playing are: " + fightingTeams)
 
     for (const team of fightingTeams) {
         graph.runDerived(cxt => {
