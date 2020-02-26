@@ -56,15 +56,16 @@ set team/white
 set team/black
 set team/purple
 set team/brown
+set team/champ
 
 set match/1 .teams == team/red team/blue
 set match/2 .teams == team/green team/yellow
 set match/3 .teams == team/white team/black
 set match/4 .teams == team/purple team/brown
-set match/5 .teams == (winner match/1) (winner match/2)
-set match/6 .teams == (winner match/3) (winner match/4)
-set match/7 .teams == (winner match/5) (winner match/6)
-set match/8 .teams == (winner match/7) champ
+set match/5 .teams == (list (winner match/1) (winner match/2))
+set match/6 .teams == (list (winner match/3) (winner match/4))
+set match/7 .teams == (list (winner match/5) (winner match/6))
+set match/8 .teams == (list (winner match/7) team/champ)
 
 `;
 
@@ -123,7 +124,7 @@ async function main() {
 
             const foundWinner = data.Winners[num - 1]
             if (foundWinner) {
-                graph.runSync(`set ${match.getTag('match')} .winner == team/${foundWinner}`)
+                graph.runSync(`set ${match.getTag('match')} winner == team/${foundWinner}`)
             } else {
                 if (!firstUnfinishedMatch)
                     firstUnfinishedMatch = match;
@@ -155,7 +156,7 @@ async function main() {
                 }).join(', ');
             }
 
-            console.log('Rezzes: ', formatRezzes(
+            console.log('Rez abilities: ', formatRezzes(
                 graph.runSync(`get ${team} unit/$a | join unit/$a has-skill/$s | join skill/$s category/rez`)
             ));
 
@@ -165,9 +166,7 @@ async function main() {
         });
     }
 
-
     // Analyze
-    
 
     graph.runDerived(cxt => {
         for (const unit of cxt.get('unit/*')) {
@@ -178,6 +177,7 @@ async function main() {
     graph.saveDumpFile('dump.graph');
     graph.startRepl();
 }
+
 
 main()
 .catch(console.error);
