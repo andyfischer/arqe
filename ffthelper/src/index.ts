@@ -23,6 +23,7 @@ set skill/GilTaking skilltype/trap
 set skill/StealWeapon skilltype/trap
 set skill/Wiznabius skilltype/trap
 set skill/NamelessSong skilltype/trap
+set skill/CheerUp skilltype/trap
 
 set skill/Revive category/rez
 set skill/PhoenixDown category/rez
@@ -35,6 +36,9 @@ set skill/Doublehand rank/good
 set skill/DamageSplit rank/good
 set skill/StealHeart rank/good
 set skill/Murasame rank/good
+set skill/NightSword rank/good
+set skill/HPRestore rank/good
+set skill/ShortCharge rank/good
 
 set item/StoneGun rank/verygood
 set item/Ribbon rank/verygood
@@ -45,12 +49,16 @@ set class/Summoner rank/good
 set class/Monk rank/good
 set class/Lancer rank/good
 set class/RedChocobo rank/good
+set class/Malboro rank/good
+set class/Vampire rank/good
+set class/BlueDragon rank/good
+set class/Reaper rank/good
+set class/Serpentarius rank/good
 
+set class/Hydra rank/verygood
 set class/Taiju rank/verygood
 set class/SteelGiant rank/verygood
 set class/UltimaDemon rank/verygood
-set class/Vampire rank/good
-set class/BlueDragon rank/good
 
 set class/TimeMage rank/bad
 set class/Dancer rank/bad
@@ -73,7 +81,6 @@ set match/5 .teams == (list (winner match/1) (winner match/2))
 set match/6 .teams == (list (winner match/3) (winner match/4))
 set match/7 .teams == (list (winner match/5) (winner match/6))
 set match/8 .teams == (list (winner match/7) team/champion)
-
 `;
 
 const api = graph.relationSyncApi();
@@ -114,6 +121,8 @@ async function main() {
             for (const extraSkill of unit.ExtraSkills) {
                 api.run(`set ${unitId} has-skill/${toTagName(extraSkill)}`)
             }
+
+            api.run(`set ${unitId} has-skill/${toTagName(unit.ReactionSkill)}`)
         }
     }
 
@@ -190,6 +199,9 @@ async function main() {
 
                 for (const skill of api.get(`${unit.getTag('unit')} has-skill/$s | join skill/$s rank/*`))
                     console.log(`    Noteworthy skill: ${skill.getTagValue('skill')} (${skill.getTagValue('rank')})`)
+
+                for (const skill of api.get(`${unit.getTag('unit')} has-skill/$s | join skill/$s skilltype/*`))
+                    console.log(`    Noteworthy skill: ${skill.getTagValue('skill')} (${skill.getTagValue('skilltype')})`)
             }
         });
     }
