@@ -1,5 +1,6 @@
 
 import { parsePattern } from '../Pattern'
+import { newTag } from '../PatternTag'
 
 describe('isSupersetOf', () => {
 
@@ -79,10 +80,10 @@ describe('freeze', () => {
 
     it('freezes the tags list', () => {
         const pattern = parsePattern('1 2 3');
-        expect(() => { pattern.tags.push({}) } ).not.toThrow();
+        expect(() => { pattern.tags.push(newTag('x')) } ).not.toThrow();
         expect(() => { pattern.tags[0].tagType = 'x' } ).not.toThrow();
         pattern.freeze();
-        expect(() => { pattern.tags.push({}) } ).toThrow();
+        expect(() => { pattern.tags.push(newTag('x')) } ).toThrow();
         expect(() => { pattern.tags[0].tagType = 'x' } ).toThrow();
     });
 });

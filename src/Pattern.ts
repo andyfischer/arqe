@@ -63,14 +63,15 @@ export default class Pattern {
         this.isFrozen = true;
 
         for (const tag of this.tags)
-            Object.freeze(tag)
+            tag.freeze();
+
         Object.freeze(this.tags);
 
         return this;
     }
 
     copy() {
-        const pattern = new Pattern(this.tags.map(t => ({ ... t })));
+        const pattern = new Pattern(this.tags.map(t => t.copy()));
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;

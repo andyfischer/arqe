@@ -1,15 +1,16 @@
 
 import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
+import PatternTag, { newTag } from './PatternTag'
 import RelationReceiver from './RelationReceiver'
 
 export function emitCommandMeta(output: RelationReceiver, fields: any) {
     const tags = [
-        {tagType: 'command-meta', tagValue: null}
+        newTag('command-meta')
     ];
 
     for (const k in fields) {
-        tags.push({tagType: k, tagValue: fields[k]});
+        tags.push(newTag(k, fields[k]));
     }
 
     output.relation(commandTagsToRelation(tags, null));
@@ -17,8 +18,8 @@ export function emitCommandMeta(output: RelationReceiver, fields: any) {
 
 export function emitCommandError(output: RelationReceiver, msg: string) {
     const tags = [
-        {tagType: 'command-meta', tagValue: null},
-        {tagType: 'error', tagValue: null}
+        newTag('command-meta'),
+        newTag('error')
     ];
 
     output.relation(commandTagsToRelation(tags, msg));

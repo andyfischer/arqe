@@ -3,6 +3,7 @@ import Graph from '../../Graph'
 import ChaosMode from './ChaosMode'
 import Command from '../../Command'
 import CommandChain from '../../CommandChain'
+import { newTag } from '../../PatternTag'
 import { parseCommandChain } from '../../parseCommand'
 import { stringifyCommandChain, appendTagInCommand } from '../../stringifyQuery'
 
@@ -43,7 +44,7 @@ export const InsertExtraTag: ChaosMode = {
                 if (pattern.hasType('typeinfo') || pattern.hasType('filesystem-mount'))
                     return;
 
-                command.tags.push({tagType: 'extra'});
+                command.tags.push(newTag('extra'));
             }
         });
     }
@@ -59,7 +60,7 @@ export const GetInheritedBranch: ChaosMode = {
         return withParsed(s, chain => {
             for (const command of chain.commands) {
                 if (command.commandName === 'get')
-                    command.tags.push({tagType: 'chaosbranch', tagValue: '123'});
+                    command.tags.push(newTag('chaosbranch', '123'));
             }
         })
     }

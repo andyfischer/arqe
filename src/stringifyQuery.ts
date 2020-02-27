@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
-import PatternTag from './PatternTag'
+import PatternTag, { newTag } from './PatternTag'
 
 export function commandTagToString(tag: PatternTag) {
     if (tag.star && tag.identifier)
@@ -80,7 +80,7 @@ export function stringifyCommandChain(chain: CommandChain) {
 
 export function appendTagInCommand(str: string, tag: string) {
     const parsed = parseCommand(str);
-    parsed.tags.push({tagType: tag});
+    parsed.tags.push(newTag(tag));
     return parsedCommandToString(parsed);
 }
 

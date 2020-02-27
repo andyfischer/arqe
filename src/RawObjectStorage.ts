@@ -6,6 +6,7 @@ import Command from './Command'
 import { commandTagsToString } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
 import SetOperation from './SetOperation'
+import PatternTag, { newTag } from './PatternTag'
 
 export default class RawObjectStorage implements StorageProvider {
     linkedPattern: Pattern
@@ -25,23 +26,21 @@ export default class RawObjectStorage implements StorageProvider {
 
     *findAllMatches(pattern: Pattern) {
         const variedTag = pattern.getOneTagForType(this.variedType);
-        const otherTags = pattern.tags.filter(tag => tag.tagType !== variedTag.tagType);
+        const otherTags: PatternTag[] = pattern.tags.filter(tag => tag.tagType !== variedTag.tagType);
 
         if (variedTag.starValue) {
             for (const key in this.value) {
-                yield commandTagsToRelation(otherTags.concat({
-                    tagType: variedTag.tagType,
-                    tagValue: key
-                }), this.value[key]);
+                yield commandTagsToRelation(otherTags.concat(newTag(
+                    variedTag.tagType,
+                    key
+                )), this.value[key]);
             }
         } else {
             const key = variedTag.tagValue;
 
             if (this.value[key] !== undefined) {
-                yield commandTagsToRelation(otherTags.concat({
-                    tagType: variedTag.tagType,
-                    tagValue: key
-                }), this.value[key]);
+                yield commandTagsToRelation(otherTags.concat(newTag(variedTag.tagType, key)),
+                                            this.value[key]);
             }
         }
     }

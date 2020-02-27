@@ -1,6 +1,7 @@
 
 import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
+import PatternTag, { newTag } from './PatternTag'
 import Command from './Command'
 import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
@@ -70,10 +71,10 @@ export default class InMemoryStorage implements StorageProvider {
             return;
         }
         
-        const relationTags = command.tags.map(tag => ({
-            tagType: tag.tagType,
-            tagValue: tag.tagValue
-        }));
+        const relationTags: PatternTag[] = command.tags.map(tag => (newTag(
+            tag.tagType,
+            tag.tagValue
+        )));
 
         const rel = commandTagsToRelation(relationTags, command.payloadStr);
         rel.freeze();

@@ -92,6 +92,7 @@ export default class GraphContext {
     runCommandParsed(command: Command, respond: RespondFunc) {
 
         // Resolve any '?' tags that we know of.
+        /*
         for (let i = 0; i < command.tags.length; i += 1) {
             const tag = command.tags[i];
 
@@ -112,6 +113,7 @@ export default class GraphContext {
                 continue;
             }
         }
+        */
 
         switch (command.commandName) {
         case 'context':

@@ -2,6 +2,7 @@
 import parseCommand from '../parseCommand'
 import { parsedCommandToString, appendTagInCommand } from '../stringifyQuery'
 import Pattern from '../Pattern'
+import { newTagFromObject } from '../PatternTag'
 
 function testRestringify(str: string) {
     const restringified = parsedCommandToString(parseCommand(str))
@@ -36,8 +37,8 @@ it("restringify tests", () => {
 });
 
 it('stringifies tag identifiers', () => {
-    expect((new Pattern([{identifier: 'foo', star: true}])).stringify()).toEqual('$foo');
-    expect((new Pattern([{identifier: 'foo', tagType: 'type', starValue: true}])).stringify()).toEqual('type/$foo');
-    expect((new Pattern([{identifier: 'foo', tagType: 'type'}])).stringify()).toEqual('[from $foo] type');
-    expect((new Pattern([{identifier: 'foo', tagType: 'type', tagValue: 'value'}])).stringify()).toEqual('[from $foo] type/value');
+    expect((new Pattern([newTagFromObject({identifier: 'foo', star: true})])).stringify()).toEqual('$foo');
+    expect((new Pattern([newTagFromObject({identifier: 'foo', tagType: 'type', starValue: true})])).stringify()).toEqual('type/$foo');
+    expect((new Pattern([newTagFromObject({identifier: 'foo', tagType: 'type'})])).stringify()).toEqual('[from $foo] type');
+    expect((new Pattern([newTagFromObject({identifier: 'foo', tagType: 'type', tagValue: 'value'})])).stringify()).toEqual('[from $foo] type/value');
 });
