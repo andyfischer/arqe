@@ -1,7 +1,7 @@
 
 import Relation from './Relation'
 import UpdateContext from './UpdateContext'
-import { PatternTag } from './Pattern'
+import PatternTag from './PatternTag'
 
 const beforeSection = 1
 const unknownSection = 2

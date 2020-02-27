@@ -1,6 +1,6 @@
 
  - Work on the API
-   - Add Graph.get returning structured results
+   X Add Graph.get returning structured results
    - Improve DX for relation results / UpdateContext
    - Separate class for Relation
    - Be able to set and get a big text item

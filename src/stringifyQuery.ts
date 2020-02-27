@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
-import { PatternTag } from './Pattern'
+import PatternTag from './PatternTag'
 
 export function commandTagToString(tag: PatternTag) {
     if (tag.star && tag.identifier)

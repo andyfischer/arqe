@@ -334,7 +334,13 @@ export default class Graph {
         return callback(cxt);
     }
     
-    async loadDumpFile(filename: string) {
+    loadDumpFile(filename: string) {
+        const contents = Fs.readFileSync(filename, 'utf8');
+        for (const line of contents.split(/\r\n|\r|\n/)) {
+            this.run(line);
+        }
+
+        /*
         const fileStream = Fs.createReadStream(filename);
 
         const rl = Readline.createInterface({
@@ -345,6 +351,7 @@ export default class Graph {
         for await (const line of rl) {
             this.run(line);
         }
+        */
     }
     
     saveDumpFile(filename: string) {

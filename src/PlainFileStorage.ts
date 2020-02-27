@@ -4,7 +4,7 @@ import Pattern, { commandTagsToRelation } from './Pattern'
 import Command from './Command'
 import SetOperation from './SetOperation'
 import Relation from './Relation'
-import { FixedTag } from './Pattern'
+import { FixedTag } from './PatternTag'
 import RelationSearch from './RelationSearch'
 import { normalizeExactTag } from './stringifyQuery'
 

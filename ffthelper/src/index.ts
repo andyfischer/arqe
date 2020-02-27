@@ -3,85 +3,20 @@ import fetch from 'node-fetch'
 import Graph from './fs/Graph'
 import { saveObject } from './fs/GraphORM'
 import Fs from 'fs-extra'
+import Path from 'path'
 import { mountDerivedTag } from './fs/DerivedValueMount'
 import UpdateContext from './fs/UpdateContext'
 import { parsePattern } from './fs/parseCommand'
 import { parseSexprFromString, evalSexpr } from './fs/sexpr'
 import Pattern from './fs/Pattern'
 
-const graph = new Graph()
+const graph = new Graph();
+graph.loadDumpFile(Path.join(__dirname, '../source.graph'));
 
 function toTagName(str) {
     return str.replace(/ /g, '')
         .replace(/\'/g, '');
 }
-
-const bootstrap = `
-set skill/GilTaking skilltype/trap
-
-set skill/GilTaking skilltype/trap
-set skill/StealWeapon skilltype/trap
-set skill/Wiznabius skilltype/trap
-set skill/NamelessSong skilltype/trap
-set skill/CheerUp skilltype/trap
-
-set skill/Revive category/rez
-set skill/PhoenixDown category/rez
-set skill/Raise category/rez
-set skill/Raise2 category/rez
-
-set skill/FastCharge rank/verygood
-set skill/GalaxyStop rank/verygood
-set skill/Doublehand rank/good
-set skill/DamageSplit rank/good
-set skill/StealHeart rank/good
-set skill/Murasame rank/good
-set skill/NightSword rank/good
-set skill/HPRestore rank/good
-set skill/ShortCharge rank/good
-
-set item/StoneGun rank/verygood
-set item/Ribbon rank/verygood
-
-set class/Ninja rank/good
-set class/Calculator rank/good
-set class/Summoner rank/good
-set class/Monk rank/good
-set class/Lancer rank/good
-set class/RedChocobo rank/good
-set class/Malboro rank/good
-set class/Vampire rank/good
-set class/BlueDragon rank/good
-set class/Reaper rank/good
-set class/Serpentarius rank/good
-
-set class/Hydra rank/verygood
-set class/Taiju rank/verygood
-set class/SteelGiant rank/verygood
-set class/UltimaDemon rank/verygood
-
-set class/TimeMage rank/bad
-set class/Dancer rank/bad
-
-set team/red
-set team/blue
-set team/green
-set team/yellow
-set team/white
-set team/black
-set team/purple
-set team/brown
-set team/champion
-
-set match/1 .teams == team/red team/blue
-set match/2 .teams == team/green team/yellow
-set match/3 .teams == team/white team/black
-set match/4 .teams == team/purple team/brown
-set match/5 .teams == (list (winner match/1) (winner match/2))
-set match/6 .teams == (list (winner match/3) (winner match/4))
-set match/7 .teams == (list (winner match/5) (winner match/6))
-set match/8 .teams == (list (winner match/7) team/champion)
-`;
 
 const api = graph.relationSyncApi();
 
@@ -92,9 +27,6 @@ function run(graph: Graph, cmd: string) {
     console.log(' > ' + result);
     return result;
 }
-
-for (const command of bootstrap.split('\n'))
-    graph.run(command)
 
 async function main() {
     const data = await (fetch('https://fftbg.com/api/tournament/latest').then(d => d.json()));

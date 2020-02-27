@@ -3,22 +3,7 @@ import Command from './Command'
 import Graph from './Graph'
 import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
-
-export interface PatternTag {
-    tagType?: string
-    tagValue?: string
-    negate?: boolean
-    star?: boolean
-    doubleStar?: boolean
-    starValue?: boolean
-    questionValue?: boolean
-    identifier?: string
-}
-
-export interface FixedTag {
-    tagType: string
-    tagValue: string
-}
+import PatternTag, { FixedTag } from './PatternTag'
 
 export default class Pattern {
     

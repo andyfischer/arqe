@@ -3,7 +3,7 @@ import Command, { CommandFlags } from './Command'
 import CommandExecution from './CommandExecution'
 import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
-import Pattern, { PatternTag } from './Pattern'
+import Pattern from './Pattern'
 import StorageProvider from './StorageProvider'
 import { commandTagToString } from './stringifyQuery'
 import GetResponseFormatter from './GetResponseFormatter'
@@ -11,6 +11,7 @@ import GetResponseFormatterCount from './GetResponseFormatterCount'
 import GetResponseFormatterExists from './GetResponseFormatterExists'
 import RelationSearch from './RelationSearch'
 import RelationReceiver from './RelationReceiver'
+import PatternTag from './PatternTag'
 
 interface Step {
     storage: StorageProvider
