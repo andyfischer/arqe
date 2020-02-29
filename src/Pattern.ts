@@ -244,7 +244,7 @@ export default class Pattern {
         return false;
     }
 
-    getOneTagForType(typeName: string) {
+    getOneTagForType(typeName: string): PatternTag {
         const tags = this.tagsForType[typeName];
         if (!tags)
             return null;
@@ -253,6 +253,14 @@ export default class Pattern {
             throw new Error("getOneTagForType - multiple tags found for: " + typeName);
 
         return tags[0];
+    }
+
+    getTagObject(typeName: string): PatternTag {
+        const tag = this.getOneTagForType(typeName);
+        if (!tag)
+            throw new Error('tag not found for type: ' + typeName);
+
+        return tag;
     }
 
     getTag(typeName: string) {

@@ -20,14 +20,6 @@ function toTagName(str) {
 
 const api = graph.relationSyncApi();
 
-function run(graph: Graph, cmd: string) {
-
-    const result = graph.runSync(cmd);
-    console.log(' ran: ' + cmd);
-    console.log(' > ' + result);
-    return result;
-}
-
 async function main() {
     const data = await (fetch('https://fftbg.com/api/tournament/latest').then(d => d.json()));
 
@@ -82,14 +74,14 @@ async function main() {
     // console.log('Next match is: ', firstUnfinishedMatch.stringifyRelation());
 
     function getFightingTeams() {
-        const val = firstUnfinishedMatch.getValue();
+        const val = firstUnfinishedMatch.value();
         if (val[0] === '(') {
             const expr = parseSexprFromString(val) as string[];
             return evalSexpr({
                 winner(inputs: string[]) {
                     // console.log('computing winner: ', JSON.stringify(inputs));
                     const match = inputs[0];
-                    return api.getOne(`${match} winner`).getValue()
+                    return api.getOne(`${match} winner`).value()
                 }
             }, expr)
         } else {
@@ -110,7 +102,7 @@ async function main() {
                     return '(none)'
 
                 return matches.map(match => {
-                    const name = cxt.getOne(`${match.getTag('unit')} .Name`).getValue();
+                    const name = api.getOne(`${match.getTag('unit')} .Name`).value();
                     return `${name} (${match.getTagValue('skill')})`
                 }).join(', ');
             }
@@ -120,13 +112,13 @@ async function main() {
             ));
 
             for (const unit of api.get(`${teamId} unit/*`)) {
-                console.log('  Unit: ' + api.getOne(unit.getTag('unit') + ' .Name').getValue());
+                console.log('  Unit: ' + unit.tag('unit').add('.Name').getOne().value());
                 // console.log(' Class: ' + api.getOne(`${unit.getTag('unit')} class/*`).getTagValue('class'))
 
                 //for (const skill of api.get(`${unit.getTag('unit')} has-skill/$s`))
                 //    console.log(`  Skill: ${skill.getTagValue('has-skill')}`)
 
-                for (const clss of api.get(`${unit.getTag('unit')} class/$s | join class/$s rank/*`))
+                for (const clss of unit.tag('unit').add('class/$s').join(`class/$s rank/*`).rels())
                     console.log(`    Noteworthy class: ${clss.getTagValue('class')} (${clss.getTagValue('rank')})`)
 
                 for (const skill of api.get(`${unit.getTag('unit')} has-skill/$s | join skill/$s rank/*`))
