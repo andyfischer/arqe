@@ -1,4 +1,5 @@
 
+import { commandTagToString } from './stringifyQuery'
 interface NewTagOptions {
     tagType?: string
     tagValue?: string
@@ -21,6 +22,10 @@ export default class PatternTag {
     identifier?: string
 
     isFrozen?: boolean
+
+    str() {
+        return commandTagToString(this);
+    }
 
     copy() {
         const tag = new PatternTag();

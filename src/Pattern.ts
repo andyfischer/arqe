@@ -314,6 +314,10 @@ export default class Pattern {
         return this.add(s);
     }
 
+    str() {
+        return commandTagsToString(this.tags);
+    }
+
     stringify() {
         return commandTagsToString(this.tags);
     }
