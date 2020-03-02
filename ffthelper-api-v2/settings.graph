@@ -1,0 +1,2 @@
+
+set code-generation destination-filename/"src/generated.ts"

@@ -29,17 +29,31 @@ function loadFromDumpFile(filename: string) {
 
     const repl = new ClientRepl(graph);
     repl.start();
+
+    return graph;
 }
 
 export default async function main() {
-    const cliArgs = Minimist(process.argv.slice(2), {});
+    const cliArgs = Minimist(process.argv.slice(2), {
+        bool: ['generate']
+    });
+
+    let graph;
+    let useRemoteServer = true;
 
     if (cliArgs.f) {
-        loadFromDumpFile(cliArgs.f);
-        return;
+        graph = loadFromDumpFile(cliArgs.f);
+        useRemoteServer = false;
     }
 
-    await connectToSocketServer();
+    if (useRemoteServer)
+        await connectToSocketServer();
+
+    if (cliArgs.generate) {
+        if (!graph)
+            throw new Error("should use -f with --generate");
+        
+    }
 }
 
 main()

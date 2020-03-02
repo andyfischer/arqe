@@ -30,6 +30,7 @@ import ClientRepl from './cli/ClientRepl'
 import Readline from 'readline'
 import TagTypeOrdering from './TagTypeOrdering'
 import GraphRelationSyncAPI from './GraphRelationSyncAPI'
+import GraphSavedQueryAPI from './GraphSavedQueryAPI'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -151,6 +152,10 @@ export default class Graph {
 
     relationSyncApi() {
         return new GraphRelationSyncAPI(this);
+    }
+    
+    savedQueryApi() {
+        return new GraphSavedQueryAPI(this);
     }
 
     runCommandExecution(commandExec: CommandExecution) {
@@ -327,6 +332,17 @@ export default class Graph {
         if (rels === null)
             throw new Error("getRelationsSync search didn't finish synchronously: " + tags);
         return rels;
+    }
+
+    getOneRelationSync(tags: string): Relation {
+        const rels = this.getRelationsSync(tags);
+        if (rels.length === 0)
+            throw new Error("no relations found for: " + tags);
+
+        if (rels.length > 1)
+            throw new Error("getOneRelationSync found multiple results found for: " + tags);
+
+        return rels[0];
     }
 
     runDerived(callback: (cxt: UpdateContext) => void) {
