@@ -5,8 +5,45 @@ set code-generation verbose-logging
 set touchpoint/1
 set touchpoint/1 .functionName == getWinner
 set touchpoint/1 input/1
-set input/1 .name == matchTag
-set input/1 .type == string
+set input/1 name/matchTag
+set input/1 type/string
 set touchpoint/1 expectOne
-set touchpoint/1 query == get ${matchTag} winner
-set touchpoint/1 outputValue
+set touchpoint/1 query == ${matchTag} winner
+set touchpoint/1 output value
+
+set touchpoint/2
+set touchpoint/2 .functionName == getMatchNumbers
+set touchpoint/2 query == match/* .teams
+set touchpoint/2 output tagValue/match
+set touchpoint/2 output type/integer
+
+set touchpoint/3
+set touchpoint/3 .functionName == getUnits
+set touchpoint/3 query == unit/*
+set touchpoint/3 output tagValue/unit
+
+set touchpoint/4
+set touchpoint/4 .functionName == getMatchTeams
+set touchpoint/4 query == ${matchTag} .teams
+set touchpoint/4 output value
+set touchpoint/4 input/2
+set touchpoint/4 expectOne
+set input/2 name/matchTag
+set input/2 type/string
+
+set touchpoint/5
+set touchpoint/5 .functionName == getTeamName
+set touchpoint/5 query == ${teamTag}
+set touchpoint/5 output tagValue/team
+set touchpoint/5 expectOne
+set touchpoint/5 input/3
+set input/3 name/teamTag
+set input/3 type/string
+
+set touchpoint/6
+set touchpoint/6 .functionName == getTeamRezzes
+set touchpoint/6 query == get ${team} unit/$a | join unit/$a has-skill/$s | join skill/$s category/rez
+set touchpoint/6 output tagValue/team
+set touchpoint/6 input/4
+set input/4 name/team
+set input/4 type/string
