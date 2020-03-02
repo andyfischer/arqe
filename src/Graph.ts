@@ -344,6 +344,14 @@ export default class Graph {
         return rels[0];
     }
 
+    getOneRelationOptionalSync(tags: string): Relation|null {
+        const rels = this.getRelationsSync(tags);
+        if (rels.length > 1)
+            throw new Error("getOneRelationOptionalSync found multiple results found for: " + tags);
+
+        return rels[0] || null;
+    }
+
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);

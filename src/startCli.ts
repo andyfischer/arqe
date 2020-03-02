@@ -6,6 +6,7 @@ import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
 import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
+import { generateAPI } from './GenerateAPI'
 
 async function connectToSocketServer() {
     const ws = new WebSocket('http://localhost:42940');
@@ -28,32 +29,42 @@ function loadFromDumpFile(filename: string) {
     const graph = new Graph();
     graph.loadDumpFile(filename);
 
-    const repl = new ClientRepl(graph);
-    repl.start();
 
     return graph;
 }
 
 export default async function main() {
     const cliArgs = Minimist(process.argv.slice(2), {
-        bool: ['generate']
+        boolean: ['generate']
     });
 
     let graph;
     let useRemoteServer = true;
+    let startRepl = false;
 
     if (cliArgs.f) {
         graph = loadFromDumpFile(cliArgs.f);
         useRemoteServer = false;
+        startRepl = true;
     }
 
-    if (useRemoteServer)
+    if (useRemoteServer) {
+        console.log('connecting to remove server..')
         await connectToSocketServer();
+    }
 
     if (cliArgs.generate) {
         if (!graph)
             throw new Error("should use -f with --generate");
-        
+
+        startRepl = false;
+
+        generateAPI(graph);
+    }
+
+    if (startRepl) {
+        const repl = new ClientRepl(graph);
+        repl.start();
     }
 }
 

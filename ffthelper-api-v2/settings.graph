@@ -1,2 +1,12 @@
 
-set code-generation destination-filename/"src/generated.ts"
+set code-generation destination-filename == src/generated.ts
+set code-generation verbose-logging
+
+set touchpoint/1
+set touchpoint/1 .functionName == getWinner
+set touchpoint/1 input/1
+set input/1 .name == matchTag
+set input/1 .type == string
+set touchpoint/1 expectOne
+set touchpoint/1 query == get ${matchTag} winner
+set touchpoint/1 outputValue

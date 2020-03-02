@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p .",
     "start": "tsc-watch --onSuccess 'node dist/index.js'",
-    "generate-api": "tsc-watch --onSuccess 'node ../dist/cli/startCli.js -f settings.graph --generate'"
+    "generate-api": "tsc-watch --onSuccess 'node ../dist/startCli.js -f settings.graph --generate'"
   },
   "author": "",
   "dependencies": {

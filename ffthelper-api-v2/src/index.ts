@@ -9,17 +9,17 @@ import UpdateContext from './fs/UpdateContext'
 import { parsePattern } from './fs/parseCommand'
 import { parseSexprFromString, evalSexpr } from './fs/sexpr'
 import Pattern from './fs/Pattern'
+import { GraphAPI } from './generated'
 
 const graph = new Graph();
 graph.loadDumpFile(Path.join(__dirname, '../source.graph'));
+
+const api = new GraphAPI(graph);
 
 function toTagName(str) {
     return str.replace(/ /g, '')
         .replace(/\'/g, '');
 }
-
-const api = graph.savedQueryApi();
-const getWinner = api.func(`$match winner`, { expectOne: true, inputs: ['$match'] }) as (match: string) => string;
 
 async function main() {
     const data = await (fetch('https://fftbg.com/api/tournament/latest').then(d => d.json()));
@@ -82,7 +82,7 @@ async function main() {
                 winner(inputs: string[]) {
                     // console.log('computing winner: ', JSON.stringify(inputs));
                     const match = inputs[0];
-                    return getWinner(match);
+                    return api.getWinner(match);
                 }
             }, expr)
         } else {
