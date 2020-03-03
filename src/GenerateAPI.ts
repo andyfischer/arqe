@@ -8,7 +8,7 @@ function javascriptTemplate(vars) {
 `import Graph from './Graph'
 import Relation from './Relation'
 
-export default class GraphAPI {
+export default class API {
     graph: Graph
 
     constructor(graph: Graph) {
@@ -111,10 +111,11 @@ export class APIGenerator {
 
             const name = this.api.touchpointFunctionName(touchpoint);
             const expectOne = this.api.touchpointExpectOne(touchpoint);
+            const outputIsOptional = this.api.touchpointOutputIsOptional(touchpoint);
             const outputValue = this.api.touchpointOutputIsValue(touchpoint);
             const outputExists = this.api.touchpointOutputIsExists(touchpoint);
-            const tagValueOutputs = this.graph.getRelationsSync(`${touchpoint} output tagValue/*`);
-            const tagOutputs = this.graph.getRelationsSync(`${touchpoint} output tag/*`);
+            const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
+            const tagOutput = this.api.touchpointTagOutput(touchpoint);
             const outputType = this.graph.getOneRelationOptionalSync(`${touchpoint} output type/*`);
 
             let outputTypeStr = null;
@@ -167,10 +168,18 @@ export class APIGenerator {
                 writer.writeLine('return rels.length > 0;');
             } else if (expectOne) {
                 writer.writeLine()
-                writer.writeLine('// Expect one result')
+
+                if (!outputIsOptional)
+                    writer.writeLine('// Expect one result')
+
                 writer.writeLine('if (rels.length === 0) {')
                 writer.increaseIndent()
-                writer.writeLine(`throw new Error("No relation found for: " + queryStr)`)
+
+                if (outputIsOptional)
+                    writer.writeLine(`return null;`)
+                else
+                    writer.writeLine(`throw new Error("No relation found for: " + queryStr)`)
+
                 writer.decreaseIndent()
                 writer.writeLine('}')
                 writer.writeLine()
@@ -185,24 +194,15 @@ export class APIGenerator {
 
                 if (outputValue) {
                     writer.writeLine('return rel.getValue();');
-                } else if (tagValueOutputs.length > 0) {
-                    if (tagValueOutputs.length > 1)
-                        throw new Error(`can't handle multiple output tagValue/* entries`)
-
-                    const outputTagType = tagValueOutputs[0].getTagValue('tagValue');
-                    writer.writeLine(`return rel.getTagValue("${outputTagType}");`)
+                } else if (tagValueOutput) {
+                    writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
 
                 } else {
                     writer.writeLine('// no output')
                 }
             } else {
-                if (tagValueOutputs.length > 0) {
-                    if (tagValueOutputs.length > 1)
-                        throw new Error(`can't handle multiple output tagValue/* entries`)
-
-                    const outputTagType = tagValueOutputs[0].getTagValue('tagValue');
-
-                    let returnStr = `return rels.map(rel => rel.getTagValue("${outputTagType}"))`
+                if (tagValueOutput) {
+                    let returnStr = `return rels.map(rel => rel.getTagValue("${tagValueOutput}"))`
 
                     if (outputType) {
                         if (outputType.getTagValue('type') === 'integer') {
@@ -213,13 +213,8 @@ export class APIGenerator {
                     returnStr += ';'
 
                     writer.writeLine(returnStr)
-                } else if (tagOutputs.length > 0) {
-                    if (tagOutputs.length > 1)
-                        throw new Error(`can't handle multiple output tag/* entries`)
-
-                    const outputTagType = tagOutputs[0].getTagValue('tag');
-
-                    writer.writeLine(`return rels.map(rel => rel.getTag("${outputTagType}"));`)
+                } else if (tagOutput) {
+                    writer.writeLine(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
 
                 } else {
 

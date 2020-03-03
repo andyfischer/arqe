@@ -1,7 +1,7 @@
 import Graph from './Graph'
 import Relation from './Relation'
 
-export default class GraphAPI {
+export default class API {
     graph: Graph
 
     constructor(graph: Graph) {
@@ -51,6 +51,13 @@ export default class GraphAPI {
         return rels.length > 0;
     }
     
+    touchpointOutputIsOptional(touchpoint: string) {
+        // Run query search
+        const queryStr = `${touchpoint} output optional`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.length > 0;
+    }
+    
     touchpointOutputIsValue(touchpoint: string) {
         // Run query search
         const queryStr = `${touchpoint} output value`;
@@ -63,5 +70,43 @@ export default class GraphAPI {
         const queryStr = `${touchpoint} output exists`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.length > 0;
+    }
+    
+    touchpointTagValueOutputs(touchpoint: string) {
+        // Run query search
+        const queryStr = `${touchpoint} output tagValue/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTagValue("tagValue"));
+    }
+    
+    touchpointTagValueOutput(touchpoint: string) {
+        // Run query search
+        const queryStr = `${touchpoint} output tagValue/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("tagValue");
+    }
+    
+    touchpointTagOutputs(touchpoint: string) {
+        // Run query search
+        const queryStr = `${touchpoint} output tag/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTagValue("tag"));
+    }
+    
+    touchpointTagOutput(touchpoint: string) {
+        // Run query search
+        const queryStr = `${touchpoint} output tag/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTagValue("tag"));
     }
 }
