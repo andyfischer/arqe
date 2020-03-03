@@ -1,13 +1,14 @@
 
 import Graph from './Graph'
 import Fs from 'fs'
+import GenerateAPIAPI from './GenerateAPIAPI'
 
 function javascriptTemplate(vars) {
     return (
-`import Graph from './fs/Graph'
-import Relation from './fs/Relation'
+`import Graph from './Graph'
+import Relation from './Relation'
 
-export class GraphAPI {
+export default class GraphAPI {
     graph: Graph
 
     constructor(graph: Graph) {
@@ -88,43 +89,53 @@ class JavascriptCodeWriter {
 
 export class APIGenerator {
     graph: Graph
+    api: GenerateAPIAPI
 
     constructor(graph: Graph) {
         this.graph = graph;
+        this.api = new GenerateAPIAPI(graph);
     }
 
     generateMethods(writer: JavascriptCodeWriter) {
-        const verboseLogging = this.graph.getRelationsSync('code-generation verbose-logging').length > 0;
+        const verboseLogging = this.api.enableVerboseLogging();
 
         writer.startFunction('run', null, w => w.writeInput('command', 'string'));
+
         if (verboseLogging)
             writer.writeLine(`console.log('Running command: ' + command);`);
+
         writer.writeLine('this.graph.run(command);')
         writer.finishFunction()
 
-        for (const touchpoint of this.graph.getRelationsSync('touchpoint/*')) {
+        for (const touchpoint of this.api.listTouchpoints()) {
 
-            const name = this.graph.getOneRelationSync(`${touchpoint.getTag('touchpoint')} .functionName`).getValue()
-            const expectOne = this.graph.getRelationsSync(`${touchpoint.getTag('touchpoint')} expectOne`).length > 0;
-            const outputValue = this.graph.getRelationsSync(`${touchpoint.getTag('touchpoint')} output value`).length > 0;
-            const tagValueOutputs = this.graph.getRelationsSync(`${touchpoint.getTag('touchpoint')} output tagValue/*`);
-            const outputType = this.graph.getOneRelationOptionalSync(`${touchpoint.getTag('touchpoint')} output type/*`);
+            const name = this.api.touchpointFunctionName(touchpoint);
+            const expectOne = this.api.touchpointExpectOne(touchpoint);
+            const outputValue = this.api.touchpointOutputIsValue(touchpoint);
+            const outputExists = this.api.touchpointOutputIsExists(touchpoint);
+            const tagValueOutputs = this.graph.getRelationsSync(`${touchpoint} output tagValue/*`);
+            const tagOutputs = this.graph.getRelationsSync(`${touchpoint} output tag/*`);
+            const outputType = this.graph.getOneRelationOptionalSync(`${touchpoint} output type/*`);
 
             let outputTypeStr = null;
 
             if (outputValue) {
-                if (outputType) {
-                    outputTypeStr = 'number'
+                if (outputExists) {
+                    outputTypeStr = 'boolean'
                 } else {
-                    outputTypeStr = 'string'
-                }
+                    if (outputType) {
+                        outputTypeStr = 'number'
+                    } else {
+                        outputTypeStr = 'string'
+                    }
 
-                if (!expectOne)
-                    outputTypeStr += '[]'
+                    if (!expectOne)
+                        outputTypeStr += '[]'
+                }
             }
 
             writer.startFunction(name, outputTypeStr, writer => {
-                for (const input of this.graph.getRelationsSync(`${touchpoint.getTag('touchpoint')} input/*`)) {
+                for (const input of this.graph.getRelationsSync(`${touchpoint} input/*`)) {
                     const name = this.graph.getOneRelationSync(`${input.getTag('input')} name/*`).getTagValue('name')
                     const inputTypeRel = this.graph.getOneRelationOptionalSync(`${input.getTag('input')} type/*`);
 
@@ -136,7 +147,7 @@ export class APIGenerator {
                 }
             });
 
-            const queryStr = this.graph.getOneRelationSync(`${touchpoint.getTag('touchpoint')} query`).getValue()
+            const queryStr = this.graph.getOneRelationSync(`${touchpoint} query`).getValue()
             writer.writeLine(`// Run query search`)
             writer.writeLine(`const queryStr = \`${queryStr}\`;`);
 
@@ -152,7 +163,9 @@ export class APIGenerator {
                 writer.writeLine(`console.log('Got results: [' + rels.map(rel => rel.str()).join(', ') + ']')`)
             }
 
-            if (expectOne) {
+            if (outputExists) {
+                writer.writeLine('return rels.length > 0;');
+            } else if (expectOne) {
                 writer.writeLine()
                 writer.writeLine('// Expect one result')
                 writer.writeLine('if (rels.length === 0) {')
@@ -200,13 +213,21 @@ export class APIGenerator {
                     returnStr += ';'
 
                     writer.writeLine(returnStr)
+                } else if (tagOutputs.length > 0) {
+                    if (tagOutputs.length > 1)
+                        throw new Error(`can't handle multiple output tag/* entries`)
+
+                    const outputTagType = tagOutputs[0].getTagValue('tag');
+
+                    writer.writeLine(`return rels.map(rel => rel.getTag("${outputTagType}"));`)
+
                 } else {
 
                     if (outputType && outputType.getTagValue('type') === 'object') {
                         writer.writeLine('return rels.map(rel => ({')
                         writer.increaseIndent()
 
-                        const objectdef = this.graph.getOneRelationSync(`${touchpoint.getTag('touchpoint')} output objectdef/*`).getTag('objectdef');
+                        const objectdef = this.graph.getOneRelationSync(`${touchpoint} output objectdef/*`).getTag('objectdef');
 
                         writer.writeLine('return rels.map(rel => ({')
 

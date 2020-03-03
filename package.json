@@ -8,7 +8,8 @@
     "test": "jest --watch",
     "tsc-watch": "tsc -w",
     "start": "tsc-watch --onSuccess \"node dist/startServer.js\"",
-    "cli": "node dist/startCli.js"
+    "cli": "node dist/startCli.js",
+    "generate-api-api": "tsc-watch --onSuccess 'node dist/startCli.js -f src/source.graph --generate'"
   },
   "dependencies": {
     "bent": "^1.5.13",

@@ -1,0 +1,45 @@
+
+set code-generation destination-filename == src/GenerateAPIAPI.ts
+
+set touchpoint/1
+set touchpoint/1 .functionName == enableVerboseLogging
+set touchpoint/1 output exists
+set touchpoint/1 query == code-generation verbose-logging
+
+set touchpoint/2
+set touchpoint/2 query == touchpoint/*
+set touchpoint/2 .functionName == listTouchpoints
+set touchpoint/2 output tag/touchpoint
+
+set touchpoint/3
+set touchpoint/3 query == ${touchpoint} .functionName
+set touchpoint/3 .functionName == touchpointFunctionName
+set touchpoint/3 input/1
+set input/1 name/touchpoint
+set input/1 type/string
+set touchpoint/3 output value
+set touchpoint/3 expectOne
+
+set touchpoint/4
+set touchpoint/4 query == ${touchpoint} expectOne
+set touchpoint/4 .functionName == touchpointExpectOne
+set touchpoint/4 input/2
+set input/2 name/touchpoint
+set input/2 type/string
+set touchpoint/4 output exists
+
+set touchpoint/5
+set touchpoint/5 query == ${touchpoint} output value
+set touchpoint/5 .functionName == touchpointOutputIsValue
+set touchpoint/5 input/3
+set input/3 name/touchpoint
+set input/3 type/string
+set touchpoint/5 output exists
+
+set touchpoint/6
+set touchpoint/6 query == ${touchpoint} output exists
+set touchpoint/6 .functionName == touchpointOutputIsExists
+set touchpoint/6 input/3
+set input/4 name/touchpoint
+set input/4 type/string
+set touchpoint/6 output exists
