@@ -201,7 +201,21 @@ export class APIGenerator {
 
                     writer.writeLine(returnStr)
                 } else {
-                    writer.writeLine('return rels.map(rel => rel.getValue())')
+
+                    if (outputType && outputType.getTagValue('type') === 'object') {
+                        writer.writeLine('return rels.map(rel => ({')
+                        writer.increaseIndent()
+
+                        const objectdef = this.graph.getOneRelationSync(`${touchpoint.getTag('touchpoint')} output objectdef/*`).getTag('objectdef');
+
+                        writer.writeLine('return rels.map(rel => ({')
+
+                        for (const objectField of this.graph.getRelationsSync(`${objectdef} objectfield/*`)) {
+                        }
+
+                    } else {
+                        writer.writeLine('return rels.map(rel => rel.getValue())')
+                    }
                 }
             }
 

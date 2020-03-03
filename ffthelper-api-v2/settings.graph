@@ -44,6 +44,13 @@ set touchpoint/6
 set touchpoint/6 .functionName == getTeamRezzes
 set touchpoint/6 query == get ${team} unit/$a | join unit/$a has-skill/$s | join skill/$s category/rez
 set touchpoint/6 output tagValue/team
+set touchpoint/6 output type/object
+set touchpoint/6 output objectdef/1
+set objectdef/1
+set objectdef/1 objectfield/1
+set objectdef/1 objectfield/1 name/unit
+set objectdef/1 objectfield/2
+set objectdef/1 objectfield/2 name/skill
 set touchpoint/6 input/4
 set input/4 name/team
 set input/4 type/string
