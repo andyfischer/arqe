@@ -136,9 +136,9 @@ export class DAOGenerator {
             }
 
             writer.startFunction(name, outputTypeStr, writer => {
-                for (const input of this.graph.getRelationsSync(`${touchpoint} input/*`)) {
-                    const name = this.graph.getOneRelationSync(`${input.getTag('input')} name/*`).getTagValue('name')
-                    const inputTypeRel = this.graph.getOneRelationOptionalSync(`${input.getTag('input')} type/*`);
+                for (const input of this.api.listTouchpointInputs(touchpoint)) {
+                    const name = this.graph.getOneRelationSync(`${input} name/*`).getTagValue('name')
+                    const inputTypeRel = this.graph.getOneRelationOptionalSync(`${input} type/*`);
 
                     let inputType = null;
                     if (inputTypeRel)

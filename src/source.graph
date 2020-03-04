@@ -96,3 +96,11 @@ set touchpoint/9 output optional
 set touchpoint/9 expectOne
 set input/7 name/touchpoint
 set input/7 type/string
+
+set touchpoint/10
+set touchpoint/10 query == ${touchpoint} input/*
+set touchpoint/10 .functionName == listTouchpointInputs
+set touchpoint/10 output tag/input
+set touchpoint/10 input/10
+set input/10 name/touchpoint
+set input/10 type/string

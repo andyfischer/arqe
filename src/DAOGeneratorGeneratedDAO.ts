@@ -114,4 +114,10 @@ export default class API {
         const rel = rels[0];
         return rel.getTagValue("type");
     }
+    
+    listTouchpointInputs(touchpoint: string) {
+        const queryStr = `${touchpoint} input/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTag("input"));
+    }
 }
