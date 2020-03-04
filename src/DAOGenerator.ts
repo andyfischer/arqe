@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
 import Fs from 'fs'
-import GenerateAPIAPI from './GenerateAPIAPI'
+import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
 
 function javascriptTemplate(vars) {
     return (
@@ -87,13 +87,13 @@ class JavascriptCodeWriter {
     }
 }
 
-export class APIGenerator {
+export class DAOGenerator {
     graph: Graph
-    api: GenerateAPIAPI
+    api: DAOGeneratorGeneratedDAO
 
     constructor(graph: Graph) {
         this.graph = graph;
-        this.api = new GenerateAPIAPI(graph);
+        this.api = new DAOGeneratorGeneratedDAO(graph);
     }
 
     generateMethods(writer: JavascriptCodeWriter) {
@@ -149,7 +149,6 @@ export class APIGenerator {
             });
 
             const queryStr = this.graph.getOneRelationSync(`${touchpoint} query`).getValue()
-            writer.writeLine(`// Run query search`)
             writer.writeLine(`const queryStr = \`${queryStr}\`;`);
 
             if (verboseLogging) {
@@ -270,7 +269,7 @@ export function generateAPI(graph: Graph) {
     const destinationFilename = graph.getOneRelationSync('code-generation destination-filename').getValue()
 
 
-    const generator = new APIGenerator(graph);
+    const generator = new DAOGenerator(graph);
 
     writeIfChanges(destinationFilename, generator.asJavascript());
     console.log('file is up to date: ' + destinationFilename);

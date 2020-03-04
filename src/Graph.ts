@@ -28,8 +28,6 @@ import UpdateContext from './UpdateContext'
 import Fs from 'fs'
 import ClientRepl from './ClientRepl'
 import TagTypeOrdering from './TagTypeOrdering'
-import GraphRelationSyncAPI from './GraphRelationSyncAPI'
-import GraphSavedQueryAPI from './GraphSavedQueryAPI'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -147,14 +145,6 @@ export default class Graph {
                 commandExec.output.finish();
             }
         })
-    }
-
-    relationSyncApi() {
-        return new GraphRelationSyncAPI(this);
-    }
-    
-    savedQueryApi() {
-        return new GraphSavedQueryAPI(this);
     }
 
     runCommandExecution(commandExec: CommandExecution) {

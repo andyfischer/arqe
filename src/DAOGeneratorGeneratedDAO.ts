@@ -1,7 +1,7 @@
 import Graph from './Graph'
 import Relation from './Relation'
 
-export default class API {
+export default class GeneratedAPI {
     graph: Graph
 
     constructor(graph: Graph) {
@@ -13,21 +13,18 @@ export default class API {
     }
     
     enableVerboseLogging() {
-        // Run query search
         const queryStr = `code-generation verbose-logging`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.length > 0;
     }
     
     listTouchpoints() {
-        // Run query search
         const queryStr = `touchpoint/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.map(rel => rel.getTag("touchpoint"));
     }
     
     touchpointFunctionName(touchpoint: string): string {
-        // Run query search
         const queryStr = `${touchpoint} .functionName`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         

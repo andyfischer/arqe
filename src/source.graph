@@ -1,5 +1,5 @@
 
-set code-generation destination-filename == src/GenerateAPIAPI.ts
+set code-generation destination-filename == src/DAOGeneratorGeneratedDAO.ts
 
 set touchpoint/1
 set touchpoint/1 .functionName == enableVerboseLogging
