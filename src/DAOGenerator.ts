@@ -116,7 +116,7 @@ export class DAOGenerator {
             const outputExists = this.api.touchpointOutputIsExists(touchpoint);
             const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
             const tagOutput = this.api.touchpointTagOutput(touchpoint);
-            const outputType = this.graph.getOneRelationOptionalSync(`${touchpoint} output type/*`);
+            const outputType = this.api.touchpointOutputType(touchpoint);
 
             let outputTypeStr = null;
 
@@ -125,7 +125,7 @@ export class DAOGenerator {
                     outputTypeStr = 'boolean'
                 } else {
                     if (outputType) {
-                        outputTypeStr = 'number'
+                        outputTypeStr = outputType;
                     } else {
                         outputTypeStr = 'string'
                     }
@@ -203,10 +203,8 @@ export class DAOGenerator {
                 if (tagValueOutput) {
                     let returnStr = `return rels.map(rel => rel.getTagValue("${tagValueOutput}"))`
 
-                    if (outputType) {
-                        if (outputType.getTagValue('type') === 'integer') {
-                            returnStr += '.map(str => parseInt(str, 10))'
-                        }
+                    if (outputType === 'integer') {
+                        returnStr += '.map(str => parseInt(str, 10))'
                     }
 
                     returnStr += ';'
@@ -217,7 +215,7 @@ export class DAOGenerator {
 
                 } else {
 
-                    if (outputType && outputType.getTagValue('type') === 'object') {
+                    if (outputType === 'object') {
                         writer.writeLine('return rels.map(rel => ({')
                         writer.increaseIndent()
 

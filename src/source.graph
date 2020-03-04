@@ -86,3 +86,13 @@ set touchpoint/8.1 output tagValue/tag
 set touchpoint/8.1 output optional
 set input/6 name/touchpoint
 set input/6 type/string
+
+set touchpoint/9
+set touchpoint/9 query == ${touchpoint} output type/*
+set touchpoint/9 .functionName == touchpointOutputType
+set touchpoint/9 input/7
+set touchpoint/9 output tagValue/type
+set touchpoint/9 output optional
+set touchpoint/9 expectOne
+set input/7 name/touchpoint
+set input/7 type/string
