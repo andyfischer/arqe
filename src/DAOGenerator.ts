@@ -90,10 +90,13 @@ class JavascriptCodeWriter {
 export class DAOGenerator {
     graph: Graph
     api: DAOGeneratorGeneratedDAO
+    destinationFilename: string
 
     constructor(graph: Graph) {
         this.graph = graph;
         this.api = new DAOGeneratorGeneratedDAO(graph);
+
+        this.destinationFilename = this.api.getDestinationFilename()
     }
 
     generateMethods(writer: JavascriptCodeWriter) {
@@ -120,35 +123,30 @@ export class DAOGenerator {
 
             let outputTypeStr = null;
 
-            if (outputValue) {
-                if (outputExists) {
-                    outputTypeStr = 'boolean'
+            if (outputExists) {
+                outputTypeStr = 'boolean'
+            } else {
+                if (outputType) {
+                    outputTypeStr = outputType;
                 } else {
-                    if (outputType) {
-                        outputTypeStr = outputType;
-                    } else {
-                        outputTypeStr = 'string'
-                    }
-
-                    if (!expectOne)
-                        outputTypeStr += '[]'
+                    outputTypeStr = 'string'
                 }
+
+                if (!expectOne)
+                    outputTypeStr += '[]'
             }
 
             writer.startFunction(name, outputTypeStr, writer => {
                 for (const input of this.api.listTouchpointInputs(touchpoint)) {
-                    const name = this.graph.getOneRelationSync(`${input} name/*`).getTagValue('name')
-                    const inputTypeRel = this.graph.getOneRelationOptionalSync(`${input} type/*`);
+                    const name = this.api.inputName(input);
+                    const inputType = this.api.inputType(input);
 
-                    let inputType = null;
-                    if (inputTypeRel)
-                        inputType = inputTypeRel.getTagValue('type');
-
-                    writer.writeInput(name, inputType)
+                    if (inputType)
+                        writer.writeInput(name, inputType)
                 }
             });
 
-            const queryStr = this.graph.getOneRelationSync(`${touchpoint} query`).getValue()
+            const queryStr = this.api.touchpointQueryString(touchpoint);
             writer.writeLine(`const queryStr = \`${queryStr}\`;`);
 
             if (verboseLogging) {
@@ -195,6 +193,8 @@ export class DAOGenerator {
                     writer.writeLine('return rel.getValue();');
                 } else if (tagValueOutput) {
                     writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
+                } else if (tagOutput) {
+                    writer.writeLine(`return rel.getTag("${tagOutput}");`)
 
                 } else {
                     writer.writeLine('// no output')
@@ -219,11 +219,11 @@ export class DAOGenerator {
                         writer.writeLine('return rels.map(rel => ({')
                         writer.increaseIndent()
 
-                        const objectdef = this.graph.getOneRelationSync(`${touchpoint} output objectdef/*`).getTag('objectdef');
+                        const objectdef = this.api.getOutputObjectdef(touchpoint);
 
                         writer.writeLine('return rels.map(rel => ({')
 
-                        for (const objectField of this.graph.getRelationsSync(`${objectdef} objectfield/*`)) {
+                        for (const objectField of this.api.getObjectdefFields(objectdef)) {
                         }
 
                     } else {
@@ -264,13 +264,10 @@ export function generateAPI(graph: Graph) {
 
     console.log('generateAPI starting..');
 
-    const destinationFilename = graph.getOneRelationSync('code-generation destination-filename').getValue()
-
-
     const generator = new DAOGenerator(graph);
 
-    writeIfChanges(destinationFilename, generator.asJavascript());
-    console.log('file is up to date: ' + destinationFilename);
+    writeIfChanges(generator.destinationFilename, generator.asJavascript());
+    console.log('file is up to date: ' + generator.destinationFilename);
 
     console.log('generateAPI done');
 }

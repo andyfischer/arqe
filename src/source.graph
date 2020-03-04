@@ -104,3 +104,54 @@ set touchpoint/10 output tag/input
 set touchpoint/10 input/10
 set input/10 name/touchpoint
 set input/10 type/string
+
+set touchpoint/11
+set touchpoint/11 query == ${input} name/*
+set touchpoint/11 .functionName == inputName
+set touchpoint/11 output tagValue/name
+set touchpoint/11 input/11
+set touchpoint/11 expectOne
+set input/11 name/input
+set input/11 type/string
+
+set touchpoint/12
+set touchpoint/12 query == ${input} type/*
+set touchpoint/12 .functionName == inputType
+set touchpoint/12 output tagValue/type
+set touchpoint/12 output optional
+set touchpoint/12 input/12
+set touchpoint/12 expectOne
+set input/12 name/input
+set input/12 type/string
+
+set touchpoint/13
+set touchpoint/13 query == ${touchpoint} query
+set touchpoint/13 .functionName == touchpointQueryString
+set touchpoint/13 output value
+set touchpoint/13 input/13
+set touchpoint/13 expectOne
+set input/13 name/touchpoint
+set input/13 type/string
+
+set touchpoint/14
+set touchpoint/14 query == code-generation destination-filename
+set touchpoint/14 .functionName == getDestinationFilename
+set touchpoint/14 output value
+set touchpoint/14 expectOne
+
+set touchpoint/15
+set touchpoint/15 query == ${touchpoint} output objectdef/*
+set touchpoint/15 .functionName == getOutputObjectdef
+set touchpoint/15 output tag/objectdef
+set touchpoint/15 expectOne
+set touchpoint/15 input/15
+set input/15 name/touchpoint
+set input/15 type/string
+
+set touchpoint/16
+set touchpoint/16 query == ${objectdef} objectfield/*
+set touchpoint/16 .functionName == getObjectdefFields
+set touchpoint/16 output tag/objectdef
+set touchpoint/16 input/16
+set input/16 name/objectdef
+set input/16 type/string
