@@ -26,8 +26,8 @@ import { emitSearchPatternMeta, emitCommandError } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
-import ClientRepl from './ClientRepl'
 import TagTypeOrdering from './TagTypeOrdering'
+import runningInBrowser from './context/runningInBrowser'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -50,7 +50,10 @@ export default class Graph {
     nextEagerValueId: number = 1
 
     constructor() {
-        this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
+        if (runningInBrowser())
+            this.filesystemMounts = this.eagerValue(() => []);
+        else
+            this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
@@ -370,12 +373,6 @@ export default class Graph {
     saveDumpFile(filename: string) {
         const contents = (this.runSync('dump') as string[]).join('\n');
         Fs.writeFileSync(filename, contents);
-    }
-
-    startRepl() {
-        const repl = new ClientRepl(this);
-        repl.start();
-        return repl;
     }
 }
 

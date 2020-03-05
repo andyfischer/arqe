@@ -7,14 +7,8 @@ import Relation from './Relation'
 import { newTag, FixedTag } from './PatternTag'
 import RelationSearch from './RelationSearch'
 import { normalizeExactTag } from './stringifyQuery'
-
-import Util from 'util'
-import Fs from 'fs'
+import { readFile, readDir, writeFile } from './context/fs'
 import Path from 'path'
-
-const readFile = Util.promisify(Fs.readFile);
-const readDir = Util.promisify(Fs.readdir);
-const writeFile = Util.promisify(Fs.writeFile);
 
 export default class PlainFileStorage implements StorageProvider {
     filenameType: 'filename'

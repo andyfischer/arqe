@@ -1,7 +1,15 @@
 
+DAO Generation
+ - Add a generated DAO to grind-test
+
+Tooling
+ - Break ground on the GUI!
+
+---
+
  - Work on the API
    X Add Graph.get returning structured results
-   - Improve DX for relation results / UpdateContext
+   X Improve DX for relation results / UpdateContext
    - Separate class for Relation
    - Be able to set and get a big text item
    - Change socket 

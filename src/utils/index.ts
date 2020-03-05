@@ -67,8 +67,6 @@ export function values(obj: any) {
     return out;
 }
 
-export const exec = Util.promisify(ChildProcess.exec);
-
 export async function timedOut(p: Promise<any>, ms: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
         setTimeout((() => resolve(true)), ms);

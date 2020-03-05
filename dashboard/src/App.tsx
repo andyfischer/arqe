@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Graph from 'fs/Graph'
+import { Graph } from 'inke'
 
 const graph = new Graph();
 graph.run('set app ws-sync/1');

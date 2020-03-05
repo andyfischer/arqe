@@ -1,6 +1,7 @@
 
 import Repl from 'repl'
 import CommandConnection from './socket/CommandConnection'
+import Graph from './Graph'
 
 const prompt = '~ '
 
@@ -62,4 +63,10 @@ export default class ClientRepl {
             eval: line => this.eval(line)
         });
     }
+}
+
+export function startRepl(graph: Graph) {
+        const repl = new ClientRepl(graph);
+        repl.start();
+        return repl;
 }
