@@ -1,5 +1,4 @@
-import Graph from './Graph'
-import Relation from './Relation'
+import { Graph, Relation } from '.'
 
 export default class API {
     graph: Graph
@@ -22,6 +21,23 @@ export default class API {
         const queryStr = `${target} touchpoint/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.map(rel => rel.getTag("touchpoint"));
+    }
+    
+    getIkImport(target: string): string {
+        const queryStr = `${target} ik-import`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getValue();
     }
     
     enableVerboseLogging(target: string): boolean {

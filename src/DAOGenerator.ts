@@ -5,8 +5,7 @@ import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
 
 function javascriptTemplate(vars) {
     return (
-`import Graph from './Graph'
-import Relation from './Relation'
+`import { Graph, Relation } from '${vars.ikImport}'
 
 export default class API {
     graph: Graph
@@ -245,16 +244,20 @@ export class DAOGenerator {
         this.generateMethods(writer);
         
         return javascriptTemplate({
+            ikImport: this.api.getIkImport(this.target),
             methodSource: methodText.join('')
         });
     }
 }
 
 function writeIfChanges(filename: string, contents: string) {
-    const existing = Fs.readFileSync(filename, 'utf8')
+    try {
+        const existing = Fs.readFileSync(filename, 'utf8')
 
-    if (contents === existing)
-        return false;
+        if (contents === existing)
+            return false;
+    } catch (e) {
+    }
 
     Fs.writeFileSync(filename, contents);
     return true;
