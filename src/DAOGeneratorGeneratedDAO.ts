@@ -18,20 +18,20 @@ export default class API {
         return rels.map(rel => rel.getTag("code-generation"));
     }
     
+    listTouchpoints(target: string): string[] {
+        const queryStr = `${target} touchpoint/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTag("touchpoint"));
+    }
+    
     enableVerboseLogging(target: string): boolean {
         const queryStr = `${target} verbose-logging`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.length > 0;
     }
     
-    listTouchpoints(): string[] {
-        const queryStr = `touchpoint/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
-        return rels.map(rel => rel.getTag("touchpoint"));
-    }
-    
     touchpointFunctionName(touchpoint: string): string {
-        const queryStr = `${touchpoint} .functionName`;
+        const queryStr = `${touchpoint} function-name`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
         // Expect one result

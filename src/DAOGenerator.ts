@@ -110,7 +110,7 @@ export class DAOGenerator {
         writer.writeLine('this.graph.run(command);')
         writer.finishFunction()
 
-        for (const touchpoint of this.api.listTouchpoints()) {
+        for (const touchpoint of this.api.listTouchpoints(this.target)) {
 
             const name = this.api.touchpointFunctionName(touchpoint);
             const expectOne = this.api.touchpointExpectOne(touchpoint);

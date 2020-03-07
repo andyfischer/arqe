@@ -27,3 +27,19 @@
 
 //   spreadsheet cursor row/x col/x
 //   spreadsheet edit-state/editing
+
+import React from 'react'
+// import SpreadsheetViewAPI from './SpreadsheetViewAPI'
+
+interface Props {
+    // api: SpreadsheetViewAPI
+    spreadsheet: string
+}
+
+export default function Spreadsheet(props: Props) {
+
+    // for (const col of 
+
+    return <div>
+    </div>
+}
