@@ -1,8 +1,5 @@
 
 
-set code-generation
-set code-generation destination-filename == src/DAOGeneratorGeneratedDAO.ts
-
 set code-generation/1
 set code-generation/1 destination-filename == src/DAOGeneratorGeneratedDAO.ts
 
@@ -15,7 +12,7 @@ set touchpoint/1
 set touchpoint/1 .functionName == enableVerboseLogging
 set touchpoint/1 output exists
 set touchpoint/1 query == ${target} verbose-logging
-set touchpoint/0.5 input/0.5
+set touchpoint/1 input/0.5
 set input/0.5 name/target
 set input/0.5 type/string
 
@@ -146,15 +143,9 @@ set touchpoint/13 expectOne
 set input/13 name/touchpoint
 set input/13 type/string
 
-set touchpoint/14
-set touchpoint/14 query == code-generation destination-filename
-set touchpoint/14 .functionName == getDestinationFilename
-set touchpoint/14 output value
-set touchpoint/14 expectOne
-
 set touchpoint/14.1
 set touchpoint/14.1 query == ${target} destination-filename
-set touchpoint/14.1 .functionName == getDestinationFilename2
+set touchpoint/14.1 .functionName == getDestinationFilename
 set touchpoint/14.1 output value
 set touchpoint/14.1 expectOne
 set touchpoint/14.1 input/14.1

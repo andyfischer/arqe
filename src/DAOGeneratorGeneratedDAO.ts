@@ -12,8 +12,14 @@ export default class API {
         this.graph.run(command);
     }
     
-    enableVerboseLogging(): boolean {
-        const queryStr = `code-generation verbose-logging`;
+    listTargets(): string[] {
+        const queryStr = `code-generation/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTag("code-generation"));
+    }
+    
+    enableVerboseLogging(target: string): boolean {
+        const queryStr = `${target} verbose-logging`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.length > 0;
     }
@@ -171,8 +177,8 @@ export default class API {
         return rel.getValue();
     }
     
-    getDestinationFilename(): string {
-        const queryStr = `code-generation destination-filename`;
+    getDestinationFilename(target: string): string {
+        const queryStr = `${target} destination-filename`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
         // Expect one result

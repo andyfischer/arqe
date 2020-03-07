@@ -88,19 +88,19 @@ class JavascriptCodeWriter {
 }
 
 export class DAOGenerator {
-    graph: Graph
+    target: string
     api: DAOGeneratorGeneratedDAO
     destinationFilename: string
 
-    constructor(graph: Graph) {
-        this.graph = graph;
-        this.api = new DAOGeneratorGeneratedDAO(graph);
+    constructor(api: DAOGeneratorGeneratedDAO, target: string) {
+        this.api = api;
+        this.target = target;
 
-        this.destinationFilename = this.api.getDestinationFilename()
+        this.destinationFilename = this.api.getDestinationFilename(this.target)
     }
 
     generateMethods(writer: JavascriptCodeWriter) {
-        const verboseLogging = this.api.enableVerboseLogging();
+        const verboseLogging = this.api.enableVerboseLogging(this.target);
 
         writer.startFunction('run', null, w => w.writeInput('command', 'string'));
 
@@ -264,10 +264,14 @@ export function generateAPI(graph: Graph) {
 
     console.log('generateAPI starting..');
 
-    const generator = new DAOGenerator(graph);
+    const api = new DAOGeneratorGeneratedDAO(graph);
 
-    writeIfChanges(generator.destinationFilename, generator.asJavascript());
-    console.log('file is up to date: ' + generator.destinationFilename);
+    for (const target of api.listTargets()) {
+        const generator = new DAOGenerator(api, target);
+
+        writeIfChanges(generator.destinationFilename, generator.asJavascript());
+        console.log('file is up to date: ' + generator.destinationFilename);
+    }
 
     console.log('generateAPI done');
 }
