@@ -6,7 +6,7 @@ import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
 import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
-import { generateAPI } from './DAOGenerator'
+import { runCodeGenerator } from './CodeGenerator'
 
 async function connectToSocketServer() {
     const ws = new WebSocket('http://localhost:42940');
@@ -59,7 +59,7 @@ export default async function main() {
 
         startRepl = false;
 
-        generateAPI(graph);
+        runCodeGenerator(graph);
     }
 
     if (startRepl) {

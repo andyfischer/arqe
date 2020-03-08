@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import Fs from 'fs'
+import { writeFileSyncIfUnchanged } from './context/fs'
 import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
 
 function javascriptTemplate(vars) {
@@ -250,31 +250,12 @@ export class DAOGenerator {
     }
 }
 
-function writeIfChanges(filename: string, contents: string) {
-    try {
-        const existing = Fs.readFileSync(filename, 'utf8')
-
-        if (contents === existing)
-            return false;
-    } catch (e) {
-    }
-
-    Fs.writeFileSync(filename, contents);
-    return true;
-}
-
-export function generateAPI(graph: Graph) {
-
-    console.log('generateAPI starting..');
+export function generateAPI(graph: Graph, target: string) {
 
     const api = new DAOGeneratorGeneratedDAO(graph);
 
-    for (const target of api.listTargets()) {
-        const generator = new DAOGenerator(api, target);
+    const generator = new DAOGenerator(api, target);
 
-        writeIfChanges(generator.destinationFilename, generator.asJavascript());
-        console.log('file is up to date: ' + generator.destinationFilename);
-    }
-
-    console.log('generateAPI done');
+    writeFileSyncIfUnchanged(generator.destinationFilename, generator.asJavascript());
+    console.log('generated file is up-to-date: ' + generator.destinationFilename);
 }

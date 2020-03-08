@@ -3,6 +3,12 @@
 set code-generation/1
 set code-generation/1 destination-filename == src/DAOGeneratorGeneratedDAO.ts
 set code-generation/1 ik-import == .
+set code-generation/1 strategy/dao-api
+
+set code-generation/1 touchpoint/0.5
+set touchpoint/0.5 function-name == listTargets
+set touchpoint/0.5 query == code-generation/*
+set touchpoint/0.5 output tag/code-generation
 
 set code-generation/1 touchpoint/0.5
 set touchpoint/0.5 function-name == listTargets
@@ -177,3 +183,39 @@ set touchpoint/16 output tag/objectdef
 set touchpoint/16 input/16
 set input/16 name/objectdef
 set input/16 type/string
+
+set code-generation/2
+set code-generation/2 destination-filename == src/CodeGenerationApi.ts
+set code-generation/2 ik-import == .
+set code-generation/2 strategy/dao-api
+
+set code-generation/2 touchpoint/17.1
+set touchpoint/17.1 query == code-generation/*
+set touchpoint/17.1 function-name == listCodeGenerationTargets
+set touchpoint/17.1 output tag/code-generation
+
+set code-generation/2 touchpoint/17
+set touchpoint/17 query == ${target} strategy/*
+set touchpoint/17 function-name == codeGenerationTargetStrategy
+set touchpoint/17 output tagValue/strategy
+set touchpoint/17 expectOne
+set touchpoint/17 input/0.5
+
+set code-generation/3
+set code-generation/3 destination-filename == src/code-generation/TextAsCodeApi.ts
+set code-generation/3 strategy/dao-api
+set code-generation/3 ik-import == ..
+
+set code-generation/3 touchpoint/18
+set touchpoint/18 function-name == fromFile
+set touchpoint/18 query == ${target} from-file
+set touchpoint/18 output value
+set touchpoint/18 expectOne
+set touchpoint/18 input/0.5
+
+set code-generation/3 touchpoint/19
+set touchpoint/19 function-name == destinationFilename
+set touchpoint/19 query == ${target} destination-filename
+set touchpoint/19 output value
+set touchpoint/19 expectOne
+set touchpoint/19 input/0.5
