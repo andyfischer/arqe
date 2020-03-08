@@ -269,6 +269,11 @@ export default class Graph {
 
     run(str: string, respond?: RespondFunc) {
 
+        if (/^ *\#/.exec(str)) {
+            // ignore comments
+            return;
+        }
+
         if (!respond) {
             respond = (msg) => {
                 if (msg.startsWith('#error')) {

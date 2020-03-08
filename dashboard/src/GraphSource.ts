@@ -66,8 +66,6 @@ set row/2 col/1 == Karen
 set row/2 col/2 == karen@email.com
 set row/2 col/3 == Inactive
 
-set spreadsheet-view/1 spreadsheet/1
-
 set code-generation/1 touchpoint/5
 set touchpoint/5 function-name == spreadsheetForView
 set touchpoint/5 query == \${spreadsheetView} spreadsheet/*
@@ -79,4 +77,7 @@ set touchpoint/5 input/spreadsheetView
 set input/spreadsheetView name/spreadsheetView
 set input/spreadsheetView type/string
 
+# Spreadsheet View
+set spreadsheet-view/1 spreadsheet/1
+set spreadsheet-view/1 selection col/1 row/2
 `
