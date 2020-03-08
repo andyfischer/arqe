@@ -114,7 +114,8 @@ export class DAOGenerator {
             const name = this.api.touchpointFunctionName(touchpoint);
             const expectOne = this.api.touchpointExpectOne(touchpoint);
             const outputIsOptional = this.api.touchpointOutputIsOptional(touchpoint);
-            const outputValue = this.api.touchpointOutputIsValue(touchpoint);
+            const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
+            const outputObject = this.api.touchpointOutputObject(touchpoint);
             const outputExists = this.api.touchpointOutputIsExists(touchpoint);
             const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
             const tagOutput = this.api.touchpointTagOutput(touchpoint);
@@ -127,11 +128,13 @@ export class DAOGenerator {
             } else {
                 if (outputType) {
                     outputTypeStr = outputType;
+                } else if (outputObject) {
+                    outputTypeStr = null;
                 } else {
                     outputTypeStr = 'string'
                 }
 
-                if (!expectOne)
+                if (!expectOne && outputTypeStr !== null)
                     outputTypeStr += '[]'
             }
 
@@ -190,8 +193,20 @@ export class DAOGenerator {
                 
                 writer.writeLine('const rel = rels[0];');
 
-                if (outputValue) {
+                if (outputIsValue) {
                     writer.writeLine('return rel.getValue();');
+                } else if (outputObject) {
+                    writer.writeLine();
+                    writer.writeLine('return {');
+                    writer.increaseIndent();
+
+                    for (const field of this.api.outputObjectFields(outputObject)) {
+                        writer.writeLine(`${field}: rel.getTag("${field}"),`);
+                    }
+
+                    writer.decreaseIndent();
+                    writer.writeLine('}');
+
                 } else if (tagValueOutput) {
                     writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
                 } else if (tagOutput) {

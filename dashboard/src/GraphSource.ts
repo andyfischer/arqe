@@ -80,4 +80,15 @@ set input/spreadsheetView type/string
 # Spreadsheet View
 set spreadsheet-view/1 spreadsheet/1
 set spreadsheet-view/1 selection col/1 row/2
+
+set code-generation/1 touchpoint/6
+set touchpoint/6 function-name == getSelectedCell
+set touchpoint/6 query == \${spreadsheetView} selection col/* row/*
+set touchpoint/6 expectOne
+set touchpoint/6 input/spreadsheetView
+set touchpoint/6 output output-object/1
+set touchpoint/6 output optional
+
+set output-object/1 field/col tag/col
+set output-object/1 field/row tag/row
 `

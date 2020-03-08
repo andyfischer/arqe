@@ -232,4 +232,26 @@ export default class API {
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.map(rel => rel.getTag("objectdef"));
     }
+    
+    touchpointOutputObject(touchpoint: string): string {
+        const queryStr = `${touchpoint} output output-object/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTag("output-object");
+    }
+    
+    outputObjectFields(outputObject: string): string[] {
+        const queryStr = `${outputObject} field/* tag/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTagValue("field"));
+    }
 }

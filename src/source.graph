@@ -42,6 +42,7 @@ set touchpoint/3 function-name == touchpointFunctionName
 set touchpoint/3 input/1
 set input/1 name/touchpoint
 set input/1 type/string
+
 set touchpoint/3 output value
 set touchpoint/3 expectOne
 
@@ -219,3 +220,24 @@ set touchpoint/19 query == ${target} destination-filename
 set touchpoint/19 output value
 set touchpoint/19 expectOne
 set touchpoint/19 input/0.5
+
+set input/touchpoint name/touchpoint
+set input/touchpoint type/string
+
+set code-generation/1 touchpoint/20
+set touchpoint/20 function-name == touchpointOutputObject
+set touchpoint/20 query == ${touchpoint} output output-object/*
+set touchpoint/20 output tag/output-object
+set touchpoint/20 output optional
+set touchpoint/20 expectOne
+set touchpoint/20 input/touchpoint
+
+set input/output-object name/outputObject
+set input/output-object type/string
+
+set code-generation/1 touchpoint/21
+set touchpoint/21 function-name == outputObjectFields
+set touchpoint/21 query == ${outputObject} field/* tag/*
+set touchpoint/21 output tagValue/field
+set touchpoint/21 input/output-object
+

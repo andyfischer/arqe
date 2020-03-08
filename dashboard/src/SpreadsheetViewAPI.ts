@@ -71,4 +71,24 @@ export default class API {
         const rel = rels[0];
         return rel.getTag("spreadsheet");
     }
+    
+    getSelectedCell(spreadsheetView: string) {
+        const queryStr = `${spreadsheetView} selection col/* row/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        
+        return {
+            col: rel.getTag("col"),
+            row: rel.getTag("row"),
+        }
+    }
 }
