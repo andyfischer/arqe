@@ -29,17 +29,26 @@
 //   spreadsheet edit-state/editing
 
 import React from 'react'
-// import SpreadsheetViewAPI from './SpreadsheetViewAPI'
+import SpreadsheetViewAPI from './SpreadsheetViewAPI'
+import { Graph } from 'ik'
 
 interface Props {
-    // api: SpreadsheetViewAPI
+    graph: Graph
     spreadsheet: string
 }
 
 export default function Spreadsheet(props: Props) {
 
-    // for (const col of 
+    const { graph, spreadsheet } = props;
 
-    return <div>
+    const api = new SpreadsheetViewAPI(graph);
+
+    for (const col of api.listColumns(spreadsheet)) {
+    }
+
+    for (const row of api.listColumns(spreadsheet)) {
+    }
+
+    return <div style={{ display: 'grid' }} >
     </div>
 }

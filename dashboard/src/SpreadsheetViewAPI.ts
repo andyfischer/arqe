@@ -14,12 +14,12 @@ export default class API {
     listColumns(spreadsheet: string): string[] {
         const queryStr = `${spreadsheet} col/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
-        return rels.map(rel => rel.getTag(""));
+        return rels.map(rel => rel.getTag("col"));
     }
     
     listRows(spreadsheet: string): string[] {
         const queryStr = `${spreadsheet} row/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
-        return rels.map(rel => rel.getTag(""));
+        return rels.map(rel => rel.getTag("row"));
     }
 }

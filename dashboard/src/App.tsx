@@ -1,28 +1,15 @@
 import React from 'react';
 import './App.css';
 import { Graph } from 'ik'
+import Spreadsheet from './Spreadsheet'
 
 const graph = new Graph();
-graph.run('set app ws-sync/1');
-graph.run('set app ws-sync/1 .host == http://localhost:42940');
-const data = graph.context('app');
+graph.loadDumpFile('src/source.graph');
 
 const App: React.FC = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Spreadsheet graph={graph} spreadsheet="spreadsheet/1" />
     </div>
   );
 }
