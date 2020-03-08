@@ -10,7 +10,7 @@ graph.loadDump(GraphSource);
 const App: React.FC = () => {
   return (
     <div className="App">
-      <Spreadsheet graph={graph} spreadsheet="spreadsheet/1" />
+      <Spreadsheet graph={graph} spreadsheetView="spreadsheet-view/1" />
     </div>
   );
 }

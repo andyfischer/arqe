@@ -34,14 +34,15 @@ import { Graph } from 'ik'
 
 interface Props {
     graph: Graph
-    spreadsheet: string
+    spreadsheetView: string
 }
 
 export default function Spreadsheet(props: Props) {
 
-    const { graph, spreadsheet } = props;
+    const { graph, spreadsheetView } = props;
 
     const api = new SpreadsheetViewAPI(graph);
+    const spreadsheet = api.spreadsheetForView(spreadsheetView);
 
     console.log('running listColumns on: ', spreadsheet)
     const cols = api.listColumns(spreadsheet);
@@ -64,6 +65,7 @@ export default function Spreadsheet(props: Props) {
                 color: #666;
             }
         `}</style>
+        <p>Looking at spreadsheet view: {spreadsheetView}</p>
         <p>Looking at spreadsheet: {spreadsheet}</p>
         <p>Cols: {cols.join(' ')}</p>
         <p>Rows: {rows.join(' ')}</p>
@@ -94,4 +96,3 @@ export default function Spreadsheet(props: Props) {
         </div>
     </div>
 }
-

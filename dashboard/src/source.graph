@@ -61,3 +61,21 @@ set col/3 name/Status
 set row/1 col/1 == Bob
 set row/1 col/2 == bob@email.com
 set row/1 col/3 == Active
+
+set row/2 col/1 == Karen
+set row/2 col/2 == karen@email.com
+set row/2 col/3 == Inactive
+
+set spreadsheet-view/1 spreadsheet/1
+
+set code-generation/1 touchpoint/5
+set touchpoint/5 function-name == spreadsheetForView
+set touchpoint/5 query == ${spreadsheetView} spreadsheet/*
+set touchpoint/5 expectOne
+set touchpoint/5 output tag/spreadsheet
+set touchpoint/5 output optional
+
+set touchpoint/5 input/spreadsheetView
+set input/spreadsheetView name/spreadsheetView
+set input/spreadsheetView type/string
+
