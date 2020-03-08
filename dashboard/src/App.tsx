@@ -2,9 +2,10 @@ import React from 'react';
 import './App.css';
 import { Graph } from 'ik'
 import Spreadsheet from './Spreadsheet'
+import GraphSource from './GraphSource'
 
 const graph = new Graph();
-graph.loadDumpFile('src/source.graph');
+graph.loadDump(GraphSource);
 
 const App: React.FC = () => {
   return (

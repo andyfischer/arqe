@@ -369,6 +369,12 @@ export default class Graph {
         }
         */
     }
+
+    loadDump(contents: string) {
+        for (const line of contents.split(/\r\n|\r|\n/)) {
+            this.run(line);
+        }
+    }
     
     saveDumpFile(filename: string) {
         const contents = (this.runSync('dump') as string[]).join('\n');

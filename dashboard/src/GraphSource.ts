@@ -19,10 +19,46 @@ set touchpoint/2 query == \${spreadsheet} row/*
 set touchpoint/2 output tag/row
 set touchpoint/2 input/1
 
+set code-generation/1 touchpoint/3
+set touchpoint/3 function-name == colName
+set touchpoint/3 query == \${col} name/*
+set touchpoint/3 expectOne
+set touchpoint/3 output tagValue/name
+set touchpoint/3 input/2
+
+set code-generation/1 touchpoint/4
+set touchpoint/4 function-name == getCellValue
+set touchpoint/4 query == \${row} \${col}
+set touchpoint/4 expectOne
+set touchpoint/4 output value
+set touchpoint/4 output optional
+set touchpoint/4 input/2
+set touchpoint/4 input/3
+
+set input/2 name/col
+set input/2 type/string
+
+set input/3 name/row
+set input/3 type/string
+
 set code-generation/2
 set code-generation/2 destination-filename == src/GraphSource.ts
 set code-generation/2 strategy/text-as-code
 set code-generation/2 from-file == src/source.graph
 
 set spreadsheet/1
+
+set spreadsheet/1 col/1
+set spreadsheet/1 col/2
+set spreadsheet/1 col/3
+set spreadsheet/1 row/1
+set spreadsheet/1 row/2
+
+set col/1 name/CustomerName
+set col/2 name/CustomerEmail
+set col/3 name/Status
+
+set row/1 col/1 == Bob
+set row/1 col/2 == bob@email.com
+set row/1 col/3 == Active
 `

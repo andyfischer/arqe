@@ -136,7 +136,9 @@ export class DAOGenerator {
             }
 
             writer.startFunction(name, outputTypeStr, writer => {
-                for (const input of this.api.listTouchpointInputs(touchpoint)) {
+                const inputs = this.api.listTouchpointInputs(touchpoint);
+                inputs.sort();
+                for (const input of inputs) {
                     const name = this.api.inputName(input);
                     const inputType = this.api.inputType(input);
 

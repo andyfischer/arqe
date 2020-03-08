@@ -22,4 +22,37 @@ export default class API {
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.map(rel => rel.getTag("row"));
     }
+    
+    colName(col: string): string {
+        const queryStr = `${col} name/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("name");
+    }
+    
+    getCellValue(col: string, row: string): string {
+        const queryStr = `${row} ${col}`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getValue();
+    }
 }

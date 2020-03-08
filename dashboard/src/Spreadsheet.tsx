@@ -43,12 +43,55 @@ export default function Spreadsheet(props: Props) {
 
     const api = new SpreadsheetViewAPI(graph);
 
-    for (const col of api.listColumns(spreadsheet)) {
+    console.log('running listColumns on: ', spreadsheet)
+    const cols = api.listColumns(spreadsheet);
+    const rows = api.listRows(spreadsheet);
+
+    let gridTemplateColumns = '';
+
+    for (const col of cols) {
+        gridTemplateColumns += '200px ';
     }
 
-    for (const row of api.listColumns(spreadsheet)) {
+    for (const row of api.listRows(spreadsheet)) {
     }
 
-    return <div style={{ display: 'grid' }} >
+    return <div>
+        <style>{`
+            .grid-element {
+            }
+            .header-element {
+                color: #666;
+            }
+        `}</style>
+        <p>Looking at spreadsheet: {spreadsheet}</p>
+        <p>Cols: {cols.join(' ')}</p>
+        <p>Rows: {rows.join(' ')}</p>
+        <div style={{
+            display: 'grid',
+            gridGap: '10px',
+            gridTemplateColumns
+        }} >
+
+        { cols.map(col => {
+            return <div className="grid-element header-element" key={col} style={{
+                }}>
+                {api.colName(col)}
+            </div>
+        })}
+
+
+        { rows.map(row => {
+            return cols.map(col => {
+                const value = api.getCellValue(col, row) || '';
+
+                return <div className="grid-element" key={row + ' ' + col} >
+                    {value}
+                </div>
+            })
+        })}
+
+        </div>
     </div>
 }
+
