@@ -3,6 +3,7 @@ set code-generation/1
 set code-generation/1 destination-filename == src/SpreadsheetViewAPI.ts
 set code-generation/1 ik-import == ik
 set code-generation/1 strategy/dao-api
+set code-generation/1 verbose-logging
 
 set input/1 name/spreadsheet
 set input/1 type/string
@@ -77,10 +78,6 @@ set touchpoint/5 input/spreadsheetView
 set input/spreadsheetView name/spreadsheetView
 set input/spreadsheetView type/string
 
-# Spreadsheet View
-set spreadsheet-view/1 spreadsheet/1
-set spreadsheet-view/1 selection col/1 row/2
-
 set code-generation/1 touchpoint/6
 set touchpoint/6 function-name == getSelectedCell
 set touchpoint/6 query == \${spreadsheetView} selection col/* row/*
@@ -91,4 +88,8 @@ set touchpoint/6 output optional
 
 set output-object/1 field/col tagValue/col
 set output-object/1 field/row tagValue/row
+
+# Spreadsheet View
+set spreadsheet-view/1 spreadsheet/1
+set spreadsheet-view/1 selection col/1 row/2
 `

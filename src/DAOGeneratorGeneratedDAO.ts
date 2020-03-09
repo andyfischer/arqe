@@ -258,4 +258,24 @@ export default class API {
             tagValue: rel.getTagValue("tagValue"),
         }));
     }
+    
+    outputObjectTagFields(outputObject: string) {
+        const queryStr = `${outputObject} field/* tag/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        return rels.map(rel => ({
+            field: rel.getTagValue("field"),
+            tag: rel.getTagValue("tag"),
+        }));
+    }
+    
+    outputObjectTagValueFields(outputObject: string) {
+        const queryStr = `${outputObject} field/* tagValue/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        return rels.map(rel => ({
+            field: rel.getTagValue("field"),
+            tagValue: rel.getTagValue("tagValue"),
+        }));
+    }
 }

@@ -200,8 +200,12 @@ export class DAOGenerator {
                     writer.writeLine('return {');
                     writer.increaseIndent();
 
-                    for (const { field, tagValue } of this.api.outputObjectFields(outputObject)) {
+                    for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
                         writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
+                    }
+                    
+                    for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
+                        writer.writeLine(`${field}: rel.getTag("${tag}"),`);
                     }
 
                     writer.decreaseIndent();
