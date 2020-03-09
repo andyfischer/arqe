@@ -235,9 +235,12 @@ set touchpoint/20 input/touchpoint
 set input/output-object name/outputObject
 set input/output-object type/string
 
-set code-generation/1 touchpoint/21
-set touchpoint/21 function-name == outputObjectFields
-set touchpoint/21 query == ${outputObject} field/* tag/*
-set touchpoint/21 output tagValue/field
-set touchpoint/21 input/output-object
+set code-generation/1 touchpoint/22
+set touchpoint/22 function-name == outputObjectFields
+set touchpoint/22 query == ${outputObject} field/* tag/*
+set touchpoint/22 input/output-object
+set touchpoint/22 output output-object/field-tag
+
+set output-object/field-tag field/field tag/field
+set output-object/field-tag field/tag tag/tag
 

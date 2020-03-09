@@ -89,5 +89,5 @@ set touchpoint/6 input/spreadsheetView
 set touchpoint/6 output output-object/1
 set touchpoint/6 output optional
 
-set output-object/1 field/col tag/col
-set output-object/1 field/row tag/row
+set output-object/1 field/col tagValue/col
+set output-object/1 field/row tagValue/row

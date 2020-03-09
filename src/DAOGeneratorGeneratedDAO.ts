@@ -249,9 +249,13 @@ export default class API {
         return rel.getTag("output-object");
     }
     
-    outputObjectFields(outputObject: string): string[] {
+    outputObjectFields(outputObject: string) {
         const queryStr = `${outputObject} field/* tag/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
-        return rels.map(rel => rel.getTagValue("field"));
+        
+        return rels.map(rel => ({
+            field: rel.getTagValue("field"),
+            tag: rel.getTagValue("tag"),
+        }));
     }
 }
