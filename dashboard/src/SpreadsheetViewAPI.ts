@@ -87,8 +87,6 @@ export default class API {
         const rel = rels[0];
         
         return {
-            col: rel.getTag("col"),
-            row: rel.getTag("row"),
         }
     }
 }

@@ -250,12 +250,12 @@ export default class API {
     }
     
     outputObjectFields(outputObject: string) {
-        const queryStr = `${outputObject} field/* tag/*`;
+        const queryStr = `${outputObject} field/* tagValue/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
-            tag: rel.getTagValue("tag"),
+            tagValueType: rel.getTagValue("tagValue"),
         }));
     }
 }

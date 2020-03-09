@@ -47,6 +47,7 @@ export default function Spreadsheet(props: Props) {
     console.log('running listColumns on: ', spreadsheet)
     const cols = api.listColumns(spreadsheet);
     const rows = api.listRows(spreadsheet);
+    const selection = api.getSelectedCell(spreadsheetView);
 
     let gridTemplateColumns = '';
 
@@ -67,6 +68,7 @@ export default function Spreadsheet(props: Props) {
         `}</style>
         <p>Looking at spreadsheet view: {spreadsheetView}</p>
         <p>Looking at spreadsheet: {spreadsheet}</p>
+        <p>Selection: {JSON.stringify(selection)}</p>
         <p>Cols: {cols.join(' ')}</p>
         <p>Rows: {rows.join(' ')}</p>
         <div style={{
@@ -85,6 +87,7 @@ export default function Spreadsheet(props: Props) {
 
         { rows.map(row => {
             return cols.map(col => {
+
                 const value = api.getCellValue(col, row) || '';
 
                 return <div className="grid-element" key={row + ' ' + col} >

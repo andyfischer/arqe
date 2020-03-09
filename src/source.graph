@@ -237,10 +237,10 @@ set input/output-object type/string
 
 set code-generation/1 touchpoint/22
 set touchpoint/22 function-name == outputObjectFields
-set touchpoint/22 query == ${outputObject} field/* tag/*
+set touchpoint/22 query == ${outputObject} field/* tagValue/*
 set touchpoint/22 input/output-object
 set touchpoint/22 output output-object/field-tag
 
-set output-object/field-tag field/field tag/field
-set output-object/field-tag field/tag tag/tag
+set output-object/field-tag field/field tagValue/field
+set output-object/field-tag field/tagValue tagValue/tagValue
 
