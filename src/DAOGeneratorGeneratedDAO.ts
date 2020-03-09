@@ -255,7 +255,7 @@ export default class API {
         
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
-            tagValueType: rel.getTagValue("tagValue"),
+            tagValue: rel.getTagValue("tagValue"),
         }));
     }
 }
