@@ -3,7 +3,7 @@ set code-generation/1
 set code-generation/1 destination-filename == src/SpreadsheetViewAPI.ts
 set code-generation/1 ik-import == ik
 set code-generation/1 strategy/dao-api
-set code-generation/1 verbose-logging
+# set code-generation/1 verbose-logging
 
 set input/1 name/spreadsheet
 set input/1 type/string
@@ -86,8 +86,8 @@ set touchpoint/6 input/spreadsheetView
 set touchpoint/6 output output-object/1
 set touchpoint/6 output optional
 
-set output-object/1 field/col tagValue/col
-set output-object/1 field/row tagValue/row
+set output-object/1 field/col tag/col
+set output-object/1 field/row tag/row
 
 # Spreadsheet View
 set spreadsheet-view/1 spreadsheet/1

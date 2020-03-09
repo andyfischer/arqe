@@ -61,6 +61,10 @@ export default function Spreadsheet(props: Props) {
     return <div>
         <style>{`
             .grid-element {
+              padding: 2px;
+            }
+            .grid-element.selected {
+              background-color: #77EAFF;
             }
             .header-element {
                 color: #666;
@@ -73,7 +77,7 @@ export default function Spreadsheet(props: Props) {
         <p>Rows: {rows.join(' ')}</p>
         <div style={{
             display: 'grid',
-            gridGap: '10px',
+            gridGap: '6px',
             gridTemplateColumns
         }} >
 
@@ -89,8 +93,13 @@ export default function Spreadsheet(props: Props) {
             return cols.map(col => {
 
                 const value = api.getCellValue(col, row) || '';
+                const isSelected = selection
+                    && (col === selection.col)
+                    && (row === selection.row);
 
-                return <div className="grid-element" key={row + ' ' + col} >
+                const className = 'grid-element' + (isSelected ? ' selected' : '');
+
+                return <div className={className} key={row + ' ' + col} >
                     {value}
                 </div>
             })
