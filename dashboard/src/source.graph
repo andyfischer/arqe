@@ -1,33 +1,33 @@
 
-set code-generation/1
-set code-generation/1 destination-filename == src/SpreadsheetViewAPI.ts
-set code-generation/1 ik-import == ik
-set code-generation/1 strategy/dao-api
-# set code-generation/1 verbose-logging
+set code-generation/spreadsheet-view
+set code-generation/spreadsheet-view destination-filename == src/SpreadsheetViewAPI.ts
+set code-generation/spreadsheet-view ik-import == ik
+set code-generation/spreadsheet-view strategy/dao-api
+# set code-generation/spreadsheet-view verbose-logging
 
 set input/1 name/spreadsheet
 set input/1 type/string
 
-set code-generation/1 touchpoint/1
+set code-generation/spreadsheet-view touchpoint/1
 set touchpoint/1 function-name == listColumns
 set touchpoint/1 query == ${spreadsheet} col/*
 set touchpoint/1 output tag/col
 set touchpoint/1 input/1
 
-set code-generation/1 touchpoint/2
+set code-generation/spreadsheet-view touchpoint/2
 set touchpoint/2 function-name == listRows
 set touchpoint/2 query == ${spreadsheet} row/*
 set touchpoint/2 output tag/row
 set touchpoint/2 input/1
 
-set code-generation/1 touchpoint/3
+set code-generation/spreadsheet-view touchpoint/3
 set touchpoint/3 function-name == colName
 set touchpoint/3 query == ${col} name/*
 set touchpoint/3 expectOne
 set touchpoint/3 output tagValue/name
 set touchpoint/3 input/2
 
-set code-generation/1 touchpoint/4
+set code-generation/spreadsheet-view touchpoint/4
 set touchpoint/4 function-name == getCellValue
 set touchpoint/4 query == ${row} ${col}
 set touchpoint/4 expectOne
@@ -67,7 +67,7 @@ set row/2 col/1 == Karen
 set row/2 col/2 == karen@email.com
 set row/2 col/3 == Inactive
 
-set code-generation/1 touchpoint/5
+set code-generation/spreadsheet-view touchpoint/5
 set touchpoint/5 function-name == spreadsheetForView
 set touchpoint/5 query == ${spreadsheetView} spreadsheet/*
 set touchpoint/5 expectOne
@@ -78,7 +78,7 @@ set touchpoint/5 input/spreadsheetView
 set input/spreadsheetView name/spreadsheetView
 set input/spreadsheetView type/string
 
-set code-generation/1 touchpoint/6
+set code-generation/spreadsheet-view touchpoint/6
 set touchpoint/6 function-name == getSelectedCell
 set touchpoint/6 query == ${spreadsheetView} selection col/* row/*
 set touchpoint/6 expectOne
@@ -92,3 +92,18 @@ set output-object/1 field/row tag/row
 # Spreadsheet View
 set spreadsheet-view/1 spreadsheet/1
 set spreadsheet-view/1 selection col/1 row/2
+
+set code-generation/edit-model
+set code-generation/edit-model destination-filename == src/EditModelAPI.ts
+set code-generation/edit-model ik-import == ik
+set code-generation/edit-model strategy/dao-api
+
+set code-generation/spreadsheet-view touchpoint/7
+set touchpoint/7 function-name == getSelectedCell
+set touchpoint/7 query == ${spreadsheetView} selection col/* row/*
+set touchpoint/7 expectOne
+set touchpoint/7 input/spreadsheetView
+set touchpoint/7 output output-object/1
+set touchpoint/7 output optional
+
+

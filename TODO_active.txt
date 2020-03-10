@@ -1,19 +1,11 @@
 
-DAO Generation
- - Add a generated DAO to grind-test
+Spreadsheet
 
-Tooling
- - Break ground on the GUI!
+ - Encode keyboard input mappings in graph
+ - Write key event listener in App
+ - Set up the editing interaction model
+   - Arrow keys to move selection
+   - Selection should include component
+ - Selection changes should trigger rerender
+ - More work on derived relations
 
----
-
- - Work on the API
-   X Add Graph.get returning structured results
-   X Improve DX for relation results / UpdateContext
-   - Separate class for Relation
-   - Be able to set and get a big text item
-   - Change socket 
-
-COURSE CORRECTIONS:
- - Allow tag values to act like real values. (Update syntax to allow quotes)
- - Allow 'payload' to be accessed with the 'value' tag type.

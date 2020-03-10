@@ -52,7 +52,7 @@ export default function Spreadsheet(props: Props) {
     let gridTemplateColumns = '';
 
     for (const col of cols) {
-        gridTemplateColumns += '200px ';
+        gridTemplateColumns += '1fr ';
     }
 
     for (const row of api.listRows(spreadsheet)) {
@@ -78,7 +78,8 @@ export default function Spreadsheet(props: Props) {
         <div style={{
             display: 'grid',
             gridGap: '6px',
-            gridTemplateColumns
+            gridTemplateColumns,
+            width: '50%'
         }} >
 
         { cols.map(col => {

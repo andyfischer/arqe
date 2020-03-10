@@ -1,4 +1,27 @@
 
+# March 2019 part 1 #
+
+- Allow 'payload' to be accessed with the 'value' tag type.
+
+DAO Generation
+ - Add a generated DAO to grind-test
+
+Tooling
+ X Break ground on the GUI!
+
+---
+
+ - Work on the API
+   X Add Graph.get returning structured results
+   X Improve DX for relation results / UpdateContext
+   - Separate class for Relation
+   - Be able to set and get a big text item
+   - Change socket 
+
+COURSE CORRECTIONS:
+ - Allow tag values to act like real values. (Update syntax to allow quotes)
+ 
+
 # Feb 2019 part 2 #
 
  X Keep working on tsc-runner until it supports autofixing of my errors
