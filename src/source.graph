@@ -262,3 +262,8 @@ set touchpoint/24 output output-object/field-tagValue
 set output-object/field-tagValue field/field tagValue/field
 set output-object/field-tagValue field/tagValue tagValue/tagValue
 
+set code-generation/4
+set code-generation/4 destination-filename == src/grind-test/GeneratedApi.ts
+set code-generation/4 strategy/dao-api
+set code-generation/4 ik-import == ..
+
