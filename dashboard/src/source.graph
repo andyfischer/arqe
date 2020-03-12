@@ -98,12 +98,19 @@ set code-generation/edit-model destination-filename == src/EditModelAPI.ts
 set code-generation/edit-model ik-import == ik
 set code-generation/edit-model strategy/dao-api
 
-set code-generation/spreadsheet-view touchpoint/7
-set touchpoint/7 function-name == getSelectedCell
-set touchpoint/7 query == ${spreadsheetView} selection col/* row/*
-set touchpoint/7 expectOne
-set touchpoint/7 input/spreadsheetView
-set touchpoint/7 output output-object/1
-set touchpoint/7 output optional
-
-
+# Keyboard codes
+set key/up
+set key/up keycode/38
+set key/up browsername/ArrowUp
+set key/down
+set key/down keycode/40
+set key/down browsername/ArrowDown
+set key/left
+set key/left keycode/37
+set key/left browsername/ArrowLeft
+set key/right
+set key/right keycode/39
+set key/right browsername/ArrowRight
+set key/shift
+set key/shift keycode/16
+set key/shift browsername/Shift

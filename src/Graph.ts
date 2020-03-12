@@ -54,6 +54,7 @@ export default class Graph {
             this.filesystemMounts = this.eagerValue(() => []);
         else
             this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
+
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
