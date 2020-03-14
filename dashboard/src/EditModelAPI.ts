@@ -42,4 +42,63 @@ export default class API {
         const rel = rels[0];
         return rel.getTag("action");
     }
+    
+    getCurrentView(): string {
+        const queryStr = `current-view spreadsheet-view/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTag("spreadsheet-view");
+    }
+    
+    getSpreadsheetSelectionPos(view: string) {
+        const queryStr = `${view} selection col/* row/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        
+        return {
+            col: rel.getTag("col"),
+            row: rel.getTag("row"),
+        }
+    }
+    
+    getMoveActionDelta(action: string) {
+        const queryStr = `${action} delta-x/* delta-y/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        
+        return {
+            x: rel.getTagValue("delta-x"),
+            y: rel.getTagValue("delta-y"),
+        }
+    }
 }

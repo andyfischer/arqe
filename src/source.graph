@@ -4,6 +4,7 @@ set code-generation/1
 set code-generation/1 destination-filename == src/DAOGeneratorGeneratedDAO.ts
 set code-generation/1 ik-import == .
 set code-generation/1 strategy/dao-api
+# set code-generation/1 verbose-logging
 
 set code-generation/1 touchpoint/0.5
 set touchpoint/0.5 function-name == listTargets

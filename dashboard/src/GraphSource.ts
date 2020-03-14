@@ -83,11 +83,11 @@ set touchpoint/6 function-name == getSelectedCell
 set touchpoint/6 query == \${spreadsheetView} selection col/* row/*
 set touchpoint/6 expectOne
 set touchpoint/6 input/spreadsheetView
-set touchpoint/6 output output-object/1
+set touchpoint/6 output output-object/row-col
 set touchpoint/6 output optional
 
-set output-object/1 field/col tag/col
-set output-object/1 field/row tag/row
+set output-object/row-col field/col tag/col
+set output-object/row-col field/row tag/row
 
 set code-generation/edit-model touchpoint/7
 set touchpoint/7 function-name == findKeyForBrowserName
@@ -100,6 +100,20 @@ set touchpoint/7 output tag/key
 set input/browserName type/string
 set input/browserName name/browserName
 
+set input/key type/string
+set input/key name/key
+
+# Spreadsheet View
+set spreadsheet-view/1 spreadsheet/1
+set spreadsheet-view/1 selection col/1 row/2
+
+set current-view spreadsheet-view/1
+
+set code-generation/edit-model
+set code-generation/edit-model destination-filename == src/EditModelAPI.ts
+set code-generation/edit-model ik-import == ik
+set code-generation/edit-model strategy/dao-api
+
 set code-generation/edit-model touchpoint/8
 set touchpoint/8 function-name == findActionForKey
 set touchpoint/8 query == \${key} action/*
@@ -108,17 +122,38 @@ set touchpoint/8 output optional
 set touchpoint/8 input/key
 set touchpoint/8 output tag/action
 
-set input/key type/string
-set input/key name/key
+set code-generation/edit-model touchpoint/9
+set touchpoint/9 function-name == getCurrentView
+set touchpoint/9 query == current-view spreadsheet-view/*
+set touchpoint/9 expectOne
+set touchpoint/9 output tag/spreadsheet-view
 
-# Spreadsheet View
-set spreadsheet-view/1 spreadsheet/1
-set spreadsheet-view/1 selection col/1 row/2
+set code-generation/edit-model touchpoint/10
+set touchpoint/10 function-name == getSpreadsheetSelectionPos
+set touchpoint/10 query == \${view} selection col/* row/*
+set touchpoint/10 expectOne
+set touchpoint/10 input/view
+set touchpoint/10 output tag/spreadsheet-view
+set touchpoint/10 output output-object/row-col
 
-set code-generation/edit-model
-set code-generation/edit-model destination-filename == src/EditModelAPI.ts
-set code-generation/edit-model ik-import == ik
-set code-generation/edit-model strategy/dao-api
+set input/view name/view
+set input/view type/string
+
+set code-generation/edit-model touchpoint/11
+set touchpoint/11 function-name == getMoveActionDelta
+set touchpoint/11 query == \${action} delta-x/* delta-y/*
+set touchpoint/11 expectOne
+set touchpoint/11 input/action
+set touchpoint/11 output output-object/moveActionDelta
+
+set input/action name/action
+set input/action type/string
+
+set output-object/moveActionDelta field/x tagValue/delta-x
+set output-object/moveActionDelta field/x type/integer
+set output-object/moveActionDelta field/y tagValue/delta-y
+set output-object/moveActionDelta field/y type/integer
+
 
 # Keyboard codes
 set key/up
@@ -141,6 +176,11 @@ set key/up action/move-up
 set key/down action/move-down
 set key/left action/move-left
 set key/right action/move-right
+
+set action/move-up delta-x/0 delta-y/-1
+set action/move-down delta-x/0 delta-y/1
+set action/move-left delta-x/-1 delta-y/0
+set action/move-right delta-x/1 delta-y/0
 
 set current-view spreadsheet-view/1
 `

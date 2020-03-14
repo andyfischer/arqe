@@ -21,7 +21,8 @@
     "build": "SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "test": "SKIP_PREFLIGHT_CHECK=true react-scripts test",
     "eject": "SKIP_PREFLIGHT_CHECK=true react-scripts eject",
-    "generate-api": "tsc-watch --onSuccess 'node ../dist/startCli.js -f src/source.graph --generate'"
+    "generate-api": "tsc-watch --onSuccess 'node ../dist/startCli.js -f src/source.graph --generate'",
+    "generate-api-once": "node ../dist/startCli.js -f src/source.graph --generate"
   },
   "eslintConfig": {
     "extends": "react-app"

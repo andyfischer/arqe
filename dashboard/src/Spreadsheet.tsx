@@ -44,7 +44,6 @@ export default function Spreadsheet(props: Props) {
     const api = new SpreadsheetViewAPI(graph);
     const spreadsheet = api.spreadsheetForView(spreadsheetView);
 
-    console.log('running listColumns on: ', spreadsheet)
     const cols = api.listColumns(spreadsheet);
     const rows = api.listRows(spreadsheet);
     const selection = api.getSelectedCell(spreadsheetView);

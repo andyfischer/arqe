@@ -11,17 +11,34 @@ graph.loadDump(GraphSource);
 
 const api = new EditModelAPI(graph);
 
-const keyNameToCode = graph.eagerValue((cxt) => {
-    const map = {}
-    for (const rel of cxt.getRelations('key/* browsername/*')) {
-        map[rel.getTagValue('browsername')] = rel.getTag('key');
-    }
-    return map;
-});
-
 function handleKeyPress(key) {
     const action = api.findActionForKey(key);
-    console.log('run action: ', action);
+
+    performAction(action);
+}
+
+function incRowColId(item: string, delta: number) {
+    const match = /([a-z]+)\/([0-9]+)$/.exec(item);
+    const index = parseInt(match[2]);
+    return match[1] + '/' + (index + delta);
+}
+
+function performAction(action) {
+    const currentView = api.getCurrentView();
+    // const spreadsheet = api.spreadsheetForView(currentView);
+    const pos = api.getSpreadsheetSelectionPos(currentView);
+    const deltaStr = api.getMoveActionDelta(action);
+    const delta = {
+        x: parseInt(deltaStr.x),
+        y: parseInt(deltaStr.y),
+    }
+
+    const newPos = {
+        row: incRowColId(pos.row, delta.y),
+        col: incRowColId(pos.col, delta.x),
+    }
+
+    console.log('new pos = ', newPos)
 
     switch (action) {
     case 'action/move-left':
@@ -33,9 +50,8 @@ function handleKeyPress(key) {
     case 'action/move-down':
         return;
     }
-}
 
-function performAction(action) {
+    console.log('nothing to do for action: ' + action);
 }
 
 const App: React.FC = () => {
