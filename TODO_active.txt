@@ -1,11 +1,20 @@
 
 Spreadsheet
 
- - Encode keyboard input mappings in graph
+ X Encode keyboard input mappings in graph
  - Write key event listener in App
  - Set up the editing interaction model
    - Arrow keys to move selection
    - Selection should include component
  - Selection changes should trigger rerender
  - More work on derived relations
+
+
+Declare derived data:
+ - Enter an expression like:
+ set keyNameToCode == (to-map
+    search/(query key/* browsername/*)
+    keyby/(tag-value browsername)
+    valueby/(tag key)
+ )
 

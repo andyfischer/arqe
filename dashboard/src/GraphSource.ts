@@ -89,6 +89,28 @@ set touchpoint/6 output optional
 set output-object/1 field/col tag/col
 set output-object/1 field/row tag/row
 
+set code-generation/edit-model touchpoint/7
+set touchpoint/7 function-name == findKeyForBrowserName
+set touchpoint/7 query == key/* browsername/\${browserName}
+set touchpoint/7 expectOne
+set touchpoint/7 output optional
+set touchpoint/7 input/browserName
+set touchpoint/7 output tag/key
+
+set input/browserName type/string
+set input/browserName name/browserName
+
+set code-generation/edit-model touchpoint/8
+set touchpoint/8 function-name == findActionForKey
+set touchpoint/8 query == \${key} action/*
+set touchpoint/8 expectOne
+set touchpoint/8 output optional
+set touchpoint/8 input/key
+set touchpoint/8 output tag/action
+
+set input/key type/string
+set input/key name/key
+
 # Spreadsheet View
 set spreadsheet-view/1 spreadsheet/1
 set spreadsheet-view/1 selection col/1 row/2
@@ -114,4 +136,11 @@ set key/right browsername/ArrowRight
 set key/shift
 set key/shift keycode/16
 set key/shift browsername/Shift
+
+set key/up action/move-up
+set key/down action/move-down
+set key/left action/move-left
+set key/right action/move-right
+
+set current-view spreadsheet-view/1
 `
