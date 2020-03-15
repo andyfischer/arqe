@@ -31,15 +31,15 @@
 import React from 'react'
 import SpreadsheetViewAPI from './SpreadsheetViewAPI'
 import { Graph } from 'ik'
+import { graph } from './start'
 
 interface Props {
-    graph: Graph
     spreadsheetView: string
 }
 
 export default function Spreadsheet(props: Props) {
 
-    const { graph, spreadsheetView } = props;
+    const { spreadsheetView } = props;
 
     const api = new SpreadsheetViewAPI(graph);
     const spreadsheet = api.spreadsheetForView(spreadsheetView);
@@ -87,7 +87,6 @@ export default function Spreadsheet(props: Props) {
                 {api.colName(col)}
             </div>
         })}
-
 
         { rows.map(row => {
             return cols.map(col => {

@@ -4,14 +4,13 @@ import UpdateContext, { UpdateFn } from './UpdateContext'
 
 export default class EagerValue<T> {
     graph: Graph
-    id: number
+    id: string
     updateFn: UpdateFn<T>
     value: T
 
     constructor(graph: Graph, updateFn: UpdateFn<T>, initialValue?: T) {
-        this.id = graph.nextEagerValueId;
+        this.id = graph.eagerValueIds.take()
         this.value = initialValue;
-        graph.nextEagerValueId += 1;
         this.graph = graph;
         this.updateFn = updateFn;
     }

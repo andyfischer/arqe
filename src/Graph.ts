@@ -28,6 +28,9 @@ import UpdateContext from './UpdateContext'
 import Fs from 'fs'
 import TagTypeOrdering from './TagTypeOrdering'
 import runningInBrowser from './context/runningInBrowser'
+import IDSource from './IDSource'
+import GraphListenerV2 from './GraphListenerV2'
+import { parsePattern } from './parseCommand'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -47,7 +50,10 @@ export default class Graph {
     wsProviders: EagerValue<WebSocketProvider[]>
     derivedValueMounts: StorageMount[] = []
 
-    nextEagerValueId: number = 1
+    eagerValueIds = new IDSource()
+    graphListenerIds = new IDSource()
+
+    graphListenersV2: { [id: string]: GraphListenerV2 } = {}
 
     constructor() {
         if (runningInBrowser())
@@ -245,6 +251,12 @@ export default class Graph {
         for (const listener of this.listeners)
             listener.onRelationUpdated(rel);
 
+        for (const id in this.graphListenersV2) {
+            const listener = this.graphListenersV2[id];
+            if (listener.pattern.matches(rel))
+                listener.trigger();
+        }
+
         for (const savedQuery of this.savedQueries) {
             const matches = savedQuery.pattern.matches(rel);
 
@@ -259,6 +271,12 @@ export default class Graph {
     onRelationDeleted(rel: Relation) {
         for (const listener of this.listeners)
             listener.onRelationDeleted(rel);
+
+        for (const id in this.graphListenersV2) {
+            const listener = this.graphListenersV2[id];
+            if (listener.pattern.matches(rel))
+                listener.trigger();
+        }
 
         for (const savedQuery of this.savedQueries) {
             if (savedQuery.pattern.matches(rel)) {
@@ -354,6 +372,10 @@ export default class Graph {
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
+    }
+
+    addListener(patternStr: string, callback: () => void) {
+        return new GraphListenerV2(this, parsePattern(patternStr), callback);
     }
     
     loadDumpFile(filename: string) {
