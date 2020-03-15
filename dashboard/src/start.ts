@@ -56,7 +56,9 @@ function performAction(action) {
 
 document.addEventListener('keydown', (evt) => {
     const key = api.findKeyForBrowserName(evt.key);
+
     if (key) {
-        handleKeyPress(key);
+        evt.preventDefault();
+        return handleKeyPress(key);
     }
 });

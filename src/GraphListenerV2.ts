@@ -11,6 +11,7 @@ export default class GraphListenerV2 {
     constructor(graph: Graph, pattern: Pattern, callback: () => void) {
         this.graph = graph;
         this.pattern = pattern;
+        this.callback = callback;
         this.id = graph.graphListenerIds.take()
 
         if (graph.graphListenersV2[this.id])

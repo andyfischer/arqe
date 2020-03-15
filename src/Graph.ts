@@ -312,6 +312,9 @@ export default class Graph {
     }
 
     runSync(commandStr: string) {
+
+        console.log('runSync starting: ', commandStr);
+
         let result = null;
 
         const collector = collectRespond(r => { result = r; });
@@ -375,6 +378,9 @@ export default class Graph {
     }
 
     addListener(patternStr: string, callback: () => void) {
+        if (typeof callback !== 'function')
+            throw new Error('expected callback function');
+
         return new GraphListenerV2(this, parsePattern(patternStr), callback);
     }
     
