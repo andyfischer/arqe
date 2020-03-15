@@ -17,39 +17,44 @@ function handleKeyPress(key) {
     performAction(action);
 }
 
-function incRowColId(item: string, delta: number) {
-    const match = /([a-z]+)\/([0-9]+)$/.exec(item);
+function incRowOrCol(spreadsheet, orig: string, delta: number) {
+    const match = /([a-z]+)\/([0-9]+)$/.exec(orig);
     const index = parseInt(match[2]);
-    return match[1] + '/' + (index + delta);
+    const newId = match[1] + '/' + (index + delta);
+
+    if (api.rowOrColExists(spreadsheet, newId)) {
+        return newId;
+    } else {
+        return orig;
+    }
 }
 
 function performAction(action) {
     const currentView = api.getCurrentView();
-    // const spreadsheet = api.spreadsheetForView(currentView);
+    const spreadsheet = api.spreadsheetForView(currentView);
     const pos = api.getSpreadsheetSelectionPos(currentView);
     const deltaStr = api.getMoveActionDelta(action);
+
+    if (!deltaStr)
+        return;
+
     const delta = {
         x: parseInt(deltaStr.x),
         y: parseInt(deltaStr.y),
     }
 
     const newPos = {
-        row: incRowColId(pos.row, delta.y),
-        col: incRowColId(pos.col, delta.x),
+        row: incRowOrCol(spreadsheet, pos.row, delta.y),
+        col: incRowOrCol(spreadsheet, pos.col, delta.x),
     }
+
+    if (pos === newPos)
+        return;
+
+    api.clearSelection(currentView);
+    api.setSelection(newPos.col, newPos.row, currentView);
 
     console.log('new pos = ', newPos)
-
-    switch (action) {
-    case 'action/move-left':
-        return;
-    case 'action/move-up':
-        return;
-    case 'action/move-right':
-        return;
-    case 'action/move-down':
-        return;
-    }
 
     console.log('nothing to do for action: ' + action);
 }

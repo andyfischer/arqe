@@ -11,6 +11,22 @@ export default class API {
         this.graph.run(command);
     }
     
+    spreadsheetForView(spreadsheetView: string): string {
+        const queryStr = `${spreadsheetView} spreadsheet/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTag("spreadsheet");
+    }
+    
     findKeyForBrowserName(browserName: string): string {
         const queryStr = `key/* browsername/${browserName}`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
@@ -100,5 +116,19 @@ export default class API {
             x: rel.getTagValue("delta-x"),
             y: rel.getTagValue("delta-y"),
         }
+    }
+    
+    rowOrColExists(item: string, spreadsheet: string): boolean {
+        const queryStr = `${spreadsheet} ${item}`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.length > 0;
+    }
+    
+    clearSelection(spreadsheet: string) {
+        this.graph.runSync(`delete ${spreadsheet} selection row/* col/*`);
+    }
+    
+    setSelection(col: string, row: string, view: string) {
+        this.graph.runSync(`set ${view} selection ${row} ${col}`);
     }
 }

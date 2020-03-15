@@ -90,182 +90,214 @@ export class DAOGenerator {
     target: string
     api: DAOGeneratorGeneratedDAO
     destinationFilename: string
+    verboseLogging: boolean
 
     constructor(api: DAOGeneratorGeneratedDAO, target: string) {
         this.api = api;
         this.target = target;
 
         this.destinationFilename = this.api.getDestinationFilename(this.target)
+        this.verboseLogging = this.api.enableVerboseLogging(this.target);
+    }
+    
+    generateEffectfulMethod(writer: JavascriptCodeWriter, touchpoint: string) {
+        const queryStr = this.api.touchpointQueryString(touchpoint);
+        const name = this.api.touchpointFunctionName(touchpoint);
+
+        writer.startFunction(name, null, writer => {
+            const inputs = this.api.listTouchpointInputs(touchpoint);
+            inputs.sort();
+            for (const input of inputs) {
+                const name = this.api.inputName(input);
+                const inputType = this.api.inputType(input);
+
+                if (inputType)
+                    writer.writeInput(name, inputType)
+            }
+        });
+
+        writer.writeLine(`this.graph.runSync(\`${queryStr}\`);`);
+
+        writer.finishFunction();
+    }
+
+    generateMethod(writer: JavascriptCodeWriter, touchpoint: string) {
+
+        const queryStr = this.api.touchpointQueryString(touchpoint);
+
+        if (queryStr.startsWith('set ') || queryStr.startsWith('delete ')) {
+            this.generateEffectfulMethod(writer, touchpoint);
+            return;
+        }
+
+        const name = this.api.touchpointFunctionName(touchpoint);
+        const expectOne = this.api.touchpointExpectOne(touchpoint);
+        const outputIsOptional = this.api.touchpointOutputIsOptional(touchpoint);
+        const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
+        const outputObject = this.api.touchpointOutputObject(touchpoint);
+        const outputExists = this.api.touchpointOutputIsExists(touchpoint);
+        const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
+        const tagOutput = this.api.touchpointTagOutput(touchpoint);
+        const outputType = this.api.touchpointOutputType(touchpoint);
+
+        let outputTypeStr = null;
+
+        if (outputExists) {
+            outputTypeStr = 'boolean'
+        } else {
+            if (outputType) {
+                outputTypeStr = outputType;
+            } else if (outputObject) {
+                outputTypeStr = null;
+            } else {
+                outputTypeStr = 'string'
+            }
+
+            if (!expectOne && outputTypeStr !== null)
+                outputTypeStr += '[]'
+        }
+
+        writer.startFunction(name, outputTypeStr, writer => {
+            const inputs = this.api.listTouchpointInputs(touchpoint);
+            inputs.sort();
+            for (const input of inputs) {
+                const name = this.api.inputName(input);
+                const inputType = this.api.inputType(input);
+
+                if (inputType)
+                    writer.writeInput(name, inputType)
+            }
+        });
+
+        writer.writeLine(`const queryStr = \`${queryStr}\`;`);
+
+        if (this.verboseLogging) {
+            writer.writeLine();
+            writer.writeLine(`console.log('Running query (for ${name}): ' + queryStr)`);
+        }
+
+        writer.writeLine('const rels: Relation[] = this.graph.getRelationsSync(queryStr);');
+
+        if (this.verboseLogging) {
+            writer.writeLine();
+            writer.writeLine(`console.log('Got results: [' + rels.map(rel => rel.str()).join(', ') + ']')`)
+        }
+
+        if (outputExists) {
+            writer.writeLine('return rels.length > 0;');
+        } else if (expectOne) {
+            writer.writeLine()
+
+            if (!outputIsOptional)
+                writer.writeLine('// Expect one result')
+
+            writer.writeLine('if (rels.length === 0) {')
+            writer.increaseIndent()
+
+            if (outputIsOptional)
+                writer.writeLine(`return null;`)
+            else
+                writer.writeLine(`throw new Error("No relation found for: " + queryStr)`)
+
+            writer.decreaseIndent()
+            writer.writeLine('}')
+            writer.writeLine()
+            writer.writeLine('if (rels.length > 1) {')
+            writer.increaseIndent()
+            writer.writeLine(`throw new Error("Multiple results found for: " + queryStr)`)
+            writer.decreaseIndent()
+            writer.writeLine('}')
+            writer.writeLine()
+            
+            writer.writeLine('const rel = rels[0];');
+
+            if (outputIsValue) {
+                writer.writeLine('return rel.getValue();');
+            } else if (outputObject) {
+                writer.writeLine();
+                writer.writeLine('return {');
+                writer.increaseIndent();
+
+                for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
+                    writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
+                }
+                
+                for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
+                    writer.writeLine(`${field}: rel.getTag("${tag}"),`);
+                }
+
+                writer.decreaseIndent();
+                writer.writeLine('}');
+
+            } else if (tagValueOutput) {
+                writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
+            } else if (tagOutput) {
+                writer.writeLine(`return rel.getTag("${tagOutput}");`)
+
+            } else {
+                writer.writeLine('// no output')
+            }
+        } else {
+            if (tagValueOutput) {
+                let returnStr = `return rels.map(rel => rel.getTagValue("${tagValueOutput}"))`
+
+                if (outputType === 'integer') {
+                    returnStr += '.map(str => parseInt(str, 10))'
+                }
+
+                returnStr += ';'
+
+                writer.writeLine(returnStr)
+            } else if (outputObject) {
+
+                writer.writeLine();
+                writer.writeLine('return rels.map(rel => ({');
+                writer.increaseIndent();
+
+                for (const { field, tagValue } of this.api.outputObjectFields(outputObject)) {
+                    writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
+                }
+
+                writer.decreaseIndent();
+                writer.writeLine('}));');
+
+            } else if (tagOutput) {
+                writer.writeLine(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
+
+            } else {
+
+                if (outputType === 'object') {
+                    writer.writeLine('return rels.map(rel => ({')
+                    writer.increaseIndent()
+
+                    const objectdef = this.api.getOutputObjectdef(touchpoint);
+
+                    writer.writeLine('return rels.map(rel => ({')
+
+                    for (const objectField of this.api.getObjectdefFields(objectdef)) {
+                    }
+
+                } else {
+                    writer.writeLine('return rels.map(rel => rel.getValue())')
+                }
+            }
+        }
+
+        writer.finishFunction()
     }
 
     generateMethods(writer: JavascriptCodeWriter) {
-        const verboseLogging = this.api.enableVerboseLogging(this.target);
 
         writer.startFunction('run', null, w => w.writeInput('command', 'string'));
 
-        if (verboseLogging)
+        if (this.verboseLogging)
             writer.writeLine(`console.log('Running command: ' + command);`);
 
         writer.writeLine('this.graph.run(command);')
         writer.finishFunction()
 
         for (const touchpoint of this.api.listTouchpoints(this.target)) {
-
-            const name = this.api.touchpointFunctionName(touchpoint);
-            const expectOne = this.api.touchpointExpectOne(touchpoint);
-            const outputIsOptional = this.api.touchpointOutputIsOptional(touchpoint);
-            const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
-            const outputObject = this.api.touchpointOutputObject(touchpoint);
-            const outputExists = this.api.touchpointOutputIsExists(touchpoint);
-            const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
-            const tagOutput = this.api.touchpointTagOutput(touchpoint);
-            const outputType = this.api.touchpointOutputType(touchpoint);
-
-            let outputTypeStr = null;
-
-            if (outputExists) {
-                outputTypeStr = 'boolean'
-            } else {
-                if (outputType) {
-                    outputTypeStr = outputType;
-                } else if (outputObject) {
-                    outputTypeStr = null;
-                } else {
-                    outputTypeStr = 'string'
-                }
-
-                if (!expectOne && outputTypeStr !== null)
-                    outputTypeStr += '[]'
-            }
-
-            writer.startFunction(name, outputTypeStr, writer => {
-                const inputs = this.api.listTouchpointInputs(touchpoint);
-                inputs.sort();
-                for (const input of inputs) {
-                    const name = this.api.inputName(input);
-                    const inputType = this.api.inputType(input);
-
-                    if (inputType)
-                        writer.writeInput(name, inputType)
-                }
-            });
-
-            const queryStr = this.api.touchpointQueryString(touchpoint);
-            writer.writeLine(`const queryStr = \`${queryStr}\`;`);
-
-            if (verboseLogging) {
-                writer.writeLine();
-                writer.writeLine(`console.log('Running query (for ${name}): ' + queryStr)`);
-            }
-
-            writer.writeLine('const rels: Relation[] = this.graph.getRelationsSync(queryStr);');
-
-            if (verboseLogging) {
-                writer.writeLine();
-                writer.writeLine(`console.log('Got results: [' + rels.map(rel => rel.str()).join(', ') + ']')`)
-            }
-
-            if (outputExists) {
-                writer.writeLine('return rels.length > 0;');
-            } else if (expectOne) {
-                writer.writeLine()
-
-                if (!outputIsOptional)
-                    writer.writeLine('// Expect one result')
-
-                writer.writeLine('if (rels.length === 0) {')
-                writer.increaseIndent()
-
-                if (outputIsOptional)
-                    writer.writeLine(`return null;`)
-                else
-                    writer.writeLine(`throw new Error("No relation found for: " + queryStr)`)
-
-                writer.decreaseIndent()
-                writer.writeLine('}')
-                writer.writeLine()
-                writer.writeLine('if (rels.length > 1) {')
-                writer.increaseIndent()
-                writer.writeLine(`throw new Error("Multiple results found for: " + queryStr)`)
-                writer.decreaseIndent()
-                writer.writeLine('}')
-                writer.writeLine()
-                
-                writer.writeLine('const rel = rels[0];');
-
-                if (outputIsValue) {
-                    writer.writeLine('return rel.getValue();');
-                } else if (outputObject) {
-                    writer.writeLine();
-                    writer.writeLine('return {');
-                    writer.increaseIndent();
-
-                    for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
-                        writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
-                    }
-                    
-                    for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
-                        writer.writeLine(`${field}: rel.getTag("${tag}"),`);
-                    }
-
-                    writer.decreaseIndent();
-                    writer.writeLine('}');
-
-                } else if (tagValueOutput) {
-                    writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
-                } else if (tagOutput) {
-                    writer.writeLine(`return rel.getTag("${tagOutput}");`)
-
-                } else {
-                    writer.writeLine('// no output')
-                }
-            } else {
-                if (tagValueOutput) {
-                    let returnStr = `return rels.map(rel => rel.getTagValue("${tagValueOutput}"))`
-
-                    if (outputType === 'integer') {
-                        returnStr += '.map(str => parseInt(str, 10))'
-                    }
-
-                    returnStr += ';'
-
-                    writer.writeLine(returnStr)
-                } else if (outputObject) {
-
-                    writer.writeLine();
-                    writer.writeLine('return rels.map(rel => ({');
-                    writer.increaseIndent();
-
-                    for (const { field, tagValue } of this.api.outputObjectFields(outputObject)) {
-                        writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
-                    }
-
-                    writer.decreaseIndent();
-                    writer.writeLine('}));');
-
-                } else if (tagOutput) {
-                    writer.writeLine(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
-
-                } else {
-
-                    if (outputType === 'object') {
-                        writer.writeLine('return rels.map(rel => ({')
-                        writer.increaseIndent()
-
-                        const objectdef = this.api.getOutputObjectdef(touchpoint);
-
-                        writer.writeLine('return rels.map(rel => ({')
-
-                        for (const objectField of this.api.getObjectdefFields(objectdef)) {
-                        }
-
-                    } else {
-                        writer.writeLine('return rels.map(rel => rel.getValue())')
-                    }
-                }
-            }
-
-            writer.finishFunction()
+            this.generateMethod(writer, touchpoint);
         }
     }
 
