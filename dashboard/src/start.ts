@@ -11,7 +11,8 @@ const api = new EditModelAPI(graph);
 function handleKeyPress(key) {
     const action = api.findActionForKey(key);
 
-    performAction(action);
+    if (action)
+        performAction(action);
 }
 
 function incRowOrCol(spreadsheet, orig: string, delta: number) {
@@ -27,13 +28,36 @@ function incRowOrCol(spreadsheet, orig: string, delta: number) {
 }
 
 function performAction(action) {
+
+    console.log('performAction: ', action)
+
+    const view = api.getCurrentView();
+    const deltaStr = api.getMoveActionDelta(action);
+    if (deltaStr)
+        handleMoveAction(action);
+
+    switch (action) {
+
+    case 'action/start-editing':
+        if (api.isEditing(view))
+            api.stopEditing(view);
+        else
+            api.startEditing(view);
+
+        break;
+
+    case 'action/stop-editing':
+        api.stopEditing(view);
+        break;
+    }
+}
+
+function handleMoveAction(action) {
+
     const currentView = api.getCurrentView();
     const spreadsheet = api.spreadsheetForView(currentView);
     const pos = api.getSpreadsheetSelectionPos(currentView);
     const deltaStr = api.getMoveActionDelta(action);
-
-    if (!deltaStr)
-        return;
 
     const delta = {
         x: parseInt(deltaStr.x),
@@ -50,11 +74,10 @@ function performAction(action) {
 
     api.clearSelection(currentView);
     api.setSelection(newPos.col, newPos.row, currentView);
-
-    console.log('changed selection: ', newPos)
 }
 
 document.addEventListener('keydown', (evt) => {
+    console.log('keydown event: ', evt);
     const key = api.findKeyForBrowserName(evt.key);
 
     if (key) {

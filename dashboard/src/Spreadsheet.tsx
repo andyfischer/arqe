@@ -47,6 +47,7 @@ export default function Spreadsheet(props: Props) {
     const cols = api.listColumns(spreadsheet);
     const rows = api.listRows(spreadsheet);
     const selection = api.getSelectedCell(spreadsheetView);
+    const isEditing = api.isEditing(spreadsheetView);
 
     let gridTemplateColumns = '';
 
@@ -64,6 +65,9 @@ export default function Spreadsheet(props: Props) {
             }
             .grid-element.selected {
               background-color: #77EAFF;
+            }
+            .grid-element.editing {
+              background-color: red;
             }
             .header-element {
                 color: #666;
@@ -91,14 +95,32 @@ export default function Spreadsheet(props: Props) {
         { rows.map(row => {
             return cols.map(col => {
 
+                const key = row + ' ' + col;
                 const value = api.getCellValue(col, row) || '';
                 const isSelected = selection
                     && (col === selection.col)
                     && (row === selection.row);
 
+                if (isSelected && isEditing) {
+                    return <input key={key}
+                        type="text"
+                        value={value}
+                        onChange={evt => {
+                            console.log('on change: ', evt)
+                        }}
+                        />
+                }
+
                 const className = 'grid-element' + (isSelected ? ' selected' : '');
 
-                return <div className={className} key={row + ' ' + col} >
+                return <div
+                        className={className}
+                        key={key}
+                        onClick={() => {
+                            api.clearSelection(spreadsheetView);
+                            api.setSelection(col, row, spreadsheetView);
+                        }}
+                        >
                     {value}
                 </div>
             })

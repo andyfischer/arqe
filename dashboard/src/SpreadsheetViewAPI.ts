@@ -91,4 +91,18 @@ export default class API {
             row: rel.getTag("row"),
         }
     }
+    
+    clearSelection(spreadsheet: string) {
+        this.graph.runSync(`delete ${spreadsheet} selection row/* col/*`);
+    }
+    
+    setSelection(col: string, row: string, view: string) {
+        this.graph.runSync(`set ${view} selection ${row} ${col}`);
+    }
+    
+    isEditing(view: string): boolean {
+        const queryStr = `${view} now-editing`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.length > 0;
+    }
 }

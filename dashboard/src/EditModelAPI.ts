@@ -101,9 +101,8 @@ export default class API {
         const queryStr = `${action} delta-x/* delta-y/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
-        // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            return null;
         }
         
         if (rels.length > 1) {
@@ -130,5 +129,19 @@ export default class API {
     
     setSelection(col: string, row: string, view: string) {
         this.graph.runSync(`set ${view} selection ${row} ${col}`);
+    }
+    
+    startEditing(view: string) {
+        this.graph.runSync(`set ${view} now-editing`);
+    }
+    
+    stopEditing(view: string) {
+        this.graph.runSync(`delete ${view} now-editing`);
+    }
+    
+    isEditing(view: string): boolean {
+        const queryStr = `${view} now-editing`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.length > 0;
     }
 }

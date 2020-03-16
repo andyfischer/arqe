@@ -312,9 +312,6 @@ export default class Graph {
     }
 
     runSync(commandStr: string) {
-
-        console.log('runSync starting: ', commandStr);
-
         let result = null;
 
         const collector = collectRespond(r => { result = r; });

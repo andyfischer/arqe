@@ -144,7 +144,7 @@ set code-generation/edit-model touchpoint/11
 set touchpoint/11 function-name == getMoveActionDelta
 set touchpoint/11 query == \${action} delta-x/* delta-y/*
 set touchpoint/11 expectOne
-set touchpoint/11 optional
+set touchpoint/11 output optional
 set touchpoint/11 input/action
 set touchpoint/11 output output-object/moveActionDelta
 
@@ -160,22 +160,41 @@ set code-generation/edit-model touchpoint/12
 set touchpoint/12 function-name == rowOrColExists
 set touchpoint/12 query == \${spreadsheet} \${item}
 set touchpoint/12 expectOne
-set touchpoint/12 optional
+set touchpoint/12 output optional
 set touchpoint/12 input/item
 set touchpoint/12 input/spreadsheet
 set touchpoint/12 output exists
 
+set code-generation/spreadsheet-view touchpoint/13
 set code-generation/edit-model touchpoint/13
 set touchpoint/13 function-name == clearSelection
 set touchpoint/13 query == delete \${spreadsheet} selection row/* col/*
 set touchpoint/13 input/spreadsheet
 
+set code-generation/spreadsheet-view touchpoint/14
 set code-generation/edit-model touchpoint/14
 set touchpoint/14 function-name == setSelection
 set touchpoint/14 query == set \${view} selection \${row} \${col}
 set touchpoint/14 input/view
 set touchpoint/14 input/row
 set touchpoint/14 input/col
+
+set code-generation/edit-model touchpoint/15
+set touchpoint/15 function-name == startEditing
+set touchpoint/15 query == set \${view} now-editing
+set touchpoint/15 input/view
+
+set code-generation/edit-model touchpoint/16
+set touchpoint/16 function-name == stopEditing
+set touchpoint/16 query == delete \${view} now-editing
+set touchpoint/16 input/view
+
+set code-generation/spreadsheet-view touchpoint/17
+set code-generation/edit-model touchpoint/17
+set touchpoint/17 function-name == isEditing
+set touchpoint/17 query == \${view} now-editing
+set touchpoint/17 input/view
+set touchpoint/17 output exists
 
 set input/row name/row
 set input/row type/string
@@ -205,11 +224,14 @@ set key/right browsername/ArrowRight
 set key/shift
 set key/shift keycode/16
 set key/shift browsername/Shift
+set key/enter
+set key/enter browsername/Enter
 
 set key/up action/move-up
 set key/down action/move-down
 set key/left action/move-left
 set key/right action/move-right
+set key/enter action/start-editing
 
 set action/move-up delta-x/0 delta-y/-1
 set action/move-down delta-x/0 delta-y/1
