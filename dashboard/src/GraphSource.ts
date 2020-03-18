@@ -1,51 +1,351 @@
 export default `
+set code-generation/1
+set code-generation/1 destination-filename == src/DAOGeneratorGeneratedDAO.ts
+set code-generation/1 ik-import == .
+set code-generation/1 strategy/dao-api
+# set code-generation/1 verbose-logging
+
+set code-generation/1 touchpoint/0.5
+set touchpoint/0.5 function-name == listTargets
+set touchpoint/0.5 query == code-generation/*
+set touchpoint/0.5 output tag/code-generation
+
+set code-generation/1 touchpoint/0.5
+set touchpoint/0.5 function-name == listTargets
+set touchpoint/0.5 query == code-generation/*
+set touchpoint/0.5 output tag/code-generation
+
+set code-generation/1 touchpoint/0.6
+set touchpoint/0.6 function-name == listTouchpoints
+set touchpoint/0.6 query == \${target} touchpoint/*
+set touchpoint/0.6 output tag/touchpoint
+set touchpoint/0.6 input/0.5
+
+set code-generation/1 touchpoint/0.8
+set touchpoint/0.8 function-name == getIkImport
+set touchpoint/0.8 query == \${target} ik-import
+set touchpoint/0.8 output value
+set touchpoint/0.8 expectOne
+set touchpoint/0.8 input/0.5
+
+set code-generation/1 touchpoint/1
+set touchpoint/1 function-name == enableVerboseLogging
+set touchpoint/1 output exists
+set touchpoint/1 query == \${target} verbose-logging
+set touchpoint/1 input/0.5
+set input/0.5 name/target
+set input/0.5 type/string
+
+set code-generation/1 touchpoint/3
+set touchpoint/3 query == \${touchpoint} function-name
+set touchpoint/3 function-name == touchpointFunctionName
+set touchpoint/3 input/1
+set input/1 name/touchpoint
+set input/1 type/string
+
+set touchpoint/3 output value
+set touchpoint/3 expectOne
+
+set code-generation/1 touchpoint/4
+set touchpoint/4 query == \${touchpoint} expectOne
+set touchpoint/4 function-name == touchpointExpectOne
+set touchpoint/4 input/2
+set input/2 name/touchpoint
+set input/2 type/string
+set touchpoint/4 output exists
+
+set code-generation/1 touchpoint/4.1
+set touchpoint/4.1 query == \${touchpoint} output optional
+set touchpoint/4.1 function-name == touchpointOutputIsOptional
+set touchpoint/4.1 input/2
+set input/2 name/touchpoint
+set input/2 type/string
+set touchpoint/4.1 output exists
+
+set code-generation/1 touchpoint/5
+set touchpoint/5 query == \${touchpoint} output value
+set touchpoint/5 function-name == touchpointOutputIsValue
+set touchpoint/5 input/3
+set input/3 name/touchpoint
+set input/3 type/string
+set touchpoint/5 output exists
+
+set code-generation/1 touchpoint/6
+set touchpoint/6 query == \${touchpoint} output exists
+set touchpoint/6 function-name == touchpointOutputIsExists
+set touchpoint/6 input/4
+set input/4 name/touchpoint
+set input/4 type/string
+set touchpoint/6 output exists
+
+set code-generation/1 touchpoint/7
+set touchpoint/7 query == \${touchpoint} output tagValue/*
+set touchpoint/7 function-name == touchpointTagValueOutputs
+set touchpoint/7 input/5
+set touchpoint/7 output tagValue/tagValue
+set input/5 name/touchpoint
+set input/5 type/string
+
+set code-generation/1 touchpoint/7.1
+set touchpoint/7.1 query == \${touchpoint} output tagValue/*
+set touchpoint/7.1 function-name == touchpointTagValueOutput
+set touchpoint/7.1 input/5
+set touchpoint/7.1 output tagValue/tagValue
+set touchpoint/7.1 output optional
+set touchpoint/7.1 expectOne
+set input/5 name/touchpoint
+set input/5 type/string
+
+set code-generation/1 touchpoint/8
+set touchpoint/8 query == \${touchpoint} output tag/*
+set touchpoint/8 function-name == touchpointTagOutputs
+set touchpoint/8 input/6
+set touchpoint/8 output tagValue/tag
+set input/6 name/touchpoint
+set input/6 type/string
+
+set code-generation/1 touchpoint/8.1
+set touchpoint/8.1 query == \${touchpoint} output tag/*
+set touchpoint/8.1 function-name == touchpointTagOutput
+set touchpoint/8.1 input/6
+set touchpoint/8.1 output tagValue/tag
+set touchpoint/8.1 output optional
+set input/6 name/touchpoint
+set input/6 type/string
+
+set code-generation/1 touchpoint/9
+set touchpoint/9 query == \${touchpoint} output type/*
+set touchpoint/9 function-name == touchpointOutputType
+set touchpoint/9 input/7
+set touchpoint/9 output tagValue/type
+set touchpoint/9 output optional
+set touchpoint/9 expectOne
+set input/7 name/touchpoint
+set input/7 type/string
+
+set code-generation/1 touchpoint/10
+set touchpoint/10 query == \${touchpoint} input/*
+set touchpoint/10 function-name == listTouchpointInputs
+set touchpoint/10 output tag/input
+set touchpoint/10 input/10
+set input/10 name/touchpoint
+set input/10 type/string
+
+set code-generation/1 touchpoint/11
+set touchpoint/11 query == \${input} name/*
+set touchpoint/11 function-name == inputName
+set touchpoint/11 output tagValue/name
+set touchpoint/11 input/11
+set touchpoint/11 expectOne
+set input/11 name/input
+set input/11 type/string
+
+set code-generation/1 touchpoint/12
+set touchpoint/12 query == \${input} type/*
+set touchpoint/12 function-name == inputType
+set touchpoint/12 output tagValue/type
+set touchpoint/12 output optional
+set touchpoint/12 input/12
+set touchpoint/12 expectOne
+set input/12 name/input
+set input/12 type/string
+
+set code-generation/1 touchpoint/13
+set touchpoint/13 query == \${touchpoint} query
+set touchpoint/13 function-name == touchpointQueryString
+set touchpoint/13 output value
+set touchpoint/13 input/13
+set touchpoint/13 expectOne
+set input/13 name/touchpoint
+set input/13 type/string
+
+set code-generation/1 touchpoint/14.1
+set touchpoint/14.1 query == \${target} destination-filename
+set touchpoint/14.1 function-name == getDestinationFilename
+set touchpoint/14.1 output value
+set touchpoint/14.1 expectOne
+set touchpoint/14.1 input/14.1
+set input/14.1 name/target
+set input/14.1 type/string
+
+set code-generation/1 touchpoint/15
+set touchpoint/15 query == \${touchpoint} output objectdef/*
+set touchpoint/15 function-name == getOutputObjectdef
+set touchpoint/15 output tag/objectdef
+set touchpoint/15 expectOne
+set touchpoint/15 input/15
+set input/15 name/touchpoint
+set input/15 type/string
+
+set code-generation/1 touchpoint/16
+set touchpoint/16 query == \${objectdef} objectfield/*
+set touchpoint/16 function-name == getObjectdefFields
+set touchpoint/16 output tag/objectdef
+set touchpoint/16 input/16
+set input/16 name/objectdef
+set input/16 type/string
+
+set code-generation/2
+set code-generation/2 destination-filename == src/CodeGenerationApi.ts
+set code-generation/2 ik-import == .
+set code-generation/2 strategy/dao-api
+
+set code-generation/2 touchpoint/17.1
+set touchpoint/17.1 query == code-generation/*
+set touchpoint/17.1 function-name == listCodeGenerationTargets
+set touchpoint/17.1 output tag/code-generation
+
+set code-generation/2 touchpoint/17
+set touchpoint/17 query == \${target} strategy/*
+set touchpoint/17 function-name == codeGenerationTargetStrategy
+set touchpoint/17 output tagValue/strategy
+set touchpoint/17 expectOne
+set touchpoint/17 input/0.5
+
+set code-generation/3
+set code-generation/3 destination-filename == src/code-generation/TextAsCodeApi.ts
+set code-generation/3 strategy/dao-api
+set code-generation/3 ik-import == ..
+
+set code-generation/3 touchpoint/18
+set touchpoint/18 function-name == fromFile
+set touchpoint/18 query == \${target} from-file
+set touchpoint/18 output value
+set touchpoint/18 expectOne
+set touchpoint/18 input/0.5
+
+set code-generation/3 touchpoint/19
+set touchpoint/19 function-name == destinationFilename
+set touchpoint/19 query == \${target} destination-filename
+set touchpoint/19 output value
+set touchpoint/19 expectOne
+set touchpoint/19 input/0.5
+
+set input/touchpoint name/touchpoint
+set input/touchpoint type/string
+
+set code-generation/1 touchpoint/20
+set touchpoint/20 function-name == touchpointOutputObject
+set touchpoint/20 query == \${touchpoint} output output-object/*
+set touchpoint/20 output tag/output-object
+set touchpoint/20 output optional
+set touchpoint/20 expectOne
+set touchpoint/20 input/touchpoint
+
+set input/output-object name/outputObject
+set input/output-object type/string
+
+set code-generation/1 touchpoint/22
+set touchpoint/22 function-name == outputObjectFields
+set touchpoint/22 query == \${outputObject} field/* tagValue/*
+set touchpoint/22 input/output-object
+set touchpoint/22 output output-object/field-tag
+
+set output-object/field-tag field/field tagValue/field
+set output-object/field-tag field/tagValue tagValue/tagValue
+
+set code-generation/1 touchpoint/23
+set touchpoint/23 function-name == outputObjectTagFields
+set touchpoint/23 query == \${outputObject} field/* tag/*
+set touchpoint/23 input/output-object
+set touchpoint/23 output output-object/field-tag2
+
+set output-object/field-tag2 field/field tagValue/field
+set output-object/field-tag2 field/tag tagValue/tag
+
+set code-generation/1 touchpoint/24
+set touchpoint/24 function-name == outputObjectTagValueFields
+set touchpoint/24 query == \${outputObject} field/* tagValue/*
+set touchpoint/24 input/output-object
+set touchpoint/24 output output-object/field-tagValue
+
+set output-object/field-tagValue field/field tagValue/field
+set output-object/field-tagValue field/tagValue tagValue/tagValue
+
+set code-generation/4
+set code-generation/4 destination-filename == src/__tests__/generated/GeneratedApi.ts
+set code-generation/4 strategy/dao-api
+set code-generation/4 ik-import == ../..
+
+set code-generation/4 touchpoint/25
+set touchpoint/25 function-name == getOneTag
+set touchpoint/25 query == a/1 b/*
+set touchpoint/25 expectOne
+set touchpoint/25 output tag/b
+
+set code-generation/4 touchpoint/26
+set touchpoint/26 function-name == getOneTagValue
+set touchpoint/26 query == a/1 b/*
+set touchpoint/26 expectOne
+set touchpoint/26 output tagValue/b
+
+set code-generation/4 touchpoint/27
+set touchpoint/27 function-name == getCurrentFlag
+set touchpoint/27 query == \${target} flag/*
+set touchpoint/27 expectOne
+set touchpoint/27 output tagValue/flag
+set touchpoint/27 input/target
+
+set code-generation/4 touchpoint/30
+set touchpoint/30 function-name == changeFlag
+set touchpoint/30 query == delete \${target} flag/* | set \${target} flag/\${val}
+set touchpoint/30 input/target
+set touchpoint/30 input/val
+
+set input/target name/target
+set input/target type/string
+set input/val name/val
+set input/val type/string
+
+### DASHBOARD ###
+
 set code-generation/spreadsheet-view
-set code-generation/spreadsheet-view destination-filename == src/SpreadsheetViewAPI.ts
+set code-generation/spreadsheet-view destination-filename == dashboard/src/SpreadsheetViewAPI.ts
 set code-generation/spreadsheet-view ik-import == ik
 set code-generation/spreadsheet-view strategy/dao-api
 # set code-generation/spreadsheet-view verbose-logging
 
-set input/1 name/spreadsheet
-set input/1 type/string
+set input/spreadsheet name/spreadsheet
+set input/spreadsheet type/string
 
-set code-generation/spreadsheet-view touchpoint/1
-set touchpoint/1 function-name == listColumns
-set touchpoint/1 query == \${spreadsheet} col/*
-set touchpoint/1 output tag/col
-set touchpoint/1 input/1
+set code-generation/spreadsheet-view touchpoint/db1
+set touchpoint/db1 function-name == listColumns
+set touchpoint/db1 query == \${spreadsheet} col/*
+set touchpoint/db1 output tag/col
+set touchpoint/db1 input/spreadsheet
 
-set code-generation/spreadsheet-view touchpoint/2
-set touchpoint/2 function-name == listRows
-set touchpoint/2 query == \${spreadsheet} row/*
-set touchpoint/2 output tag/row
-set touchpoint/2 input/1
+set code-generation/spreadsheet-view touchpoint/db2
+set touchpoint/db2 function-name == listRows
+set touchpoint/db2 query == \${spreadsheet} row/*
+set touchpoint/db2 output tag/row
+set touchpoint/db2 input/spreadsheet
 
-set code-generation/spreadsheet-view touchpoint/3
-set touchpoint/3 function-name == colName
-set touchpoint/3 query == \${col} name/*
-set touchpoint/3 expectOne
-set touchpoint/3 output tagValue/name
-set touchpoint/3 input/2
+set code-generation/spreadsheet-view touchpoint/db3
+set touchpoint/db3 function-name == colName
+set touchpoint/db3 query == \${col} name/*
+set touchpoint/db3 expectOne
+set touchpoint/db3 output tagValue/name
+set touchpoint/db3 input/col
 
-set code-generation/spreadsheet-view touchpoint/4
-set touchpoint/4 function-name == getCellValue
-set touchpoint/4 query == \${row} \${col}
-set touchpoint/4 expectOne
-set touchpoint/4 output value
-set touchpoint/4 output optional
-set touchpoint/4 input/2
-set touchpoint/4 input/3
+set code-generation/spreadsheet-view touchpoint/db4
+set touchpoint/db4 function-name == getCellValue
+set touchpoint/db4 query == \${row} \${col}
+set touchpoint/db4 expectOne
+set touchpoint/db4 output value
+set touchpoint/db4 output optional
+set touchpoint/db4 input/col
+set touchpoint/db4 input/row
 
-set input/2 name/col
+set input/col name/col
 set input/2 type/string
 
-set input/3 name/row
-set input/3 type/string
+set input/row name/row
+set input/row type/string
 
-set code-generation/2
-set code-generation/2 destination-filename == src/GraphSource.ts
-set code-generation/2 strategy/text-as-code
-set code-generation/2 from-file == src/source.graph
+set code-generation/db2
+set code-generation/db2 destination-filename == dashboard/src/GraphSource.ts
+set code-generation/db2 strategy/text-as-code
+set code-generation/db2 from-file == src/source.graph
 
 set spreadsheet/1
 
@@ -67,36 +367,35 @@ set row/2 col/1 == Karen
 set row/2 col/2 == karen@email.com
 set row/2 col/3 == Inactive
 
-set code-generation/spreadsheet-view touchpoint/5
-set code-generation/edit-model touchpoint/5
-set touchpoint/5 function-name == spreadsheetForView
-set touchpoint/5 query == \${spreadsheetView} spreadsheet/*
-set touchpoint/5 expectOne
-set touchpoint/5 output tag/spreadsheet
-set touchpoint/5 output optional
-
-set touchpoint/5 input/spreadsheetView
+set code-generation/spreadsheet-view touchpoint/db5
+set code-generation/edit-model touchpoint/db5
+set touchpoint/db5 function-name == spreadsheetForView
+set touchpoint/db5 query == \${spreadsheetView} spreadsheet/*
+set touchpoint/db5 expectOne
+set touchpoint/db5 output tag/spreadsheet
+set touchpoint/db5 output optional
+set touchpoint/db5 input/spreadsheetView
 set input/spreadsheetView name/spreadsheetView
 set input/spreadsheetView type/string
 
-set code-generation/spreadsheet-view touchpoint/6
-set touchpoint/6 function-name == getSelectedCell
-set touchpoint/6 query == \${spreadsheetView} selection col/* row/*
-set touchpoint/6 expectOne
-set touchpoint/6 input/spreadsheetView
-set touchpoint/6 output output-object/row-col
-set touchpoint/6 output optional
+set code-generation/spreadsheet-view touchpoint/db6
+set touchpoint/db6 function-name == getSelectedCell
+set touchpoint/db6 query == \${spreadsheetView} selection col/* row/*
+set touchpoint/db6 expectOne
+set touchpoint/db6 input/spreadsheetView
+set touchpoint/db6 output output-object/row-col
+set touchpoint/db6 output optional
 
 set output-object/row-col field/col tag/col
 set output-object/row-col field/row tag/row
 
-set code-generation/edit-model touchpoint/7
-set touchpoint/7 function-name == findKeyForBrowserName
-set touchpoint/7 query == key/* browsername/\${browserName}
-set touchpoint/7 expectOne
-set touchpoint/7 output optional
-set touchpoint/7 input/browserName
-set touchpoint/7 output tag/key
+set code-generation/edit-model touchpoint/db7
+set touchpoint/db7 function-name == findKeyForBrowserName
+set touchpoint/db7 query == key/* browsername/\${browserName}
+set touchpoint/db7 expectOne
+set touchpoint/db7 output optional
+set touchpoint/db7 input/browserName
+set touchpoint/db7 output tag/key
 
 set input/browserName type/string
 set input/browserName name/browserName
@@ -111,42 +410,42 @@ set spreadsheet-view/1 selection col/1 row/2
 set current-view spreadsheet-view/1
 
 set code-generation/edit-model
-set code-generation/edit-model destination-filename == src/EditModelAPI.ts
+set code-generation/edit-model destination-filename == dashboard/src/EditModelAPI.ts
 set code-generation/edit-model ik-import == ik
 set code-generation/edit-model strategy/dao-api
 
-set code-generation/edit-model touchpoint/8
-set touchpoint/8 function-name == findActionForKey
-set touchpoint/8 query == \${key} action/*
-set touchpoint/8 expectOne
-set touchpoint/8 output optional
-set touchpoint/8 input/key
-set touchpoint/8 output tag/action
+set code-generation/edit-model touchpoint/db8
+set touchpoint/db8 function-name == findActionForKey
+set touchpoint/db8 query == \${key} action/*
+set touchpoint/db8 expectOne
+set touchpoint/db8 output optional
+set touchpoint/db8 input/key
+set touchpoint/db8 output tag/action
 
-set code-generation/edit-model touchpoint/9
-set touchpoint/9 function-name == getCurrentView
-set touchpoint/9 query == current-view spreadsheet-view/*
-set touchpoint/9 expectOne
-set touchpoint/9 output tag/spreadsheet-view
+set code-generation/edit-model touchpoint/db9
+set touchpoint/db9 function-name == getCurrentView
+set touchpoint/db9 query == current-view spreadsheet-view/*
+set touchpoint/db9 expectOne
+set touchpoint/db9 output tag/spreadsheet-view
 
-set code-generation/edit-model touchpoint/10
-set touchpoint/10 function-name == getSpreadsheetSelectionPos
-set touchpoint/10 query == \${view} selection col/* row/*
-set touchpoint/10 expectOne
-set touchpoint/10 input/view
-set touchpoint/10 output tag/spreadsheet-view
-set touchpoint/10 output output-object/row-col
+set code-generation/edit-model touchpoint/db10
+set touchpoint/db10 function-name == getSpreadsheetSelectionPos
+set touchpoint/db10 query == \${view} selection col/* row/*
+set touchpoint/db10 expectOne
+set touchpoint/db10 input/view
+set touchpoint/db10 output tag/spreadsheet-view
+set touchpoint/db10 output output-object/row-col
 
 set input/view name/view
 set input/view type/string
 
-set code-generation/edit-model touchpoint/11
-set touchpoint/11 function-name == getMoveActionDelta
-set touchpoint/11 query == \${action} delta-x/* delta-y/*
-set touchpoint/11 expectOne
-set touchpoint/11 output optional
-set touchpoint/11 input/action
-set touchpoint/11 output output-object/moveActionDelta
+set code-generation/edit-model touchpoint/db11
+set touchpoint/db11 function-name == getMoveActionDelta
+set touchpoint/db11 query == \${action} delta-x/* delta-y/*
+set touchpoint/db11 expectOne
+set touchpoint/db11 output optional
+set touchpoint/db11 input/action
+set touchpoint/db11 output output-object/moveActionDelta
 
 set input/action name/action
 set input/action type/string
@@ -156,57 +455,57 @@ set output-object/moveActionDelta field/x type/integer
 set output-object/moveActionDelta field/y tagValue/delta-y
 set output-object/moveActionDelta field/y type/integer
 
-set code-generation/edit-model touchpoint/12
-set touchpoint/12 function-name == rowOrColExists
-set touchpoint/12 query == \${spreadsheet} \${item}
-set touchpoint/12 expectOne
-set touchpoint/12 output optional
-set touchpoint/12 input/item
-set touchpoint/12 input/spreadsheet
-set touchpoint/12 output exists
+set code-generation/edit-model touchpoint/db12
+set touchpoint/db12 function-name == rowOrColExists
+set touchpoint/db12 query == \${spreadsheet} \${item}
+set touchpoint/db12 expectOne
+set touchpoint/db12 output optional
+set touchpoint/db12 input/item
+set touchpoint/db12 input/spreadsheet
+set touchpoint/db12 output exists
 
-set code-generation/spreadsheet-view touchpoint/13
-set code-generation/edit-model touchpoint/13
-set touchpoint/13 function-name == clearSelection
-set touchpoint/13 query == delete \${spreadsheet} selection row/* col/*
-set touchpoint/13 input/spreadsheet
+set code-generation/spreadsheet-view touchpoint/db13
+set code-generation/edit-model touchpoint/db13
+set touchpoint/db13 function-name == clearSelection
+set touchpoint/db13 query == delete \${spreadsheet} selection row/* col/*
+set touchpoint/db13 input/spreadsheet
 
-set code-generation/spreadsheet-view touchpoint/14
-set code-generation/edit-model touchpoint/14
-set touchpoint/14 function-name == setSelection
-set touchpoint/14 query == set \${view} selection \${row} \${col}
-set touchpoint/14 input/view
-set touchpoint/14 input/row
-set touchpoint/14 input/col
+set code-generation/spreadsheet-view touchpoint/db14
+set code-generation/edit-model touchpoint/db14
+set touchpoint/db14 function-name == setSelection
+set touchpoint/db14 query == set \${view} selection \${row} \${col}
+set touchpoint/db14 input/view
+set touchpoint/db14 input/row
+set touchpoint/db14 input/col
 
-set code-generation/edit-model touchpoint/15
-set touchpoint/15 function-name == startEditing
-set touchpoint/15 query == set \${view} now-editing
-set touchpoint/15 input/view
+set code-generation/edit-model touchpoint/db15
+set touchpoint/db15 function-name == startEditing
+set touchpoint/db15 query == set \${view} now-editing
+set touchpoint/db15 input/view
 
-set code-generation/edit-model touchpoint/16
-set touchpoint/16 function-name == stopEditing
-set touchpoint/16 query == delete \${view} now-editing
-set touchpoint/16 input/view
+set code-generation/edit-model touchpoint/db16
+set touchpoint/db16 function-name == stopEditing
+set touchpoint/db16 query == delete \${view} now-editing
+set touchpoint/db16 input/view
 
-set code-generation/spreadsheet-view touchpoint/17
-set code-generation/edit-model touchpoint/17
-set touchpoint/17 function-name == isEditing
-set touchpoint/17 query == \${view} now-editing
-set touchpoint/17 input/view
-set touchpoint/17 output exists
+set code-generation/spreadsheet-view touchpoint/db17
+set code-generation/edit-model touchpoint/db17
+set touchpoint/db17 function-name == isEditing
+set touchpoint/db17 query == \${view} now-editing
+set touchpoint/db17 input/view
+set touchpoint/db17 output exists
 
-set code-generation/edit-model touchpoint/18
-set touchpoint/18 function-name == getInputMode
-set touchpoint/18 query == \${view} input-mode/*
-set touchpoint/18 input/view
-set touchpoint/18 output tagValue/input-mode
+set code-generation/edit-model touchpoint/db18
+set touchpoint/db18 function-name == getInputMode
+set touchpoint/db18 query == \${view} input-mode/*
+set touchpoint/db18 input/view
+set touchpoint/db18 output tagValue/input-mode
 
-set code-generation/edit-model touchpoint/19
-set touchpoint/19 function-name == setInputMode
-set touchpoint/19 query == set \${view} input-mode/*
-set touchpoint/19 input/view
-set touchpoint/19 input/input-mode
+set code-generation/edit-model touchpoint/db19
+set touchpoint/db19 function-name == setInputMode
+set touchpoint/db19 query == set \${view} input-mode/*
+set touchpoint/db19 input/view
+set touchpoint/db19 input/input-mode
 
 set input/input-mode name/inputMode
 set input/input-mode type/string

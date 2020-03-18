@@ -296,3 +296,261 @@ set input/target name/target
 set input/target type/string
 set input/val name/val
 set input/val type/string
+
+### DASHBOARD ###
+
+set code-generation/spreadsheet-view
+set code-generation/spreadsheet-view destination-filename == dashboard/src/SpreadsheetViewAPI.ts
+set code-generation/spreadsheet-view ik-import == ik
+set code-generation/spreadsheet-view strategy/dao-api
+# set code-generation/spreadsheet-view verbose-logging
+
+set input/spreadsheet name/spreadsheet
+set input/spreadsheet type/string
+
+set code-generation/spreadsheet-view touchpoint/db1
+set touchpoint/db1 function-name == listColumns
+set touchpoint/db1 query == ${spreadsheet} col/*
+set touchpoint/db1 output tag/col
+set touchpoint/db1 input/spreadsheet
+
+set code-generation/spreadsheet-view touchpoint/db2
+set touchpoint/db2 function-name == listRows
+set touchpoint/db2 query == ${spreadsheet} row/*
+set touchpoint/db2 output tag/row
+set touchpoint/db2 input/spreadsheet
+
+set code-generation/spreadsheet-view touchpoint/db3
+set touchpoint/db3 function-name == colName
+set touchpoint/db3 query == ${col} name/*
+set touchpoint/db3 expectOne
+set touchpoint/db3 output tagValue/name
+set touchpoint/db3 input/col
+
+set code-generation/spreadsheet-view touchpoint/db4
+set touchpoint/db4 function-name == getCellValue
+set touchpoint/db4 query == ${row} ${col}
+set touchpoint/db4 expectOne
+set touchpoint/db4 output value
+set touchpoint/db4 output optional
+set touchpoint/db4 input/col
+set touchpoint/db4 input/row
+
+set input/col name/col
+set input/2 type/string
+
+set input/row name/row
+set input/row type/string
+
+set code-generation/db2
+set code-generation/db2 destination-filename == dashboard/src/GraphSource.ts
+set code-generation/db2 strategy/text-as-code
+set code-generation/db2 from-file == src/source.graph
+
+set spreadsheet/1
+
+set spreadsheet/1 col/1
+set spreadsheet/1 col/2
+set spreadsheet/1 col/3
+set spreadsheet/1 row/1
+set spreadsheet/1 row/2
+
+set col/1 name/CustomerName
+set col/2 name/CustomerEmail
+set col/3 name/Status
+
+set row/1 col/1 == Bob
+set row/1 col/2 == bob@email.com
+set row/1 col/3 == Active
+
+set row/2 col/1 == Karen
+set row/2 col/2 == karen@email.com
+set row/2 col/3 == Inactive
+
+set code-generation/spreadsheet-view touchpoint/db5
+set code-generation/edit-model touchpoint/db5
+set touchpoint/db5 function-name == spreadsheetForView
+set touchpoint/db5 query == ${spreadsheetView} spreadsheet/*
+set touchpoint/db5 expectOne
+set touchpoint/db5 output tag/spreadsheet
+set touchpoint/db5 output optional
+set touchpoint/db5 input/spreadsheetView
+set input/spreadsheetView name/spreadsheetView
+set input/spreadsheetView type/string
+
+set code-generation/spreadsheet-view touchpoint/db6
+set touchpoint/db6 function-name == getSelectedCell
+set touchpoint/db6 query == ${spreadsheetView} selection col/* row/*
+set touchpoint/db6 expectOne
+set touchpoint/db6 input/spreadsheetView
+set touchpoint/db6 output output-object/row-col
+set touchpoint/db6 output optional
+
+set output-object/row-col field/col tag/col
+set output-object/row-col field/row tag/row
+
+set code-generation/edit-model touchpoint/db7
+set touchpoint/db7 function-name == findKeyForBrowserName
+set touchpoint/db7 query == key/* browsername/${browserName}
+set touchpoint/db7 expectOne
+set touchpoint/db7 output optional
+set touchpoint/db7 input/browserName
+set touchpoint/db7 output tag/key
+
+set input/browserName type/string
+set input/browserName name/browserName
+
+set input/key type/string
+set input/key name/key
+
+# Spreadsheet View
+set spreadsheet-view/1 spreadsheet/1
+set spreadsheet-view/1 selection col/1 row/2
+
+set current-view spreadsheet-view/1
+
+set code-generation/edit-model
+set code-generation/edit-model destination-filename == dashboard/src/EditModelAPI.ts
+set code-generation/edit-model ik-import == ik
+set code-generation/edit-model strategy/dao-api
+
+set code-generation/edit-model touchpoint/db8
+set touchpoint/db8 function-name == findActionForKey
+set touchpoint/db8 query == ${key} action/*
+set touchpoint/db8 expectOne
+set touchpoint/db8 output optional
+set touchpoint/db8 input/key
+set touchpoint/db8 output tag/action
+
+set code-generation/edit-model touchpoint/db9
+set touchpoint/db9 function-name == getCurrentView
+set touchpoint/db9 query == current-view spreadsheet-view/*
+set touchpoint/db9 expectOne
+set touchpoint/db9 output tag/spreadsheet-view
+
+set code-generation/edit-model touchpoint/db10
+set touchpoint/db10 function-name == getSpreadsheetSelectionPos
+set touchpoint/db10 query == ${view} selection col/* row/*
+set touchpoint/db10 expectOne
+set touchpoint/db10 input/view
+set touchpoint/db10 output tag/spreadsheet-view
+set touchpoint/db10 output output-object/row-col
+
+set input/view name/view
+set input/view type/string
+
+set code-generation/edit-model touchpoint/db11
+set touchpoint/db11 function-name == getMoveActionDelta
+set touchpoint/db11 query == ${action} delta-x/* delta-y/*
+set touchpoint/db11 expectOne
+set touchpoint/db11 output optional
+set touchpoint/db11 input/action
+set touchpoint/db11 output output-object/moveActionDelta
+
+set input/action name/action
+set input/action type/string
+
+set output-object/moveActionDelta field/x tagValue/delta-x
+set output-object/moveActionDelta field/x type/integer
+set output-object/moveActionDelta field/y tagValue/delta-y
+set output-object/moveActionDelta field/y type/integer
+
+set code-generation/edit-model touchpoint/db12
+set touchpoint/db12 function-name == rowOrColExists
+set touchpoint/db12 query == ${spreadsheet} ${item}
+set touchpoint/db12 expectOne
+set touchpoint/db12 output optional
+set touchpoint/db12 input/item
+set touchpoint/db12 input/spreadsheet
+set touchpoint/db12 output exists
+
+set code-generation/spreadsheet-view touchpoint/db13
+set code-generation/edit-model touchpoint/db13
+set touchpoint/db13 function-name == clearSelection
+set touchpoint/db13 query == delete ${spreadsheet} selection row/* col/*
+set touchpoint/db13 input/spreadsheet
+
+set code-generation/spreadsheet-view touchpoint/db14
+set code-generation/edit-model touchpoint/db14
+set touchpoint/db14 function-name == setSelection
+set touchpoint/db14 query == set ${view} selection ${row} ${col}
+set touchpoint/db14 input/view
+set touchpoint/db14 input/row
+set touchpoint/db14 input/col
+
+set code-generation/edit-model touchpoint/db15
+set touchpoint/db15 function-name == startEditing
+set touchpoint/db15 query == set ${view} now-editing
+set touchpoint/db15 input/view
+
+set code-generation/edit-model touchpoint/db16
+set touchpoint/db16 function-name == stopEditing
+set touchpoint/db16 query == delete ${view} now-editing
+set touchpoint/db16 input/view
+
+set code-generation/spreadsheet-view touchpoint/db17
+set code-generation/edit-model touchpoint/db17
+set touchpoint/db17 function-name == isEditing
+set touchpoint/db17 query == ${view} now-editing
+set touchpoint/db17 input/view
+set touchpoint/db17 output exists
+
+set code-generation/edit-model touchpoint/db18
+set touchpoint/db18 function-name == getInputMode
+set touchpoint/db18 query == ${view} input-mode/*
+set touchpoint/db18 input/view
+set touchpoint/db18 output tagValue/input-mode
+
+set code-generation/edit-model touchpoint/db19
+set touchpoint/db19 function-name == setInputMode
+set touchpoint/db19 query == set ${view} input-mode/*
+set touchpoint/db19 input/view
+set touchpoint/db19 input/input-mode
+
+set input/input-mode name/inputMode
+set input/input-mode type/string
+
+set input/row name/row
+set input/row type/string
+
+set input/col name/col
+set input/col type/string
+
+set input/item name/item
+set input/item type/string
+
+set input/spreadsheet name/spreadsheet
+set input/spreadsheet type/string
+
+# Keyboard codes
+set key/up
+set key/up keycode/38
+set key/up browsername/ArrowUp
+set key/down
+set key/down keycode/40
+set key/down browsername/ArrowDown
+set key/left
+set key/left keycode/37
+set key/left browsername/ArrowLeft
+set key/right
+set key/right keycode/39
+set key/right browsername/ArrowRight
+set key/shift
+set key/shift keycode/16
+set key/shift browsername/Shift
+set key/enter
+set key/enter browsername/Enter
+
+set key/up action/move-up
+set key/down action/move-down
+set key/left action/move-left
+set key/right action/move-right
+set key/enter action/start-editing
+
+set action/move-up delta-x/0 delta-y/-1
+set action/move-down delta-x/0 delta-y/1
+set action/move-left delta-x/-1 delta-y/0
+set action/move-right delta-x/1 delta-y/0
+
+set current-view spreadsheet-view/1
+set current-view input-mode/normal
