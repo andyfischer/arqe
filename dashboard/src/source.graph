@@ -196,6 +196,21 @@ set touchpoint/17 query == ${view} now-editing
 set touchpoint/17 input/view
 set touchpoint/17 output exists
 
+set code-generation/edit-model touchpoint/18
+set touchpoint/18 function-name == getInputMode
+set touchpoint/18 query == ${view} input-mode/*
+set touchpoint/18 input/view
+set touchpoint/18 output tagValue/input-mode
+
+set code-generation/edit-model touchpoint/19
+set touchpoint/19 function-name == setInputMode
+set touchpoint/19 query == set ${view} input-mode/*
+set touchpoint/19 input/view
+set touchpoint/19 input/input-mode
+
+set input/input-mode name/inputMode
+set input/input-mode type/string
+
 set input/row name/row
 set input/row type/string
 
@@ -239,3 +254,4 @@ set action/move-left delta-x/-1 delta-y/0
 set action/move-right delta-x/1 delta-y/0
 
 set current-view spreadsheet-view/1
+set current-view input-mode/normal

@@ -9,10 +9,6 @@ graph.loadDump(GraphSource);
 const api = new EditModelAPI(graph);
 
 function handleKeyPress(key) {
-    const action = api.findActionForKey(key);
-
-    if (action)
-        performAction(action);
 }
 
 function incRowOrCol(spreadsheet, orig: string, delta: number) {
@@ -80,8 +76,13 @@ document.addEventListener('keydown', (evt) => {
     console.log('keydown event: ', evt);
     const key = api.findKeyForBrowserName(evt.key);
 
-    if (key) {
-        evt.preventDefault();
-        return handleKeyPress(key);
-    }
+    if (!key)
+        return;
+
+    evt.preventDefault();
+
+    const action = api.findActionForKey(key);
+    if (action)
+        performAction(action);
+
 });

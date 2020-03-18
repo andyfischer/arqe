@@ -144,4 +144,14 @@ export default class API {
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.length > 0;
     }
+    
+    getInputMode(view: string): string[] {
+        const queryStr = `${view} input-mode/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTagValue("input-mode"));
+    }
+    
+    setInputMode(inputMode: string, view: string) {
+        this.graph.runSync(`set ${view} input-mode/*`);
+    }
 }

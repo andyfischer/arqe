@@ -1,5 +1,4 @@
 
-
 set code-generation/1
 set code-generation/1 destination-filename == src/DAOGeneratorGeneratedDAO.ts
 set code-generation/1 ik-import == .
@@ -264,7 +263,26 @@ set output-object/field-tagValue field/field tagValue/field
 set output-object/field-tagValue field/tagValue tagValue/tagValue
 
 set code-generation/4
-set code-generation/4 destination-filename == src/grind-test/GeneratedApi.ts
+set code-generation/4 destination-filename == src/__tests__/generated/GeneratedApi.ts
 set code-generation/4 strategy/dao-api
-set code-generation/4 ik-import == ..
+set code-generation/4 ik-import == ../..
 
+set code-generation/4 touchpoint/25
+set touchpoint/25 function-name == getOneTag
+set touchpoint/25 query == a/1 b/*
+set touchpoint/25 expectOne
+set touchpoint/25 output tag/b
+
+set code-generation/4 touchpoint/26
+set touchpoint/26 function-name == getOneTagValue
+set touchpoint/26 query == a/1 b/*
+set touchpoint/26 expectOne
+set touchpoint/26 output tagValue/b
+
+set code-generation/4 touchpoint/27
+set touchpoint/27 function-name == changeFlag
+set touchpoint/27 query == delete ${target} flag | set ${target} new-flag
+set touchpoint/27 input/target
+
+set input/target name/target
+set input/target type/string

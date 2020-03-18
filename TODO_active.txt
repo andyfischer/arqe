@@ -19,5 +19,7 @@ Declare derived data:
  )
 
 Dashboard
- - Best way to trigger state change from graph change?
- - Key event listener is getting lost after rerender?
+ X Best way to trigger state change from graph change?
+ X Key event listener is getting lost after rerender?
+ - Hook up text editing
+ - Populate from real graph
