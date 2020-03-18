@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import CommandExecution from './CommandExecution'
 import CommandChain from './CommandChain'
-import RelationReceiver from './RelationReceiver'
+import RelationReceiver, { receiveToNull } from './RelationReceiver'
 
 import { setupGetExecution } from './GetCommand'
 import { setupJoinExecution } from './JoinCommand'
@@ -34,8 +34,10 @@ export function runCommandChain(graph: Graph, chain: CommandChain, output: Relat
 
         if (!isLast) {
             const next = commandExecs[index + 1];
-            if (!next.input)
-                throw new Error(`piped command '${next.command.commandName}' didn't expect input`);
+            if (!next.input) {
+                commandExec.outputTo(receiveToNull());
+                continue;
+            }
 
             commandExec.outputTo(next.input);
         }

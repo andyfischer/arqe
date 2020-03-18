@@ -45,7 +45,24 @@ export default class API {
         return rel.getTagValue("b");
     }
     
-    changeFlag(target: string) {
-        this.graph.runSync(`delete ${target} flag | set ${target} new-flag`);
+    getCurrentFlag(target: string): string {
+        const queryStr = `${target} flag/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("flag");
+    }
+    
+    changeFlag(target: string, val: string) {
+        this.graph.runSync(`delete ${target} flag/* | set ${target} flag/${val}`);
     }
 }

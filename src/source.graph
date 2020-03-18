@@ -280,9 +280,19 @@ set touchpoint/26 expectOne
 set touchpoint/26 output tagValue/b
 
 set code-generation/4 touchpoint/27
-set touchpoint/27 function-name == changeFlag
-set touchpoint/27 query == delete ${target} flag | set ${target} new-flag
+set touchpoint/27 function-name == getCurrentFlag
+set touchpoint/27 query == ${target} flag/*
+set touchpoint/27 expectOne
+set touchpoint/27 output tagValue/flag
 set touchpoint/27 input/target
+
+set code-generation/4 touchpoint/30
+set touchpoint/30 function-name == changeFlag
+set touchpoint/30 query == delete ${target} flag/* | set ${target} flag/${val}
+set touchpoint/30 input/target
+set touchpoint/30 input/val
 
 set input/target name/target
 set input/target type/string
+set input/val name/val
+set input/val type/string

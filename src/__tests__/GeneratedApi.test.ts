@@ -9,6 +9,7 @@ beforeAll(() => {
     graph = new Graph();
 
     graph.runSync('set a/1 b/1');
+    graph.runSync('set a flag/startingval');
     api = new GeneratedApi(graph);
 });
 
@@ -21,4 +22,7 @@ it('supports getting a single tag value', () => {
 });
 
 it('supports a delete & set piped query', () => {
+    expect(api.getCurrentFlag('a')).toEqual('startingval');
+    api.changeFlag('a', 'nextval');
+    expect(api.getCurrentFlag('a')).toEqual('nextval');
 });

@@ -69,3 +69,12 @@ export function receiveToStringRespond(graph: Graph, command: Command, respond: 
 
     return formatter;
 }
+
+export function receiveToNull(): RelationReceiver {
+    return {
+        start() {  },
+        relation(rel) {  },
+        isDone() { return true },
+        finish() {  }
+    }
+}
