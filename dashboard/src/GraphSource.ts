@@ -506,22 +506,26 @@ set code-generation/edit-model touchpoint/db18
 set touchpoint/db18 function-name == getInputMode
 set touchpoint/db18 query == \${view} input-mode/*
 set touchpoint/db18 input/view
+set touchpoint/db18 expectOne
 set touchpoint/db18 output tagValue/input-mode
 
 set code-generation/edit-model touchpoint/db19
 set touchpoint/db19 function-name == setInputMode
-set touchpoint/db19 query == set \${view} input-mode/*
+set touchpoint/db19 query == delete \${view} input-mode/* | set \${view} input-mode/\${inputMode}
 set touchpoint/db19 input/view
 set touchpoint/db19 input/input-mode
 
-set code-generation/edit-model touchpoint/db20
-set touchpoint/db20 function-name == isKeyActionActive
-set touchpoint/db20 query == 
-set touchpoint/db20 input/view
-set touchpoint/db20 input/input-mode
-
 set input/input-mode name/inputMode
 set input/input-mode type/string
+
+set code-generation/edit-model touchpoint/db20
+set touchpoint/db20 function-name == findActionForKeyInMode
+set touchpoint/db20 query == get \${view} input-mode/\$m | join \${key} action/* active-for-mode input-mode/\$m
+set touchpoint/db20 input/view
+set touchpoint/db20 input/key
+set touchpoint/db20 expectOne
+set touchpoint/db20 output optional
+set touchpoint/db20 output tag/action
 
 set input/row name/row
 set input/row type/string
@@ -560,7 +564,8 @@ set key/left action/move-left
 set key/right action/move-right
 set key/enter action/toggle-editing
 
-set key/enter action/toggle-editing active-for input-mode/text-editing
+set key/enter action/stop-editing active-for-mode input-mode/text-editing
+set key/enter action/start-editing active-for-mode input-mode/normal
 
 set action/move-up delta-x/0 delta-y/-1
 set action/move-down delta-x/0 delta-y/1
@@ -568,5 +573,5 @@ set action/move-left delta-x/-1 delta-y/0
 set action/move-right delta-x/1 delta-y/0
 
 set current-view spreadsheet-view/1
-set current-view input-mode/normal
+set spreadsheet-view/1 input-mode/normal
 `

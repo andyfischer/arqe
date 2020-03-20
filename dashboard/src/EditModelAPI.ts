@@ -157,22 +157,45 @@ export default class API {
         return rels.length > 0;
     }
     
-    getInputMode(view: string): string[] {
+    getInputMode(view: string): string {
         const queryStr = `${view} input-mode/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
-        return rels.map(rel => rel.getTagValue("input-mode"));
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("input-mode");
     }
     
     setInputMode(inputMode: string, view: string) {
-        const queryStr = `set ${view} input-mode/*`;
+        const queryStr = `delete ${view} input-mode/* | set ${view} input-mode/${inputMode}`;
         this.graph.runCommandChainSync(queryStr);
         
         // TODO - handle multi results
     }
     
-    isKeyActionActive(inputMode: string, view: string): string[] {
-        const queryStr = ``;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
-        return rels.map(rel => rel.getTag(""));
+    findActionForKeyInMode(key: string, view: string) {
+        const queryStr = `get ${view} input-mode/$m | join ${key} action/* active-for-mode input-mode/$m`;
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        
+        return rel.getTag("action");
     }
 }

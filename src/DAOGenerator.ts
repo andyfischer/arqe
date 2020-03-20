@@ -122,10 +122,12 @@ export class DAOGenerator {
         });
 
         writer.writeLine(`const queryStr = \`${queryStr}\`;`);
-        let runLine = `this.graph.runCommandChainSync(queryStr);`;
-        if (usesOutput)
-            runLine = 'const rels = ' + runLine;
-        writer.writeLine(runLine);
+        if (usesOutput) {
+            writer.writeLine('const rels = this.graph.runCommandChainSync(queryStr)')
+            writer.writeLine('    .filter(rel => !rel.hasType("command-meta"));');
+        } else {
+            writer.writeLine('this.graph.runCommandChainSync(queryStr);')
+        }
         writer.writeLine();
 
         this.relationCountGuards(writer, touchpoint);
@@ -167,7 +169,6 @@ export class DAOGenerator {
     returnOneResult(writer: JavascriptCodeWriter, touchpoint: string) {
         const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
 
-
         if (outputIsValue) {
             writer.writeLine('return rel.getValue();');
             return;
@@ -201,7 +202,8 @@ export class DAOGenerator {
 
         const tagOutput = this.api.touchpointTagOutput(touchpoint);
         if (tagOutput) {
-            writer.writeLine(`return rel.getTag("${tagOutput}");`)
+            writer.writeLine(`return rel.getTag("${tagOutput}");`);
+            return;
         }
 
         writer.writeLine('// no output')

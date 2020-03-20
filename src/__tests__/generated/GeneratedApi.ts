@@ -64,7 +64,8 @@ export default class API {
     
     getUsingCommandChain(target: string) {
         const queryStr = `get ${target} flag/*`;
-        const rels = this.graph.runCommandChainSync(queryStr);
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {

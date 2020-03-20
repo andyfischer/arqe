@@ -39,6 +39,7 @@ function performAction(action) {
             api.stopEditing(view);
             api.setInputMode(view, 'normal');
         } else {
+            console.log('start mode: text-editing');
             api.startEditing(view);
             api.setInputMode(view, 'text-editing');
         }
@@ -72,8 +73,12 @@ function handleMoveAction(action) {
 }
 
 document.addEventListener('keydown', (evt) => {
+    const view = api.getCurrentView();
     console.log('keydown event: ', evt);
     const key = api.findKeyForBrowserName(evt.key);
+
+    console.log('current mode: ', api.getInputMode(view))
+    console.log('action for key in mode: ', api.findActionForKeyInMode(key, view));
 
     if (!key)
         return;
