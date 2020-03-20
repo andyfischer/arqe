@@ -17,6 +17,7 @@ export function emitCommandMeta(output: RelationReceiver, fields: any) {
 }
 
 export function emitCommandError(output: RelationReceiver, msg: string) {
+
     const tags = [
         newTag('command-meta'),
         newTag('error')

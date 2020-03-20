@@ -262,31 +262,38 @@ set touchpoint/24 output output-object/field-tagValue
 set output-object/field-tagValue field/field tagValue/field
 set output-object/field-tagValue field/tagValue tagValue/tagValue
 
-set code-generation/4
-set code-generation/4 destination-filename == src/__tests__/generated/GeneratedApi.ts
-set code-generation/4 strategy/dao-api
-set code-generation/4 ik-import == ../..
+set code-generation/test-api
+set code-generation/test-api destination-filename == src/__tests__/generated/GeneratedApi.ts
+set code-generation/test-api strategy/dao-api
+set code-generation/test-api ik-import == ../..
 
-set code-generation/4 touchpoint/25
+set code-generation/test-api touchpoint/25
 set touchpoint/25 function-name == getOneTag
 set touchpoint/25 query == a/1 b/*
 set touchpoint/25 expectOne
 set touchpoint/25 output tag/b
 
-set code-generation/4 touchpoint/26
+set code-generation/test-api touchpoint/26
 set touchpoint/26 function-name == getOneTagValue
 set touchpoint/26 query == a/1 b/*
 set touchpoint/26 expectOne
 set touchpoint/26 output tagValue/b
 
-set code-generation/4 touchpoint/27
+set code-generation/test-api touchpoint/27
 set touchpoint/27 function-name == getCurrentFlag
 set touchpoint/27 query == \${target} flag/*
 set touchpoint/27 expectOne
 set touchpoint/27 output tagValue/flag
 set touchpoint/27 input/target
 
-set code-generation/4 touchpoint/30
+set code-generation/test-api touchpoint/28
+set touchpoint/28 function-name == getUsingCommandChain
+set touchpoint/28 query == get \${target} flag/*
+set touchpoint/28 expectOne
+set touchpoint/28 output tagValue/flag
+set touchpoint/28 input/target
+
+set code-generation/test-api touchpoint/30
 set touchpoint/30 function-name == changeFlag
 set touchpoint/30 query == delete \${target} flag/* | set \${target} flag/\${val}
 set touchpoint/30 input/target
@@ -507,6 +514,12 @@ set touchpoint/db19 query == set \${view} input-mode/*
 set touchpoint/db19 input/view
 set touchpoint/db19 input/input-mode
 
+set code-generation/edit-model touchpoint/db20
+set touchpoint/db20 function-name == isKeyActionActive
+set touchpoint/db20 query == 
+set touchpoint/db20 input/view
+set touchpoint/db20 input/input-mode
+
 set input/input-mode name/inputMode
 set input/input-mode type/string
 
@@ -545,7 +558,9 @@ set key/up action/move-up
 set key/down action/move-down
 set key/left action/move-left
 set key/right action/move-right
-set key/enter action/start-editing
+set key/enter action/toggle-editing
+
+set key/enter action/toggle-editing active-for input-mode/text-editing
 
 set action/move-up delta-x/0 delta-y/-1
 set action/move-down delta-x/0 delta-y/1

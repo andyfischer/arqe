@@ -18,7 +18,6 @@ export default class SetOperation {
     }
 
     run() {
-
         const { command } = this;
 
         // Validate

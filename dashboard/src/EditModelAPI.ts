@@ -124,19 +124,31 @@ export default class API {
     }
     
     clearSelection(spreadsheet: string) {
-        this.graph.runSync(`delete ${spreadsheet} selection row/* col/*`);
+        const queryStr = `delete ${spreadsheet} selection row/* col/*`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
     }
     
     setSelection(col: string, row: string, view: string) {
-        this.graph.runSync(`set ${view} selection ${row} ${col}`);
+        const queryStr = `set ${view} selection ${row} ${col}`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
     }
     
     startEditing(view: string) {
-        this.graph.runSync(`set ${view} now-editing`);
+        const queryStr = `set ${view} now-editing`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
     }
     
     stopEditing(view: string) {
-        this.graph.runSync(`delete ${view} now-editing`);
+        const queryStr = `delete ${view} now-editing`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
     }
     
     isEditing(view: string): boolean {
@@ -152,6 +164,15 @@ export default class API {
     }
     
     setInputMode(inputMode: string, view: string) {
-        this.graph.runSync(`set ${view} input-mode/*`);
+        const queryStr = `set ${view} input-mode/*`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
+    }
+    
+    isKeyActionActive(inputMode: string, view: string): string[] {
+        const queryStr = ``;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.map(rel => rel.getTag(""));
     }
 }

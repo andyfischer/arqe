@@ -62,7 +62,28 @@ export default class API {
         return rel.getTagValue("flag");
     }
     
+    getUsingCommandChain(target: string) {
+        const queryStr = `get ${target} flag/*`;
+        const rels = this.graph.runCommandChainSync(queryStr);
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + queryStr)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        
+        return rel.getTagValue("flag");
+    }
+    
     changeFlag(target: string, val: string) {
-        this.graph.runSync(`delete ${target} flag/* | set ${target} flag/${val}`);
+        const queryStr = `delete ${target} flag/* | set ${target} flag/${val}`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
     }
 }

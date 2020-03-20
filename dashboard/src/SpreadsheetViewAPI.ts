@@ -93,11 +93,17 @@ export default class API {
     }
     
     clearSelection(spreadsheet: string) {
-        this.graph.runSync(`delete ${spreadsheet} selection row/* col/*`);
+        const queryStr = `delete ${spreadsheet} selection row/* col/*`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
     }
     
     setSelection(col: string, row: string, view: string) {
-        this.graph.runSync(`set ${view} selection ${row} ${col}`);
+        const queryStr = `set ${view} selection ${row} ${col}`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
     }
     
     isEditing(view: string): boolean {

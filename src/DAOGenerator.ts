@@ -100,9 +100,14 @@ export class DAOGenerator {
         this.verboseLogging = this.api.enableVerboseLogging(this.target);
     }
     
-    generateEffectfulMethod(writer: JavascriptCodeWriter, touchpoint: string) {
+    generateFullQuery(writer: JavascriptCodeWriter, touchpoint: string) {
         const queryStr = this.api.touchpointQueryString(touchpoint);
         const name = this.api.touchpointFunctionName(touchpoint);
+
+        let usesOutput = false;
+
+        if (queryStr.startsWith('get '))
+            usesOutput = true;
 
         writer.startFunction(name, null, writer => {
             const inputs = this.api.listTouchpointInputs(touchpoint);
@@ -116,17 +121,109 @@ export class DAOGenerator {
             }
         });
 
-        writer.writeLine(`this.graph.runSync(\`${queryStr}\`);`);
+        writer.writeLine(`const queryStr = \`${queryStr}\`;`);
+        let runLine = `this.graph.runCommandChainSync(queryStr);`;
+        if (usesOutput)
+            runLine = 'const rels = ' + runLine;
+        writer.writeLine(runLine);
+        writer.writeLine();
+
+        this.relationCountGuards(writer, touchpoint);
+        this.returnResult(writer, touchpoint);
 
         writer.finishFunction();
+    }
+
+    relationCountGuards(writer: JavascriptCodeWriter, touchpoint: string) {
+        const expectOne = this.api.touchpointExpectOne(touchpoint);
+        const outputIsOptional = this.api.touchpointOutputIsOptional(touchpoint);
+
+        if (expectOne) {
+            if (!outputIsOptional)
+                writer.writeLine('// Expect one result')
+
+            writer.writeLine('if (rels.length === 0) {')
+            writer.increaseIndent()
+
+            if (outputIsOptional)
+                writer.writeLine(`return null;`)
+            else
+                writer.writeLine(`throw new Error("No relation found for: " + queryStr)`)
+
+            writer.decreaseIndent()
+            writer.writeLine('}')
+            writer.writeLine()
+            writer.writeLine('if (rels.length > 1) {')
+            writer.increaseIndent()
+            writer.writeLine(`throw new Error("Multiple results found for: " + queryStr)`)
+            writer.decreaseIndent()
+            writer.writeLine('}')
+            writer.writeLine()
+            writer.writeLine('const rel = rels[0];');
+            writer.writeLine()
+        }
+    }
+
+    returnOneResult(writer: JavascriptCodeWriter, touchpoint: string) {
+        const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
+
+
+        if (outputIsValue) {
+            writer.writeLine('return rel.getValue();');
+            return;
+        }
+
+        const outputObject = this.api.touchpointOutputObject(touchpoint);
+
+        if (outputObject) {
+            writer.writeLine();
+            writer.writeLine('return {');
+            writer.increaseIndent();
+
+            for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
+                writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
+            }
+            
+            for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
+                writer.writeLine(`${field}: rel.getTag("${tag}"),`);
+            }
+
+            writer.decreaseIndent();
+            writer.writeLine('}');
+            return;
+        }
+
+        const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
+        if (tagValueOutput) {
+            writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
+            return;
+        }
+
+        const tagOutput = this.api.touchpointTagOutput(touchpoint);
+        if (tagOutput) {
+            writer.writeLine(`return rel.getTag("${tagOutput}");`)
+        }
+
+        writer.writeLine('// no output')
+    }
+
+    returnResult(writer: JavascriptCodeWriter, touchpoint: string) {
+        const expectOne = this.api.touchpointExpectOne(touchpoint);
+
+        if (expectOne)
+            return this.returnOneResult(writer, touchpoint);
+
+        writer.writeLine('// TODO - handle multi results')
     }
 
     generateMethod(writer: JavascriptCodeWriter, touchpoint: string) {
 
         const queryStr = this.api.touchpointQueryString(touchpoint);
 
-        if (queryStr.startsWith('set ') || queryStr.startsWith('delete ')) {
-            this.generateEffectfulMethod(writer, touchpoint);
+        if (queryStr.startsWith('get ')
+                || queryStr.startsWith('set ')
+                || queryStr.startsWith('delete ')) {
+            this.generateFullQuery(writer, touchpoint);
             return;
         }
 

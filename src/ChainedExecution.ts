@@ -43,6 +43,7 @@ export function runCommandChain(graph: Graph, chain: CommandChain, output: Relat
         }
     }
 
-    for (const commandExec of commandExecs)
+    for (const commandExec of commandExecs) {
         graph.runCommandExecution(commandExec);
+    }
 }

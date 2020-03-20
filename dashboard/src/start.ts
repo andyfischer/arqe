@@ -34,16 +34,15 @@ function performAction(action) {
 
     switch (action) {
 
-    case 'action/start-editing':
-        if (api.isEditing(view))
+    case 'action/toggle-editing':
+        if (api.isEditing(view)) {
             api.stopEditing(view);
-        else
+            api.setInputMode(view, 'normal');
+        } else {
             api.startEditing(view);
+            api.setInputMode(view, 'text-editing');
+        }
 
-        break;
-
-    case 'action/stop-editing':
-        api.stopEditing(view);
         break;
     }
 }
