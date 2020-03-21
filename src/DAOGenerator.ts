@@ -109,8 +109,7 @@ export class DAOGenerator {
         if (queryStr.startsWith('get '))
             usesOutput = true;
 
-        const inputs = this.api.listTouchpointInputs(touchpoint);
-        inputs.sort();
+        const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
 
         writer.startFunction(name, null, writer => {
             for (const input of inputs) {
@@ -232,6 +231,41 @@ export class DAOGenerator {
         writer.writeLine('// TODO - handle multi results')
     }
 
+    sortInputs(inputs: string[]) {
+        if (inputs.length < 2)
+            return inputs;
+
+        let anySortOrder = false;
+
+        const entries = inputs.map(input => {
+
+            const out = {
+                input
+            }
+
+            const sortOrder = this.api.inputSortOrder(input);
+
+            if (sortOrder) {
+                anySortOrder = true;
+            }
+
+            return {
+                input,
+                sortOrder: sortOrder ? parseFloat(sortOrder) : 0
+            }
+        });
+
+        if (!anySortOrder) {
+            inputs.sort();
+        } else {
+            entries.sort((a,b) => 
+                a.sortOrder - b.sortOrder
+            );
+        }
+
+        return inputs;
+    }
+
     generateMethod(writer: JavascriptCodeWriter, touchpoint: string) {
 
         const queryStr = this.api.touchpointQueryString(touchpoint);
@@ -271,8 +305,9 @@ export class DAOGenerator {
         }
 
         writer.startFunction(name, outputTypeStr, writer => {
-            const inputs = this.api.listTouchpointInputs(touchpoint);
-            inputs.sort();
+
+            const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
+
             for (const input of inputs) {
                 const name = this.api.inputName(input);
                 const inputType = this.api.inputType(input);

@@ -41,11 +41,11 @@ function performAction(action) {
             //   Need a way to specify the ordering in db
             //   Need a way to validate inputs
 
-            api.setInputMode(view, 'normal');
+            api.setInputMode(view, 'input-mode/normal');
         } else {
             console.log('start mode: text-editing');
             api.startEditing(view);
-            api.setInputMode(view, 'text-editing');
+            api.setInputMode(view, 'input-mode/text-editing');
         }
 
         break;

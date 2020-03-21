@@ -137,7 +137,7 @@ export default class API {
         return rel.getTagValue("type");
     }
     
-    listTouchpointInputs(touchpoint: string): string[] {
+    touchpointInputs(touchpoint: string): string[] {
         const queryStr = `${touchpoint} input/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.map(rel => rel.getTag("input"));
@@ -174,6 +174,22 @@ export default class API {
         
         const rel = rels[0];
         return rel.getTagValue("name");
+    }
+    
+    inputSortOrder(input: string): string {
+        const queryStr = `${input} sortOrder/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("sortOrder");
     }
     
     inputType(input: string): string {

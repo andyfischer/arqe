@@ -125,9 +125,10 @@ set input/7 type/string
 
 set code-generation/1 touchpoint/10
 set touchpoint/10 query == \${touchpoint} input/*
-set touchpoint/10 function-name == listTouchpointInputs
+set touchpoint/10 function-name == touchpointInputs
 set touchpoint/10 output tag/input
 set touchpoint/10 input/touchpoint
+
 set input/touchpoint name/touchpoint
 set input/touchpoint type/string
 
@@ -137,16 +138,26 @@ set touchpoint/10.5 function-name == inputTagType
 set touchpoint/10.5 expectOne
 set touchpoint/10.5 output tagValue/tagType
 set touchpoint/10.5 output optional
-set touchpoint/10.5 input/11
+set touchpoint/10.5 input/input
 
 set code-generation/1 touchpoint/11
 set touchpoint/11 query == \${input} name/*
 set touchpoint/11 function-name == inputName
 set touchpoint/11 output tagValue/name
-set touchpoint/11 input/11
+set touchpoint/11 input/input
 set touchpoint/11 expectOne
-set input/11 name/input
-set input/11 type/string
+
+set input/input name/input
+set input/input type/string
+set input/input tagType/input
+
+set code-generation/1 touchpoint/11.5
+set touchpoint/11.5 query == \${input} sortOrder/*
+set touchpoint/11.5 function-name == inputSortOrder
+set touchpoint/11.5 output tagValue/sortOrder
+set touchpoint/11.5 input/input
+set touchpoint/11.5 expectOne
+set touchpoint/11.5 output optional
 
 set code-generation/1 touchpoint/12
 set touchpoint/12 query == \${input} type/*
@@ -173,6 +184,7 @@ set touchpoint/14.1 function-name == getDestinationFilename
 set touchpoint/14.1 output value
 set touchpoint/14.1 expectOne
 set touchpoint/14.1 input/14.1
+
 set input/14.1 name/target
 set input/14.1 type/string
 
@@ -182,6 +194,7 @@ set touchpoint/15 function-name == getOutputObjectdef
 set touchpoint/15 output tag/objectdef
 set touchpoint/15 expectOne
 set touchpoint/15 input/15
+
 set input/15 name/touchpoint
 set input/15 type/string
 
@@ -190,6 +203,7 @@ set touchpoint/16 query == \${objectdef} objectfield/*
 set touchpoint/16 function-name == getObjectdefFields
 set touchpoint/16 output tag/objectdef
 set touchpoint/16 input/16
+
 set input/16 name/objectdef
 set input/16 type/string
 
@@ -453,6 +467,7 @@ set touchpoint/db10 output output-object/row-col
 
 set input/view name/view
 set input/view type/string
+set input/view sortOrder/-1
 
 set code-generation/edit-model touchpoint/db11
 set touchpoint/db11 function-name == getMoveActionDelta
@@ -520,6 +535,7 @@ set touchpoint/db18 output tagValue/input-mode
 set code-generation/edit-model touchpoint/db19
 set touchpoint/db19 function-name == setInputMode
 set touchpoint/db19 query == delete \${view} input-mode/* | set \${view} input-mode/\${inputMode}
+set touchpoint/db19 inputs == view input-mode
 set touchpoint/db19 input/view
 set touchpoint/db19 input/input-mode
 

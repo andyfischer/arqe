@@ -130,7 +130,7 @@ export default class API {
         // TODO - handle multi results
     }
     
-    setSelection(col: string, row: string, view: string) {
+    setSelection(view: string, row: string, col: string) {
         const queryStr = `set ${view} selection ${row} ${col}`;
         this.graph.runCommandChainSync(queryStr);
         
@@ -174,9 +174,9 @@ export default class API {
         return rel.getTagValue("input-mode");
     }
     
-    setInputMode(inputMode: string, view: string) {
+    setInputMode(view: string, inputMode: string) {
         if (!inputMode.startsWith("input-mode/")) {
-            throw new Error('Expected "input-mode/*", saw: ' + inputMode);
+            throw new Error('Expected "input-mode/...", saw: ' + inputMode);
         }
         
         const queryStr = `delete ${view} input-mode/* | set ${view} input-mode/${inputMode}`;
@@ -185,7 +185,7 @@ export default class API {
         // TODO - handle multi results
     }
     
-    findActionForKeyInMode(key: string, view: string) {
+    findActionForKeyInMode(view: string, key: string) {
         const queryStr = `get ${view} input-mode/$m | join ${key} action/* active-for-mode input-mode/$m`;
         const rels = this.graph.runCommandChainSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));

@@ -99,7 +99,7 @@ export default class API {
         // TODO - handle multi results
     }
     
-    setSelection(col: string, row: string, view: string) {
+    setSelection(view: string, row: string, col: string) {
         const queryStr = `set ${view} selection ${row} ${col}`;
         this.graph.runCommandChainSync(queryStr);
         
