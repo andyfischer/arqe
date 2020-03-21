@@ -554,9 +554,11 @@ set touchpoint/db20 output tag/action
 
 set input/row name/row
 set input/row type/string
+set input/row sortOrder/2
 
 set input/col name/col
 set input/col type/string
+set input/col sortOrder/1
 
 set input/item name/item
 set input/item type/string

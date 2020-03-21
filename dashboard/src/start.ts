@@ -73,7 +73,7 @@ function handleMoveAction(action) {
         return;
 
     api.clearSelection(currentView);
-    api.setSelection(newPos.col, newPos.row, currentView);
+    api.setSelection(currentView, newPos.col, newPos.row);
 }
 
 document.addEventListener('keydown', (evt) => {

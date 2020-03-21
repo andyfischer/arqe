@@ -235,7 +235,7 @@ export class DAOGenerator {
         if (inputs.length < 2)
             return inputs;
 
-        let anySortOrder = false;
+        inputs.sort();
 
         const entries = inputs.map(input => {
 
@@ -245,25 +245,17 @@ export class DAOGenerator {
 
             const sortOrder = this.api.inputSortOrder(input);
 
-            if (sortOrder) {
-                anySortOrder = true;
-            }
-
             return {
                 input,
                 sortOrder: sortOrder ? parseFloat(sortOrder) : 0
             }
         });
 
-        if (!anySortOrder) {
-            inputs.sort();
-        } else {
-            entries.sort((a,b) => 
-                a.sortOrder - b.sortOrder
-            );
-        }
+        entries.sort((a,b) => 
+            a.sortOrder - b.sortOrder
+        );
 
-        return inputs;
+        return entries.map(entry => entry.input);
     }
 
     generateMethod(writer: JavascriptCodeWriter, touchpoint: string) {

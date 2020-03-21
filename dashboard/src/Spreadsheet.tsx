@@ -118,7 +118,7 @@ export default function Spreadsheet(props: Props) {
                         key={key}
                         onClick={() => {
                             api.clearSelection(spreadsheetView);
-                            api.setSelection(col, row, spreadsheetView);
+                            api.setSelection(spreadsheetView, col, row);
                         }}
                         >
                     {value}
