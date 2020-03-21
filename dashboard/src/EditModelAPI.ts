@@ -179,7 +179,7 @@ export default class API {
             throw new Error('Expected "input-mode/...", saw: ' + inputMode);
         }
         
-        const queryStr = `delete ${view} input-mode/* | set ${view} input-mode/${inputMode}`;
+        const queryStr = `delete ${view} input-mode/* | set ${view} ${inputMode}`;
         this.graph.runCommandChainSync(queryStr);
         
         // TODO - handle multi results

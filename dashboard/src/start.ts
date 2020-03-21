@@ -8,9 +8,6 @@ graph.loadDump(GraphSource);
 
 const api = new EditModelAPI(graph);
 
-function handleKeyPress(key) {
-}
-
 function incRowOrCol(spreadsheet, orig: string, delta: number) {
     const match = /([a-z]+)\/([0-9]+)$/.exec(orig);
     const index = parseInt(match[2]);
@@ -25,8 +22,6 @@ function incRowOrCol(spreadsheet, orig: string, delta: number) {
 
 function performAction(action) {
 
-    console.log('performAction: ', action)
-
     const view = api.getCurrentView();
     const deltaStr = api.getMoveActionDelta(action);
     if (deltaStr)
@@ -34,16 +29,22 @@ function performAction(action) {
 
     switch (action) {
 
+    case 'action/start-editing':
+        api.startEditing(view);
+        api.setInputMode(view, 'input-mode/text-editing');
+        document.removeEventListener('keydown', onKeyDown);
+        break;
+
+    case 'action/stop-editing':
+        api.stopEditing(view);
+        api.setInputMode(view, 'input-mode/normal');
+        break;
+
     case 'action/toggle-editing':
         if (api.isEditing(view)) {
             api.stopEditing(view);
-            // FIXME - These args are in the wrong order
-            //   Need a way to specify the ordering in db
-            //   Need a way to validate inputs
-
             api.setInputMode(view, 'input-mode/normal');
         } else {
-            console.log('start mode: text-editing');
             api.startEditing(view);
             api.setInputMode(view, 'input-mode/text-editing');
         }
@@ -76,21 +77,30 @@ function handleMoveAction(action) {
     api.setSelection(currentView, newPos.col, newPos.row);
 }
 
-document.addEventListener('keydown', (evt) => {
+function onKeyDown(evt) {
     const view = api.getCurrentView();
-    console.log('keydown event: ', evt);
     const key = api.findKeyForBrowserName(evt.key);
-
-    console.log('current mode: ', api.getInputMode(view))
-    console.log('action for key in mode: ', api.findActionForKeyInMode(key, view));
 
     if (!key)
         return;
 
-    evt.preventDefault();
+    const inputMode = api.getInputMode(view);
+    let defaultAction = api.findActionForKey(key);
+    const modeAction = api.findActionForKeyInMode(view, key);
 
-    const action = api.findActionForKey(key);
+    if (inputMode === 'input-mode/text-editing' && !modeAction)
+        return;
+
+    const action = modeAction || defaultAction;
+
+    evt.preventDefault();
     if (action)
         performAction(action);
 
-});
+}
+
+document.addEventListener('keydown', onKeyDown);
+
+window['query'] = (s) => {
+    graph.runCommandChainSync(s).map(r => console.log(r.stringifyRelation()));
+}

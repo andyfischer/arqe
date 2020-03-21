@@ -94,7 +94,6 @@ export default function Spreadsheet(props: Props) {
 
         { rows.map(row => {
             return cols.map(col => {
-
                 const key = row + ' ' + col;
                 const value = api.getCellValue(col, row) || '';
                 const isSelected = selection
@@ -106,9 +105,8 @@ export default function Spreadsheet(props: Props) {
                         type="text"
                         value={value}
                         onChange={evt => {
-                            console.log('on change: ', evt)
-                        }}
-                        />
+                            api.setCellValue(col, row, evt.target.value);
+                        }} />
                 }
 
                 const className = 'grid-element' + (isSelected ? ' selected' : '');

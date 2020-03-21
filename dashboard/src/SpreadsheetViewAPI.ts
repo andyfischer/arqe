@@ -56,6 +56,13 @@ export default class API {
         return rel.getValue();
     }
     
+    setCellValue(col: string, row: string, value: string) {
+        const queryStr = `delete ${row} ${col} | set ${row} ${col} == ${value}`;
+        this.graph.runCommandChainSync(queryStr);
+        
+        // TODO - handle multi results
+    }
+    
     spreadsheetForView(spreadsheetView: string): string {
         const queryStr = `${spreadsheetView} spreadsheet/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);

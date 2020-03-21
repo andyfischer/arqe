@@ -365,11 +365,22 @@ set touchpoint/db4 output optional
 set touchpoint/db4 input/col
 set touchpoint/db4 input/row
 
+set code-generation/spreadsheet-view touchpoint/db4.1
+set touchpoint/db4.1 function-name == setCellValue
+set touchpoint/db4.1 query == delete ${row} ${col} | set ${row} ${col} == ${value}
+set touchpoint/db4.1 input/col
+set touchpoint/db4.1 input/row
+set touchpoint/db4.1 input/value
+
 set input/col name/col
 set input/2 type/string
 
 set input/row name/row
 set input/row type/string
+
+set input/value name/value
+set input/value type/string
+set input/value sortOrder/5
 
 set code-generation/db2
 set code-generation/db2 destination-filename == dashboard/src/GraphSource.ts
@@ -534,7 +545,7 @@ set touchpoint/db18 output tagValue/input-mode
 
 set code-generation/edit-model touchpoint/db19
 set touchpoint/db19 function-name == setInputMode
-set touchpoint/db19 query == delete ${view} input-mode/* | set ${view} input-mode/${inputMode}
+set touchpoint/db19 query == delete ${view} input-mode/* | set ${view} ${inputMode}
 set touchpoint/db19 inputs == view input-mode
 set touchpoint/db19 input/view
 set touchpoint/db19 input/input-mode
