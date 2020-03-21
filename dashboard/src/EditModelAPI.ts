@@ -175,6 +175,10 @@ export default class API {
     }
     
     setInputMode(inputMode: string, view: string) {
+        if (!inputMode.startsWith("input-mode/")) {
+            throw new Error('Expected "input-mode/*", saw: ' + inputMode);
+        }
+        
         const queryStr = `delete ${view} input-mode/* | set ${view} input-mode/${inputMode}`;
         this.graph.runCommandChainSync(queryStr);
         

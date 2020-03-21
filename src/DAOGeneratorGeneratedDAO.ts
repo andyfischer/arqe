@@ -143,6 +143,22 @@ export default class API {
         return rels.map(rel => rel.getTag("input"));
     }
     
+    inputTagType(input: string): string {
+        const queryStr = `${input} tagType/*`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + queryStr)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("tagType");
+    }
+    
     inputName(input: string): string {
         const queryStr = `${input} name/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);

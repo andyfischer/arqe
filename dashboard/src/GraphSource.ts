@@ -127,9 +127,17 @@ set code-generation/1 touchpoint/10
 set touchpoint/10 query == \${touchpoint} input/*
 set touchpoint/10 function-name == listTouchpointInputs
 set touchpoint/10 output tag/input
-set touchpoint/10 input/10
-set input/10 name/touchpoint
-set input/10 type/string
+set touchpoint/10 input/touchpoint
+set input/touchpoint name/touchpoint
+set input/touchpoint type/string
+
+set code-generation/1 touchpoint/10.5
+set touchpoint/10.5 query == \${input} tagType/*
+set touchpoint/10.5 function-name == inputTagType
+set touchpoint/10.5 expectOne
+set touchpoint/10.5 output tagValue/tagType
+set touchpoint/10.5 output optional
+set touchpoint/10.5 input/11
 
 set code-generation/1 touchpoint/11
 set touchpoint/11 query == \${input} name/*
@@ -515,6 +523,7 @@ set touchpoint/db19 query == delete \${view} input-mode/* | set \${view} input-m
 set touchpoint/db19 input/view
 set touchpoint/db19 input/input-mode
 
+set input/input-mode tagType/input-mode
 set input/input-mode name/inputMode
 set input/input-mode type/string
 

@@ -37,6 +37,10 @@ function performAction(action) {
     case 'action/toggle-editing':
         if (api.isEditing(view)) {
             api.stopEditing(view);
+            // FIXME - These args are in the wrong order
+            //   Need a way to specify the ordering in db
+            //   Need a way to validate inputs
+
             api.setInputMode(view, 'normal');
         } else {
             console.log('start mode: text-editing');

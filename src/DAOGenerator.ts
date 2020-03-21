@@ -109,9 +109,10 @@ export class DAOGenerator {
         if (queryStr.startsWith('get '))
             usesOutput = true;
 
+        const inputs = this.api.listTouchpointInputs(touchpoint);
+        inputs.sort();
+
         writer.startFunction(name, null, writer => {
-            const inputs = this.api.listTouchpointInputs(touchpoint);
-            inputs.sort();
             for (const input of inputs) {
                 const name = this.api.inputName(input);
                 const inputType = this.api.inputType(input);
@@ -120,6 +121,19 @@ export class DAOGenerator {
                     writer.writeInput(name, inputType)
             }
         });
+
+        for (const input of inputs) {
+            const name = this.api.inputName(input);
+            const tagType = this.api.inputTagType(input);
+            if (tagType) {
+                writer.writeLine(`if (!${name}.startsWith("${tagType}/")) {`);
+                writer.increaseIndent();
+                writer.writeLine(`throw new Error('Expected "${tagType}/...", saw: ' + ${name});`);
+                writer.decreaseIndent();
+                writer.writeLine('}')
+                writer.writeLine()
+            }
+        }
 
         writer.writeLine(`const queryStr = \`${queryStr}\`;`);
         if (usesOutput) {
