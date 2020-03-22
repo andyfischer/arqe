@@ -32,7 +32,6 @@ function performAction(action) {
     case 'action/start-editing':
         api.startEditing(view);
         api.setInputMode(view, 'input-mode/text-editing');
-        document.removeEventListener('keydown', onKeyDown);
         break;
 
     case 'action/stop-editing':

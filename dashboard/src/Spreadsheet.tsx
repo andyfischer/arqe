@@ -104,6 +104,7 @@ export default function Spreadsheet(props: Props) {
                     return <input key={key}
                         type="text"
                         value={value}
+                        autoFocus
                         onChange={evt => {
                             api.setCellValue(col, row, evt.target.value);
                         }} />
