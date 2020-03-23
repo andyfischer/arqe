@@ -1,0 +1,38 @@
+
+NOTES
+
+Value tags
+ - The value syntax " == val" is weird.
+ - Some relations have multiple value-like things
+ - Some relation tags behave like values
+ - Should be an easier way to *change* a tag's value (rather than deleting
+   the old relation and setting a new one)
+
+Lenses versus columns
+ - Are there fundamentally two usages for tags?
+ - Tags as relation colums.
+ - And tags as 'views' - their presence means we are getting an altered view
+   of some other data.
+ - Should these be different?
+
+
+Sometimes we just want to find the connection between two columns, and we
+don't care about the other columns in the relation.
+
+But currently, we need to mention all of the columns exactly in the query,
+or else we won't find it.
+
+Ways to fix:
+ - Have a way for a multi-column relation to be marked as still holding true,
+   even when columns are omitted.
+
+     still-true-for-partial(A B C)
+
+     Means that we will find the same relation when searching for (A B) or
+     (A C) or (B C)
+
+     And also find results when searching for (A) (B) (C)
+
+ - Maybe each column needs a declared purpose
+ - Some are entities, some are views, some are values, some are annotations
+    

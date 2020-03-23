@@ -4,7 +4,9 @@ import CodeGenerationApi from './CodeGenerationApi'
 import { generateAPI } from './DAOGenerator'
 import { generateTextAsCode } from './code-generation/TextAsCode'
 
-export function runCodeGenerator(graph: Graph) {
+export function runCodeGenerator(filename: string) {
+
+    const graph = Graph.loadFromDumpFile(filename);
     const api = new CodeGenerationApi(graph);
 
     for (const target of api.listCodeGenerationTargets()) {

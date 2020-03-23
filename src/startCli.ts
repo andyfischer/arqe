@@ -25,14 +25,6 @@ async function connectToSocketServer() {
     repl.start();
 }
 
-function loadFromDumpFile(filename: string) {
-    const graph = new Graph();
-    graph.loadDumpFile(filename);
-
-
-    return graph;
-}
-
 export default async function main() {
     const cliArgs = Minimist(process.argv.slice(2), {
         boolean: ['generate']
@@ -42,8 +34,16 @@ export default async function main() {
     let useRemoteServer = true;
     let startRepl = false;
 
+    if (cliArgs.generate) {
+        if (!cliArgs.f)
+            throw new Error("should use -f with --generate");
+
+        runCodeGenerator(cliArgs.f);
+        return;
+    }
+
     if (cliArgs.f) {
-        graph = loadFromDumpFile(cliArgs.f);
+        graph = Graph.loadFromDumpFile(cliArgs.f);
         useRemoteServer = false;
         startRepl = true;
     }
@@ -53,14 +53,6 @@ export default async function main() {
         await connectToSocketServer();
     }
 
-    if (cliArgs.generate) {
-        if (!graph)
-            throw new Error("should use -f with --generate");
-
-        startRepl = false;
-
-        runCodeGenerator(graph);
-    }
 
     if (startRepl) {
         const repl = new ClientRepl(graph);

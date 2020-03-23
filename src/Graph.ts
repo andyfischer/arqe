@@ -428,5 +428,11 @@ export default class Graph {
         const contents = (this.runSync('dump') as string[]).join('\n');
         Fs.writeFileSync(filename, contents);
     }
+
+    static loadFromDumpFile(filename: string) {
+        const graph = new Graph();
+        graph.loadDumpFile(filename);
+        return graph;
+    }
 }
 
