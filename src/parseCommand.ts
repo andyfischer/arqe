@@ -64,7 +64,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
     }
 
     if (it.tryConsume(t_dot)) {
-        const optionValue = it.consumeTextWhile(acceptableTagValue);
+        const optionValue = it.consumeNextUnquotedText();
         return newTagFromObject({
             tagType: 'option',
             tagValue: optionValue,
@@ -100,7 +100,17 @@ function parseOneTag(it: TokenIterator): PatternTag {
             identifier = it.consumeNextUnquotedText();
             starValue = true;
         } else {
-            tagValue = it.consumeTextWhile(acceptableTagValue);
+
+            let iterationCount = 0;
+            tagValue = '';
+
+            while (!it.finished() && acceptableTagValue(it.next())) {
+                iterationCount += 1;
+                if (iterationCount > 1000)
+                    throw new Error('too many iterations when parsing tag value');
+
+                tagValue += it.consumeNextUnquotedText();
+            }
         }
     }
 

@@ -4,6 +4,15 @@ import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
 import PatternTag, { newTag } from './PatternTag'
 
+
+function tagValueStringNeedsQuote(s: string) {
+    for (let i = 0; i < s.length; i++)
+        if (s.charAt(i) === ' ')
+            return true;
+
+    return false;
+}
+
 export function commandTagToString(tag: PatternTag) {
     if (tag.star && tag.identifier)
         return '$' + tag.identifier;
@@ -23,7 +32,7 @@ export function commandTagToString(tag: PatternTag) {
         let s = '';
 
         if (tag.identifier) {
-            s += `[from \$${tag.identifier}] `
+            s += `[from \$${tag.identifier}] `;
         }
 
         if (tag.tagType === 'option')
@@ -31,7 +40,15 @@ export function commandTagToString(tag: PatternTag) {
         else
             s += tag.tagType + '/';
 
+        const needsQuote = tagValueStringNeedsQuote(tag.tagValue);
+
+        if (needsQuote)
+            s += '"';
+
         s += tag.tagValue;
+
+        if (needsQuote)
+            s += '"';
 
         return s;
     }

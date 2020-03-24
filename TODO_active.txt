@@ -1,25 +1,10 @@
 
-Spreadsheet
+ - Fetch a relation set
+ - Organize relations into schema patterns
+ - Show a collection of real relations in dashboard
+ - Dashboard: Support key events that jump across tables
+ X Quoted strings as tag values
+ - Server understands file changes
 
- X Encode keyboard input mappings in graph
- - Write key event listener in App
- - Set up the editing interaction model
-   - Arrow keys to move selection
-   - Selection should include component
- - Selection changes should trigger rerender
- - More work on derived relations
-
-
-Declare derived data:
- - Enter an expression like:
- set keyNameToCode == (to-map
-    search/(query key/* browsername/*)
-    keyby/(tag-value browsername)
-    valueby/(tag key)
- )
-
-Dashboard
- X Best way to trigger state change from graph change?
- X Key event listener is getting lost after rerender?
- - Hook up text editing
- - Populate from real graph
+Pending refactors: 
+ - Proper Relation class (instead of Pattern)

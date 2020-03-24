@@ -395,8 +395,8 @@ set spreadsheet/1 col/3
 set spreadsheet/1 row/1
 set spreadsheet/1 row/2
 
-set col/1 name/CustomerName
-set col/2 name/CustomerEmail
+set col/1 name/"Customer Name"
+set col/2 name/"Customer Email"
 set col/3 name/Status
 
 set row/1 col/1 == Bob
