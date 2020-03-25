@@ -2,6 +2,7 @@
 import Repl from 'repl'
 import CommandConnection from './socket/CommandConnection'
 import Graph from './Graph'
+import RelationReceiver, { receiveToRelationStream } from './RelationReceiver'
 
 const prompt = '~ '
 
@@ -14,43 +15,41 @@ function trimEndline(str) {
 
 interface Runnable {
     run: (msg: string, callback: (response: string) => void) => void
+    run2: (command: string, output: RelationReceiver) => void
 }
 
 export default class ClientRepl {
     graph: Runnable
     repl: any
 
-    waitingForDone: boolean
 
     constructor(graph: Runnable) {
         this.graph = graph;
-        this.waitingForDone = false;
-    }
-
-    receive(msg: string) {
-        if (msg === '#start') {
-            this.waitingForDone = true;
-            return;
-        }
-
-        if (msg === '#done') {
-            this.waitingForDone = false;
-            this.displayPrompt()
-            return;
-        }
-
-        console.log(' > ' + msg);
-
-        if (!this.waitingForDone)
-            this.displayPrompt()
     }
 
     async eval(line) {
+        let isFinished = false;
         line = trimEndline(line);
 
-        this.graph.run(line, response => {
-            this.receive(response);
-        })
+        if (line === '') {
+            this.displayPrompt();
+            return;
+        }
+
+        this.graph.run2(line, {
+            start() {},
+            relation: (rel) => {
+                if (isFinished)
+                    throw new Error('got relation after finish()');
+
+                console.log(' > ' + rel.stringifyRelation());
+            },
+            isDone: () => false,
+            finish: () => {
+                isFinished = true;
+                this.displayPrompt()
+            }
+        });
     }
 
     displayPrompt() {

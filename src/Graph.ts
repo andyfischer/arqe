@@ -19,7 +19,7 @@ import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
-import { receiveToStringRespond, receiveToRelationList } from './RelationReceiver'
+import RelationReceiver, { receiveToStringRespond, receiveToRelationList } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
 import { emitSearchPatternMeta, emitCommandError } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
@@ -312,6 +312,16 @@ export default class Graph {
         }
 
         this.runCommandChainParsed(chain, respond);
+    }
+
+    run2(str: string, output: RelationReceiver) {
+        if (/^ *\#/.exec(str)) {
+            // ignore comments
+            return;
+        }
+
+        const chain = parseCommandChain(str);
+        runCommandChain(this, chain, output);
     }
 
     runSync(commandStr: string) {

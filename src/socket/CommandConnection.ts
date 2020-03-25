@@ -2,6 +2,8 @@
 import WebSocket from 'ws'
 import EventEmitter from 'events'
 import { RespondFunc } from '../Graph'
+import RelationReceiver from '../RelationReceiver'
+import { parseRelation } from '../parseCommand'
 
 interface Listener {
     respond: (msg: string) => void
@@ -58,7 +60,6 @@ export default class CommandConnection {
 
             for (const { query, respond } of pending) {
                 this.run(query, respond)
-                .catch(console.error);
             }
         });
     }
@@ -67,7 +68,7 @@ export default class CommandConnection {
         this.ws.terminate();
     }
 
-    async run(query: string, respond: RespondFunc) {
+    run(query: string, respond: RespondFunc) {
 
         if (typeof query !== 'string')
             throw new Error("expected string for query, got: " + query);
@@ -84,6 +85,21 @@ export default class CommandConnection {
         this.reqListeners[reqid] = {
             respond
         }
+    }
+
+    run2(query: string, output: RelationReceiver) {
+        this.run(query, (msg: string) => {
+            if (msg === '#start')
+                return;
+
+            if (msg === '#done') {
+                output.finish();
+                return;
+            }
+
+            const rel = parseRelation(msg);
+            output.relation(rel);
+        });
     }
 }
 

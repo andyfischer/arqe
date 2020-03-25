@@ -28,6 +28,16 @@ export function receiveToRelationList(onDone: (rels: Pattern[]) => void): Relati
     }
 }
 
+export function receiveToRelationStream(onRel: (rel: Pattern) => void, onDone: () => void): RelationReceiver {
+    return {
+        start() {},
+        relation: onRel,
+        isDone() { return false; },
+        finish: onDone
+    }
+}
+
+
 export function receiveToStringRespond(graph: Graph, command: Command, respond: RespondFunc): RelationReceiver {
     if (command.commandName === 'set') {
         return new SetResponseFormatter(graph, command, respond);

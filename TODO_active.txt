@@ -8,4 +8,6 @@
 
 Pending refactors: 
  - Proper Relation class (instead of Pattern)
- - Remove RelationReceiver.start
+ - Change the protocol, use command-meta relations to indicate multi versus
+   single. Remove #start command.
+   - Remove RelationReceiver.start
