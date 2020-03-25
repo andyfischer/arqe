@@ -7,6 +7,7 @@ import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
 import SetOperation from './SetOperation'
 import RelationSearch from './RelationSearch'
+import RelationReceiver from './RelationReceiver'
 
 export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
@@ -55,9 +56,7 @@ export default class InMemoryStorage implements StorageProvider {
         search.finish();
     }
 
-    runSave(set: SetOperation) {
-        const command = set.command;
-
+    runSave(command: Command, output: RelationReceiver) {
         const ntag = normalizeExactTag(command.tags);
 
         const existing = this.relationsByNtag[ntag];
@@ -67,7 +66,8 @@ export default class InMemoryStorage implements StorageProvider {
             modified.setPayload(command.payloadStr);
             modified.freeze();
             this.relationsByNtag[ntag] = modified;
-            set.saveFinished(modified);
+            output.relation(modified);
+            output.finish();
             return;
         }
         
@@ -79,7 +79,8 @@ export default class InMemoryStorage implements StorageProvider {
         const rel = commandTagsToRelation(relationTags, command.payloadStr);
         rel.freeze();
         this.relationsByNtag[ntag] = rel;
-        set.saveFinished(this.relationsByNtag[ntag]);
+        output.relation(this.relationsByNtag[ntag]);
+        output.finish();
     }
 }
 

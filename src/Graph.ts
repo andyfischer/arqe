@@ -181,6 +181,10 @@ export default class Graph {
                 return;
             }
 
+            case 'modify': {
+                return;
+            }
+
             case 'dump': {
                 commandExec.output.start();
                 for (const rel of this.inMemory.everyRelation()) {

@@ -7,6 +7,7 @@ import { commandTagsToString } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
 import SetOperation from './SetOperation'
 import PatternTag, { newTag } from './PatternTag'
+import RelationReceiver from './RelationReceiver'
 
 export default class RawObjectStorage implements StorageProvider {
     linkedPattern: Pattern
@@ -55,7 +56,7 @@ export default class RawObjectStorage implements StorageProvider {
         search.finish();
     }
 
-    runSave(set: SetOperation) {
-        set.saveFinished(commandTagsToRelation([], ''));
+    runSave(command: Command, output: RelationReceiver) {
+        output.finish();
     }
 }

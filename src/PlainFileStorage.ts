@@ -9,6 +9,7 @@ import RelationSearch from './RelationSearch'
 import { normalizeExactTag } from './stringifyQuery'
 import { readFile, readDir, writeFile } from './context/fs'
 import Path from 'path'
+import RelationReceiver from './RelationReceiver'
 
 export default class PlainFileStorage implements StorageProvider {
     filenameType: 'filename'
@@ -44,7 +45,7 @@ export default class PlainFileStorage implements StorageProvider {
         search.finish();
     }
 
-    async runSave(set: SetOperation) {
-        set.saveFinished(null);
+    async runSave(command: Command, output: RelationReceiver) {
+        output.finish();
     }
 }

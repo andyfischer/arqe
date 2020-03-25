@@ -38,9 +38,20 @@ export default class SetOperation {
             }
         }
 
-        this.graph.inMemory.runSave(this);
+        this.graph.inMemory.runSave(this.command, {
+            start: () => this.commandExec.output.start(),
+            relation: (rel) => {
+                this.graph.onRelationUpdated(command, rel);
+                this.commandExec.output.relation(rel);
+            },
+            finish: () => {
+                this.commandExec.output.finish()
+            },
+            isDone: () => false
+        });
     }
 
+    /*
     saveFinished(relation?: Relation) {
 
         const { command } = this;
@@ -55,4 +66,5 @@ export default class SetOperation {
         this.commandExec.output.relation(relation);
         this.commandExec.output.finish();
     }
+    */
 }

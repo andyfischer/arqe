@@ -8,6 +8,8 @@ import RelationSearch from './RelationSearch'
 import UpdateContext from './UpdateContext'
 import { runSearch } from './Search'
 import { parsePattern } from './parseCommand'
+import RelationReceiver from './RelationReceiver'
+import Command from './Command'
 
 type DeriveFunc = (cxt: UpdateContext, rel: Pattern) => any
 
@@ -51,7 +53,7 @@ export default class DerivedValueMount implements StorageProvider {
         runSearch(this.graph, subSearch);
     }
 
-    async runSave(set: SetOperation) {
+    async runSave(command: Command, output: RelationReceiver) {
         throw new Error("can't save on a derived value");
     }
 }

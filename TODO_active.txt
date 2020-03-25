@@ -8,3 +8,4 @@
 
 Pending refactors: 
  - Proper Relation class (instead of Pattern)
+ - Remove RelationReceiver.start
