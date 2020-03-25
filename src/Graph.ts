@@ -4,7 +4,6 @@ import CommandChain from './CommandChain'
 import CommandExecution from './CommandExecution'
 import parseCommand, { parseCommandChain } from './parseCommand'
 import Relation from './Relation'
-import SetOperation from './SetOperation'
 import SetResponseFormatter from './SetResponseFormatter'
 import { runSearch } from './Search'
 import GraphListener from './GraphListener'
@@ -31,6 +30,7 @@ import runningInBrowser from './context/runningInBrowser'
 import IDSource from './IDSource'
 import GraphListenerV2 from './GraphListenerV2'
 import { parsePattern } from './parseCommand'
+import { runSetOperation } from './SetOperation'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -168,8 +168,7 @@ export default class Graph {
             switch (commandExec.commandName) {
 
             case 'set': {
-                const set = new SetOperation(this, commandExec);
-                set.run();
+                runSetOperation(this, commandExec);
                 return;
             }
 

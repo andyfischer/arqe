@@ -2,7 +2,6 @@
 import Command from './Command'
 import Relation from './Relation'
 import Pattern from './Pattern'
-import SetOperation from './SetOperation'
 import RelationSearch from './RelationSearch'
 import RelationReceiver from './RelationReceiver'
 

@@ -2,7 +2,6 @@
 import Graph from './Graph'
 import Relation from './Relation'
 import StorageProvider from './StorageProvider'
-import SetOperation from './SetOperation'
 import Pattern from './Pattern'
 import RelationSearch from './RelationSearch'
 import UpdateContext from './UpdateContext'

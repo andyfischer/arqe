@@ -5,66 +5,40 @@ import Graph, { RespondFunc } from './Graph'
 import Relation from './Relation'
 import { emitCommandError } from './CommandMeta'
 
-export default class SetOperation {
-    graph: Graph
-    command: Command
-    commandExec: CommandExecution
-    relation: Relation
+export function runSetOperation(graph: Graph, commandExec: CommandExecution) {
+    const command = commandExec.command;
+    const output = commandExec.output;
 
-    constructor(graph: Graph, commandExec: CommandExecution) {
-        this.graph = graph;
-        this.commandExec = commandExec;
-        this.command = commandExec.command;
-    }
+    if (!command)
+        throw new Error('missing commandExec.command');
 
-    run() {
-        const { command } = this;
-
-        // Validate
-        for (const tag of command.tags) {
-            if (tag.starValue) {
-                emitCommandError(this.commandExec.output, "can't use star pattern in 'set'");
-                return;
-            }
-
-            if (tag.star) {
-                emitCommandError(this.commandExec.output, "can't use star pattern in 'set'");
-                return;
-            }
-
-            if (tag.doubleStar) {
-                emitCommandError(this.commandExec.output, "can't use star pattern in 'set'");
-                return;
-            }
+    // Validate
+    for (const tag of command.tags) {
+        if (tag.starValue) {
+            emitCommandError(output, "can't use star pattern in 'set'");
+            return;
         }
 
-        this.graph.inMemory.runSave(this.command, {
-            start: () => this.commandExec.output.start(),
-            relation: (rel) => {
-                this.graph.onRelationUpdated(command, rel);
-                this.commandExec.output.relation(rel);
-            },
-            finish: () => {
-                this.commandExec.output.finish()
-            },
-            isDone: () => false
-        });
-    }
-
-    /*
-    saveFinished(relation?: Relation) {
-
-        const { command } = this;
-
-        if (!relation) {
-            emitCommandError(this.commandExec.output, "couldn't save");
-            return
+        if (tag.star) {
+            emitCommandError(output, "can't use star pattern in 'set'");
+            return;
         }
 
-        this.graph.onRelationUpdated(command, relation);
-        this.commandExec.output.start();
-        this.commandExec.output.relation(relation);
-        this.commandExec.output.finish();
+        if (tag.doubleStar) {
+            emitCommandError(output, "can't use star pattern in 'set'");
+            return;
+        }
     }
-    */
+
+    graph.inMemory.runSave(command, {
+        start: () => output.start(),
+        relation: (rel) => {
+            graph.onRelationUpdated(command, rel);
+            output.relation(rel);
+        },
+        finish: () => {
+            output.finish()
+        },
+        isDone: () => false
+    });
 }

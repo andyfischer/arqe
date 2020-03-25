@@ -5,7 +5,6 @@ import RelationSearch from './RelationSearch'
 import Command from './Command'
 import { commandTagsToString } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
-import SetOperation from './SetOperation'
 import PatternTag, { newTag } from './PatternTag'
 import RelationReceiver from './RelationReceiver'
 

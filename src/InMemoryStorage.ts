@@ -5,7 +5,6 @@ import PatternTag, { newTag } from './PatternTag'
 import Command from './Command'
 import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
-import SetOperation from './SetOperation'
 import RelationSearch from './RelationSearch'
 import RelationReceiver from './RelationReceiver'
 

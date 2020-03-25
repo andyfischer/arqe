@@ -2,7 +2,6 @@
 import StorageProvider from './StorageProvider'
 import Pattern, { commandTagsToRelation } from './Pattern'
 import Command from './Command'
-import SetOperation from './SetOperation'
 import Relation from './Relation'
 import { newTag, FixedTag } from './PatternTag'
 import RelationSearch from './RelationSearch'
