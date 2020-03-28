@@ -14,18 +14,9 @@ export function runSetOperation(graph: Graph, commandExec: CommandExecution) {
 
     // Validate
     for (const tag of command.tags) {
-        if (tag.starValue) {
+        if (tag.starValue || tag.star || tag.doubleStar) {
             emitCommandError(output, "can't use star pattern in 'set'");
-            return;
-        }
-
-        if (tag.star) {
-            emitCommandError(output, "can't use star pattern in 'set'");
-            return;
-        }
-
-        if (tag.doubleStar) {
-            emitCommandError(output, "can't use star pattern in 'set'");
+            commandExec.output.finish();
             return;
         }
     }

@@ -21,7 +21,7 @@ import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import RelationReceiver, { receiveToStringRespond, receiveToRelationList } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
-import { emitSearchPatternMeta, emitCommandError, emitActionPerformed } from './CommandMeta'
+import { emitSearchPatternMeta, emitCommandError, emitActionPerformed, emitCommandOutputFlags } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
@@ -154,6 +154,8 @@ export default class Graph {
 
     runCommandExecution(commandExec: CommandExecution) {
 
+        emitCommandOutputFlags(commandExec.command, commandExec.output);
+
         if (commandExec.start) {
             commandExec.start();
             return;
@@ -205,10 +207,13 @@ export default class Graph {
             
             }
 
-            emitCommandError(commandExec.output, "#error unrecognized command: " + commandExec.commandName);
+            emitCommandError(commandExec.output, "unrecognized command: " + commandExec.commandName);
+            commandExec.output.finish();
+
         } catch (err) {
             console.log(err.stack || err);
             emitCommandError(commandExec.output, "internal error: " + (err.stack || err));
+            commandExec.output.finish();
         }
     }
 
