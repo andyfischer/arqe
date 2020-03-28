@@ -214,8 +214,6 @@ export default class Graph {
 
     runCommandParsed(command: Command, respond: RespondFunc) {
 
-        console.log('runCommandParsed')
-
         // Maybe divert to socket
         const wsProviders = this.wsProviders && this.wsProviders.get();
         if (wsProviders) {
