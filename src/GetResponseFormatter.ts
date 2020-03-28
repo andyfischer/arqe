@@ -84,8 +84,10 @@ export default class GetResponseFormatter implements RelationReceiver {
         if (this.enoughResults)
             return;
 
-        if (rel.hasType('command-meta') && !rel.hasType('error'))
+        if (rel.hasType('command-meta') && !rel.hasType('error')) {
+            console.log('warning, dropping meta: ', rel.stringifyRelation())
             return;
+        }
 
         const { respond, pattern, extendedResult, asMultiResults } = this;
 

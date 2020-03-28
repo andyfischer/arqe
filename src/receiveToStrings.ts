@@ -4,17 +4,31 @@ import RelationReceiver from './RelationReceiver'
 
 export default function receiveToStrings(onDone: (s: string|string[]) => void): RelationReceiver {
 
+    let searchPattern = null;
+    let actionPerformed = null;
     const rels = [];
 
     return {
         start() {},
         relation: (rel: Relation) => {
+            if (rel.hasType('command-meta')) {
+                if (rel.hasType('action-performed')) {
+                    actionPerformed = rel;
+                    return;
+                }
+
+                if (rel.hasType('search-pattern')) {
+                    searchPattern = rel;
+                    return;
+                }
+            }
+
             rels.push(rel);
         },
         isDone() { return false },
         finish: () => {
             // Stringify
-            if (rels.length === 1 && rels[0].hasType('command-meta') && rels[0].hasType('action-performed')) {
+            if (actionPerformed) {
                 onDone('#done');
                 return;
             }

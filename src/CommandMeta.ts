@@ -28,17 +28,10 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
 
 export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver) {
 
-    // Only emit if the pattern has any identifiers.
-
-    for (const tag of pattern.tags) {
-        if (tag.identifier) {
-            let metaPattern = pattern.copy()
-                .addTag('command-meta')
-                .addTag('search-pattern');
-            output.relation(metaPattern);
-            return
-        }
-    }
+    let metaPattern = pattern.copy()
+        .addTag('command-meta')
+        .addTag('search-pattern');
+    output.relation(metaPattern);
 }
 
 export function emitActionPerformed(output: RelationReceiver) {
