@@ -54,7 +54,7 @@ class Connection extends EventEmitter {
         });
 
         ws.on('close', async () => {
-            this.graph.run(`delete connection/${id} *`)
+            this.graph.runSilent(`delete connection/${id} *`)
             console.log(`server: closed connection/${id}`);
         });
     }

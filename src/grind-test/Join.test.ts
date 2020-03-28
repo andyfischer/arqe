@@ -8,7 +8,7 @@ test('join works', async({run}) => {
     await run('set a32 b/3')
     await run('set b/1 c32')
     await run('set b/4 c32')
-    expect(await run('get a32 b/$b | join b/$b c32')).toEqual(['[from $b] b/1 c32']);
+    expect(await run('get a32 b/$b | join b/$b c32')).toEqual(['[from $b] b/1']);
 });
 
 test('double join works', async({run}) => {

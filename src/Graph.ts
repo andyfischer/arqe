@@ -324,6 +324,26 @@ export default class Graph {
         runCommandChain(this, chain, output);
     }
 
+    runSilent(str: string) {
+        let error = null;
+
+        this.run2(str, {
+            start() {},
+            relation(rel) {
+                if (rel.hasType('command-meta') && rel.hasType('error'))
+                    console.log('error: ' + rel.getPayload());
+
+                error = error || rel;
+            },
+            isDone() { return false; },
+            finish() {
+            }
+        });
+
+        if (error)
+            throw new Error(error.getPayload())
+    }
+
     runSync(commandStr: string) {
         let result = null;
 
