@@ -11,3 +11,7 @@ Pending refactors:
  - Change the protocol, use command-meta relations to indicate multi versus
    single. Remove #start command.
    - Remove RelationReceiver.start
+
+ - Remove Graph.run (string based)
+ - Write new collectRespond that understands command-meta
+ - GetResponseFormatter needs to pass through command-meta ?

@@ -5,6 +5,7 @@ import verifyRespondProtocol from '../../verifyRespondProtocol'
 import Graph, { RunFunc } from '../../Graph'
 import { connectToServer } from '../../socket/CommandConnection'
 import ChaosMode from './ChaosMode'
+import runCommand from './runCommand'
 
 interface RunOptions {
     allowError?: true
@@ -18,7 +19,6 @@ export default class TestRunner {
     constructor(suite: TestSuite, chaosMode?: ChaosMode) {
         this.suite = suite;
         this.chaosMode = chaosMode;
-
         this.setup();
     }
 
@@ -39,30 +39,10 @@ export default class TestRunner {
     }
 
     run = (command, opts?: RunOptions): Promise<string> => {
-
-        const runFunc = this.runFunc;
-        const allowError = opts && opts.allowError;
-
-        if (this.chaosMode && this.chaosMode.modifyRunCommand)
-            command = this.chaosMode.modifyRunCommand(command);
-
-        const verifier = verifyRespondProtocol(command, (err) => {
-            fail(`Protocol error: ${err.problem} (${JSON.stringify({ causedBy: err.causedBy })})`);
-        });
-
-        return new Promise((resolve, reject) => {
-            const collector = collectRespond(resolve);
-
-            runFunc(command, msg => {
-                if (msg && msg.startsWith('#error') && !allowError) {
-                    fail(`Graph error: ${msg}`);
-                    reject(msg);
-                    return;
-                }
-
-                verifier(msg);
-                collector(msg);
-            });
+        return runCommand(command, {
+            runFunc: this.runFunc,
+            chaosMode: this.chaosMode,
+            ...opts
         });
     }
 }
