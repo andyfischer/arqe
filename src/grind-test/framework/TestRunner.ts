@@ -6,6 +6,7 @@ import Graph, { RunFunc } from '../../Graph'
 import { connectToServer } from '../../socket/CommandConnection'
 import ChaosMode from './ChaosMode'
 import runCommand from './runCommand'
+import Runnable from '../../Runnable'
 
 interface RunOptions {
     allowError?: true
@@ -14,7 +15,7 @@ interface RunOptions {
 export default class TestRunner {
     suite: TestSuite
     chaosMode?: ChaosMode
-    runFunc: RunFunc
+    graph: Runnable
 
     constructor(suite: TestSuite, chaosMode?: ChaosMode) {
         this.suite = suite;
@@ -25,7 +26,7 @@ export default class TestRunner {
     setup() {
         if (process.env.REMOTE_HOST) {
             const connection = connectToServer(process.env.REMOTE_HOST);
-            this.runFunc = (m,r) => connection.run(m,r);
+            this.graph = connection;
             return;
         }
 
@@ -35,12 +36,12 @@ export default class TestRunner {
             this.chaosMode.setupNewGraph(graph);
         }
 
-        this.runFunc = (m,r) => graph.run(m,r);
+        this.graph = graph;
     }
 
     run = (command, opts?: RunOptions): Promise<string> => {
         return runCommand(command, {
-            runFunc: this.runFunc,
+            graph: this.graph,
             chaosMode: this.chaosMode,
             ...opts
         });

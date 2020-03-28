@@ -2,15 +2,15 @@ import verifyRespondProtocol from '../../verifyRespondProtocol'
 import collectRespond from '../../collectRespond'
 import Graph, { RunFunc } from '../../Graph'
 import ChaosMode from './ChaosMode'
+import Runnable from '../../Runnable'
 
 interface RunOptions {
     allowError?: true
-    runFunc: RunFunc
+    graph: Runnable
     chaosMode?: ChaosMode
 }
 
 export default function run(command, opts?: RunOptions): Promise<string> {
-    const runFunc = opts.runFunc;
     const allowError = opts && opts.allowError;
 
     if (opts.chaosMode && opts.chaosMode.modifyRunCommand)
@@ -23,7 +23,7 @@ export default function run(command, opts?: RunOptions): Promise<string> {
     return new Promise((resolve, reject) => {
         const collector = collectRespond(resolve);
 
-        runFunc(command, msg => {
+        opts.graph.run(command, msg => {
             if (msg && msg.startsWith('#error') && !allowError) {
                 fail(`Graph error: ${msg}`);
                 reject(msg);

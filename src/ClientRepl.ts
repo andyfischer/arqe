@@ -3,6 +3,7 @@ import Repl from 'repl'
 import CommandConnection from './socket/CommandConnection'
 import Graph from './Graph'
 import RelationReceiver, { receiveToRelationStream } from './RelationReceiver'
+import Runnable from './Runnable'
 
 const prompt = '~ '
 
@@ -13,10 +14,6 @@ function trimEndline(str) {
     return str;
 }
 
-interface Runnable {
-    run: (msg: string, callback: (response: string) => void) => void
-    run2: (command: string, output: RelationReceiver) => void
-}
 
 export default class ClientRepl {
     graph: Runnable

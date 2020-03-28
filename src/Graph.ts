@@ -66,12 +66,6 @@ export default class Graph {
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
     }
 
-    context(query: string) {
-        const cxt = new GraphContext(this);
-        cxt.run('context ' + query, () => null);
-        return cxt;
-    }
-
     savedQuery(queryStr: string): SavedQuery {
         if (this.savedQueryMap[queryStr])
             return this.savedQueryMap[queryStr];
@@ -329,6 +323,7 @@ export default class Graph {
 
         const collector = collectRespond(r => { result = r; });
         
+        const parsed = parseCommandChain(commandStr);
         this.run(commandStr, collector);
 
         if (result === null)
