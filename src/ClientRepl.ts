@@ -14,11 +14,9 @@ function trimEndline(str) {
     return str;
 }
 
-
 export default class ClientRepl {
     graph: Runnable
     repl: any
-
 
     constructor(graph: Runnable) {
         this.graph = graph;

@@ -39,7 +39,7 @@ export default class TestRunner {
         this.graph = graph;
     }
 
-    run = (command, opts?: RunOptions): Promise<string> => {
+    run = (command, opts?: RunOptions) => {
         return runCommand(command, {
             graph: this.graph,
             chaosMode: this.chaosMode,

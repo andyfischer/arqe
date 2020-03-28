@@ -21,7 +21,7 @@ import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import RelationReceiver, { receiveToStringRespond, receiveToRelationList } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
-import { emitSearchPatternMeta, emitCommandError } from './CommandMeta'
+import { emitSearchPatternMeta, emitCommandError, emitActionPerformed } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
@@ -118,6 +118,7 @@ export default class Graph {
         }
 
         commandExec.output.start();
+        emitActionPerformed(commandExec.output);
         commandExec.output.finish();
     }
 

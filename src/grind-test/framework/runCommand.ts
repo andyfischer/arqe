@@ -3,6 +3,7 @@ import collectRespond from '../../collectRespond'
 import Graph, { RunFunc } from '../../Graph'
 import ChaosMode from './ChaosMode'
 import Runnable from '../../Runnable'
+import receiveToStrings from '../../receiveToStrings'
 
 interface RunOptions {
     allowError?: true
@@ -10,7 +11,7 @@ interface RunOptions {
     chaosMode?: ChaosMode
 }
 
-export default function run(command, opts?: RunOptions): Promise<string> {
+export default function run(command, opts?: RunOptions): Promise<string | string[]> {
     const allowError = opts && opts.allowError;
 
     if (opts.chaosMode && opts.chaosMode.modifyRunCommand)
@@ -21,6 +22,11 @@ export default function run(command, opts?: RunOptions): Promise<string> {
     });
 
     return new Promise((resolve, reject) => {
+        const collector = receiveToStrings(resolve);
+
+        opts.graph.run2(command, collector);
+
+        /*
         const collector = collectRespond(resolve);
 
         opts.graph.run(command, msg => {
@@ -33,5 +39,6 @@ export default function run(command, opts?: RunOptions): Promise<string> {
             verifier(msg);
             collector(msg);
         });
+        */
     });
 }

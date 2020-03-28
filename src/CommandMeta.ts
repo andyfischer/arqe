@@ -40,3 +40,7 @@ export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver
         }
     }
 }
+
+export function emitActionPerformed(output: RelationReceiver) {
+    emitCommandMeta(output, { 'action-performed': true })
+}
