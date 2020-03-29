@@ -1,10 +1,21 @@
 
 import WebSocket from 'ws'
 import Graph from '../Graph'
-import { createUniqueEntity } from '../GraphORM'
 import Command from '../Command'
 import logError from '../logError'
 import EventEmitter from 'events'
+import parseCommand from '../parseCommand'
+
+export function createUniqueEntity(graph: Graph, typename: string) {
+    const result = graph.runSync(`set ${typename}/#unique`);
+
+    const parsed = parseCommand(result);
+
+    if (parsed.commandName !== 'set')
+        throw new Error('expected reply with "set": ' + result);
+
+    return parsed.tags[0].tagValue;
+}
 
 class Connection extends EventEmitter {
     ws: WebSocket
