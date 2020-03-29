@@ -5,6 +5,7 @@ import Command from '../Command'
 import logError from '../logError'
 import EventEmitter from 'events'
 import parseCommand from '../parseCommand'
+import receiveToStringList from '../receiveToStringList'
 
 export function createUniqueEntity(graph: Graph, typename: string) {
     const result = graph.runSync(`set ${typename}/#unique`);
@@ -27,9 +28,9 @@ class Connection extends EventEmitter {
     }
 
     async handleCommand(reqid: string, query: string) {
-        this.graph.run(query, (msg) => {
+        this.graph.run2(query, receiveToStringList((msg) => {
             this.send(query, {reqid, msg});
-        });
+        }))
     }
 
     constructor(graph: Graph, ws: WebSocket) {
@@ -71,7 +72,7 @@ class Connection extends EventEmitter {
     }
 }
 
-export default class ServerSocket extends EventEmitter {
+export default class SockerServer extends EventEmitter {
     graph: Graph
     wss: WebSocket.Server
 
