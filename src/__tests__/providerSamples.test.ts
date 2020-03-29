@@ -4,8 +4,8 @@ import UpdateContext, { runUpdateOnce } from '../UpdateContext'
 
 it('test with getRelations', () => {
     const graph = new Graph();
-    graph.run('set a b/123')
-    graph.run('set a b/456')
+    graph.runSilent('set a b/123')
+    graph.runSilent('set a b/456')
 
     const result = runUpdateOnce(graph, cxt => {
         const out = []
@@ -20,11 +20,11 @@ it('test with getRelations', () => {
 
 it('test with getOptionsObject', () => {
     const graph = new Graph();
-    graph.run('set a b/123')
-    graph.run('set a b/123 .foo == bee')
-    graph.run('set a b/456')
-    graph.run('set a b/456 .opt1 == bar')
-    graph.run('set a b/456 .opt2 == zee')
+    graph.runSilent('set a b/123')
+    graph.runSilent('set a b/123 .foo == bee')
+    graph.runSilent('set a b/456')
+    graph.runSilent('set a b/456 .opt1 == bar')
+    graph.runSilent('set a b/456 .opt2 == zee')
 
     const result = runUpdateOnce(graph, cxt => {
         const out = {}

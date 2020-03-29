@@ -321,7 +321,6 @@ function parseModule() {
 export function parseSourceIntoGraph(graph: Graph, str: string) {
     const commands = [];
     it = lexStringToIterator(str);
-    out = cmd => graph.run(cmd);
     parseModule();
     return commands;
 }

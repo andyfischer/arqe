@@ -403,7 +403,7 @@ export default class Graph {
     loadDumpFile(filename: string) {
         const contents = Fs.readFileSync(filename, 'utf8');
         for (const line of contents.split(/\r\n|\r|\n/)) {
-            this.run(line);
+            this.runSilent(line);
         }
 
         /*
@@ -422,7 +422,7 @@ export default class Graph {
 
     loadDump(contents: string) {
         for (const line of contents.split(/\r\n|\r|\n/)) {
-            this.run(line);
+            this.runSilent(line);
         }
     }
     

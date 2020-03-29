@@ -11,23 +11,23 @@ it('listen ** notifies on all changes', () => {
     expect(listenCalls).toEqual([]);
 
     listenCalls = [];
-    graph.run('set a');
+    graph.runSilent('set a');
     expect(listenCalls).toEqual(['a']);
 
     listenCalls = [];
-    graph.run('set a/1 b/1');
+    graph.runSilent('set a/1 b/1');
     expect(listenCalls).toEqual(['a/1 b/1']);
     
     listenCalls = [];
-    graph.run('set a/1 b/1 == 5');
+    graph.runSilent('set a/1 b/1 == 5');
     expect(listenCalls).toEqual(['a/1 b/1 == 5']);
 });
 
 it('listen -get ** first sends messages for existing items', () => {
     const graph = new Graph();
-    graph.run('set a');
-    graph.run('set a b');
-    graph.run('set a b c == 5');
+    graph.runSilent('set a');
+    graph.runSilent('set a b');
+    graph.runSilent('set a b c == 5');
 
     let listenCalls = [];
 
@@ -40,7 +40,7 @@ it('listen -get ** first sends messages for existing items', () => {
     ]);
 
     listenCalls = [];
-    graph.run('set a b c == 9');
+    graph.runSilent('set a b c == 9');
     expect(listenCalls).toEqual([
         'a b c == 9'
     ]);
