@@ -7,10 +7,6 @@ export default class API {
         this.graph = graph;
     }
     
-    run(command: string) {
-        this.graph.run(command);
-    }
-    
     fromFile(target: string): string {
         const queryStr = `${target} from-file`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);

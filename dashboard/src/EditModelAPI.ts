@@ -7,10 +7,6 @@ export default class API {
         this.graph = graph;
     }
     
-    run(command: string) {
-        this.graph.run(command);
-    }
-    
     spreadsheetForView(spreadsheetView: string): string {
         const queryStr = `${spreadsheetView} spreadsheet/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);

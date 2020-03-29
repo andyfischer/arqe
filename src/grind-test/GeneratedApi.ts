@@ -6,8 +6,4 @@ export default class API {
     constructor(graph: Graph) {
         this.graph = graph;
     }
-    
-    run(command: string) {
-        this.graph.run(command);
-    }
 }

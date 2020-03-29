@@ -7,10 +7,6 @@ export default class API {
         this.graph = graph;
     }
     
-    run(command: string) {
-        this.graph.run(command);
-    }
-    
     listTargets(): string[] {
         const queryStr = `code-generation/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);

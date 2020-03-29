@@ -7,10 +7,6 @@ export default class API {
         this.graph = graph;
     }
     
-    run(command: string) {
-        this.graph.run(command);
-    }
-    
     getOneTag(): string {
         const queryStr = `a/1 b/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);

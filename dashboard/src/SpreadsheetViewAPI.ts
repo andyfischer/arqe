@@ -7,10 +7,6 @@ export default class API {
         this.graph = graph;
     }
     
-    run(command: string) {
-        this.graph.run(command);
-    }
-    
     listColumns(spreadsheet: string): string[] {
         const queryStr = `${spreadsheet} col/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);

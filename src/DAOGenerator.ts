@@ -428,14 +428,6 @@ export class DAOGenerator {
 
     generateMethods(writer: JavascriptCodeWriter) {
 
-        writer.startFunction('run', null, w => w.writeInput('command', 'string'));
-
-        if (this.verboseLogging)
-            writer.writeLine(`console.log('Running command: ' + command);`);
-
-        writer.writeLine('this.graph.run(command);')
-        writer.finishFunction()
-
         for (const touchpoint of this.api.listTouchpoints(this.target)) {
             this.generateMethod(writer, touchpoint);
         }
