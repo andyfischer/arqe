@@ -17,7 +17,6 @@ import { UpdateFn } from './UpdateContext'
 import updateFilesystemMounts from './updateFilesystemMounts'
 import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
-import GraphContext from './GraphContext'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import RelationReceiver, { receiveToStringRespond, receiveToRelationList } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
@@ -218,33 +217,11 @@ export default class Graph {
         }
     }
 
-    runCommandParsed(command: Command, respond: RespondFunc) {
-
-        // Maybe divert to socket
-        const wsProviders = this.wsProviders && this.wsProviders.get();
-        if (wsProviders) {
-            for (const provider of wsProviders) {
-                if (provider.pattern.isSupersetOf(command.toPattern())) {
-                    provider.handle(command, respond);
-                    return;
-                }
-            }
-        }
-
-        const commandExec = new CommandExecution(this, command);
-        commandExec.outputToStringRespond(respond);
-        
-        this.runCommandExecution(commandExec);
-    }
-
     runCommandChainParsed(chain: CommandChain, respond: RespondFunc) {
         if (chain.commands.length === 0) {
             respond('#done');
             return;
         }
-
-        if (chain.commands.length === 1)
-            return this.runCommandParsed(chain.commands[0], respond);
 
         const output = receiveToStringRespond(this, chain.commands[0], respond);
         runCommandChain(this, chain, output);
