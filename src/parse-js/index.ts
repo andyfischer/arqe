@@ -320,6 +320,7 @@ function parseModule() {
 
 export function parseSourceIntoGraph(graph: Graph, str: string) {
     const commands = [];
+    out = (cmd) => graph.runSilent(cmd)
     it = lexStringToIterator(str);
     parseModule();
     return commands;

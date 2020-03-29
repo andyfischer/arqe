@@ -267,29 +267,6 @@ export default class Graph {
         }
     }
 
-    run(str: string, respond?: RespondFunc) {
-
-        if (!respond) {
-            return this.runSilent(str);
-        }
-
-        if (/^ *\#/.exec(str)) {
-            // ignore comments
-            return;
-        }
-
-        throw new Error("dont use run1");
-
-        const chain = parseCommandChain(str);
-
-        for (const command of chain.commands) {
-            if (!command.commandName)
-                throw new Error('no command name found: ' + parsedCommandToString(command));
-        }
-
-        this.runCommandChainParsed(chain, respond);
-    }
-
     run2(str: string, output: RelationReceiver) {
         if (/^ *\#/.exec(str)) {
             // ignore comments
