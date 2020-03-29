@@ -1,5 +1,6 @@
 
 import Graph from '../Graph'
+import receiveToStringStream from '../receiveToStringStream'
 
 it('listen ** notifies on all changes', () => {
     const graph = new Graph();
@@ -32,20 +33,19 @@ it('listen -get ** first sends messages for existing items', () => {
 
     let listenCalls = [];
 
-    graph.run('listen -get **', msg => {
-        listenCalls.push(msg);
-    });
+    const receiver = receiveToStringStream(s => listenCalls.push(s));
+
+    graph.run2('listen -get **', receiver);
 
     expect(listenCalls).toEqual([
-        '#start',
-        'set a',
-        'set a b',
-        'set a b c == 5'
+        'a',
+        'a b',
+        'a b c == 5',
     ]);
 
     listenCalls = [];
     graph.run('set a b c == 9');
     expect(listenCalls).toEqual([
-        'set a b c == 9'
+        'a b c == 9'
     ]);
 });

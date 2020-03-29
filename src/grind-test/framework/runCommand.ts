@@ -3,7 +3,7 @@ import collectRespond from '../../collectRespond'
 import Graph, { RunFunc } from '../../Graph'
 import ChaosMode from './ChaosMode'
 import Runnable from '../../Runnable'
-import receiveToStrings from '../../receiveToStrings'
+import receiveToStringList from '../../receiveToStringList'
 
 interface RunOptions {
     allowError?: true
@@ -22,7 +22,7 @@ export default function run(command, opts?: RunOptions): Promise<string | string
     });
 
     return new Promise((resolve, reject) => {
-        const collector = receiveToStrings(resolve);
+        const collector = receiveToStringList(resolve);
 
         opts.graph.run2(command, collector);
 

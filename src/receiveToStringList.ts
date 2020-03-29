@@ -3,7 +3,7 @@ import Relation from './Relation'
 import RelationReceiver from './RelationReceiver'
 import { commandTagToString } from './stringifyQuery'
 
-export default function receiveToStrings(onDone: (s: string|string[]) => void): RelationReceiver {
+export default function receiveToStringList(onDone: (s: string|string[]) => void): RelationReceiver {
 
     let searchPattern = null;
     let actionPerformed = null;
