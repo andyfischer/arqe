@@ -1,5 +1,6 @@
 
 import Graph from '../Graph'
+import receiveToStringStream from '../receiveToStringStream'
 
 it("fires callbacks when a related item is saved", () => {
     const graph = new Graph();
@@ -11,17 +12,17 @@ it("fires callbacks when a related item is saved", () => {
         return result;
     }
 
-    graph.run('listen a/*', (msg) => calls.push(msg));
+    graph.run2('listen a/*', receiveToStringStream(s => calls.push(s)));
 
-    expect(recentCalls()).toEqual(['#start']);
+    expect(recentCalls()).toEqual([]);
 
     graph.run('set a/1');
-    expect(recentCalls()).toEqual(["set a/1"]);
+    expect(recentCalls()).toEqual(["a/1"]);
 
     graph.run('set a/2');
     graph.run('set a/3');
     graph.run('set b/2');
-    expect(recentCalls()).toEqual(["set a/2", "set a/3"]);
+    expect(recentCalls()).toEqual(["a/2", "a/3"]);
 
     graph.run('delete a/2');
     expect(recentCalls()).toEqual(["delete a/2"]);

@@ -269,18 +269,16 @@ export default class Graph {
 
     run(str: string, respond?: RespondFunc) {
 
+        if (!respond) {
+            return this.runSilent(str);
+        }
+
         if (/^ *\#/.exec(str)) {
             // ignore comments
             return;
         }
 
-        if (!respond) {
-            respond = (msg) => {
-                if (msg.startsWith('#error')) {
-                    console.log(`Uncaught error when running '${str}': ${msg}`);
-                }
-            }
-        }
+        throw new Error("dont use run1");
 
         const chain = parseCommandChain(str);
 
