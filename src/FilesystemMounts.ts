@@ -4,6 +4,7 @@ import StorageProvider from './StorageProvider'
 import { parseRelation } from './parseCommand'
 import PlainFileStorage from './PlainFileStorage'
 import Pattern, { commandToRelationPattern } from './Pattern'
+import receiveToStringStream from './receiveToStringStream'
 
 export interface Mount {
     pattern: Pattern
@@ -17,8 +18,8 @@ export default class FilesystemMounts {
 
     constructor(graph: Graph) {
         this.graph = graph;
-        graph.run("listen filesystem-mount/*", resp => this.onChange());
-        graph.run("listen filesystem-mount/* option/*", resp => this.onChange());
+        graph.run2("listen filesystem-mount/*", receiveToStringStream(m => this.onChange()));
+        graph.run2("listen filesystem-mount/* option/*", receiveToStringStream(m => this.onChange()));
     }
 
     *iterateMounts() {

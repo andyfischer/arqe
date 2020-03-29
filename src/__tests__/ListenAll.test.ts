@@ -6,23 +6,21 @@ it('listen ** notifies on all changes', () => {
     const graph = new Graph();
     let listenCalls = [];
 
-    graph.run('listen **', msg => {
-        listenCalls.push(msg);
-    });
+    graph.run2('listen **', receiveToStringStream(s => listenCalls.push(s)));
 
-    expect(listenCalls).toEqual(['#start']);
+    expect(listenCalls).toEqual([]);
 
     listenCalls = [];
     graph.run('set a');
-    expect(listenCalls).toEqual(['set a']);
+    expect(listenCalls).toEqual(['a']);
 
     listenCalls = [];
     graph.run('set a/1 b/1');
-    expect(listenCalls).toEqual(['set a/1 b/1']);
+    expect(listenCalls).toEqual(['a/1 b/1']);
     
     listenCalls = [];
     graph.run('set a/1 b/1 == 5');
-    expect(listenCalls).toEqual(['set a/1 b/1 == 5']);
+    expect(listenCalls).toEqual(['a/1 b/1 == 5']);
 });
 
 it('listen -get ** first sends messages for existing items', () => {
@@ -33,9 +31,7 @@ it('listen -get ** first sends messages for existing items', () => {
 
     let listenCalls = [];
 
-    const receiver = receiveToStringStream(s => listenCalls.push(s));
-
-    graph.run2('listen -get **', receiver);
+    graph.run2('listen -get **', receiveToStringStream(s => listenCalls.push(s)));
 
     expect(listenCalls).toEqual([
         'a',
