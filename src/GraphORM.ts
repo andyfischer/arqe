@@ -18,7 +18,8 @@ function isPrimitive(val) {
     return (val !== Object(val));
 };
 
-export async function saveObject(graph: Graph, patternStr: string, object: any): Promise<Pattern> {
+export async function saveObject(graph: Graph, patternStr: string, object: any) {
+    /*
     const parsed = parsePattern(patternStr);
 
     let unique = null;
@@ -44,4 +45,5 @@ export async function saveObject(graph: Graph, patternStr: string, object: any):
     }
 
     return resolvedPattern;
+    */
 }

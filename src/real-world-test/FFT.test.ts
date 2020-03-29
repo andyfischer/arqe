@@ -21,8 +21,8 @@ it('correctly joins with a has-skill', () => {
     }
 
     expect(joinResults).toEqual([
-       "has-skill/Revive [from $a] unit/2d6dd",
-       "has-skill/Revive [from $a] unit/56330",
-       "has-skill/Revive [from $a] unit/ce769",
+       "[from $a] unit/2d6dd",
+       "[from $a] unit/56330",
+       "[from $a] unit/ce769",
     ])
 });

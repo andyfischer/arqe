@@ -31,6 +31,7 @@ import IDSource from './IDSource'
 import GraphListenerV2 from './GraphListenerV2'
 import { parsePattern } from './parseCommand'
 import { runSetOperation } from './SetOperation'
+import receiveToStringList from './receiveToStringList'
 
 export type RespondFunc = (msg: string) => void
 export type RunFunc = (query: string, respond: RespondFunc) => void
@@ -347,22 +348,14 @@ export default class Graph {
     runSync(commandStr: string) {
         let result = null;
 
-        const collector = collectRespond(r => { result = r; });
+        const receiver = receiveToStringList(r => { result = r; });
         
-        const parsed = parseCommandChain(commandStr);
-        this.run(commandStr, collector);
+        this.run2(commandStr, receiver);
 
         if (result === null)
             throw new Error("command didn't have sync response in runSync");
 
         return result;
-    }
-
-    runAsync(commandStr: string): Promise<string | string[]> {
-        return new Promise(resolve => {
-            const collector = collectRespond(resolve);
-            this.run(commandStr, collector);
-        })
     }
 
     runCommandChainSync(commandStr: string): Relation[] {
