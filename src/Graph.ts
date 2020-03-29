@@ -308,10 +308,10 @@ export default class Graph {
         this.run2(str, {
             start() {},
             relation(rel) {
-                if (rel.hasType('command-meta') && rel.hasType('error'))
+                if (rel.hasType('command-meta') && rel.hasType('error')) {
                     console.log('error: ' + rel.getPayload());
-
-                error = error || rel;
+                    error = error || rel;
+                }
             },
             isDone() { return false; },
             finish() {

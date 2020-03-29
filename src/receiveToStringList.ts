@@ -25,6 +25,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
         });
 
         const tagStrs = tags.map(commandTagToString);
+        tagStrs.sort();
 
         let str = tagStrs.join(' ');
         
