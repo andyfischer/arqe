@@ -6,7 +6,7 @@ import parseCommand, { parseCommandChain } from './parseCommand'
 import Relation from './Relation'
 import { runSearch } from './Search'
 import GraphListener from './GraphListener'
-import Pattern, { commandToRelationPattern } from './Pattern'
+import Pattern from './Pattern'
 import collectRespond from './collectRespond'
 import InMemoryStorage from './InMemoryStorage'
 import SavedQuery from './SavedQuery'
@@ -20,7 +20,6 @@ import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
 import { emitSearchPatternMeta, emitCommandError, emitActionPerformed, emitCommandOutputFlags } from './CommandMeta'
-import { parsedCommandToString } from './stringifyQuery'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
 import TagTypeOrdering from './TagTypeOrdering'
@@ -48,7 +47,6 @@ export default class Graph {
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
-
     graphListenersV2: { [id: string]: GraphListenerV2 } = {}
 
     constructor() {
@@ -269,15 +267,11 @@ export default class Graph {
                 }
             },
             isDone() { return false; },
-            finish() {
-            }
+            finish() { }
         });
 
         if (error)
             throw new Error(error.getPayload())
-    }
-
-    runSync2(commandStr: string, output: RelationReceiver) {
     }
 
     runSync(commandStr: string) {
