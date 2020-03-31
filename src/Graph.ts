@@ -17,7 +17,7 @@ import updateFilesystemMounts from './updateFilesystemMounts'
 import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
-import RelationReceiver, { receiveToStringRespond, receiveToRelationList } from './RelationReceiver'
+import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
 import { emitSearchPatternMeta, emitCommandError, emitActionPerformed, emitCommandOutputFlags } from './CommandMeta'
 import { parsedCommandToString } from './stringifyQuery'
@@ -215,7 +215,6 @@ export default class Graph {
             commandExec.output.finish();
         }
     }
-
 
     onRelationUpdated(command: Command, rel: Relation) {
 
