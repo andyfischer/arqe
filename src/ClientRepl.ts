@@ -31,7 +31,7 @@ export default class ClientRepl {
             return;
         }
 
-        this.graph.run2(line, {
+        this.graph.run(line, {
             start() {},
             relation: (rel) => {
                 if (isFinished)

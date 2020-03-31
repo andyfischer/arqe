@@ -12,7 +12,7 @@ it("fires callbacks when a related item is saved", () => {
         return result;
     }
 
-    graph.run2('listen a/*', receiveToStringStream(s => calls.push(s)));
+    graph.run('listen a/*', receiveToStringStream(s => calls.push(s)));
 
     expect(recentCalls()).toEqual([]);
 

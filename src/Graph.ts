@@ -253,7 +253,7 @@ export default class Graph {
         }
     }
 
-    run2(str: string, output: RelationReceiver) {
+    run(str: string, output: RelationReceiver) {
         if (/^ *\#/.exec(str)) {
             // ignore comments
             return;
@@ -266,7 +266,7 @@ export default class Graph {
     runSilent(str: string) {
         let error = null;
 
-        this.run2(str, {
+        this.run(str, {
             start() {},
             relation(rel) {
                 if (rel.hasType('command-meta') && rel.hasType('error')) {
@@ -288,7 +288,7 @@ export default class Graph {
 
         const receiver = receiveToStringList(r => { result = r; });
         
-        this.run2(commandStr, receiver);
+        this.run(commandStr, receiver);
 
         if (result === null)
             throw new Error("command didn't have sync response in runSync");

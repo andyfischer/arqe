@@ -24,7 +24,7 @@ export default function run(command, opts?: RunOptions): Promise<string | string
     return new Promise((resolve, reject) => {
         const collector = receiveToStringList(resolve);
 
-        opts.graph.run2(command, collector);
+        opts.graph.run(command, collector);
 
         /*
         const collector = collectRespond(resolve);

@@ -60,7 +60,7 @@ export default class CommandConnection {
             this.pendingForConnection = [];
 
             for (const { query, respond } of pending) {
-                this.run(query, respond)
+                this.runOld(query, respond)
             }
         });
     }
@@ -69,7 +69,7 @@ export default class CommandConnection {
         this.ws.terminate();
     }
 
-    run(query: string, respond: RespondFunc) {
+    runOld(query: string, respond: RespondFunc) {
 
         if (typeof query !== 'string')
             throw new Error("expected string for query, got: " + query);
@@ -88,8 +88,8 @@ export default class CommandConnection {
         }
     }
 
-    run2(query: string, output: RelationReceiver) {
-        this.run(query, (msg: string) => {
+    run(query: string, output: RelationReceiver) {
+        this.runOld(query, (msg: string) => {
             if (msg === '#start')
                 return;
 

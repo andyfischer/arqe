@@ -18,8 +18,8 @@ export default class FilesystemMounts {
 
     constructor(graph: Graph) {
         this.graph = graph;
-        graph.run2("listen filesystem-mount/*", receiveToStringStream(m => this.onChange()));
-        graph.run2("listen filesystem-mount/* option/*", receiveToStringStream(m => this.onChange()));
+        graph.run("listen filesystem-mount/*", receiveToStringStream(m => this.onChange()));
+        graph.run("listen filesystem-mount/* option/*", receiveToStringStream(m => this.onChange()));
     }
 
     *iterateMounts() {

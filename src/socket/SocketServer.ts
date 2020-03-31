@@ -28,7 +28,7 @@ class Connection extends EventEmitter {
     }
 
     async handleCommand(reqid: string, query: string) {
-        this.graph.run2(query, receiveToStringList((msg) => {
+        this.graph.run(query, receiveToStringList((msg) => {
             this.send(query, {reqid, msg});
         }))
     }

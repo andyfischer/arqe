@@ -6,7 +6,7 @@ it('listen ** notifies on all changes', () => {
     const graph = new Graph();
     let listenCalls = [];
 
-    graph.run2('listen **', receiveToStringStream(s => listenCalls.push(s)));
+    graph.run('listen **', receiveToStringStream(s => listenCalls.push(s)));
 
     expect(listenCalls).toEqual([]);
 
@@ -31,7 +31,7 @@ it('listen -get ** first sends messages for existing items', () => {
 
     let listenCalls = [];
 
-    graph.run2('listen -get **', receiveToStringStream(s => listenCalls.push(s)));
+    graph.run('listen -get **', receiveToStringStream(s => listenCalls.push(s)));
 
     expect(listenCalls).toEqual([
         'a',
