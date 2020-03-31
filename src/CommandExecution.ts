@@ -5,7 +5,6 @@ import Relation from './Relation'
 import Pattern from './Pattern'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import RelationSearch from './RelationSearch'
-import { receiveToStringRespond } from './RelationReceiver'
 
 export default class CommandExecution {
     graph: Graph
@@ -47,13 +46,6 @@ export default class CommandExecution {
             throw new Error('already have this.output');
 
         this.output = receiver;
-    }
-
-    outputToStringRespond(respond: RespondFunc) {
-        if (this.output)
-            throw new Error('already have this.output');
-
-        this.output = receiveToStringRespond(this.graph, this.command, respond);
     }
 
     outputToRelationList(onDone: (rels: Relation[]) => void) {

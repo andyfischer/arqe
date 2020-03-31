@@ -4,7 +4,6 @@ import CommandChain from './CommandChain'
 import CommandExecution from './CommandExecution'
 import parseCommand, { parseCommandChain } from './parseCommand'
 import Relation from './Relation'
-import SetResponseFormatter from './SetResponseFormatter'
 import { runSearch } from './Search'
 import GraphListener from './GraphListener'
 import Pattern, { commandToRelationPattern } from './Pattern'
@@ -217,15 +216,6 @@ export default class Graph {
         }
     }
 
-    runCommandChainParsed(chain: CommandChain, respond: RespondFunc) {
-        if (chain.commands.length === 0) {
-            respond('#done');
-            return;
-        }
-
-        const output = receiveToStringRespond(this, chain.commands[0], respond);
-        runCommandChain(this, chain, output);
-    }
 
     onRelationUpdated(command: Command, rel: Relation) {
 

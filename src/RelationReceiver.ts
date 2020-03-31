@@ -7,7 +7,6 @@ import { RespondFunc } from './Graph'
 import GetResponseFormatter from './GetResponseFormatter'
 import GetResponseFormatterExists from './GetResponseFormatterExists'
 import GetResponseFormatterCount from './GetResponseFormatterCount'
-import SetResponseFormatter from './SetResponseFormatter'
 
 export default interface RelationReceiver {
     start: () => void
@@ -39,9 +38,6 @@ export function receiveToRelationStream(onRel: (rel: Pattern) => void, onDone: (
 
 
 export function receiveToStringRespond(graph: Graph, command: Command, respond: RespondFunc): RelationReceiver {
-    if (command.commandName === 'set') {
-        return new SetResponseFormatter(graph, command, respond);
-    }
 
     if (command.commandName === 'delete') {
         return {
