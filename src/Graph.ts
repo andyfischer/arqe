@@ -31,9 +31,6 @@ import { parsePattern } from './parseCommand'
 import { runSetOperation } from './SetOperation'
 import receiveToStringList from './receiveToStringList'
 
-export type RespondFunc = (msg: string) => void
-export type RunFunc = (query: string, respond: RespondFunc) => void
-
 export default class Graph {
 
     inMemory = new InMemoryStorage()

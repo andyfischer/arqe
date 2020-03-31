@@ -1,9 +1,10 @@
 
 import WebSocket from 'ws'
 import EventEmitter from 'events'
-import { RespondFunc } from '../Graph'
 import RelationReceiver from '../RelationReceiver'
 import { parseRelation } from '../parseCommand'
+
+export type RespondFunc = (msg: string) => void
 
 interface Listener {
     respond: (msg: string) => void

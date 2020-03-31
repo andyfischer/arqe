@@ -3,7 +3,6 @@ import Graph from './Graph'
 import Command from './Command'
 import Relation from './Relation'
 import Pattern from './Pattern'
-import { RespondFunc } from './Graph'
 
 export default interface RelationReceiver {
     start: () => void

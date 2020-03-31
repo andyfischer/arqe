@@ -2,7 +2,7 @@
 import TestSuite from './TestSuite'
 import collectRespond from '../../collectRespond'
 import verifyRespondProtocol from '../../verifyRespondProtocol'
-import Graph, { RunFunc } from '../../Graph'
+import Graph from '../../Graph'
 import { connectToServer } from '../../socket/CommandConnection'
 import ChaosMode from './ChaosMode'
 import runCommand from './runCommand'

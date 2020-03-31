@@ -4,7 +4,6 @@ import CommandExecution from './CommandExecution'
 import CommandChain from './CommandChain'
 import RelationReceiver, { receiveToNull } from './RelationReceiver'
 
-import { setupGetExecution } from './GetCommand'
 import { setupJoinExecution } from './JoinCommand'
 
 function setupCommandExecution(commandExec: CommandExecution) {

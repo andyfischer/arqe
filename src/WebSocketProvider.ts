@@ -3,7 +3,6 @@ import Command from './Command'
 import CommandConnection, { connectToServer } from './socket/CommandConnection'
 import Pattern, { parsePattern } from './Pattern'
 import UpdateContext from './UpdateContext'
-import { RespondFunc } from './Graph'
 
 export default class WebSocketProvider {
 
@@ -17,10 +16,12 @@ export default class WebSocketProvider {
         this.connection = connectToServer(host);
     }
 
+    /*
     handle(command: Command, respond: RespondFunc) {
         console.log('ws handling command: ', command.stringify())
         // provider.connection.run(command.stringify(), respond);
     }
+    */
 }
 
 export function updateWebSocketProviders(cxt: UpdateContext) {

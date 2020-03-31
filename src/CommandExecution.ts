@@ -1,6 +1,6 @@
 
 import Command, { CommandFlags } from './Command'
-import Graph, { RespondFunc } from './Graph'
+import Graph from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'

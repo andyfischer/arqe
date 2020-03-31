@@ -1,7 +1,7 @@
 
 import Command, { CommandFlags } from './Command'
 import CommandExecution from './CommandExecution'
-import Graph, { RespondFunc } from './Graph'
+import Graph from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'
 import StorageProvider from './StorageProvider'

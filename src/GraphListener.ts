@@ -1,5 +1,5 @@
 
-import Graph, { RespondFunc } from './Graph'
+import Graph from './Graph'
 import Command from './Command'
 import Relation from './Relation'
 import Pattern from './Pattern'

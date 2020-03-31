@@ -1,6 +1,6 @@
 import verifyRespondProtocol from '../../verifyRespondProtocol'
 import collectRespond from '../../collectRespond'
-import Graph, { RunFunc } from '../../Graph'
+import Graph from '../../Graph'
 import ChaosMode from './ChaosMode'
 import Runnable from '../../Runnable'
 import receiveToStringList from '../../receiveToStringList'
