@@ -76,11 +76,6 @@ export function setupJoinExecution(commandExec: CommandExecution) {
         check();
     });
 
-    commandExec.start = () => {
-        commandExec.output.start();
-        runSearch(commandExec.graph, { pattern: searchPattern, subSearchDepth: 0, ...search } );
-    }
-
     const check = () => {
         if (triggeredOutput)
             return;
@@ -96,6 +91,8 @@ export function setupJoinExecution(commandExec: CommandExecution) {
         searchRelations = annotateRelationsWithMissingIdentifier(searchPattern, searchRelations);
         runJoin(inputSearchPattern, inputRelations, searchPattern, searchRelations, commandExec.output);
     }
+
+    runSearch(commandExec.graph, { pattern: searchPattern, subSearchDepth: 0, ...search } );
 }
 
 function combineRelations(a: Pattern, b: Pattern) {

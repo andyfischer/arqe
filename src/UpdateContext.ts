@@ -34,7 +34,6 @@ export default class UpdateContext {
         let rels: Relation[] = null;
 
         const search = commandExec.toRelationSearch();
-        search.start();
         runSearch(this.graph, search);
 
         if (rels === null)

@@ -22,7 +22,6 @@ export function runSetOperation(graph: Graph, commandExec: CommandExecution) {
     }
 
     graph.inMemory.runSave(command, {
-        start: () => output.start(),
         relation: (rel) => {
             graph.onRelationUpdated(command, rel);
             output.relation(rel);

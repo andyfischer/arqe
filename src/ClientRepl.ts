@@ -32,7 +32,6 @@ export default class ClientRepl {
         }
 
         this.graph.run(line, {
-            start() {},
             relation: (rel) => {
                 if (isFinished)
                     throw new Error('got relation after finish()');

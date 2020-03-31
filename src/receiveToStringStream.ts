@@ -7,7 +7,6 @@ export default function receiveToStringStream(onStr: (s: string) => void): Relat
     const stringifier = stringifyRelationStream();
 
     return {
-        start() {},
         isDone() { return false },
         relation(rel: Relation) { 
             const str = stringifier(rel);

@@ -52,7 +52,6 @@ function get_inherit(graph: Graph, search: RelationSearch) {
             subSearchDepth: search.subSearchDepth + 1,
             relation(rel) { search.relation(rel) },
             isDone() { return search.isDone() },
-            start () {},
             finish() {
 
                 // Try dropping this tag and then restarting.
@@ -60,7 +59,6 @@ function get_inherit(graph: Graph, search: RelationSearch) {
                     pattern: search.pattern.dropTagIndex(foundInheritTagIndex),
                     subSearchDepth: search.subSearchDepth + 1,
                     relation(rel) { search.relation(rel) },
-                    start () {},
                     finish() { search.finish() },
                     isDone() { return search.isDone() }
                 });

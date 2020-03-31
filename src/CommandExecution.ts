@@ -35,7 +35,6 @@ export default class CommandExecution {
             pattern: this.pattern,
             subSearchDepth: 0,
             isDone() { return output.isDone() },
-            start() { output.start() },
             relation(r) { output.relation(r) },
             finish() { output.finish() },
         }

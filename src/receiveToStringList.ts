@@ -40,7 +40,6 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
     }
 
     return {
-        start() {},
         relation: (rel: Relation) => {
 
             if (rel.hasType('command-meta')) {

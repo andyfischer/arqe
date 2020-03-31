@@ -113,14 +113,11 @@ export default class Graph {
             this.onRelationDeleted(rel);
         }
 
-        commandExec.output.start();
         emitActionPerformed(commandExec.output);
         commandExec.output.finish();
     }
 
     listen(commandExec: CommandExecution) {
-        commandExec.output.start();
-
         if (commandExec.flags.get) {
             const search = commandExec.toRelationSearch();
             search.finish = () => null;
@@ -167,7 +164,6 @@ export default class Graph {
 
             case 'get': {
                 const search = commandExec.toRelationSearch();
-                search.start();
                 emitSearchPatternMeta(commandExec.command.toPattern(), search);
                 runSearch(this, search);
                 return;
@@ -178,7 +174,6 @@ export default class Graph {
             }
 
             case 'dump': {
-                commandExec.output.start();
                 for (const rel of this.inMemory.everyRelation()) {
                     commandExec.output.relation(rel);
                 }
@@ -267,7 +262,6 @@ export default class Graph {
         let error = null;
 
         this.run(str, {
-            start() {},
             relation(rel) {
                 if (rel.hasType('command-meta') && rel.hasType('error')) {
                     console.log('error: ' + rel.getPayload());
@@ -281,6 +275,9 @@ export default class Graph {
 
         if (error)
             throw new Error(error.getPayload())
+    }
+
+    runSync2(commandStr: string, output: RelationReceiver) {
     }
 
     runSync(commandStr: string) {
@@ -325,7 +322,6 @@ export default class Graph {
         const commandExec = new CommandExecution(this, parsedCommand);
         commandExec.outputToRelationList(l => { rels = l });
         const search = commandExec.toRelationSearch();
-        search.start();
         runSearch(this, search);
         if (rels === null)
             throw new Error("getRelationsSync search didn't finish synchronously: " + tags);

@@ -29,7 +29,6 @@ export default class DerivedValueMount implements StorageProvider {
         const subSearch: RelationSearch = {
             pattern: search.pattern.removeType(this.mountTypename),
             subSearchDepth: search.subSearchDepth + 1,
-            start() {},
             relation: (rel: Relation) => {
                 
                 const cxt = new UpdateContext(this.graph);
