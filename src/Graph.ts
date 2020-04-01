@@ -27,8 +27,8 @@ import runningInBrowser from './context/runningInBrowser'
 import IDSource from './IDSource'
 import GraphListenerV2 from './GraphListenerV2'
 import { parsePattern } from './parseCommand'
-import { runSetOperation } from './SetOperation'
 import receiveToStringList from './receiveToStringList'
+import { singleCommandExecution } from './ChainedExecution'
 
 export default class Graph {
 
@@ -143,69 +143,6 @@ export default class Graph {
         })
     }
 
-    runCommandExecution(commandExec: CommandExecution) {
-
-        emitCommandOutputFlags(commandExec.command, commandExec.output);
-
-        if (commandExec.start) {
-            commandExec.start();
-            return;
-        }
-
-        try {
-            switch (commandExec.commandName) {
-
-            case 'set': {
-                runSetOperation(this, commandExec);
-                return;
-            }
-
-            case 'get': {
-                const search = commandExec.toRelationSearch();
-                emitSearchPatternMeta(commandExec.command.toPattern(), search);
-                runSearch(this, search);
-                return;
-            }
-
-            case 'modify': {
-                return;
-            }
-
-            case 'dump': {
-                for (const rel of this.inMemory.everyRelation()) {
-                    commandExec.output.relation(rel);
-                }
-                commandExec.output.finish();
-                return;
-            }
-
-            case 'delete': {
-                this.deleteCmd(commandExec);
-                return;
-            }
-
-            case 'listen': {
-                this.listen(commandExec);
-                return;
-            }
-
-            case 'join': {
-                // handled in setupCommandExecution
-                return;
-            }
-            
-            }
-
-            emitCommandError(commandExec.output, "unrecognized command: " + commandExec.commandName);
-            commandExec.output.finish();
-
-        } catch (err) {
-            console.log(err.stack || err);
-            emitCommandError(commandExec.output, "internal error: " + (err.stack || err));
-            commandExec.output.finish();
-        }
-    }
-
     onRelationUpdated(command: Command, rel: Relation) {
 
         for (const listener of this.listeners)
@@ -313,8 +250,8 @@ export default class Graph {
         let rels: Relation[] = null;
         const commandStr = 'get ' + tags;
         const parsedCommand = parseCommand(commandStr);
-        const commandExec = new CommandExecution(this, parsedCommand);
-        commandExec.outputToRelationList(l => { rels = l });
+        const commandExec = singleCommandExecution(this, parsedCommand);
+        commandExec.output.waitForAll(l => { rels = l });
         const search = commandExec.toRelationSearch();
         runSearch(this, search);
         if (rels === null)

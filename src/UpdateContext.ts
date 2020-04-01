@@ -6,6 +6,7 @@ import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
 import CommandExecution from './CommandExecution'
 import { runSearch } from './Search'
+import { singleCommandExecution } from './ChainedExecution'
 
 export type UpdateFn<T> = (cxt: UpdateContext) => T
 
@@ -28,8 +29,8 @@ export default class UpdateContext {
         this.usedSearches.push(tags);
 
         const parsedCommand = parseCommand(commandStr);
-        const commandExec = new CommandExecution(this.graph, parsedCommand);
-        commandExec.outputToRelationList(l => { rels = l });
+        const commandExec = singleCommandExecution(this.graph, parsedCommand);
+        commandExec.output.waitForAll(l => { rels = l });
 
         let rels: Relation[] = null;
 

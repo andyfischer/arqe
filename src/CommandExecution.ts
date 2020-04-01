@@ -5,6 +5,7 @@ import Relation from './Relation'
 import Pattern from './Pattern'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import RelationSearch from './RelationSearch'
+import RelationPipe from './RelationPipe'
 
 export default class CommandExecution {
     graph: Graph
@@ -12,9 +13,8 @@ export default class CommandExecution {
     command: Command
     commandName: string
     pattern: Pattern
-    input?: RelationReceiver
-    output: RelationReceiver
-    start?: () => void
+    input: RelationPipe
+    output: RelationPipe
 
     constructor (graph: Graph, command: Command) {
         this.graph = graph;
@@ -38,19 +38,5 @@ export default class CommandExecution {
             relation(r) { output.relation(r) },
             finish() { output.finish() },
         }
-    }
-
-    outputTo(receiver: RelationReceiver) {
-        if (this.output)
-            throw new Error('already have this.output');
-
-        this.output = receiver;
-    }
-
-    outputToRelationList(onDone: (rels: Relation[]) => void) {
-        if (this.output)
-            throw new Error("already have a configured output");
-
-        this.output = receiveToRelationList(onDone);
     }
 }

@@ -4,6 +4,7 @@ import CommandExecution from './CommandExecution'
 import { runSearch } from './Search'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import Pattern from './Pattern'
+import Relation from './Relation'
 import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { commandTagToString } from './stringifyQuery'
@@ -35,12 +36,7 @@ function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pa
     return rels;
 }
 
-export function setupJoinExecution(commandExec: CommandExecution) {
-    // run the search
-    // wait for input
-    // when both are done..
-    // look for relations where the unbound item matches
-
+export function runJoinStep(step: CommandExecution) {
     let triggeredOutput = false;
 
     let inputRelations: Pattern[] = [];
@@ -49,9 +45,35 @@ export function setupJoinExecution(commandExec: CommandExecution) {
     let searchDone = false;
     let inputSearchPattern: Pattern = null;
 
-    const searchPattern = commandExec.command.toPattern();
+    const searchPattern = step.command.toPattern();
 
-    commandExec.input = receiveToRelationList((rels) => {
+    const sendOutput = () => {
+        inputRelations = annotateRelationsWithMissingIdentifier(inputSearchPattern, inputRelations);
+        searchRelations = annotateRelationsWithMissingIdentifier(searchPattern, searchRelations);
+        runJoin(inputSearchPattern, inputRelations, searchPattern, searchRelations, step.output);
+    }
+
+    const check = () => {
+        if (triggeredOutput)
+            return;
+
+        if (inputDone && searchDone) {
+            triggeredOutput = true;
+            sendOutput();
+        }
+    }
+
+    const search = receiveToRelationList((rels) => {
+        for (const rel of rels)
+            searchRelations.push(rel);
+
+        searchDone = true;
+        check();
+    });
+
+    runSearch(step.graph, { pattern: searchPattern, subSearchDepth: 0, ...search } );
+
+    step.input.waitForAll((rels) => {
 
         for (const rel of rels) {
             if (rel.hasType('command-meta')) {
@@ -67,32 +89,6 @@ export function setupJoinExecution(commandExec: CommandExecution) {
         inputDone = true;
         check();
     });
-
-    const search = receiveToRelationList((rels) => {
-        for (const rel of rels)
-            searchRelations.push(rel);
-
-        searchDone = true;
-        check();
-    });
-
-    const check = () => {
-        if (triggeredOutput)
-            return;
-
-        if (inputDone && searchDone) {
-            triggeredOutput = true;
-            sendOutput();
-        }
-    }
-
-    const sendOutput = () => {
-        inputRelations = annotateRelationsWithMissingIdentifier(inputSearchPattern, inputRelations);
-        searchRelations = annotateRelationsWithMissingIdentifier(searchPattern, searchRelations);
-        runJoin(inputSearchPattern, inputRelations, searchPattern, searchRelations, commandExec.output);
-    }
-
-    runSearch(commandExec.graph, { pattern: searchPattern, subSearchDepth: 0, ...search } );
 }
 
 function combineRelations(a: Pattern, b: Pattern) {
