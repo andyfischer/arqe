@@ -13,7 +13,6 @@ export type UpdateFn<T> = (cxt: UpdateContext) => T
 export default class UpdateContext {
 
     graph: Graph
-
     usedSearches: string[] = []
 
     constructor(graph: Graph) {
