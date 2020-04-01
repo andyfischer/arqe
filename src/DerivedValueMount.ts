@@ -55,7 +55,7 @@ export default class DerivedValueMount implements StorageProvider {
         */
     }
 
-    async runSave(command: Command, output: RelationReceiver) {
+    async runSave(rel: Relation, output: RelationReceiver) {
         throw new Error("can't save on a derived value");
     }
 }

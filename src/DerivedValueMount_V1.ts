@@ -51,7 +51,7 @@ export default class DerivedValueMount implements StorageProvider {
         runSearch(this.graph, subSearch);
     }
 
-    async runSave(command: Command, output: RelationReceiver) {
+    async runSave(rel: Relation, output: RelationReceiver) {
         throw new Error("can't save on a derived value");
     }
 }

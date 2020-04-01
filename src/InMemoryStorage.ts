@@ -8,6 +8,9 @@ import StorageProvider from './StorageProvider'
 import RelationSearch from './RelationSearch'
 import RelationReceiver from './RelationReceiver'
 
+// TODO- Handle modifications
+//  - Delete the old tag and insert a new one
+
 export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
 
@@ -43,14 +46,13 @@ export default class InMemoryStorage implements StorageProvider {
         search.finish();
     }
 
-    runSave(command: Command, output: RelationReceiver) {
-        const ntag = normalizeExactTag(command.tags);
-
+    runSave(relation: Relation, output: RelationReceiver) {
+        const ntag = relation.getNtag();
         const existing = this.relationsByNtag[ntag];
 
         if (existing) {
             let modified = existing.copy();
-            modified.setPayload(command.payloadStr);
+            modified.setPayload(relation.getPayload());
             modified.freeze();
             this.relationsByNtag[ntag] = modified;
             output.relation(modified);
@@ -58,14 +60,8 @@ export default class InMemoryStorage implements StorageProvider {
             return;
         }
         
-        const relationTags: PatternTag[] = command.tags.map(tag => (newTag(
-            tag.tagType,
-            tag.tagValue
-        )));
-
-        const rel = commandTagsToRelation(relationTags, command.payloadStr);
-        rel.freeze();
-        this.relationsByNtag[ntag] = rel;
+        relation.freeze();
+        this.relationsByNtag[ntag] = relation;
         output.relation(this.relationsByNtag[ntag]);
         output.finish();
     }

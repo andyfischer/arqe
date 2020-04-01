@@ -30,6 +30,12 @@ export default class Command {
         return new Pattern(this.tags);
     }
 
+    toRelation() {
+        const rel = new Pattern(this.tags);
+        rel.setPayload(this.payloadStr);
+        return rel;
+    }
+
     stringify() {
         return parsedCommandToString(this);
     }

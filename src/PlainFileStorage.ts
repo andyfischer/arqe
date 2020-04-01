@@ -44,7 +44,7 @@ export default class PlainFileStorage implements StorageProvider {
         search.finish();
     }
 
-    async runSave(command: Command, output: RelationReceiver) {
+    async runSave(relation: Relation, output: RelationReceiver) {
         output.finish();
     }
 }

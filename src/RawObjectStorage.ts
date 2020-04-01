@@ -55,7 +55,7 @@ export default class RawObjectStorage implements StorageProvider {
         search.finish();
     }
 
-    runSave(command: Command, output: RelationReceiver) {
+    runSave(relation: Relation, output: RelationReceiver) {
         output.finish();
     }
 }

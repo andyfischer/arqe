@@ -7,5 +7,5 @@ import RelationReceiver from './RelationReceiver'
 
 export default interface StorageProvider {
     runSearch: (search: RelationSearch) => void
-    runSave: (command: Command, output: RelationReceiver) => void
+    runSave: (relation: Relation, output: RelationReceiver) => void
 }

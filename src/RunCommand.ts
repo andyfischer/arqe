@@ -76,7 +76,7 @@ function runSetStep(graph: Graph, commandExec: CommandStep) {
         }
     }
 
-    graph.inMemory.runSave(command, {
+    graph.inMemory.runSave(command.toRelation(), {
         relation: (rel) => {
             graph.onRelationUpdated(command, rel);
             output.relation(rel);
