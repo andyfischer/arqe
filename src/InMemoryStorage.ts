@@ -11,12 +11,6 @@ import RelationReceiver from './RelationReceiver'
 export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
 
-    *everyRelation() {
-        for (const ntag in this.relationsByNtag) {
-            yield this.relationsByNtag[ntag];
-        }
-    }
-
     deleteRelation(rel: Relation) {
         delete this.relationsByNtag[rel.getNtag()];
     }
@@ -29,12 +23,6 @@ export default class InMemoryStorage implements StorageProvider {
                 yield rel;
             }
         }
-    }
-
-    findExactMatch(pattern: Pattern): Relation|null {
-        // Exact tag lookup.
-        const ntag = normalizeExactTag(pattern.tags);
-        return this.relationsByNtag[ntag]
     }
 
     *findAllMatches(pattern: Pattern) {

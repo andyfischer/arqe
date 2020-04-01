@@ -32,14 +32,6 @@ function runStep(step: CommandStep) {
             return;
         }
 
-        case 'dump': {
-            for (const rel of step.graph.inMemory.everyRelation()) {
-                step.output.relation(rel);
-            }
-            step.output.finish();
-            return;
-        }
-
         case 'delete': {
             step.graph.deleteCmd(step);
             return;
