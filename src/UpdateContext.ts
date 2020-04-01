@@ -4,9 +4,9 @@ import Relation from './Relation'
 import parseCommand from './parseCommand'
 import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
-import CommandExecution from './CommandExecution'
+import CommandStep from './CommandStep'
 import { runSearch } from './Search'
-import { singleCommandExecution } from './ChainedExecution'
+import { singleCommandExecution } from './RunCommand'
 
 export type UpdateFn<T> = (cxt: UpdateContext) => T
 

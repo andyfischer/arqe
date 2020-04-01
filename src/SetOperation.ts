@@ -1,11 +1,11 @@
 
 import Command from './Command'
-import CommandExecution from './CommandExecution'
+import CommandStep from './CommandStep'
 import Graph from './Graph'
 import Relation from './Relation'
 import { emitCommandError } from './CommandMeta'
 
-export function runSetOperation(graph: Graph, commandExec: CommandExecution) {
+export function runSetOperation(graph: Graph, commandExec: CommandStep) {
     const command = commandExec.command;
     const output = commandExec.output;
 

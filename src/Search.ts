@@ -1,6 +1,5 @@
 
 import Command, { CommandFlags } from './Command'
-import CommandExecution from './CommandExecution'
 import Graph from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'

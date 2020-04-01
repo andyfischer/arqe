@@ -1,7 +1,7 @@
 
 import Command from './Command'
 import CommandChain from './CommandChain'
-import CommandExecution from './CommandExecution'
+import CommandStep from './CommandStep'
 import parseCommand, { parseCommandChain } from './parseCommand'
 import Relation from './Relation'
 import { runSearch } from './Search'
@@ -18,7 +18,7 @@ import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
-import { runCommandChain } from './ChainedExecution'
+import { runCommandChain, singleCommandExecution } from './RunCommand'
 import { emitSearchPatternMeta, emitCommandError, emitActionPerformed, emitCommandOutputFlags } from './CommandMeta'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
@@ -28,7 +28,6 @@ import IDSource from './IDSource'
 import GraphListenerV2 from './GraphListenerV2'
 import { parsePattern } from './parseCommand'
 import receiveToStringList from './receiveToStringList'
-import { singleCommandExecution } from './ChainedExecution'
 
 export default class Graph {
 
@@ -99,8 +98,8 @@ export default class Graph {
         return this.typeInfo[name];
     }
 
-    deleteCmd(commandExec: CommandExecution) {
-        const pattern = commandExec.pattern;
+    deleteCmd(step: CommandStep) {
+        const pattern = step.pattern;
 
         for (const rel of this.inMemory.findAllMatches(pattern)) {
             if (rel.hasType('typeinfo'))
@@ -111,21 +110,21 @@ export default class Graph {
             this.onRelationDeleted(rel);
         }
 
-        emitActionPerformed(commandExec.output);
-        commandExec.output.finish();
+        emitActionPerformed(step.output);
+        step.output.finish();
     }
 
-    listen(commandExec: CommandExecution) {
-        if (commandExec.flags.get) {
-            const search = commandExec.toRelationSearch();
+    listen(step: CommandStep) {
+        if (step.flags.get) {
+            const search = step.toRelationSearch();
             search.finish = () => null;
             runSearch(this, search);
         }
 
         this.listeners.push({
             onRelationUpdated(rel: Relation) {
-                if (commandExec.pattern.matches(rel)) {
-                    commandExec.output.relation(rel);
+                if (step.pattern.matches(rel)) {
+                    step.output.relation(rel);
                 }
             },
             onRelationDeleted(rel: Relation) {
@@ -133,12 +132,12 @@ export default class Graph {
                     throw new Error('onRelationDeleted called but rel.wasDeleted is false');
                 }
 
-                if (commandExec.pattern.matches(rel)) {
-                    commandExec.output.relation(rel);
+                if (step.pattern.matches(rel)) {
+                    step.output.relation(rel);
                 }
             },
             finish() {
-                commandExec.output.finish();
+                step.output.finish();
             }
         })
     }

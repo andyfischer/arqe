@@ -1,17 +1,16 @@
 
 import Graph from './Graph'
-import CommandExecution from './CommandExecution'
+import CommandStep from './CommandStep'
 import CommandChain from './CommandChain'
-import RelationReceiver, { receiveToNull } from './RelationReceiver'
+import RelationReceiver from './RelationReceiver'
 import RelationPipe from './RelationPipe'
 import Command from './Command'
 import { runSearch } from './Search'
-import { emitSearchPatternMeta, emitCommandError, emitActionPerformed, emitCommandOutputFlags } from './CommandMeta'
+import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runSetOperation } from './SetOperation'
-
 import { runJoinStep } from './JoinCommand'
 
-function runStep(step: CommandExecution) {
+function runStep(step: CommandStep) {
     try {
         emitCommandOutputFlags(step.command, step.output);
 
@@ -63,15 +62,15 @@ function runStep(step: CommandExecution) {
     }
 }
 
-function runGetStep(step: CommandExecution) {
+function runGetStep(step: CommandStep) {
     const search = step.toRelationSearch();
     emitSearchPatternMeta(step.command.toPattern(), search);
     runSearch(step.graph, search);
     return;
 }
 
-export function singleCommandExecution(graph: Graph, command: Command): CommandExecution {
-    const step = new CommandExecution(graph, command);
+export function singleCommandExecution(graph: Graph, command: Command): CommandStep {
+    const step = new CommandStep(graph, command);
     step.input = new RelationPipe();
     step.input.finish();
     step.output = new RelationPipe();
@@ -88,13 +87,13 @@ export function runCommandChain(graph: Graph, chain: CommandChain, output: Relat
         return;
     }
 
-    // Set up CommandExecution objects with pipe objects. The 'output' of one step is the 'input' of
+    // Set up CommandStep objects with pipe objects. The 'output' of one step is the 'input' of
     // the next step.
     
-    const steps:CommandExecution[] = [];
+    const steps:CommandStep[] = [];
     
     for (const command of chain.commands) {
-        const step = new CommandExecution(graph, command);
+        const step = new CommandStep(graph, command);
         step.input = (steps.length === 0) ? new RelationPipe() : steps[steps.length - 1].output;
         step.output = new RelationPipe();
         steps.push(step);
@@ -109,38 +108,4 @@ export function runCommandChain(graph: Graph, chain: CommandChain, output: Relat
     // Start
     for (const step of steps)
         runStep(step);
-
-    /*
-    // Set up commands
-    const commandExecs = chain.commands.map(command => {
-        const exec = new CommandExecution(graph, command);
-        setupCommandExecution(exec);
-        return exec;
-    });
-
-    // Link up commands
-    for (let index = 0; index < commandExecs.length; index++) {
-        const isFirst = index == 0;
-        const isLast = index == commandExecs.length - 1;
-        const commandExec = commandExecs[index];
-
-        if (isLast)
-            commandExec.outputTo(output);
-
-        if (!isLast) {
-            const next = commandExecs[index + 1];
-            if (!next.input) {
-                commandExec.outputTo(receiveToNull());
-                continue;
-            }
-
-            commandExec.outputTo(next.input);
-        }
-    }
-
-    // Launch
-    for (const commandExec of commandExecs) {
-        graph.runCommandExecution(commandExec);
-    }
-    */
 }

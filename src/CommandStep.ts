@@ -7,7 +7,7 @@ import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import RelationSearch from './RelationSearch'
 import RelationPipe from './RelationPipe'
 
-export default class CommandExecution {
+export default class CommandStep {
     graph: Graph
     flags: CommandFlags
     command: Command

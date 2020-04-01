@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import CommandExecution from './CommandExecution'
+import CommandStep from './CommandStep'
 import { runSearch } from './Search'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import Pattern from './Pattern'
@@ -36,7 +36,7 @@ function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pa
     return rels;
 }
 
-export function runJoinStep(step: CommandExecution) {
+export function runJoinStep(step: CommandStep) {
     let triggeredOutput = false;
 
     let inputRelations: Pattern[] = [];
