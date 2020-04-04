@@ -1,22 +1,16 @@
 
-import Relation from './Relation'
-import Pattern, { commandTagsToRelation } from './Pattern'
-import PatternTag, { newTag } from './PatternTag'
-import Command from './Command'
-import { normalizeExactTag } from './stringifyQuery'
-import StorageProvider from './StorageProvider'
-import RelationSearch from './RelationSearch'
-import RelationReceiver from './RelationReceiver'
+import Relation from '../Relation'
+import Pattern, { commandTagsToRelation } from '../Pattern'
+import { normalizeExactTag } from '../stringifyQuery'
+import StorageProvider from '../StorageProvider'
+import RelationSearch from '../RelationSearch'
+import RelationReceiver from '../RelationReceiver'
 
-// TODO- Handle modifications
-//  - Delete the old tag and insert a new one
+type RelationModifier = (rel: Relation) => Relation
 
 export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
 
-    deleteRelation(rel: Relation) {
-        delete this.relationsByNtag[rel.getNtag()];
-    }
 
     *linearScan(pattern: Pattern) {
         for (const ntag in this.relationsByNtag) {
@@ -64,6 +58,14 @@ export default class InMemoryStorage implements StorageProvider {
         this.relationsByNtag[ntag] = relation;
         output.relation(this.relationsByNtag[ntag]);
         output.finish();
+    }
+
+    deleteRelation(rel: Relation) {
+        delete this.relationsByNtag[rel.getNtag()];
+    }
+
+    runModification(relation: Relation, modifier: RelationModifier, output: RelationReceiver) {
+
     }
 }
 

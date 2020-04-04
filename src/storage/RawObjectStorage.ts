@@ -1,12 +1,12 @@
 
-import Relation from './Relation'
-import Pattern, { commandTagsToRelation } from './Pattern'
-import RelationSearch from './RelationSearch'
-import Command from './Command'
-import { commandTagsToString } from './stringifyQuery'
-import StorageProvider from './StorageProvider'
-import PatternTag, { newTag } from './PatternTag'
-import RelationReceiver from './RelationReceiver'
+import Relation from '../Relation'
+import Pattern, { commandTagsToRelation } from '../Pattern'
+import RelationSearch from '../RelationSearch'
+import Command from '../Command'
+import { commandTagsToString } from '../stringifyQuery'
+import StorageProvider from '../StorageProvider'
+import PatternTag, { newTag } from '../PatternTag'
+import RelationReceiver from '../RelationReceiver'
 
 export default class RawObjectStorage implements StorageProvider {
     linkedPattern: Pattern

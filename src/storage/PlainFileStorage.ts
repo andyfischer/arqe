@@ -1,14 +1,13 @@
 
-import StorageProvider from './StorageProvider'
-import Pattern, { commandTagsToRelation } from './Pattern'
-import Command from './Command'
-import Relation from './Relation'
-import { newTag, FixedTag } from './PatternTag'
-import RelationSearch from './RelationSearch'
-import { normalizeExactTag } from './stringifyQuery'
-import { readFile, readDir, writeFile } from './context/fs'
 import Path from 'path'
-import RelationReceiver from './RelationReceiver'
+import StorageProvider from '../StorageProvider'
+import Pattern, { commandTagsToRelation } from '../Pattern'
+import Relation from '../Relation'
+import { newTag, FixedTag } from '../PatternTag'
+import RelationSearch from '../RelationSearch'
+import { normalizeExactTag } from '../stringifyQuery'
+import { readFile, readDir, writeFile } from '../context/fs'
+import RelationReceiver from '../RelationReceiver'
 
 export default class PlainFileStorage implements StorageProvider {
     filenameType: 'filename'

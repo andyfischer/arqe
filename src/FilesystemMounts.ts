@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import StorageProvider from './StorageProvider'
 import { parseRelation } from './parseCommand'
-import PlainFileStorage from './PlainFileStorage'
+import PlainFileStorage from './storage/PlainFileStorage'
 import Pattern, { commandToRelationPattern } from './Pattern'
 import receiveToStringStream from './receiveToStringStream'
 
