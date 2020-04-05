@@ -1,13 +1,11 @@
 
 import Command from './Command'
-import CommandChain from './CommandChain'
 import CommandStep from './CommandStep'
 import parseCommand, { parseCommandChain } from './parseCommand'
+import Pattern from './Pattern'
 import Relation from './Relation'
 import { runSearch } from './Search'
 import GraphListener from './GraphListener'
-import Pattern from './Pattern'
-import collectRespond from './collectRespond'
 import InMemoryStorage from './storage/InMemoryStorage'
 import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
@@ -26,13 +24,19 @@ import TagTypeOrdering from './TagTypeOrdering'
 import runningInBrowser from './context/runningInBrowser'
 import IDSource from './IDSource'
 import GraphListenerV2 from './GraphListenerV2'
+import { GraphListenerMountV3 } from './GraphListenerV3'
 import { parsePattern } from './parseCommand'
 import receiveToStringList from './receiveToStringList'
+import ObjectColumnsSpace from './ObjectColumnsSpace'
+import GraphListenerV3 from './GraphListenerV3'
+import { parsePattern as pattern } from './parseCommand'
 
 export default class Graph {
 
-    inMemory = new InMemoryStorage()
+    inMemory = new InMemoryStorage(this)
+    objectColumns = new ObjectColumnsSpace()
     listeners: GraphListener[] = []
+    listenersV3: GraphListenerMountV3[] = []
 
     savedQueries: SavedQuery[] = []
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
@@ -57,6 +61,7 @@ export default class Graph {
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
+        this.addListenerV3(pattern('schema column/* **'), this.objectColumns);
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -142,6 +147,31 @@ export default class Graph {
         })
     }
 
+    addListenerV3(pattern: Pattern, listener: GraphListenerV3) {
+        this.listenersV3.push({ pattern, listener });
+    }
+
+    onRelationCreated(rel: Relation) {
+        for (const entry of this.listenersV3) {
+            if (entry.pattern.matches(rel))
+                entry.listener.onRelationCreated(rel);
+        }
+    }
+
+    onRelationUpdatedV3(rel: Relation) {
+        for (const entry of this.listenersV3) {
+            if (entry.pattern.matches(rel))
+                entry.listener.onRelationUpdated(rel);
+        }
+    }
+
+    onRelationDeletedV3(rel: Relation) {
+        for (const entry of this.listenersV3) {
+            if (entry.pattern.matches(rel))
+                entry.listener.onRelationDeleted(rel);
+        }
+    }
+
     onRelationUpdated(command: Command, rel: Relation) {
 
         for (const listener of this.listeners)
@@ -179,6 +209,11 @@ export default class Graph {
                 savedQuery.changeToken += 1;
                 savedQuery.updateConnectedValues();
             }
+        }
+
+        for (const entry of this.listenersV3) {
+            if (entry.pattern.matches(rel))
+                entry.listener.onRelationDeleted(rel);
         }
     }
 

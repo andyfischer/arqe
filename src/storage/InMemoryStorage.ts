@@ -5,12 +5,17 @@ import { normalizeExactTag } from '../stringifyQuery'
 import StorageProvider from '../StorageProvider'
 import RelationSearch from '../RelationSearch'
 import RelationReceiver from '../RelationReceiver'
+import Graph from '../Graph'
 
 type RelationModifier = (rel: Relation) => Relation
 
 export default class InMemoryStorage implements StorageProvider {
+    graph: Graph
     relationsByNtag: { [ ntag: string]: Relation } = {};
 
+    constructor(graph: Graph) {
+        this.graph = graph;
+    }
 
     *linearScan(pattern: Pattern) {
         for (const ntag in this.relationsByNtag) {
@@ -62,10 +67,6 @@ export default class InMemoryStorage implements StorageProvider {
 
     deleteRelation(rel: Relation) {
         delete this.relationsByNtag[rel.getNtag()];
-    }
-
-    runModification(relation: Relation, modifier: RelationModifier, output: RelationReceiver) {
-
     }
 }
 
