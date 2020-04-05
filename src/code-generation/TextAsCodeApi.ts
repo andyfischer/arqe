@@ -21,7 +21,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getValue();
+        return rel.getPayload();
     }
     
     destinationFilename(target: string): string {
@@ -38,6 +38,6 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getValue();
+        return rel.getPayload();
     }
 }

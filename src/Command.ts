@@ -1,5 +1,5 @@
 
-import Pattern from './Pattern'
+import Pattern, { PatternValue } from './Pattern'
 import { parsedCommandToString } from './stringifyQuery'
 import PatternTag from './PatternTag'
 
@@ -27,11 +27,11 @@ export default class Command {
     }
 
     toPattern() {
-        return new Pattern(this.tags);
+        return new PatternValue(this.tags);
     }
 
     toRelation() {
-        const rel = new Pattern(this.tags);
+        const rel = new PatternValue(this.tags);
         rel.setPayload(this.payloadStr);
         return rel;
     }

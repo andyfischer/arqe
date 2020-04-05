@@ -3,7 +3,7 @@ import Graph from './Graph'
 import CommandStep from './CommandStep'
 import { runSearch } from './Search'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
-import Pattern from './Pattern'
+import Pattern, { PatternValue } from './Pattern'
 import Relation from './Relation'
 import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
@@ -107,7 +107,7 @@ function combineRelations(a: Pattern, b: Pattern) {
         tags.push(tag);
     }
 
-    return new Pattern(tags);
+    return new PatternValue(tags);
 }
 
 function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: RelationReceiver) {

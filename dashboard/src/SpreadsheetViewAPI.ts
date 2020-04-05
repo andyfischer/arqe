@@ -49,7 +49,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getValue();
+        return rel.getPayload();
     }
     
     setCellValue(col: string, row: string, value: string) {

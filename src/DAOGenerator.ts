@@ -183,7 +183,7 @@ export class DAOGenerator {
         const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
 
         if (outputIsValue) {
-            writer.writeLine('return rel.getValue();');
+            writer.writeLine('return rel.getPayload();');
             return;
         }
 
@@ -352,7 +352,7 @@ export class DAOGenerator {
             writer.writeLine('const rel = rels[0];');
 
             if (outputIsValue) {
-                writer.writeLine('return rel.getValue();');
+                writer.writeLine('return rel.getPayload();');
             } else if (outputObject) {
                 writer.writeLine();
                 writer.writeLine('return {');
@@ -418,7 +418,7 @@ export class DAOGenerator {
                     }
 
                 } else {
-                    writer.writeLine('return rels.map(rel => rel.getValue())')
+                    writer.writeLine('return rels.map(rel => rel.getPayload())')
                 }
             }
         }

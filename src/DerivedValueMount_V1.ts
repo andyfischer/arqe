@@ -36,7 +36,7 @@ export default class DerivedValueMount implements StorageProvider {
 
                 const foundPattern = rel.copy();
                 foundPattern.addTag(this.mountTypename);
-                foundPattern.setValue(derivedValue);
+                foundPattern.setPayload(derivedValue);
                 search.relation(foundPattern);
 
             },

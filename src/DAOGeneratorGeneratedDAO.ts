@@ -33,7 +33,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getValue();
+        return rel.getPayload();
     }
     
     enableVerboseLogging(target: string): boolean {
@@ -56,7 +56,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getValue();
+        return rel.getPayload();
     }
     
     touchpointExpectOne(touchpoint: string): boolean {
@@ -218,7 +218,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getValue();
+        return rel.getPayload();
     }
     
     getDestinationFilename(target: string): string {
@@ -235,7 +235,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getValue();
+        return rel.getPayload();
     }
     
     getOutputObjectdef(touchpoint: string): string {

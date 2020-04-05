@@ -5,7 +5,7 @@ import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
 import PatternTag, { FixedTag } from './PatternTag'
 
-export default class Pattern {
+export class PatternValue implements Pattern {
     
     tags: PatternTag[] = []
 
@@ -71,14 +71,14 @@ export default class Pattern {
     }
 
     copy() {
-        const pattern = new Pattern(this.tags.map(t => t.copy()));
+        const pattern = new PatternValue(this.tags.map(t => t.copy()));
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
     }
 
     copyWithNewTags(tags: PatternTag[]) {
-        const pattern = new Pattern(tags);
+        const pattern = new PatternValue(tags);
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
@@ -337,19 +337,55 @@ export default class Pattern {
     }
 }
 
+export default interface Pattern {
+    freeze: () => Pattern
+    copy: () => Pattern
+    getWriteable: () => Pattern
+
+    wasDeleted?: boolean
+    tags: PatternTag[]
+    tagCount: () => number
+    fixedTags: FixedTag[]
+    starValueTags: PatternTag[]
+    tagsForType: { [typename: string]: PatternTag[] }
+    byIdentifier: { [identifier: string]: PatternTag }
+    hasType: (t: string) => boolean
+
+    getNtag: () => string
+    getTag: (t: string) => string
+    getTagValue: (t: string) => string | boolean | any
+    getTagString: (t: string) => string
+    getOneTagForType: (t: string) => PatternTag
+    hasValueForType: (t: string) => boolean
+    payloadUnavailable?: boolean
+    getPayload: () => string
+    hasPayload: () => boolean
+    setPayload: (val: string) => void
+
+    addTag: (t: string) => Pattern
+    removeType: (t: string) => Pattern
+    dropTagIndex: (n: number) => Pattern
+
+    matches: (p: Pattern) => boolean
+    isSupersetOf: (p: Pattern) => boolean
+
+    stringify: () => string
+    stringifyRelation: () => string
+}
+
 export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
-    return new Pattern(parsed.tags)
+    return new PatternValue(parsed.tags)
 }
 
 export function commandTagsToRelation(tags: PatternTag[], payload: string): Pattern {
-    const pattern = new Pattern(tags)
+    const pattern = new PatternValue(tags)
     pattern.setPayload(payload);
     return pattern;
 }
 
 export function parsePattern(query: string) {
     const parsed = parseCommand('get ' + query);
-    return new Pattern(parsed.tags)
+    return new PatternValue(parsed.tags)
 }
 
