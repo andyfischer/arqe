@@ -27,14 +27,14 @@ import GraphListenerV2 from './GraphListenerV2'
 import { GraphListenerMountV3 } from './GraphListenerV3'
 import { parsePattern } from './parseCommand'
 import receiveToStringList from './receiveToStringList'
-import ObjectColumnsSpace from './ObjectColumnsSpace'
+import { ObjectTypeSpace } from './ObjectSpace'
 import GraphListenerV3 from './GraphListenerV3'
 import { parsePattern as pattern } from './parseCommand'
 
 export default class Graph {
 
     inMemory = new InMemoryStorage(this)
-    objectColumns = new ObjectColumnsSpace(this)
+    objectTypes = new ObjectTypeSpace(this)
     listeners: GraphListener[] = []
     listenersV3: GraphListenerMountV3[] = []
 
@@ -61,7 +61,7 @@ export default class Graph {
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
-        this.addListenerV3(pattern('schema column/* **'), this.objectColumns);
+        this.addListenerV3(pattern('object-type/* **'), this.objectTypes);
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -327,7 +327,14 @@ export default class Graph {
     loadDumpFile(filename: string) {
         const contents = Fs.readFileSync(filename, 'utf8');
         for (const line of contents.split(/\r\n|\r|\n/)) {
-            this.runSilent(line);
+            if (line.trim() === '')
+                continue;
+
+            try {
+                this.runSilent(line);
+            } catch (e) {
+                console.log('Failed on command: ' + line);
+            }
         }
 
         /*

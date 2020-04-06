@@ -1,4 +1,10 @@
 
+set typeinfo/branch .inherits
+set typeinfo/testcase .inherits
+set typeinfo/testcase .order == before
+set typeinfo/typeinfo .order == before
+set typeinfo/branch .order == after
+    
 set code-generation/1
 set code-generation/1 destination-filename == src/DAOGeneratorGeneratedDAO.ts
 set code-generation/1 ik-import == .
@@ -615,6 +621,6 @@ set spreadsheet-view/1 input-mode/normal
 
 # Filesystem
 
-set column/watched-file column-type/entity
-set column/last-update column-type/attribute with-column/watched-file
-set column/filename    column-type/attribute with-column/watched-file
+set object-type/watched-file
+set object-type/watched-file attribute/filename
+set object-type/watched-file attribute/last-modified

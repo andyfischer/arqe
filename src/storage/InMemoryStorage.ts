@@ -56,6 +56,7 @@ export default class InMemoryStorage implements StorageProvider {
             this.relationsByNtag[ntag] = modified;
             output.relation(modified);
             output.finish();
+            this.graph.onRelationUpdatedV3(relation);
             return;
         }
         
@@ -63,6 +64,7 @@ export default class InMemoryStorage implements StorageProvider {
         this.relationsByNtag[ntag] = relation;
         output.relation(this.relationsByNtag[ntag]);
         output.finish();
+        this.graph.onRelationCreated(relation);
     }
 
     deleteRelation(rel: Relation) {
