@@ -34,7 +34,7 @@ import { parsePattern as pattern } from './parseCommand'
 export default class Graph {
 
     inMemory = new InMemoryStorage(this)
-    objectColumns = new ObjectColumnsSpace()
+    objectColumns = new ObjectColumnsSpace(this)
     listeners: GraphListener[] = []
     listenersV3: GraphListenerMountV3[] = []
 

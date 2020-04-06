@@ -612,3 +612,9 @@ set action/move-right delta-x/1 delta-y/0
 
 set current-view spreadsheet-view/1
 set spreadsheet-view/1 input-mode/normal
+
+# Filesystem
+
+set column/watched-file column-type/entity
+set column/last-update column-type/attribute with-column/watched-file
+set column/filename    column-type/attribute with-column/watched-file
