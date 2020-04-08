@@ -302,6 +302,12 @@ export class PatternValue implements Pattern {
         return this.copyWithNewTags(this.tags.slice(0,index).concat(this.tags.slice(index + 1)));
     }
 
+    setTagValueAtIndex(index: number, value: any) {
+        const result = this.copy();
+        result.tags[index].tagValue = value;
+        return result;
+    }
+
     removeType(typeName: string) {
         return this.copyWithNewTags(this.tags.filter(tag => tag.tagType !== typeName));
     }
@@ -365,6 +371,7 @@ export default interface Pattern {
     addTag: (t: string) => Pattern
     removeType: (t: string) => Pattern
     dropTagIndex: (n: number) => Pattern
+    setTagValueAtIndex: (index: number, value: any) => Pattern;
 
     matches: (p: Pattern) => boolean
     isSupersetOf: (p: Pattern) => boolean

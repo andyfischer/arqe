@@ -32,6 +32,7 @@ export default interface Relation {
     addTag: (t: string) => Relation
     removeType: (t: string) => Relation
     dropTagIndex: (n: number) => Pattern
+    setTagValueAtIndex: (index: number, value: any) => Pattern;
 
     matches: (p: Pattern) => boolean
     isSupersetOf: (p: Pattern) => boolean

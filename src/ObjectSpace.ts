@@ -20,8 +20,24 @@ export default class ObjectSpace {
         this.idSource = new IDSource(name + '-');
     }
 
-    addAttribute(name: string) {
+    defineAttribute(name: string) {
         this.attributes[name] = true;
+    }
+
+    hasObject(id: string) {
+        return !!this.objects[id];
+    }
+
+    object(id: string) {
+        return this.objects[id];
+    }
+
+    createObject(id: string) {
+        this.objects[id] = this.objects[id] || {
+            attrs: {}
+        }
+
+        return this.objects[id];
     }
 }
 
@@ -33,9 +49,16 @@ export class ObjectTypeSpace implements GraphListener {
         this.graph = graph;
     }
 
+    hasColumn(name: string) {
+        return !!this.columns[name];
+    }
+
+    column(name: string) {
+        return this.columns[name];
+    }
+
     maybeInitEntityColumn(name: string) {
         if (!this.columns[name]) {
-            console.log('created object column: ', name);
             this.columns[name] = new ObjectSpace(name)
         }
     }
@@ -47,12 +70,11 @@ export class ObjectTypeSpace implements GraphListener {
 
         if (rel.hasType('attribute')) {
             const attr = rel.getTagValue('attribute');
-            this.columns[columnName].addAttribute(attr);
+            this.columns[columnName].defineAttribute(attr);
         }
     }
 
     onRelationUpdated(rel: Relation) {
-        console.log('ocs saw update: ', rel.stringify());
     }
 
     onRelationDeleted(rel: Relation) {

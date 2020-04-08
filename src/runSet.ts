@@ -2,6 +2,7 @@
 import Graph from './Graph'
 import CommandStep from './CommandStep'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
+import { hookObjectSpaceSearch, hookObjectSpaceSave } from './hookObjectSpace'
 
 export function runSetStep(graph: Graph, commandExec: CommandStep) {
     const command = commandExec.command;
@@ -18,6 +19,9 @@ export function runSetStep(graph: Graph, commandExec: CommandStep) {
             return;
         }
     }
+
+    if (hookObjectSpaceSave(graph, commandExec))
+        return;
 
     graph.inMemory.runSave(command.toRelation(), {
         relation: (rel) => {

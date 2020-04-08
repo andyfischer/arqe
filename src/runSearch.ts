@@ -8,10 +8,22 @@ import { commandTagToString } from './stringifyQuery'
 import RelationSearch from './RelationSearch'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
+import { hookObjectSpaceSearch } from './hookObjectSpace'
 
 interface Step {
     storage: StorageProvider
     pattern: Pattern
+}
+
+export default function runSearch(graph: Graph, search: RelationSearch) {
+    if (!graph)
+        throw new Error('missing: graph');
+
+    if (search.subSearchDepth > 100) {
+        throw new Error('subSearchDepth is over 100, possible infinite loop');
+    }
+
+    get_inherit(graph, search);
 }
 
 function inheritTagCompare(graph: Graph, a: PatternTag, b: PatternTag) {
@@ -70,6 +82,7 @@ function get_inherit(graph: Graph, search: RelationSearch) {
 
 function get_after_inherit(graph: Graph, search: RelationSearch) {
     
+    // Check mounts
     for (const mount of graph.iterateMounts()) {
         if (mount.pattern.isSupersetOf(search.pattern)) {
             mount.storage.runSearch(search);
@@ -77,16 +90,10 @@ function get_after_inherit(graph: Graph, search: RelationSearch) {
         }
     }
 
+    if (hookObjectSpaceSearch(graph, search))
+        return;
+
+    // Fall back to in-memory
     graph.inMemory.runSearch(search);
 }
 
-export default function runSearch(graph: Graph, search: RelationSearch) {
-    if (!graph)
-        throw new Error('missing: graph');
-
-    if (search.subSearchDepth > 100) {
-        throw new Error('subSearchDepth is over 100, possible infinite loop');
-    }
-
-    get_inherit(graph, search);
-}
