@@ -80,7 +80,7 @@ function get_after_inherit(graph: Graph, search: RelationSearch) {
     graph.inMemory.runSearch(search);
 }
 
-export function runSearch(graph: Graph, search: RelationSearch) {
+export default function runSearch(graph: Graph, search: RelationSearch) {
     if (!graph)
         throw new Error('missing: graph');
 

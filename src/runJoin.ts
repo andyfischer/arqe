@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
 import CommandStep from './CommandStep'
-import { runSearch } from './Search'
+import runSearch from './runSearch'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import Pattern, { PatternValue } from './Pattern'
 import Relation from './Relation'

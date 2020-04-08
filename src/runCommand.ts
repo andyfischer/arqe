@@ -5,10 +5,10 @@ import CommandChain from './CommandChain'
 import RelationReceiver from './RelationReceiver'
 import RelationPipe from './RelationPipe'
 import Command from './Command'
-import { runSearch } from './Search'
+import runSearch from './runSearch'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
-import { runJoinStep } from './JoinCommand'
-import { runSetStep } from './SetCommand'
+import { runJoinStep } from './runJoin'
+import { runSetStep } from './runSet'
 
 function runStep(step: CommandStep) {
     try {
