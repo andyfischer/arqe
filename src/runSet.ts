@@ -1,10 +1,10 @@
 
 import Graph from './Graph'
 import CommandStep from './CommandStep'
-import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
+import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { hookObjectSpaceSearch, hookObjectSpaceSave } from './hookObjectSpace'
 
-export function runSetStep(graph: Graph, commandExec: CommandStep) {
+export default function runSet(graph: Graph, commandExec: CommandStep) {
     const command = commandExec.command;
     const output = commandExec.output;
 

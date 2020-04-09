@@ -8,7 +8,18 @@ import Command from './Command'
 import runSearch from './runSearch'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
-import { runSetStep } from './runSet'
+import runSet from './runSet'
+import runModify, { ModifyRequest } from './runModify'
+
+/*
+function toModifyRequest(step: CommandStep): ModifyRequest {
+    return {
+        graph: step.graph,
+        pattern: step.command.toPattern(),
+        output: step.output
+    }
+}
+*/
 
 function runStep(step: CommandStep) {
     try {
@@ -25,11 +36,12 @@ function runStep(step: CommandStep) {
             return;
         
         case 'set': {
-            runSetStep(step.graph, step);
+            runSet(step.graph, step);
             return;
         }
 
         case 'modify': {
+            //runModify(toModifyRequest(step));
             return;
         }
 
@@ -56,7 +68,7 @@ function runStep(step: CommandStep) {
 
 function runGetStep(step: CommandStep) {
     const search = step.toRelationSearch();
-    emitSearchPatternMeta(step.command.toPattern(), search);
+    emitSearchPatternMeta(step.command.toPattern().freeze(), search);
     runSearch(step.graph, search);
     return;
 }

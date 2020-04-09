@@ -1,5 +1,6 @@
 
 import { commandTagToString } from './stringifyQuery'
+
 interface NewTagOptions {
     tagType?: string
     tagValue?: string
@@ -29,10 +30,14 @@ export default class PatternTag {
 
     copy() {
         const tag = new PatternTag();
-        for (const k in this) {
-            if (k !== 'isFrozen')
-                tag[k as any] = this[k as any] as any;
-        }
+        tag.tagType = this.tagType;
+        tag.tagValue = this.tagValue;
+        tag.negate = this.negate;
+        tag.star = this.star;
+        tag.doubleStar = this.doubleStar;
+        tag.starValue = this.starValue;
+        tag.questionValue = this.questionValue;
+        tag.identifier = this.identifier;
         return tag;
     }
 

@@ -29,9 +29,11 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
 
 export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver) {
 
-    let metaPattern = pattern.copy()
+    let metaPattern = pattern.getWriteable()
         .addTag('command-meta')
-        .addTag('search-pattern');
+        .addTag('search-pattern')
+        .freeze();
+
     output.relation(metaPattern);
 }
 
