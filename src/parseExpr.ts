@@ -2,13 +2,12 @@
 import { lexStringToIterator, TokenIterator, Token, t_lparen, t_rparen,
     t_ident, t_integer, t_slash } from './lexer';
 
-function expr(it: TokenIterator) {
+export function parseExpr(it: TokenIterator): string | string[] {
     if (it.tryConsume(t_lparen)) {
         const result = [];
 
         while (!it.finished() && !it.nextIs(t_rparen)) {
-
-            result.push(expr(it));
+            result.push(parseExpr(it));
 
             it.skipSpaces();
         }
@@ -31,10 +30,10 @@ function expr(it: TokenIterator) {
     throw new Error('unexpected s-expr atom: ' + it.nextText());
 }
 
-export function parseSexprFromString(s: string) {
+export function parseExprFromString(s: string) {
     const it = lexStringToIterator(s);
 
-    return expr(it);
+    return parseExpr(it);
 }
 
 type EvalFunc = (inputs: string[]) => string
@@ -43,7 +42,7 @@ const environmentBuiltins = {
     list: els => els
 }
 
-export function evalSexpr(environment: {[name: string]: EvalFunc}, parsed: any[]) {
+export function evalExpr(environment: {[name: string]: EvalFunc}, parsed: any[]) {
     if (parsed.length === 0)
         return null;
 
@@ -56,7 +55,7 @@ export function evalSexpr(environment: {[name: string]: EvalFunc}, parsed: any[]
 
     const applied = parsed.slice(1).map(el => {
         if (Array.isArray(el)) {
-            return evalSexpr(environment, el)
+            return evalExpr(environment, el)
         } else {
             return el;
         }

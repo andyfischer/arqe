@@ -4,6 +4,7 @@ import { commandTagToString } from './stringifyQuery'
 interface NewTagOptions {
     tagType?: string
     tagValue?: string
+    valueExpr?: string[]
     negate?: boolean
     star?: boolean
     doubleStar?: boolean
@@ -15,6 +16,7 @@ interface NewTagOptions {
 export default class PatternTag {
     tagType?: string
     tagValue?: string
+    valueExpr?: string[]
     negate?: boolean
     star?: boolean
     doubleStar?: boolean

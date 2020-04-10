@@ -18,3 +18,9 @@ it('parses tag identifiers', () => {
     expect(pattern.tags[2].tagType).toEqual('z');
     expect(pattern.tags[2].tagValue).toEqual('1');
 });
+
+it('parses exprs', () => {
+    const pattern = parseCommandChain("modify a/(increment)").commands[0].toPattern();
+    expect(pattern.tags[0].tagType).toEqual('a');
+    expect(pattern.tags[0].valueExpr).toEqual(['increment']);
+});

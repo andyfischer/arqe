@@ -4,9 +4,11 @@ import CommandChain from './CommandChain'
 import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
 import PatternTag, { newTagFromObject, FixedTag } from './PatternTag'
+import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket } from './lexer'
+    t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
+    t_lparen, t_rparen } from './lexer'
 
 function acceptableTagValue(token: Token) {
     return token.match !== t_space && token.match !== t_newline;
@@ -88,10 +90,14 @@ function parseOneTag(it: TokenIterator): PatternTag {
         throw new Error("syntax error, tagType was '/'");
 
     let tagValue = null;
+    let valueExpr = null;
     let starValue = false;
     let questionValue = false;
 
     if (it.tryConsume(t_slash)) {
+
+        // Tag value
+
         if (it.tryConsume(t_star)) {
             starValue = true;
         } else if (it.tryConsume(t_question)) {
@@ -99,6 +105,8 @@ function parseOneTag(it: TokenIterator): PatternTag {
         } else if (it.tryConsume(t_dollar)) {
             identifier = it.consumeNextUnquotedText();
             starValue = true;
+        } else if (it.nextIs(t_lparen)) {
+            valueExpr = parseExpr(it);
         } else {
 
             let iterationCount = 0;
@@ -117,6 +125,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
     return newTagFromObject({
         tagType,
         tagValue,
+        valueExpr,
         negate,
         starValue,
         questionValue,
