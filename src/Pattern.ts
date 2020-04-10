@@ -283,11 +283,25 @@ export class PatternValue implements Pattern {
         return this.copyWithNewTags(tags);
     }
 
+    findTagWithType(tagType: string) {
+        for (let i = 0; i < this.tags.length; i++)
+            if (this.tags[i].tagType === tagType)
+                return this.tags[i];
+        return null;
+    }
+
     findTagIndexOfType(tagType: string) {
         for (let i = 0; i < this.tags.length; i++)
             if (this.tags[i].tagType === tagType)
                 return i;
         return -1;
+    }
+
+    updateTagOfType(tagType: string, update: (t: PatternTag) => void) {
+        const index = this.findTagIndexOfType(tagType);
+        if (index === -1)
+            throw new Error('tag type not found: ' + tagType);
+        return this.updateTagAtIndex(index, update);
     }
 
     updateTagAtIndex(index: number, update: (t: PatternTag) => void) {
@@ -359,7 +373,9 @@ export default interface Pattern {
     removeTypes: (t: string[]) => Pattern
     dropTagIndex: (n: number) => Pattern
     setTagValueAtIndex: (index: number, value: any) => Pattern;
+    findTagWithType: (tagType: string) => PatternTag
     findTagIndexOfType: (tagType: string) => number;
+    updateTagOfType: (tagType: string, update: (t: PatternTag) => void) => Pattern
     updateTagAtIndex: (index: number, update: (t: PatternTag) => void) => Pattern
 
     matches: (p: Pattern) => boolean

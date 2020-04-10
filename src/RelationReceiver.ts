@@ -2,16 +2,15 @@
 import Graph from './Graph'
 import Command from './Command'
 import Relation from './Relation'
-import Pattern from './Pattern'
 
 export default interface RelationReceiver {
-    relation: (rel: Pattern) => void
+    relation: (rel: Relation) => void
     finish: () => void
     isDone: () => boolean
 }
 
-export function receiveToRelationList(onDone: (rels: Pattern[]) => void): RelationReceiver {
-    const list: Pattern[] = [];
+export function receiveToRelationList(onDone: (rels: Relation[]) => void): RelationReceiver {
+    const list: Relation[] = [];
     return {
         relation(rel) { list.push(rel) },
         isDone() { return false; },
@@ -21,7 +20,7 @@ export function receiveToRelationList(onDone: (rels: Pattern[]) => void): Relati
     }
 }
 
-export function receiveToRelationStream(onRel: (rel: Pattern) => void, onDone: () => void): RelationReceiver {
+export function receiveToRelationStream(onRel: (rel: Relation) => void, onDone: () => void): RelationReceiver {
     return {
         relation: onRel,
         isDone() { return false; },

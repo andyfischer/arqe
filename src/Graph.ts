@@ -17,7 +17,7 @@ import TypeInfo from './TypeInfo'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import RelationReceiver, { receiveToRelationList } from './RelationReceiver'
 import { runCommandChain, singleCommandExecution } from './RunCommand'
-import { emitCommandError, emitActionPerformed, emitCommandOutputFlags, emitRelationDeleted } from './CommandMeta'
+import { emitCommandError, emitCommandOutputFlags, emitRelationDeleted } from './CommandMeta'
 import UpdateContext from './UpdateContext'
 import Fs from 'fs'
 import TagTypeOrdering from './TagTypeOrdering'
@@ -101,21 +101,6 @@ export default class Graph {
         }
 
         return this.typeInfo[name];
-    }
-
-    deleteCmd(step: CommandStep) {
-        const pattern = step.pattern;
-
-        for (const rel of this.inMemory.findAllMatches(pattern)) {
-            if (rel.hasType('typeinfo'))
-                throw new Error("can't delete a typeinfo relation");
-
-            this.inMemory.deleteRelation(rel);
-            this.onRelationDeleted(rel);
-        }
-
-        emitActionPerformed(step.output);
-        step.output.finish();
     }
 
     listen(step: CommandStep) {

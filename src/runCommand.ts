@@ -10,6 +10,8 @@ import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from 
 import { runJoinStep } from './runJoin'
 import runSet from './runSet'
 import runModify, { ModifyRequest } from './runModify'
+import runDelete from './runDelete'
+
 
 /*
 function toModifyRequest(step: CommandStep): ModifyRequest {
@@ -46,7 +48,7 @@ function runStep(step: CommandStep) {
         }
 
         case 'delete': {
-            step.graph.deleteCmd(step);
+            runDelete(step.graph, step.pattern, step.output);
             return;
         }
 

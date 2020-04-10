@@ -1,6 +1,5 @@
 
 import TestSuite from './TestSuite'
-import collectRespond from '../../collectRespond'
 import verifyRespondProtocol from '../../verifyRespondProtocol'
 import Graph from '../../Graph'
 import { connectToServer } from '../../socket/CommandConnection'

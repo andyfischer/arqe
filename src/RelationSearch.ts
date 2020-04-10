@@ -12,3 +12,13 @@ export default interface RelationSearch extends RelationReceiver {
     isDone: () => boolean
 }
 
+export function relationSearchFromPattern(pattern: Pattern, output: RelationReceiver): RelationSearch {
+    return {
+        pattern,
+        subSearchDepth: 0,
+        relation(rel) { output.relation(rel) },
+        finish() { output.finish() },
+        isDone() { return output.isDone() },
+    }
+
+}

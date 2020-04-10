@@ -30,7 +30,7 @@ export default class PatternTag {
         return commandTagToString(this);
     }
 
-    copy() {
+    copy(): PatternTag {
         const tag = new PatternTag();
         tag.tagType = this.tagType;
         tag.tagValue = this.tagValue;
@@ -50,6 +50,13 @@ export default class PatternTag {
         this.isFrozen = true;
         Object.freeze(this);
         return this;
+    }
+
+    setValue(value: string): PatternTag {
+        const out = this.copy();
+        out.tagValue = value;
+        out.freeze();
+        return out;
     }
 }
 

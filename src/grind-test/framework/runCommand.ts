@@ -1,5 +1,4 @@
 import verifyRespondProtocol from '../../verifyRespondProtocol'
-import collectRespond from '../../collectRespond'
 import Graph from '../../Graph'
 import ChaosMode from './ChaosMode'
 import Runnable from '../../Runnable'
@@ -25,20 +24,5 @@ export default function run(command, opts?: RunOptions): Promise<string | string
         const collector = receiveToStringList(resolve);
 
         opts.graph.run(command, collector);
-
-        /*
-        const collector = collectRespond(resolve);
-
-        opts.graph.run(command, msg => {
-            if (msg && msg.startsWith('#error') && !allowError) {
-                fail(`Graph error: ${msg}`);
-                reject(msg);
-                return;
-            }
-
-            verifier(msg);
-            collector(msg);
-        });
-        */
     });
 }
