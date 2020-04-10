@@ -16,8 +16,11 @@ export default async function main() {
 
     const serverSocket = new SocketServer(wsServer, graph)
 
-    serverSocket.on('send', ({ socket, query, response, error }) => {
-        console.log(`  ${query} -> ${response || error}`);
+    serverSocket.on('send', ({ socket, query, finish, rel, error }) => {
+        if (finish)
+            console.log(`  ${query} -> #done`);
+        else
+            console.log(`  ${query} -> ${rel || error}`);
     });
 }
 

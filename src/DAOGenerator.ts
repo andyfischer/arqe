@@ -104,10 +104,7 @@ export class DAOGenerator {
         const queryStr = this.api.touchpointQueryString(touchpoint);
         const name = this.api.touchpointFunctionName(touchpoint);
 
-        let usesOutput = false;
-
-        if (queryStr.startsWith('get '))
-            usesOutput = true;
+        const usesOutput = true;
 
         const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
 

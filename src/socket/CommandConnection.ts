@@ -3,64 +3,56 @@ import WebSocket from 'ws'
 import EventEmitter from 'events'
 import RelationReceiver from '../RelationReceiver'
 import { parseRelation } from '../parseCommand'
+import IDSource from '../IDSource'
 
 export type RespondFunc = (msg: string) => void
 
-interface Listener {
-    respond: (msg: string) => void
-    streaming?: boolean
-}
-
 interface PendingQuery {
     query: string
-    respond: RespondFunc
+    output: RelationReceiver
 }
 
 export default class CommandConnection {
     ws: WebSocket
-    nextReqId: number = 1
+    requestId: IDSource = new IDSource()
     connectionId: string
 
     pendingForConnection: PendingQuery[] = []
-    reqListeners: { [id: string]: Listener } = {}
+    reqListeners: { [id: string]: RelationReceiver } = {}
 
     constructor(ws: WebSocket) {
         this.ws = ws;
 
-        ws.on('message', str => {
+        ws.on('message', messageStr => {
 
-            const { reqid, msg } = JSON.parse(str);
+            const { reqid, rel, finish } = JSON.parse(messageStr);
 
-            if (msg === undefined) {
-                console.log('CommandConnection internal error: missing "msg" field');
-            }
-            
             const listener = this.reqListeners[reqid]
-
             if (!listener) {
-                console.log('CommandConnection internal error: unrecognized reqid: ' + str);
+                console.log('CommandConnection internal error: unrecognized reqid: ' + messageStr);
                 return;
             }
 
-            listener.respond(msg);
-
-            if (msg === '#start')
-                listener.streaming = true;
-
-            if (msg === '#done')
-                listener.streaming = false;
-
-            if (!listener.streaming) {
+            if (finish) {
                 delete this.reqListeners[reqid];
+                listener.finish();
+                return;
             }
+
+            if (rel === undefined) {
+                console.log('CommandConnection internal error: missing "rel" field');
+                return;
+            }
+            
+            listener.relation(parseRelation(rel));
         });
 
         ws.on('open', str => {
             const pending = this.pendingForConnection;
             this.pendingForConnection = [];
 
-            for (const { query, respond } of pending) {
-                this.runOld(query, respond)
+            for (const { query, output } of pending) {
+                this.run(query, output)
             }
         });
     }
@@ -69,38 +61,20 @@ export default class CommandConnection {
         this.ws.terminate();
     }
 
-    runOld(query: string, respond: RespondFunc) {
+    run(query: string, output: RelationReceiver) {
 
         if (typeof query !== 'string')
-            throw new Error("expected string for query, got: " + query);
+            throw new Error("expected string for query, saw: " + query);
 
         if (this.ws.readyState === WebSocket.CONNECTING) {
-            this.pendingForConnection.push({ query, respond });
+            this.pendingForConnection.push({ query, output });
             return;
         }
 
-        const reqid = this.nextReqId;
-        this.nextReqId += 1
+        const reqid = this.requestId.take();
 
         this.ws.send(JSON.stringify({reqid, query}));
-        this.reqListeners[reqid] = {
-            respond
-        }
-    }
-
-    run(query: string, output: RelationReceiver) {
-        this.runOld(query, (msg: string) => {
-            if (msg === '#start')
-                return;
-
-            if (msg === '#done') {
-                output.finish();
-                return;
-            }
-
-            const rel = parseRelation(msg);
-            output.relation(rel);
-        });
+        this.reqListeners[reqid] = output;
     }
 }
 

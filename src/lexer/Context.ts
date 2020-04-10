@@ -21,6 +21,9 @@ export default class Context {
     bracketStack: BracketFrame[] = []
 
     constructor(str: string) {
+        if (typeof str !== 'string')
+            throw new Error('expected string');
+
         this.str = str;
     }
 
@@ -29,7 +32,7 @@ export default class Context {
     }
 
     next(lookahead:number = 0) {
-        if (this.index+lookahead >= this.str.length)
+        if ((this.index + lookahead) >= this.str.length)
             return 0;
 
         return this.str.charCodeAt(this.index+lookahead);

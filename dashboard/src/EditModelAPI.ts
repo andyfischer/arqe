@@ -121,28 +121,32 @@ export default class API {
     
     clearSelection(spreadsheet: string) {
         const queryStr = `delete ${spreadsheet} selection row/* col/*`;
-        this.graph.runCommandChainSync(queryStr);
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     setSelection(view: string, col: string, row: string) {
         const queryStr = `set ${view} selection ${row} ${col}`;
-        this.graph.runCommandChainSync(queryStr);
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     startEditing(view: string) {
         const queryStr = `set ${view} now-editing`;
-        this.graph.runCommandChainSync(queryStr);
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     stopEditing(view: string) {
         const queryStr = `delete ${view} now-editing`;
-        this.graph.runCommandChainSync(queryStr);
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
@@ -176,7 +180,8 @@ export default class API {
         }
         
         const queryStr = `delete ${view} input-mode/* | set ${view} ${inputMode}`;
-        this.graph.runCommandChainSync(queryStr);
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }

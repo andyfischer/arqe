@@ -112,7 +112,7 @@ function consumeNext(input: Context) {
     return input.consume(t_unrecognized, 1);
 }
 
-export function tokenizeString(str:string): LexedText {
+export function tokenizeString(str: string): LexedText {
     const context = new Context(str);
 
     while (!context.finished()) {

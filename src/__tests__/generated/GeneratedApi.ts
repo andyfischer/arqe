@@ -79,7 +79,8 @@ export default class API {
     
     changeFlag(target: string, val: string) {
         const queryStr = `delete ${target} flag/* | set ${target} flag/${val}`;
-        this.graph.runCommandChainSync(queryStr);
+        const rels = this.graph.runCommandChainSync(queryStr)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }

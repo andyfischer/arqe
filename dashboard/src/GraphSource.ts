@@ -1,4 +1,10 @@
 export default `
+set typeinfo/branch .inherits
+set typeinfo/testcase .inherits
+set typeinfo/testcase .order == before
+set typeinfo/typeinfo .order == before
+set typeinfo/branch .order == after
+    
 set code-generation/1
 set code-generation/1 destination-filename == src/DAOGeneratorGeneratedDAO.ts
 set code-generation/1 ik-import == .
@@ -245,6 +251,25 @@ set touchpoint/19 input/0.5
 
 set input/touchpoint name/touchpoint
 set input/touchpoint type/string
+
+set code-generation/socket
+set code-generation/socket destination-filename == src/code-generation/SocketApi.ts
+set code-generation/socket strategy/dao-api
+set code-generation/socket ik-import == ..
+
+set code-generation/socket touchpoint/socket1
+set touchpoint/socket1 function-name == createUniqueConnection
+set touchpoint/socket1 query == set connection/#unique
+set touchpoint/socket1 output tag/connection
+set touchpoint/socket1 expectOne
+
+set code-generation/socket touchpoint/socket2
+set touchpoint/socket2 function-name == deleteConnection
+set touchpoint/socket2 query == delete \${connection}
+set touchpoint/socket2 input/connection
+
+set input/connection name/connection
+set input/connection type/string
 
 set code-generation/1 touchpoint/20
 set touchpoint/20 function-name == touchpointOutputObject
@@ -612,4 +637,10 @@ set action/move-right delta-x/1 delta-y/0
 
 set current-view spreadsheet-view/1
 set spreadsheet-view/1 input-mode/normal
+
+# Filesystem
+
+set object-type/watched-file
+set object-type/watched-file attribute/filename
+set object-type/watched-file attribute/last-modified
 `

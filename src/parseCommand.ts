@@ -216,6 +216,9 @@ function parseOneCommandChain(it: TokenIterator): CommandChain {
 }
 
 export function parseRelation(str: string): Relation {
+    if (typeof str !== 'string')
+        throw new Error('expected string');
+
     const it = lexStringToIterator(str);
 
     const query: InProgressQuery = {

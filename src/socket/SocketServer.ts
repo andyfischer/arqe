@@ -5,7 +5,8 @@ import Command from '../Command'
 import logError from '../logError'
 import EventEmitter from 'events'
 import parseCommand from '../parseCommand'
-import receiveToStringList from '../receiveToStringList'
+import SocketApi from '../code-generation/SocketApi'
+import Relation from '../Relation'
 
 export function createUniqueEntity(graph: Graph, typename: string) {
     const result = graph.runSync(`set ${typename}/#unique`);
@@ -21,16 +22,11 @@ export function createUniqueEntity(graph: Graph, typename: string) {
 class Connection extends EventEmitter {
     ws: WebSocket
     graph: Graph
+    api: SocketApi
 
     send(query, data) {
-        this.emit('send', { query, response: data.msg, error: data.err });
+        this.emit('send', { query, rel: data.rel, finish: data.finish, error: data.err });
         this.ws.send(JSON.stringify(data))
-    }
-
-    async handleCommand(reqid: string, query: string) {
-        this.graph.run(query, receiveToStringList((msg) => {
-            this.send(query, {reqid, msg});
-        }))
     }
 
     constructor(graph: Graph, ws: WebSocket) {
@@ -38,11 +34,8 @@ class Connection extends EventEmitter {
 
         this.graph = graph
         this.ws = ws;
-
-        const id = createUniqueEntity(graph, 'connection');
-
-        // this.graphContext = new GraphContext(this.graph);
-        // this.graphContext.addOptionalContextTag({ tagType: 'connection', tagValue: id });
+        this.api = new SocketApi(graph);
+        const id = this.api.createUniqueConnection();
 
         ws.on('message', async (message) => {
 
@@ -57,7 +50,16 @@ class Connection extends EventEmitter {
             }
 
             try {
-                await this.handleCommand(reqid, query);
+
+                this.graph.run(query, {
+                    relation: (rel: Relation) => {
+                        this.send(query, { reqid, rel: rel.stringifyRelation() });
+                    },
+                    isDone: () => false,
+                    finish: () => {
+                        this.send(query, { reqid, finish: true });
+                    }
+                });
 
             } catch (err) {
                 logError(err);
@@ -66,7 +68,7 @@ class Connection extends EventEmitter {
         });
 
         ws.on('close', async () => {
-            this.graph.runSilent(`delete connection/${id} *`)
+            this.api.deleteConnection(id);
             console.log(`server: closed connection/${id}`);
         });
     }
