@@ -8,17 +8,6 @@ import parseCommand from '../parseCommand'
 import SocketApi from '../code-generation/SocketApi'
 import Relation from '../Relation'
 
-export function createUniqueEntity(graph: Graph, typename: string) {
-    const result = graph.runSync(`set ${typename}/#unique`);
-
-    const parsed = parseCommand(result);
-
-    if (parsed.commandName !== 'set')
-        throw new Error('expected reply with "set": ' + result);
-
-    return parsed.tags[0].tagValue;
-}
-
 class Connection extends EventEmitter {
     ws: WebSocket
     graph: Graph

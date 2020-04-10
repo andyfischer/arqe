@@ -37,18 +37,3 @@ export default function collectRespond(onDone) {
         }
     }
 }
-
-interface GraphLike {
-    run: (q: string, respond: (response: string) => void) => void
-}
-
-export function runSync(graph: GraphLike, q: string)  {
-    let result = null;
-    const collector = collectRespond(r => { result = r; });
-    graph.run(q, collector);
-
-    if (!result)
-        throw new Error("query didn't finish synchronously");
-
-    return result;
-}
