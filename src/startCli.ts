@@ -53,7 +53,6 @@ export default async function main() {
         await connectToSocketServer();
     }
 
-
     if (startRepl) {
         const repl = new ClientRepl(graph);
         repl.start();
