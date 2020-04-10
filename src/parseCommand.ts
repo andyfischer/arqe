@@ -107,6 +107,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
             starValue = true;
         } else if (it.nextIs(t_lparen)) {
             valueExpr = parseExpr(it);
+            starValue = true;
         } else {
 
             let iterationCount = 0;

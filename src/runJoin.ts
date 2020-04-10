@@ -25,7 +25,7 @@ function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pa
                                     +"to handle ident tag: " + searchPattern.stringify());
                 }
 
-                rel = rel.updateTagAtIndex(rel.findTagIndexOfType(tag.tagType), t => {t.identifier = tag.identifier } )
+                rel = rel.updateTagAtIndex(rel.findTagIndexOfType(tag.tagType), t => t.setIdentifier(tag.identifier) )
             }
         }
 

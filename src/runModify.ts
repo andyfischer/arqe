@@ -6,6 +6,7 @@ import RelationReceiver from './RelationReceiver'
 import runSearch from './runSearch'
 import { relationSearchFromPattern } from './RelationSearch'
 import runDelete from './runDelete'
+import runSet from './runSet'
 
 export interface ModifyRequest {
     graph: Graph
@@ -24,6 +25,7 @@ function translateValueWithExpr(value: string, expr: string[]) {
 function modifyWithPattern(rel: Relation, pattern: Pattern): Relation {
     for (const tag of rel.tags) {
         const patternTag = pattern.findTagWithType(tag.tagType);
+
         if (patternTag.valueExpr) {
             const update = tag => tag.setValue(translateValueWithExpr(tag.tagValue, patternTag.valueExpr))
             rel = rel.updateTagOfType(tag.tagType, update);
@@ -33,9 +35,7 @@ function modifyWithPattern(rel: Relation, pattern: Pattern): Relation {
     return rel;
 }
 
-export default function runModify(modify: ModifyRequest) {
-    const { graph, pattern } = modify;
-
+export default function runModify(graph: Graph, pattern: Pattern, output: RelationReceiver) {
     const exprTags = pattern.tags.filter(t => !!t.valueExpr);
     if (exprTags.length === 0)
         throw new Error('expected an expression tag value: ' + pattern.stringify());
@@ -54,15 +54,24 @@ export default function runModify(modify: ModifyRequest) {
             }
         });
 
-
+        runSet(graph, updated, {
+            relation(rel) {},
+            isDone() { return false },
+            finish() {
+                if (isDone)
+                    console.error('warning: out of order in runModify');
+            }
+        });
     }
 
     runSearch(graph, relationSearchFromPattern(pattern, {
         relation: foundRelation,
-        isDone: () => modify.output.isDone(),
-        finish: () => modify.output.finish()
+        isDone: () => output.isDone(),
+        finish: () => {
+            isDone = true;
+            output.finish();
+        }
     }));
-
 }
 
 // modify file-watch filename/xyz last-version/(increment)

@@ -12,17 +12,6 @@ import runSet from './runSet'
 import runModify, { ModifyRequest } from './runModify'
 import runDelete from './runDelete'
 
-
-/*
-function toModifyRequest(step: CommandStep): ModifyRequest {
-    return {
-        graph: step.graph,
-        pattern: step.command.toPattern(),
-        output: step.output
-    }
-}
-*/
-
 function runStep(step: CommandStep) {
     try {
         emitCommandOutputFlags(step.command, step.output);
@@ -43,7 +32,7 @@ function runStep(step: CommandStep) {
         }
 
         case 'modify': {
-            //runModify(toModifyRequest(step));
+            runModify(step.graph, step.command.toRelation(), step.output);
             return;
         }
 

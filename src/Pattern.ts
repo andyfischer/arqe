@@ -297,17 +297,16 @@ export class PatternValue implements Pattern {
         return -1;
     }
 
-    updateTagOfType(tagType: string, update: (t: PatternTag) => void) {
+    updateTagOfType(tagType: string, update: (t: PatternTag) => PatternTag) {
         const index = this.findTagIndexOfType(tagType);
         if (index === -1)
             throw new Error('tag type not found: ' + tagType);
         return this.updateTagAtIndex(index, update);
     }
 
-    updateTagAtIndex(index: number, update: (t: PatternTag) => void) {
+    updateTagAtIndex(index: number, update: (t: PatternTag) => PatternTag) {
         const tags = this.tags.map(t => t);
-        tags[index] = tags[index].copy();
-        update(tags[index]);
+        tags[index] = update(tags[index]);
         return this.copyWithNewTags(tags);
     }
 
@@ -375,8 +374,8 @@ export default interface Pattern {
     setTagValueAtIndex: (index: number, value: any) => Pattern;
     findTagWithType: (tagType: string) => PatternTag
     findTagIndexOfType: (tagType: string) => number;
-    updateTagOfType: (tagType: string, update: (t: PatternTag) => void) => Pattern
-    updateTagAtIndex: (index: number, update: (t: PatternTag) => void) => Pattern
+    updateTagOfType: (tagType: string, update: (t: PatternTag) => PatternTag) => Pattern
+    updateTagAtIndex: (index: number, update: (t: PatternTag) => PatternTag) => Pattern
 
     matches: (p: Pattern) => boolean
     isSupersetOf: (p: Pattern) => boolean
