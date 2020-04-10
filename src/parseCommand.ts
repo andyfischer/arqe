@@ -260,9 +260,14 @@ export default function parseCommand(str: string): Command {
         throw new Error('parseCommand was called on a command chain: ' + str);
     }
 
-    const command = parseOneCommand(it);
+    try {
+        const command = parseOneCommand(it);
+        return command;
+    } catch (e) {
+        console.error('Error trying to parse: ' + str);
+        throw e;
+    }
 
-    return command;
 }
 
 export function parseCommandChain(str: string): CommandChain {

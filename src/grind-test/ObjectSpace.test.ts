@@ -17,7 +17,6 @@ test('can get on an object-space column', async ({run}) => {
 });
 
 test('ObjectSpace attributes exclude multiple values', async ({run}) => {
-
     await run('set object-type/ot');
     await run('set object-type/ot attribute attr1');
     await run('set ot/ot2');
