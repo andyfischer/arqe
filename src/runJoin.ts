@@ -25,8 +25,7 @@ function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pa
                                     +"to handle ident tag: " + searchPattern.stringify());
                 }
 
-                rel = rel.getWriteable();
-                rel.tagsForType[tag.tagType][0].identifier = tag.identifier;
+                rel = rel.updateTagAtIndex(rel.findTagIndexOfType(tag.tagType), t => {t.identifier = tag.identifier } )
             }
         }
 
@@ -78,7 +77,7 @@ export function runJoinStep(step: CommandStep) {
         for (const rel of rels) {
             if (rel.hasType('command-meta')) {
                 if (rel.hasType('search-pattern')) {
-                    inputSearchPattern = rel.freeze();
+                    inputSearchPattern = rel;
                 }
                 continue;
             }

@@ -14,6 +14,7 @@ export class PatternValue implements Pattern {
     payloadUnavailable?: true
 
     // derived data
+    hasDerivedData: boolean
     starValueTags: PatternTag[] = []
     fixedTags: FixedTag[] = []
     fixedTagsForType: { [typename: string]: true } = {}
@@ -23,13 +24,16 @@ export class PatternValue implements Pattern {
     ntag?: string
     byIdentifier: { [identifier: string]: PatternTag } = {}
 
-    // lifecycle
-    isFrozen: boolean = false;
-
     constructor(tags: PatternTag[]) {
         this.tags = tags;
+        this.updateDerivedData();
+    }
 
-        for (const tag of tags) {
+    updateDerivedData() {
+        if (this.hasDerivedData)
+            return;
+
+        for (const tag of this.tags) {
             const { tagType } = tag;
 
             if (!this.tagsForType[tagType])
@@ -51,27 +55,8 @@ export class PatternValue implements Pattern {
             if (tag.identifier)
                 this.byIdentifier[tag.identifier] = tag;
         }
-    }
 
-    freeze() {
-        if (this.isFrozen)
-            return this;
-
-        this.isFrozen = true;
-
-        for (const tag of this.tags)
-            tag.freeze();
-
-        Object.freeze(this.tags);
-
-        return this;
-    }
-
-    copy() {
-        const pattern = new PatternValue(this.tags.map(t => t.copy()));
-        pattern.payload = this.payload;
-        pattern.payloadUnavailable = this.payloadUnavailable;
-        return pattern;
+        this.hasDerivedData = true;
     }
 
     copyWithNewTags(tags: PatternTag[]) {
@@ -79,13 +64,6 @@ export class PatternValue implements Pattern {
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
-    }
-
-    getWriteable() {
-        if (this.isFrozen)
-            return this.copy();
-
-        return this;
     }
 
     getNtag() {
@@ -118,9 +96,6 @@ export class PatternValue implements Pattern {
     }
 
     setValue(payload: any) {
-        if (this.isFrozen)
-            throw new Error("can't setValue on frozen pattern");
-
         if (payload === '#exists') {
             throw new Error("don't use #exists as payload");
             payload = null;
@@ -301,17 +276,41 @@ export class PatternValue implements Pattern {
     }
 
     setTagValueAtIndex(index: number, value: any) {
-        const result = this.copy();
-        result.tags[index].tagValue = value;
-        return result;
+        const tags = this.tags.map(t => t);
+        tags[index] = tags[index].copy();
+        tags[index].tagValue = value;
+
+        return this.copyWithNewTags(tags);
+    }
+
+    findTagIndexOfType(tagType: string) {
+        for (let i = 0; i < this.tags.length; i++)
+            if (this.tags[i].tagType === tagType)
+                return i;
+        return -1;
+    }
+
+    updateTagAtIndex(index: number, update: (t: PatternTag) => void) {
+        const tags = this.tags.map(t => t);
+        tags[index] = tags[index].copy();
+        update(tags[index]);
+        return this.copyWithNewTags(tags);
     }
 
     removeType(typeName: string) {
         return this.copyWithNewTags(this.tags.filter(tag => tag.tagType !== typeName));
     }
 
+    removeTypes(typeNames: string[]) {
+        return this.copyWithNewTags(this.tags.filter(tag => typeNames.indexOf(tag.tagType) === -1));
+    }
+
     addTag(s: string) {
         return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
+    }
+
+    addTags(strs: string[]) {
+        return this.copyWithNewTags(this.tags.concat(strs.map(parseTag)));
     }
 
     str() {
@@ -335,10 +334,6 @@ export class PatternValue implements Pattern {
 }
 
 export default interface Pattern {
-    freeze: () => Pattern
-    copy: () => Pattern
-    getWriteable: () => Pattern
-
     tags: PatternTag[]
     tagCount: () => number
     fixedTags: FixedTag[]
@@ -359,9 +354,13 @@ export default interface Pattern {
     setPayload: (val: string) => Pattern
 
     addTag: (t: string) => Pattern
+    addTags: (t: string[]) => Pattern
     removeType: (t: string) => Pattern
+    removeTypes: (t: string[]) => Pattern
     dropTagIndex: (n: number) => Pattern
     setTagValueAtIndex: (index: number, value: any) => Pattern;
+    findTagIndexOfType: (tagType: string) => number;
+    updateTagAtIndex: (index: number, update: (t: PatternTag) => void) => Pattern
 
     matches: (p: Pattern) => boolean
     isSupersetOf: (p: Pattern) => boolean

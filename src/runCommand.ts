@@ -68,7 +68,7 @@ function runStep(step: CommandStep) {
 
 function runGetStep(step: CommandStep) {
     const search = step.toRelationSearch();
-    emitSearchPatternMeta(step.command.toPattern().freeze(), search);
+    emitSearchPatternMeta(step.command.toPattern(), search);
     runSearch(step.graph, search);
     return;
 }

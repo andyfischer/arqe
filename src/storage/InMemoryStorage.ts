@@ -50,9 +50,7 @@ export default class InMemoryStorage implements StorageProvider {
         const existing = this.relationsByNtag[ntag];
 
         if (existing) {
-            let modified = existing.copy();
-            modified.setPayload(relation.getPayload());
-            modified.freeze();
+            let modified = existing.setPayload(relation.getPayload());
             this.relationsByNtag[ntag] = modified;
             output.relation(modified);
             output.finish();
@@ -60,7 +58,6 @@ export default class InMemoryStorage implements StorageProvider {
             return;
         }
         
-        relation.freeze();
         this.relationsByNtag[ntag] = relation;
         output.relation(this.relationsByNtag[ntag]);
         output.finish();

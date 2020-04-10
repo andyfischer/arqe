@@ -28,13 +28,7 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
 }
 
 export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver) {
-
-    let metaPattern = pattern.getWriteable()
-        .addTag('command-meta')
-        .addTag('search-pattern')
-        .freeze();
-
-    output.relation(metaPattern);
+    output.relation(pattern.addTags(['command-meta', 'search-pattern']));
 }
 
 export function emitActionPerformed(output: RelationReceiver) {
@@ -53,10 +47,6 @@ export function emitCommandOutputFlags(command: Command, output: RelationReceive
 }
 
 export function emitRelationDeleted(pattern: Pattern, output: RelationReceiver) {
-    const rel = pattern.getWriteable()
-        .addTag('command-meta')
-        .addTag('deleted')
-        .freeze();
-
+    const rel = pattern.addTags(['command-meta', 'deleted']);
     output.relation(rel);
 }

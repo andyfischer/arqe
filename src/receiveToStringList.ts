@@ -45,11 +45,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
                 }
 
                 if (rel.hasType('search-pattern')) {
-                    searchPattern = rel
-                        .removeType('command-meta')
-                        .removeType('search-pattern')
-                        .freeze();
-
+                    searchPattern = rel.removeTypes(['command-meta', 'search-pattern']);
                     return;
                 }
 

@@ -70,38 +70,3 @@ describe("matches", () => {
     });
 });
 
-describe('freeze', () => {
-    it('blocks setValue', () => {
-        const pattern = parsePattern('1 2 3');
-        pattern.setValue(1);
-        pattern.freeze();
-        expect(() => { pattern.setValue(2) }).toThrow();
-    });
-
-    it('freezes the tags list', () => {
-        const pattern = parsePattern('1 2 3');
-        expect(() => { pattern.tags.push(newTag('x')) } ).not.toThrow();
-        expect(() => { pattern.tags[0].tagType = 'x' } ).not.toThrow();
-        pattern.freeze();
-        expect(() => { pattern.tags.push(newTag('x')) } ).toThrow();
-        expect(() => { pattern.tags[0].tagType = 'x' } ).toThrow();
-    });
-});
-
-describe('copy', () => {
-    it('creates a copy', () => {
-        const pattern = parsePattern('1 2 3');
-        const copy = pattern.copy();
-        expect(copy.stringify()).toEqual('1 2 3');
-    });
-
-    it("doesn't share the tags object", () => {
-        const original = parsePattern('1 2 3');
-        original.freeze();
-        const copy = original.copy();
-        copy.tags[0].tagType = '4';
-        expect(original.stringify()).toEqual('1 2 3');
-        expect(copy.stringify()).toEqual('4 2 3');
-    });
-});
-
