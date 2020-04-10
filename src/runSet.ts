@@ -1,31 +1,26 @@
 
 import Graph from './Graph'
-import CommandStep from './CommandStep'
+import Relation from './Relation'
+import RelationReceiver from './RelationReceiver'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { hookObjectSpaceSearch, hookObjectSpaceSave } from './hookObjectSpace'
 
-export default function runSet(graph: Graph, commandExec: CommandStep) {
-    const command = commandExec.command;
-    const output = commandExec.output;
-
-    if (!command)
-        throw new Error('missing commandExec.command');
-
+export default function runSet(graph: Graph, relation: Relation, output: RelationReceiver) {
     // Validate
-    for (const tag of command.tags) {
+    for (const tag of relation.tags) {
         if (tag.starValue || tag.star || tag.doubleStar) {
             emitCommandError(output, "can't use star pattern in 'set'");
-            commandExec.output.finish();
+            output.finish();
             return;
         }
     }
 
-    if (hookObjectSpaceSave(graph, commandExec))
+    if (hookObjectSpaceSave(graph, relation, output))
         return;
 
-    graph.inMemory.runSave(command.toRelation(), {
+    graph.inMemory.runSave(relation, {
         relation: (rel) => {
-            graph.onRelationUpdated(command, rel);
+            graph.onRelationUpdated(relation);
             output.relation(rel);
         },
         finish: () => {

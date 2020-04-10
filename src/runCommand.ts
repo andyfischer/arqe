@@ -38,7 +38,7 @@ function runStep(step: CommandStep) {
             return;
         
         case 'set': {
-            runSet(step.graph, step);
+            runSet(step.graph, step.command.toRelation(), step.output);
             return;
         }
 

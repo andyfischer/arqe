@@ -2,6 +2,8 @@
 import Graph from './Graph'
 import RelationSearch from './RelationSearch'
 import CommandStep from './CommandStep'
+import Relation from './Relation'
+import RelationReceiver from './RelationReceiver'
 
 export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
     // Check object space - #exists
@@ -38,17 +40,16 @@ export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
     }
 }
 
-export function hookObjectSpaceSave(graph: Graph, commandExec: CommandStep) {
+export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: RelationReceiver) {
     // Check object space - object definition
-    const command = commandExec.command;
-    const tags = command.tags;
+    const tags = rel.tags;
 
     if (tags.length === 1) {
         const columnName = tags[0].tagType;
         if (graph.objectTypes.hasColumn(columnName)) {
             graph.objectTypes.column(columnName).createObject(tags[0].tagValue);
-            commandExec.output.relation(command.toRelation());
-            commandExec.output.finish();
+            output.relation(rel);
+            output.finish();
             return true;
         }
     }
@@ -64,8 +65,8 @@ export function hookObjectSpaceSave(graph: Graph, commandExec: CommandStep) {
                     .createObject(tags[tagIndex].tagValue);
 
                 object.attrs[tags[otherTagIndex].tagType] = tags[otherTagIndex].tagValue;
-                commandExec.output.relation(command.toRelation());
-                commandExec.output.finish();
+                output.relation(rel);
+                output.finish();
                 return true;
             }
         }

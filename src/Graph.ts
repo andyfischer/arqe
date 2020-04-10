@@ -152,7 +152,7 @@ export default class Graph {
         }
     }
 
-    onRelationUpdated(command: Command, rel: Relation) {
+    onRelationUpdated(rel: Relation) {
 
         for (const listener of this.listeners)
             listener.onRelationUpdated(rel);
