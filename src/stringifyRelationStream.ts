@@ -33,6 +33,10 @@ export default function stringifyRelationStream() {
                 return '#error ' + sawError.getPayload();
             }
 
+            if (rel.hasType('deleted')) {
+                return 'delete ' + rel.removeType('command-meta').removeType('deleted').stringify()
+            }
+
             return null;
         }
 
@@ -50,46 +54,6 @@ export default function stringifyRelationStream() {
         if (!outputList)
             str += (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
 
-        if (rel.wasDeleted) {
-            str = 'delete ' + str;
-        }
-
         return str;
-
-        /*
-                if (searchPattern && !searchPattern.isMultiMatch()) {
-                    if (rels.length === 0) {
-                        onDone('#null');
-                    } else {
-                        if (rels[0].hasPayload()) {
-                            onDone(rels[0].getPayload());
-                        } else if (outputExtended) {
-                            onDone('set ' + rels[0].stringifyRelation());
-                        } else {
-                            onDone('#exists');
-                        }
-                    }
-
-                    return;
-                }
-
-                if (outputExists) {
-                    if (rels.length === 0)
-                        onDone('#null');
-                    else
-                        onDone('#exists');
-
-                    return;
-                }
-
-                if (outputCount) {
-                    onDone(rels.length + '');
-                    return;
-                }
-
-                onDone(rels.map(rel => stringifyRelation(rel)))
-            }
-        }
-        */
     }
 }

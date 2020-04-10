@@ -32,10 +32,6 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
         if (!outputList)
             str += (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
 
-        if (rel.wasDeleted) {
-            str = 'delete ' + str;
-        }
-
         return str;
     }
 

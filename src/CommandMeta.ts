@@ -51,3 +51,12 @@ export function emitCommandOutputFlags(command: Command, output: RelationReceive
     if (command.flags.list)
         emitCommandMeta(output, { 'output-flag': 'list' })
 }
+
+export function emitRelationDeleted(pattern: Pattern, output: RelationReceiver) {
+    const rel = pattern.getWriteable()
+        .addTag('command-meta')
+        .addTag('deleted')
+        .freeze();
+
+    output.relation(rel);
+}

@@ -13,9 +13,6 @@ export class PatternValue implements Pattern {
     payload: string | null
     payloadUnavailable?: true
 
-    // relation change
-    wasDeleted?: true
-
     // derived data
     starValueTags: PatternTag[] = []
     fixedTags: FixedTag[] = []
@@ -333,9 +330,6 @@ export class PatternValue implements Pattern {
     stringifyToCommand() {
         let commandPrefix = 'set ';
 
-        if (this.wasDeleted)
-            commandPrefix = 'delete ';
-
         return commandPrefix + this.stringifyRelation();
     }
 }
@@ -345,7 +339,6 @@ export default interface Pattern {
     copy: () => Pattern
     getWriteable: () => Pattern
 
-    wasDeleted?: boolean
     tags: PatternTag[]
     tagCount: () => number
     fixedTags: FixedTag[]

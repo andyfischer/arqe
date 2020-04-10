@@ -9,7 +9,6 @@ export default interface Relation {
     freeze: () => Relation
     copy: () => Relation
     getWriteable: () => Relation
-    wasDeleted?: boolean
     tags: PatternTag[]
     tagCount: () => number
     fixedTags: FixedTag[]
