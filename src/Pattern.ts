@@ -134,6 +134,7 @@ export class PatternValue implements Pattern {
 
     setPayload(payload: string | null) {
         this.setValue(payload);
+        return this;
     }
 
     isSupersetOf(subPattern: Pattern) {
@@ -312,12 +313,8 @@ export class PatternValue implements Pattern {
         return this.copyWithNewTags(this.tags.filter(tag => tag.tagType !== typeName));
     }
 
-    add(s: string) {
-        return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
-    }
-
     addTag(s: string) {
-        return this.add(s);
+        return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
     }
 
     str() {
@@ -366,7 +363,7 @@ export default interface Pattern {
     payloadUnavailable?: boolean
     getPayload: () => string
     hasPayload: () => boolean
-    setPayload: (val: string) => void
+    setPayload: (val: string) => Pattern
 
     addTag: (t: string) => Pattern
     removeType: (t: string) => Pattern

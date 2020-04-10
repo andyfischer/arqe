@@ -27,7 +27,7 @@ export default interface Relation {
     payloadUnavailable?: boolean
     getPayload: () => string
     hasPayload: () => boolean
-    setPayload: (val: string) => void
+    setPayload: (val: string) => Pattern
 
     addTag: (t: string) => Relation
     removeType: (t: string) => Relation
