@@ -142,8 +142,7 @@ export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: Relatio
     const object = objectSpace.createObject(columnTag.tagValue);
 
     // Attribute assignment
-    for (let tagIndex=0; tagIndex < rel.tags.length; tagIndex++) {
-        const tag = rel.tags[tagIndex];
+    for (const tag of rel.tags) {
         if (tag.tagType === columnName)
             continue;
 

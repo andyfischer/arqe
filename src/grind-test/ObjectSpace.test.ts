@@ -27,11 +27,8 @@ test('ObjectSpace attributes exclude multiple values', async ({run}) => {
     expect(await run('get ot/ot3 attr1/*')).toEqual(["attr1/2"]);
 });
 
-/*
 test('can set (unique) with objects', async ({run, graph}) => {
-    console.log('can set unique..')
     await run('set object-type/ot');
-    console.log('object types: ', graph.objectTypes)
     expect(await run('set ot/(unique)')).toEqual(['ot/ot-1']);
 });
 
@@ -51,8 +48,9 @@ test('can get multiple attributes at once', async ({run}) => {
     await run('set object-type/ot');
     await run('set object-type/ot attribute/attr1');
     await run('set object-type/ot attribute/attr2');
-    await run('set ot/ot4 attr1/a');
-    await run('set ot/ot4 attr2/b');
+
+    expect(await run('set ot/ot4 attr1/a')).toEqual([]);
+    expect(await run('set ot/ot4 attr2/b')).toEqual([]);
 
     expect(await run('get ot/ot4 attr1/* attr2/*')).toEqual(['attr1/a attr2/b']);
 });
@@ -73,6 +71,7 @@ test('implicitly creates an object during attribute assignment', async ({run}) =
     expect(await run('get ot/ot7')).toEqual('#exists');
 });
 
+/*
 test('supports object search by value', async ({run}) => {
     await run('set object-type/ot');
     await run('set ot/8 foo/a');

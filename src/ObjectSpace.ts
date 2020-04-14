@@ -38,7 +38,7 @@ export default class ObjectSpace {
     }
 
     createObject(id: string) {
-        this.objects.set(id, this.objects[id] || {
+        this.objects.set(id, this.objects.get(id) || {
             attrs: {}
         });
 
