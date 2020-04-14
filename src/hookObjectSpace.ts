@@ -26,6 +26,11 @@ export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
 
     const objectSpace = graph.objectTypes.column(columnName);
     const columnTag = search.pattern.findTagWithType(columnName);
+
+    if (columnTag.starValue) {
+        emitCommandError(search, `star value not supported on object type`);
+    }
+
     const object = objectSpace.getExistingObject(columnTag.tagValue);
 
     if (!object) {
