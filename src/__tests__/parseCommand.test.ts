@@ -191,3 +191,7 @@ it('stringifies tag identifiers', () => {
 it('stringifies tag values that need quotes', () => {
     testRestringify('get tag/"string value"')
 });
+
+it('stringifies expressions', () => {
+    testRestringify('set a/(increment)');
+});

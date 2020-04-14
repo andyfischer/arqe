@@ -13,7 +13,7 @@ export default class ObjectSpace {
     name: string
     idSource: IDSource
 
-    objects: { [id: string]: Entity } = {}
+    objects: Map<string, Entity> = new Map();
     attributes: { [name: string]: boolean } = {}
 
     constructor(name: string) {

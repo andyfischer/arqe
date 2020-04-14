@@ -1,5 +1,5 @@
 
-import { commandTagToString } from './stringifyQuery'
+import { patternTagToString } from './stringifyQuery'
 
 interface NewTagOptions {
     tagType?: string
@@ -27,11 +27,11 @@ export default class PatternTag {
     isFrozen?: boolean
 
     str() {
-        return commandTagToString(this);
+        return patternTagToString(this);
     }
 
     stringify() {
-        return commandTagToString(this);
+        return patternTagToString(this);
     }
 
     copy(): PatternTag {

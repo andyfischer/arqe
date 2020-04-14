@@ -13,7 +13,7 @@ function tagValueStringNeedsQuote(s: string) {
     return false;
 }
 
-export function commandTagToString(tag: PatternTag) {
+export function patternTagToString(tag: PatternTag) {
     if (tag.star && tag.identifier)
         return '$' + tag.identifier;
 
@@ -54,7 +54,7 @@ export function commandTagToString(tag: PatternTag) {
     }
 
     if (tag.valueExpr) {
-        return stringifyExpr(tag.valueExpr)
+        return tag.tagType + '/' + stringifyExpr(tag.valueExpr)
 
     } else if (tag.starValue) {
         return tag.tagType + '/*';
@@ -69,13 +69,13 @@ export function commandTagToString(tag: PatternTag) {
         return s;
     }
     
-    throw new Error('unhandled case in commandTagToString');
+    throw new Error('unhandled case in patternTagToString');
 
     return ''
 }
 
 export function commandTagsToString(tags: PatternTag[]) {
-    return tags.map(commandTagToString).join(' ');
+    return tags.map(patternTagToString).join(' ');
 }
 
 export function parsedCommandToString(command: Command) {

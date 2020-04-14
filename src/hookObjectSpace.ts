@@ -3,7 +3,7 @@ import Graph from './Graph'
 import RelationSearch from './RelationSearch'
 import CommandStep from './CommandStep'
 import Relation from './Relation'
-import Pattern from './Pattern'
+import Pattern, { patternFromMap } from './Pattern'
 import RelationReceiver from './RelationReceiver'
 import { stringifyExpr } from './parseExpr'
 import { emitCommandError } from './CommandMeta'
@@ -38,15 +38,18 @@ function runObjectStarSearch(graph: Graph, search: RelationSearch, columnTag: Pa
         filters.push((obj) => obj.attrs === tag.tagValue);
     }
 
-    for (const id in objectSpace.objects) {
-        const obj = objectSpace.objects[id];
-
+    for (const obj of objectSpace.objects.values()) {
         for (const filter of filters)
             if (!filter(obj))
                 continue;
 
         // Object matches
+        const map = new Map();
 
+        for (const attr of attrsToInclude)
+            map[attr] = obj.attrs[attr];
+
+        search.relation(patternFromMap(map));
     }
 
     search.finish();

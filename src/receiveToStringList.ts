@@ -1,7 +1,7 @@
 
 import Relation from './Relation'
 import RelationReceiver from './RelationReceiver'
-import { commandTagToString } from './stringifyQuery'
+import { patternTagToString } from './stringifyQuery'
 
 export default function receiveToStringList(onDone: (s: string|string[]) => void): RelationReceiver {
 
@@ -24,7 +24,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
             return true;
         });
 
-        const tagStrs = tags.map(commandTagToString);
+        const tagStrs = tags.map(patternTagToString);
         tagStrs.sort();
 
         let str = tagStrs.join(' ');

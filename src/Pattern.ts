@@ -2,7 +2,7 @@
 import Command from './Command'
 import Graph from './Graph'
 import parseCommand, { parseTag } from './parseCommand'
-import { normalizeExactTag, commandTagToString, commandTagsToString } from './stringifyQuery'
+import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
 import PatternTag, { FixedTag } from './PatternTag'
 
 export class PatternValue implements Pattern {
@@ -195,7 +195,7 @@ export class PatternValue implements Pattern {
             if (this.fixedTagsForType[tag.tagType])
                 continue;
 
-            outTags.push(commandTagToString(tag));
+            outTags.push(patternTagToString(tag));
         }
 
         const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
@@ -387,6 +387,18 @@ export default interface Pattern {
 export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
     return new PatternValue(parsed.tags)
+}
+
+export function patternFromMap(map: Map<string,string>) {
+    const tags = []
+    for (const [key,value] of map.entries()) {
+        const tag = new PatternTag();
+        tag.tagType = key;
+        tag.tagValue = value;
+        tags.push(tag);
+    }
+
+    return new PatternValue(tags);
 }
 
 export function commandTagsToRelation(tags: PatternTag[], payload: string): Pattern {

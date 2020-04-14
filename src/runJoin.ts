@@ -7,7 +7,7 @@ import Pattern, { PatternValue } from './Pattern'
 import Relation from './Relation'
 import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
-import { commandTagToString } from './stringifyQuery'
+import { patternTagToString } from './stringifyQuery'
 
 function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
     const identifierTags: PatternTag[] = []
@@ -96,11 +96,11 @@ function combineRelations(a: Pattern, b: Pattern) {
 
     for (const tag of a.tags) {
         tags.push(tag);
-        saw[commandTagToString(tag)] = true;
+        saw[patternTagToString(tag)] = true;
     }
 
     for (const tag of b.tags) {
-        const str = commandTagToString(tag);
+        const str = patternTagToString(tag);
         if (saw[str])
             continue;
         tags.push(tag);

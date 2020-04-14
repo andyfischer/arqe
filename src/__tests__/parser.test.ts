@@ -1,5 +1,4 @@
 
-
 import { parsePattern, parseCommandChain } from '../parseCommand'
 
 it('parses correctly', () => {

@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import { commandTagToString } from './stringifyQuery'
+import { patternTagToString } from './stringifyQuery'
 
 export default function stringifyRelationStream() {
     let searchPattern = null;
@@ -43,7 +43,7 @@ export default function stringifyRelationStream() {
             return true;
         });
 
-        const tagStrs = tags.map(commandTagToString);
+        const tagStrs = tags.map(patternTagToString);
 
         let str = tagStrs.join(' ');
         
