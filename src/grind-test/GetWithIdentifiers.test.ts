@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('get results include identifiers', async ({run}) => {
     await run(`set tc30/1`);

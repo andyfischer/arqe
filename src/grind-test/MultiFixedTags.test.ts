@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('correctly matches several exact tags', async ({run}) => {
     await run('set a b c');

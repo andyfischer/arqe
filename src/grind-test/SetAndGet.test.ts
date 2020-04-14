@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test("initially doesn't have a value", async ({run}) => {
     const existing = await run('get testval/1');

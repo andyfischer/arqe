@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('star tag works', async ({run}) => {
     await run('set a b');

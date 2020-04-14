@@ -1,7 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
-
+import { test } from '.'
 
 test('get * works with fixed valueless tags', async ({run}) => {
     await run('set a/1 tc23 c')

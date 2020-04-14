@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('modify increment value', async ({run}) => {
     await run('set modify-test1 a/1 b/1');

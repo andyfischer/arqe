@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('returns correct data when inherit tags are used', async ({run}) => {
     await run('set typeinfo/branch .inherits')

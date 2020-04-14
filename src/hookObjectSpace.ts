@@ -47,7 +47,7 @@ function runObjectStarSearch(graph: Graph, search: RelationSearch, columnTag: Pa
         const map = new Map();
 
         for (const attr of attrsToInclude)
-            map[attr] = obj.attrs[attr];
+            map.set(attr, obj.attrs[attr]);
 
         search.relation(patternFromMap(map));
     }
@@ -149,7 +149,7 @@ export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: Relatio
 
         const tagType = tag.tagType;
 
-        if (!objectSpace.attributes[tagType]) {
+        if (!objectSpace.attributes.has(tagType)) {
             emitCommandError(output, `object type '${columnName}' has no attribute '${tagType}'`);
             continue;
         }

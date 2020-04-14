@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('get with unbound type acts like star', async ({run}) => {
     await run('set a b == 1')

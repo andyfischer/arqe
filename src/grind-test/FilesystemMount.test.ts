@@ -1,7 +1,6 @@
 
 import path from 'path'
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test("filesystem mount works", async ({run}) => {
 

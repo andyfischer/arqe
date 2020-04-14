@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('overwrite', async ({run}) => {
     const object = 'tc20/1';

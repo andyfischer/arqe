@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('get -count works', async({run}) => {
     expect(await run('get -count counttest/*')).toEqual('0');

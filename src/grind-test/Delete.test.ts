@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('delete works', async ({run}) => {
     await run('set deletetest/1');

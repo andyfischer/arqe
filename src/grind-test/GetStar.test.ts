@@ -1,6 +1,5 @@
 
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test('get * works on no results', async ({run}) => {
     const result = await run('get multitest/*');

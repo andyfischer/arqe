@@ -1,7 +1,5 @@
 
-
-import { startSuite } from '.'
-const { test } = startSuite();
+import { test } from '.'
 
 test("can't set with *", async ({run}) => {
     expect(await run('set *', { allowError: true })).toMatch(/^#error/);

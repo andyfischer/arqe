@@ -1,8 +1,6 @@
 
 import { test } from '.'
 
-it('', () => {});
-/*
 test('can get on an object-space column', async ({run}) => {
     await run('set object-type/ot');
     await run('set object-type/ot attribute/attr1');
@@ -13,7 +11,7 @@ test('can get on an object-space column', async ({run}) => {
     expect(await run('get ot/ot2')).toEqual('#null');
 
     expect(await run('get ot/ot1 attr1/*')).toEqual(['attr1']);
-    await run('set ot/ot1 attr1/test')
+    expect(await run('set ot/ot1 attr1/test')).toEqual([]);
     expect(await run('get ot/ot1 attr1/*')).toEqual(['attr1/test']);
 });
 
@@ -29,6 +27,7 @@ test('ObjectSpace attributes exclude multiple values', async ({run}) => {
     expect(await run('get ot/ot3 attr1/*')).toEqual(["attr1/2"]);
 });
 
+/*
 test('can set (unique) with objects', async ({run, graph}) => {
     console.log('can set unique..')
     await run('set object-type/ot');

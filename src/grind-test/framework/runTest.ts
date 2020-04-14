@@ -11,7 +11,6 @@ export default function test(name, callback) {
     const graph = new Graph()
 
     function run(command, opts?: RunOptions) {
-        console.log('running: ' + command)
         return runCommand(command, { graph, ... opts });
     }
 
