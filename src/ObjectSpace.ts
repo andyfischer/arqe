@@ -3,6 +3,7 @@ import IDSource from './IDSource'
 import Graph from './Graph'
 import GraphListener from './GraphListenerV3'
 import Relation from './Relation'
+import PatternTag from './PatternTag'
 
 interface Entity {
     attrs: { [name: string]: string }

@@ -7,6 +7,8 @@ import Pattern from './Pattern'
 import RelationReceiver from './RelationReceiver'
 import { stringifyExpr } from './parseExpr'
 import { emitCommandError } from './CommandMeta'
+import PatternTag from './PatternTag'
+import ObjectSpace from './ObjectSpace'
 
 function findObjectType(graph: Graph, pattern: Pattern) {
     for (const tag of pattern.tags) {
@@ -16,6 +18,38 @@ function findObjectType(graph: Graph, pattern: Pattern) {
     }
 
     return null;
+}
+
+function runObjectStarSearch(graph: Graph, search: RelationSearch, columnTag: PatternTag, objectSpace: ObjectSpace) {
+
+    const filters = [];
+    const attrsToInclude = [];
+
+    for (const tag of search.pattern.tags) {
+
+        if (tag.tagType === columnTag.tagType)
+            continue;
+
+        attrsToInclude.push(tag.tagType);
+
+        if (tag.starValue)
+            continue;
+
+        filters.push((obj) => obj.attrs === tag.tagValue);
+    }
+
+    for (const id in objectSpace.objects) {
+        const obj = objectSpace.objects[id];
+
+        for (const filter of filters)
+            if (!filter(obj))
+                continue;
+
+        // Object matches
+
+    }
+
+    search.finish();
 }
 
 export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
@@ -28,7 +62,8 @@ export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
     const columnTag = search.pattern.findTagWithType(columnName);
 
     if (columnTag.starValue) {
-        emitCommandError(search, `star value not supported on object type`);
+        runObjectStarSearch(graph, search, columnTag, objectSpace);
+        return;
     }
 
     const object = objectSpace.getExistingObject(columnTag.tagValue);

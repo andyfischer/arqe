@@ -62,5 +62,19 @@ test('getting a nonexisting object returns nothing', async ({run}) => {
 
 test('getting attributes from a nonexisting object returns nothing', async ({run}) => {
     await run('set object-type/ot');
-    expect(await run('get ot/ot5 attr/a')).toEqual('#null');
+    expect(await run('get ot/ot6 attr/a')).toEqual('#null');
+});
+
+test('implicitly creates an object during attribute assignment', async ({run}) => {
+    await run('set object-type/ot');
+    await run('set ot/ot7 foo/a');
+    expect(await run('get ot/ot7')).toEqual('#exists');
+});
+
+test('supports object search by value', async ({run}) => {
+    await run('set object-type/ot');
+    await run('set ot/8 foo/a');
+    await run('set ot/9 foo/a');
+    await run('set ot/10 foo/b');
+    expect(await run('get ot/* foo/a')).toEqual(['ot/8', 'ot/9']);
 });

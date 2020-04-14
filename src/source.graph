@@ -640,6 +640,6 @@ set spreadsheet-view/1 input-mode/normal
 
 # Filesystem
 
-set object-type/watched-file
-set object-type/watched-file attribute/filename
-set object-type/watched-file attribute/last-modified
+set object-type/file-watch
+set object-type/file-watch attribute/filename
+set object-type/file-watch attribute/last-modified
