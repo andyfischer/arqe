@@ -63,3 +63,11 @@ export function evalExpr(environment: {[name: string]: EvalFunc}, parsed: any[])
 
     return func(applied);
 }
+
+export function stringifyExpr(expr: string[] | string): string {
+
+    if (Array.isArray(expr))
+        return '(' + expr.map(stringifyExpr).join(' ') + ')'
+    else
+        return expr;
+}

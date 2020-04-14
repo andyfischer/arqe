@@ -3,7 +3,7 @@ import Command from './Command'
 import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
 import PatternTag, { newTag } from './PatternTag'
-
+import { stringifyExpr } from './parseExpr'
 
 function tagValueStringNeedsQuote(s: string) {
     for (let i = 0; i < s.length; i++)
@@ -53,7 +53,10 @@ export function commandTagToString(tag: PatternTag) {
         return s;
     }
 
-    if (tag.starValue) {
+    if (tag.valueExpr) {
+        return stringifyExpr(tag.valueExpr)
+
+    } else if (tag.starValue) {
         return tag.tagType + '/*';
     }
 

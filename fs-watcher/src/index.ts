@@ -30,4 +30,17 @@ async function main() {
         isDone() { return false },
         finish() {}
     });
+
+    conn.run('listen file-watch/* filename/*', {
+        relation(rel: Relation) {
+            console.log('saw: ' + rel.stringify())
+        },
+        isDone() { return false },
+        finish() {}
+    });
+
+    console.log('Connected to server');
 }
+
+main()
+.catch(console.error);

@@ -6,6 +6,7 @@ import StorageProvider from '../StorageProvider'
 import RelationSearch from '../RelationSearch'
 import RelationReceiver from '../RelationReceiver'
 import Graph from '../Graph'
+import { emitCommandError, emitCommandOutputFlags } from '../CommandMeta'
 
 type RelationModifier = (rel: Relation) => Relation
 
@@ -48,6 +49,14 @@ export default class InMemoryStorage implements StorageProvider {
     runSave(relation: Relation, output: RelationReceiver) {
         const ntag = relation.getNtag();
         const existing = this.relationsByNtag[ntag];
+
+        for (const tag of relation.tags) {
+            if (tag.valueExpr) {
+                emitCommandError(output, "unhandled expression:" + tag.stringify());
+                output.finish();
+                return;
+            }
+        }
 
         if (existing) {
             let modified = existing.setPayload(relation.getPayload());

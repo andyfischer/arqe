@@ -20,6 +20,10 @@ export default class ObjectSpace {
         this.idSource = new IDSource(name + '-');
     }
 
+    nextId() {
+        return this.idSource.take();
+    }
+
     defineAttribute(name: string) {
         this.attributes[name] = true;
     }
@@ -37,6 +41,10 @@ export default class ObjectSpace {
             attrs: {}
         }
 
+        return this.objects[id];
+    }
+
+    getExistingObject(id: string) {
         return this.objects[id];
     }
 }

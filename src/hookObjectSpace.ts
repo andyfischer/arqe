@@ -3,72 +3,117 @@ import Graph from './Graph'
 import RelationSearch from './RelationSearch'
 import CommandStep from './CommandStep'
 import Relation from './Relation'
+import Pattern from './Pattern'
 import RelationReceiver from './RelationReceiver'
+import { stringifyExpr } from './parseExpr'
+import { emitCommandError } from './CommandMeta'
+
+function findObjectType(graph: Graph, pattern: Pattern) {
+    for (const tag of pattern.tags) {
+        const columnName = pattern.tags[0].tagType;
+        if (graph.objectTypes.hasColumn(columnName))
+            return columnName;
+    }
+
+    return null;
+}
 
 export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
+
+    const columnName = findObjectType(graph, search.pattern);
+    if (!columnName)
+        return false;
+
+    const objectSpace = graph.objectTypes.column(columnName);
+    const columnTag = search.pattern.findTagWithType(columnName);
+    const object = objectSpace.getExistingObject(columnTag.tagValue);
+
+    if (!object) {
+        search.finish();
+        return true;
+    }
+
     // Check object space - #exists
     const tags = search.pattern.tags;
     if (tags.length === 1) {
         const columnName = tags[0].tagType;
-        if (graph.objectTypes.hasColumn(columnName)) {
-            if (graph.objectTypes.column(columnName).hasObject(tags[0].tagValue)) {
-                search.relation(search.pattern);
-            }
-            search.finish();
-            return true;
+        if (objectSpace.hasObject(tags[0].tagValue)) {
+            search.relation(search.pattern);
         }
+        search.finish();
+        return true;
     }
 
     // Check object space - attribute fetch
-    if (tags.length === 2) {
-        for (let tagIndex=0; tagIndex < 2; tagIndex++) {
-            const columnName = tags[tagIndex].tagType;
-            if (graph.objectTypes.hasColumn(columnName)) {
-                const otherTagIndex = (tagIndex === 0) ? 1 : 0;
-                const object = graph.objectTypes
-                    .column(columnName)
-                    .object(tags[tagIndex].tagValue);
+    let outRelation = search.pattern;
 
-                const attrName = tags[otherTagIndex].tagType;
-                if (object.attrs[attrName]) {
-                    search.relation(search.pattern.setTagValueAtIndex(otherTagIndex, object.attrs[attrName]));
-                }
-                search.finish();
-                return true;
-            }
+    for (const tag of tags) {
+        if (tag.tagType === columnName)
+            continue;
+
+        const attr = tag.tagType;
+
+        if (tag.starValue) {
+            outRelation = outRelation.updateTagOfType(attr, tag => tag.setValue(object.attrs[attr]));
         }
     }
+
+    search.relation(outRelation);
+    search.finish();
+
+    //emitCommandError(search, `don't know how to get relation from '${columnName}' object type`);
+    //search.finish();
+    return true;
 }
 
 export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: RelationReceiver) {
-    // Check object space - object definition
-    const tags = rel.tags;
 
-    if (tags.length === 1) {
-        const columnName = tags[0].tagType;
-        if (graph.objectTypes.hasColumn(columnName)) {
-            graph.objectTypes.column(columnName).createObject(tags[0].tagValue);
-            output.relation(rel);
+    const columnName = findObjectType(graph, rel);
+    if (!columnName)
+        return false;
+
+    const objectSpace = graph.objectTypes.column(columnName)
+
+    // Object definition
+    if (rel.tags.length === 1) {
+        let tag = rel.tags[0];
+
+        if (tag.valueExpr && tag.valueExpr.length === 1 && tag.valueExpr[0] === 'unique') {
+            rel = rel.updateTagAtIndex(0, tag => tag.setValue(objectSpace.nextId()));
+            tag = rel.tags[0];
+        }
+
+        if (tag.valueExpr) {
+            emitCommandError(output, "unexpected expression: " + stringifyExpr(tag.valueExpr));
             output.finish();
             return true;
         }
+
+        objectSpace.createObject(tag.tagValue);
+        output.relation(rel);
+        output.finish();
+        return true;
     }
 
-    // Check object space - attribute assignment
-    if (tags.length === 2) {
-        for (let tagIndex=0; tagIndex < 2; tagIndex++) {
-            const columnName = tags[tagIndex].tagType;
-            if (graph.objectTypes.hasColumn(columnName)) {
-                const otherTagIndex = (tagIndex === 0) ? 1 : 0;
-                const object = graph.objectTypes
-                    .column(columnName)
-                    .createObject(tags[tagIndex].tagValue);
+    const columnTag = rel.findTagWithType(columnName);
+    const object = objectSpace.createObject(columnTag.tagValue);
 
-                object.attrs[tags[otherTagIndex].tagType] = tags[otherTagIndex].tagValue;
-                output.relation(rel);
-                output.finish();
-                return true;
-            }
+    // Attribute assignment
+    for (let tagIndex=0; tagIndex < rel.tags.length; tagIndex++) {
+        const tag = rel.tags[tagIndex];
+        if (tag.tagType === columnName)
+            continue;
+
+        const tagType = tag.tagType;
+
+        if (!objectSpace.attributes[tagType]) {
+            emitCommandError(output, `object type '${columnName}' has no attribute '${tagType}'`);
+            continue;
         }
+
+        object.attrs[tag.tagType] = tag.tagValue;
     }
+
+    output.finish();
+    return true;
 }
