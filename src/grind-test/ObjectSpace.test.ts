@@ -19,13 +19,13 @@ test('can get on an object-space column', async ({run}) => {
 test('ObjectSpace attributes exclude multiple values', async ({run}) => {
     await run('set object-type/ot');
     await run('set object-type/ot attribute/attr1');
-    await run('set ot/ot2');
+    await run('set ot/ot3');
 
-    expect(await run('get ot/ot2 attr1/*')).toEqual(["attr1"]);
-    await run('set ot/ot2 attr1/1');
-    expect(await run('get ot/ot2 attr1/*')).toEqual(["attr1/1"]);
-    await run('set ot/ot2 attr1/2');
-    expect(await run('get ot/ot2 attr1/*')).toEqual(["attr1/2"]);
+    expect(await run('get ot/ot3 attr1/*')).toEqual(["attr1"]);
+    await run('set ot/ot3 attr1/1');
+    expect(await run('get ot/ot3 attr1/*')).toEqual(["attr1/1"]);
+    await run('set ot/ot3 attr1/2');
+    expect(await run('get ot/ot3 attr1/*')).toEqual(["attr1/2"]);
 });
 
 test('can set (unique) with objects', async ({run}) => {
