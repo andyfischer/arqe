@@ -52,7 +52,7 @@ export default class InMemoryStorage implements StorageProvider {
 
         for (const tag of relation.tags) {
             if (tag.valueExpr) {
-                emitCommandError(output, "unhandled expression:" + tag.stringify());
+                emitCommandError(output, "InMemoryStorage unhandled expression: " + tag.stringify());
                 output.finish();
                 return;
             }

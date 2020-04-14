@@ -146,9 +146,10 @@ export class PatternValue implements Pattern {
 
     matches(rel: Pattern) {
 
-        // Check tag count on this relatino.
+        // Check tag count on this relation.
         if (this.hasDoubleStar) {
-            if (rel.tagCount() < this.tagCount())
+            const tagCountWithoutDoubleStar = this.tagCount() - 1;
+            if (rel.tagCount() < tagCountWithoutDoubleStar)
                 return false;
         } else {
             if (rel.tagCount() !== this.tagCount())

@@ -14,7 +14,7 @@ export default class ObjectSpace {
     idSource: IDSource
 
     objects: Map<string, Entity> = new Map();
-    attributes: { [name: string]: boolean } = {}
+    attributes: Map<string, boolean> = new Map();
 
     constructor(name: string) {
         this.name = name;
@@ -26,49 +26,49 @@ export default class ObjectSpace {
     }
 
     defineAttribute(name: string) {
-        this.attributes[name] = true;
+        this.attributes.set(name, true);
     }
 
     hasObject(id: string) {
-        return !!this.objects[id];
+        return this.objects.has(id);
     }
 
     object(id: string) {
-        return this.objects[id];
+        return this.objects.get(id);
     }
 
     createObject(id: string) {
-        this.objects[id] = this.objects[id] || {
+        this.objects.set(id, this.objects[id] || {
             attrs: {}
-        }
+        });
 
-        return this.objects[id];
+        return this.objects.get(id);
     }
 
     getExistingObject(id: string) {
-        return this.objects[id];
+        return this.objects.get(id);
     }
 }
 
 export class ObjectTypeSpace implements GraphListener {
     graph: Graph
-    columns: { [name: string]: ObjectSpace } = {}
+    columns: Map<string, ObjectSpace> = new Map();
 
     constructor(graph: Graph) {
         this.graph = graph;
     }
 
     hasColumn(name: string) {
-        return !!this.columns[name];
+        return this.columns.has(name);
     }
 
     column(name: string) {
-        return this.columns[name];
+        return this.columns.get(name);
     }
 
     maybeInitEntityColumn(name: string) {
-        if (!this.columns[name]) {
-            this.columns[name] = new ObjectSpace(name)
+        if (!this.columns.has(name)) {
+            this.columns.set(name, new ObjectSpace(name))
         }
     }
 
@@ -79,11 +79,12 @@ export class ObjectTypeSpace implements GraphListener {
 
         if (rel.hasType('attribute')) {
             const attr = rel.getTagValue('attribute');
-            this.columns[columnName].defineAttribute(attr);
+            this.columns.get(columnName).defineAttribute(attr);
         }
     }
 
     onRelationUpdated(rel: Relation) {
+        console.log('onRelationUpdated', rel.stringify());
     }
 
     onRelationDeleted(rel: Relation) {

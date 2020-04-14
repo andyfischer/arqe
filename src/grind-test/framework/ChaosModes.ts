@@ -1,11 +1,17 @@
 
 import Graph from '../../Graph'
-import ChaosMode from './ChaosMode'
 import Command from '../../Command'
 import CommandChain from '../../CommandChain'
 import { newTag } from '../../PatternTag'
 import { parseCommandChain } from '../../parseCommand'
 import { stringifyCommandChain, appendTagInCommand } from '../../stringifyQuery'
+
+export interface ChaosMode {
+    name: string
+    shortDescription: string
+    setupNewGraph?: (graph: Graph) => void
+    modifyRunCommand?: (command: string) => string
+}
 
 export const ReparseCommand: ChaosMode = {
     name: 'reparseCommand',
@@ -98,3 +104,16 @@ export const ScrambleTagOrder: ChaosMode = {
 
 // Modes to add:
 //  - Enable specific optimizations
+
+export function activeChaosModes() {
+    if (process.env.MIN_CHAOS)
+        return []
+
+    return [
+        ReparseCommand,
+        InsertExtraTag,
+        GetInheritedBranch,
+        ScrambleTagOrder
+    ]
+
+}

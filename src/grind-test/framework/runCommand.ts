@@ -1,6 +1,6 @@
 import verifyRespondProtocol from '../../verifyRespondProtocol'
 import Graph from '../../Graph'
-import ChaosMode from './ChaosMode'
+import { ChaosMode } from './ChaosModes'
 import Runnable from '../../Runnable'
 import receiveToStringList from '../../receiveToStringList'
 

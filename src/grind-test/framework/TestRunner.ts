@@ -3,7 +3,7 @@ import TestSuite from './TestSuite'
 import verifyRespondProtocol from '../../verifyRespondProtocol'
 import Graph from '../../Graph'
 import { connectToServer } from '../../socket/CommandConnection'
-import ChaosMode from './ChaosMode'
+import { ChaosMode } from './ChaosModes'
 import runCommand from './runCommand'
 import Runnable from '../../Runnable'
 
