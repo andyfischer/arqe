@@ -222,7 +222,7 @@ export default class API {
     }
     
     getDestinationFilename(target: string): string {
-        const queryStr = `${target} destination-filename`;
+        const queryStr = `${target} destination-filename/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
         // Expect one result
@@ -235,7 +235,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getPayload();
+        return rel.getTagValue("destination-filename");
     }
     
     getOutputObjectdef(touchpoint: string): string {

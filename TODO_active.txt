@@ -6,4 +6,4 @@ Support 'async' in DAO generator
 
 Serialize/Deserialize graph as YAML
 
-New tag(value) syntax
+X New tag(value) syntax
