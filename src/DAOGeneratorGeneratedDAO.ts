@@ -43,7 +43,7 @@ export default class API {
     }
     
     touchpointFunctionName(touchpoint: string): string {
-        const queryStr = `${touchpoint} function-name`;
+        const queryStr = `${touchpoint} function-name/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
         // Expect one result
@@ -56,7 +56,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getPayload();
+        return rel.getTagValue("function-name");
     }
     
     touchpointExpectOne(touchpoint: string): boolean {
