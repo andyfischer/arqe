@@ -7,7 +7,7 @@ set typeinfo/branch .order == after
     
 set code-generation/1
 set code-generation/1 destination-filename(src/DAOGeneratorGeneratedDAO.ts)
-set code-generation/1 ik-import == .
+set code-generation/1 ik-import(.)
 set code-generation/1 strategy/dao-api
 # set code-generation/1 verbose-logging
 
@@ -29,8 +29,8 @@ set touchpoint/0.6 input/0.5
 
 set code-generation/1 touchpoint/0.8
 set touchpoint/0.8 function-name == getIkImport
-set touchpoint/0.8 query == \${target} ik-import
-set touchpoint/0.8 output value
+set touchpoint/0.8 query == \${target} ik-import/*
+set touchpoint/0.8 output tagValue/ik-import
 set touchpoint/0.8 expectOne
 set touchpoint/0.8 input/0.5
 
@@ -215,7 +215,7 @@ set input/16 type/string
 
 set code-generation/2
 set code-generation/2 destination-filename(src/CodeGenerationApi.ts)
-set code-generation/2 ik-import == .
+set code-generation/2 ik-import(.)
 set code-generation/2 strategy/dao-api
 
 set code-generation/2 touchpoint/17.1
@@ -233,7 +233,7 @@ set touchpoint/17 input/0.5
 set code-generation/3
 set code-generation/3 destination-filename(src/code-generation/TextAsCodeApi.ts)
 set code-generation/3 strategy/dao-api
-set code-generation/3 ik-import == ..
+set code-generation/3 ik-import(..)
 
 set code-generation/3 touchpoint/18
 set touchpoint/18 function-name == fromFile
@@ -255,7 +255,7 @@ set input/touchpoint type/string
 set code-generation/socket
 set code-generation/socket destination-filename(src/code-generation/SocketApi.ts)
 set code-generation/socket strategy/dao-api
-set code-generation/socket ik-import == ..
+set code-generation/socket ik-import(..)
 
 set code-generation/socket touchpoint/socket1
 set touchpoint/socket1 function-name == createUniqueConnection
@@ -312,7 +312,7 @@ set output-object/field-tagValue field/tagValue tagValue/tagValue
 set code-generation/test-api
 set code-generation/test-api destination-filename(src/__tests__/generated/GeneratedApi.ts)
 set code-generation/test-api strategy/dao-api
-set code-generation/test-api ik-import == ../..
+set code-generation/test-api ik-import(../..)
 
 set code-generation/test-api touchpoint/25
 set touchpoint/25 function-name == getOneTag
@@ -355,7 +355,7 @@ set input/val type/string
 
 set code-generation/spreadsheet-view
 set code-generation/spreadsheet-view destination-filename(dashboard/src/SpreadsheetViewAPI.ts)
-set code-generation/spreadsheet-view ik-import == ik
+set code-generation/spreadsheet-view ik-import(ik)
 set code-generation/spreadsheet-view strategy/dao-api
 # set code-generation/spreadsheet-view verbose-logging
 
@@ -476,7 +476,7 @@ set current-view spreadsheet-view/1
 
 set code-generation/edit-model
 set code-generation/edit-model destination-filename(dashboard/src/EditModelAPI.ts)
-set code-generation/edit-model ik-import == ik
+set code-generation/edit-model ik-import(ik)
 set code-generation/edit-model strategy/dao-api
 
 set code-generation/edit-model touchpoint/db8

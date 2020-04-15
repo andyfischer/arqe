@@ -20,7 +20,7 @@ export default class API {
     }
     
     getIkImport(target: string): string {
-        const queryStr = `${target} ik-import`;
+        const queryStr = `${target} ik-import/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
         // Expect one result
@@ -33,7 +33,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getPayload();
+        return rel.getTagValue("ik-import");
     }
     
     enableVerboseLogging(target: string): boolean {
