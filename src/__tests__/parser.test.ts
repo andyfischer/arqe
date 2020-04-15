@@ -23,3 +23,9 @@ it('parses exprs', () => {
     expect(pattern.tags[0].tagType).toEqual('a');
     expect(pattern.tags[0].valueExpr).toEqual(['increment']);
 });
+
+it('parses new style tags', () => {
+    const pattern = parseCommandChain("modify a(b)").commands[0].toPattern();
+    expect(pattern.tags[0].tagType).toEqual('a');
+    expect(pattern.tags[0].tagValue).toEqual('b');
+});

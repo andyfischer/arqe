@@ -3,7 +3,7 @@ import Command from './Command'
 import CommandChain from './CommandChain'
 import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
-import PatternTag, { newTagFromObject, FixedTag } from './PatternTag'
+import PatternTag, { newTagFromObject, PatternTagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
@@ -22,6 +22,68 @@ interface InProgressQuery {
     tags: PatternTag[]
     flags: { [flag: string]: any }
     payload: string | null
+}
+
+function parseTagValue(it: TokenIterator): PatternTagOptions {
+    let tagValue = null;
+    let valueExpr = null;
+    let starValue = false;
+    let questionValue = false;
+    let identifier;
+    let hasValue = false;
+    let parenSyntax = false;
+
+    if (it.tryConsume(t_slash)) {
+        hasValue = true;
+    } else if (it.tryConsume(t_lparen)) {
+        hasValue = true;
+        parenSyntax = true;
+    }
+
+    if (!hasValue)
+        return {}
+
+    // Tag value
+
+    if (it.tryConsume(t_star)) {
+        starValue = true;
+    } else if (it.tryConsume(t_question)) {
+        questionValue = true;
+    } else if (it.tryConsume(t_dollar)) {
+        identifier = it.consumeNextUnquotedText();
+        starValue = true;
+    } else if (it.nextIs(t_lparen)) {
+        valueExpr = parseExpr(it);
+        starValue = true;
+    } else {
+
+        let iterationCount = 0;
+        tagValue = '';
+
+        while (!it.finished() && acceptableTagValue(it.next())) {
+
+            if (parenSyntax && it.nextIs(t_rparen))
+                break;
+
+            iterationCount += 1;
+            if (iterationCount > 1000)
+                throw new Error('too many iterations when parsing tag value');
+
+            tagValue += it.consumeNextUnquotedText();
+        }
+    }
+
+    if (parenSyntax)
+        if (!it.tryConsume(t_rparen))
+            throw new Error('Expected )');
+
+    return {
+        tagValue,
+        valueExpr,
+        starValue,
+        questionValue,
+        identifier
+    }
 }
 
 function parseOneTag(it: TokenIterator): PatternTag {
@@ -89,48 +151,14 @@ function parseOneTag(it: TokenIterator): PatternTag {
     if (tagType === '/')
         throw new Error("syntax error, tagType was '/'");
 
-    let tagValue = null;
-    let valueExpr = null;
-    let starValue = false;
-    let questionValue = false;
 
-    if (it.tryConsume(t_slash)) {
-
-        // Tag value
-
-        if (it.tryConsume(t_star)) {
-            starValue = true;
-        } else if (it.tryConsume(t_question)) {
-            questionValue = true;
-        } else if (it.tryConsume(t_dollar)) {
-            identifier = it.consumeNextUnquotedText();
-            starValue = true;
-        } else if (it.nextIs(t_lparen)) {
-            valueExpr = parseExpr(it);
-            starValue = true;
-        } else {
-
-            let iterationCount = 0;
-            tagValue = '';
-
-            while (!it.finished() && acceptableTagValue(it.next())) {
-                iterationCount += 1;
-                if (iterationCount > 1000)
-                    throw new Error('too many iterations when parsing tag value');
-
-                tagValue += it.consumeNextUnquotedText();
-            }
-        }
-    }
+    const valueOptions = parseTagValue(it);
 
     return newTagFromObject({
+        ...valueOptions,
         tagType,
-        tagValue,
-        valueExpr,
         negate,
-        starValue,
-        questionValue,
-        identifier
+        identifier: identifier || valueOptions.identifier,
     })
 }
 

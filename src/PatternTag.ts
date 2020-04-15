@@ -1,7 +1,7 @@
 
 import { patternTagToString } from './stringifyQuery'
 
-interface NewTagOptions {
+export interface PatternTagOptions {
     tagType?: string
     tagValue?: string
     valueExpr?: string[]
@@ -82,9 +82,13 @@ export function newTag(tagType: string, tagValue?: string): PatternTag {
     return tag;
 }
 
-export function newTagFromObject(obj: NewTagOptions) {
+export function newTagFromObject(obj: PatternTagOptions) {
     const tag = new PatternTag();
     for (const k in obj)
         tag[k] = obj[k];
+
+    if (tag.tagValue === undefined)
+        tag.tagValue = null;
+
     return tag;
 }
