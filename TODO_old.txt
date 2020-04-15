@@ -1,5 +1,28 @@
 
-# March 2019 part 2 #
+# April 2020 #
+
+
+ / Fetch a relation set
+ / Organize relations into schema patterns
+ / Show a collection of real relations in dashboard
+ / Dashboard: Support key events that jump across tables
+ X Quoted strings as tag values
+ X Server understands file changes
+   X Implement 'increment' command
+
+Pending refactors: 
+ - Proper Relation class (instead of Pattern)
+ X Change the protocol, use command-meta relations to indicate multi versus
+   single. Remove #start command.
+   X Remove RelationReceiver.start
+     / Remove RelationReceiver.finish?
+     - Express relation streams as input -> output[]
+
+ X Remove Graph.run (string based)
+ X Write new collectRespond that understands command-meta
+ X GetResponseFormatter needs to pass through command-meta ?
+
+# March 2020 part 2 #
 
 Spreadsheet
 
@@ -25,7 +48,7 @@ Dashboard
  X Hook up text editing
  - Populate from real graph
 
-# March 2019 part 1 #
+# March 2020 part 1 #
 
 - Allow 'payload' to be accessed with the 'value' tag type.
 
@@ -48,7 +71,7 @@ COURSE CORRECTIONS:
  - Allow tag values to act like real values. (Update syntax to allow quotes)
  
 
-# Feb 2019 part 2 #
+# Feb 2020 part 2 #
 
  X Keep working on tsc-runner until it supports autofixing of my errors
  X Easy mount a derived value
@@ -66,7 +89,7 @@ COURSE CORRECTIONS:
  . More tests on listening
  - Web UI
 
-# Feb 2019 #
+# Feb 2020 #
 
 ### Notes ###
 
@@ -95,7 +118,7 @@ Web UI
 More
  - Store in database backend?
 
-# Jan 2019 #
+# Jan 2020 #
 
  X Finish migration to grind-test
  X Mount a plain object in the graph

@@ -3,7 +3,7 @@ import WebSocket from 'ws'
 import EventEmitter from 'events'
 import RelationReceiver from '../RelationReceiver'
 import { parseRelation } from '../parseCommand'
-import IDSource from '../IDSource'
+import IDSource from '../utils/IDSource'
 
 export type RespondFunc = (msg: string) => void
 

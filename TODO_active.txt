@@ -1,20 +1,9 @@
 
- - Fetch a relation set
- - Organize relations into schema patterns
- - Show a collection of real relations in dashboard
- - Dashboard: Support key events that jump across tables
- X Quoted strings as tag values
- - Server understands file changes
-   - Implement 'increment' command
+Prepare for usage in sfly
+  Publish 'ik-dynamodb' to npm
 
-Pending refactors: 
- - Proper Relation class (instead of Pattern)
- X Change the protocol, use command-meta relations to indicate multi versus
-   single. Remove #start command.
-   X Remove RelationReceiver.start
-     - Remove RelationReceiver.finish?
-     - Express relation streams as input -> output[]
+Support 'async' in DAO generator
 
- X Remove Graph.run (string based)
- X Write new collectRespond that understands command-meta
- X GetResponseFormatter needs to pass through command-meta ?
+Serialize/Deserialize graph as YAML
+
+New tag(value) syntax

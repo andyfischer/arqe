@@ -1,5 +1,5 @@
 
-import IDSource from './IDSource'
+import IDSource from './utils/IDSource'
 import Graph from './Graph'
 import GraphListener from './GraphListenerV3'
 import Relation from './Relation'
