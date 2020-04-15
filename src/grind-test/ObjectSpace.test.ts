@@ -71,12 +71,11 @@ test('implicitly creates an object during attribute assignment', async ({run}) =
     expect(await run('get ot/ot7')).toEqual('#exists');
 });
 
-/*
 test('supports object search by value', async ({run}) => {
     await run('set object-type/ot');
+    await run('set object-type/ot attribute/foo');
     await run('set ot/8 foo/a');
     await run('set ot/9 foo/a');
     await run('set ot/10 foo/b');
-    // expect(await run('get ot/* foo/a')).toEqual(['ot/8', 'ot/9']);
+    expect(await run('get ot/* foo/a')).toEqual(['ot/8', 'ot/9']);
 });
-*/

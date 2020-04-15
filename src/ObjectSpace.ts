@@ -6,6 +6,7 @@ import Relation from './Relation'
 import PatternTag from './PatternTag'
 
 interface Entity {
+    id: string
     attrs: { [name: string]: string }
 }
 
@@ -39,6 +40,7 @@ export default class ObjectSpace {
 
     createObject(id: string) {
         this.objects.set(id, this.objects.get(id) || {
+            id,
             attrs: {}
         });
 

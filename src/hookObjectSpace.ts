@@ -35,21 +35,37 @@ function runObjectStarSearch(graph: Graph, search: RelationSearch, columnTag: Pa
         if (tag.starValue)
             continue;
 
-        filters.push((obj) => obj.attrs === tag.tagValue);
+        filters.push((obj) => {
+            //console.log(`checking ${tag.tagType} ${tag.tagValue} ${JSON.stringify(obj.attrs)}`);
+            return obj.attrs[tag.tagType] === tag.tagValue;
+        });
     }
 
     for (const obj of objectSpace.objects.values()) {
+
+        let match = true;
         for (const filter of filters)
             if (!filter(obj))
-                continue;
+                match = false;
+
+        if (!match)
+            continue;
 
         // Object matches
         const map = new Map();
 
+        //console.log('this object matches: ', JSON.stringify(obj.attrs))
+
         for (const attr of attrsToInclude)
             map.set(attr, obj.attrs[attr]);
 
-        search.relation(patternFromMap(map));
+        map.set(columnTag.tagType, obj.id);
+
+        //console.log('map = ', map);
+
+        const rel = patternFromMap(map);
+        //console.log('object space search found: ' + rel.stringify());
+        search.relation(rel);
     }
 
     search.finish();
