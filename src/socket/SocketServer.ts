@@ -32,6 +32,7 @@ class Connection extends EventEmitter {
 
             const data = JSON.parse(message);
             const { reqid, query } = data;
+            let sentFinish = false;
 
             if (!query) {
                 this.send(null, { reqid, err: "#error protocal error, missing 'query'" });
@@ -46,7 +47,11 @@ class Connection extends EventEmitter {
                     },
                     isDone: () => false,
                     finish: () => {
+                        if (sentFinish)
+                            throw new Error(`saw duplicate 'finish' event`);
+
                         this.send(query, { reqid, finish: true });
+                        sentFinish = true;
                     }
                 });
 

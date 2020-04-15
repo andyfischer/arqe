@@ -71,7 +71,7 @@ function runObjectStarSearch(graph: Graph, search: RelationSearch, columnTag: Pa
     search.finish();
 }
 
-export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
+export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch): boolean {
 
     const columnName = findObjectType(graph, search.pattern);
     if (!columnName)
@@ -82,7 +82,7 @@ export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch) {
 
     if (columnTag.starValue) {
         runObjectStarSearch(graph, search, columnTag, objectSpace);
-        return;
+        return true;
     }
 
     const object = objectSpace.getExistingObject(columnTag.tagValue);
