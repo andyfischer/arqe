@@ -8,7 +8,7 @@ export default class API {
     }
     
     createUniqueConnection() {
-        const queryStr = `set connection/#unique`;
+        const queryStr = `set connection/unique`;
         const rels = this.graph.runCommandChainSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         

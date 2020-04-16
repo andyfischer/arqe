@@ -259,6 +259,9 @@ export class DAOGenerator {
 
         const queryStr = this.api.touchpointQueryString(touchpoint);
 
+        if (!queryStr)
+            throw new Error(`couldn't find query for: ` + touchpoint);
+
         if (queryStr.startsWith('get ')
                 || queryStr.startsWith('set ')
                 || queryStr.startsWith('delete ')) {

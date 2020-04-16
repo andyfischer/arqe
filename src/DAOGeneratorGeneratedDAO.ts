@@ -205,7 +205,7 @@ export default class API {
     }
     
     touchpointQueryString(touchpoint: string): string {
-        const queryStr = `${touchpoint} query`;
+        const queryStr = `${touchpoint} query/*`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         
         // Expect one result
@@ -218,7 +218,7 @@ export default class API {
         }
         
         const rel = rels[0];
-        return rel.getPayload();
+        return rel.getTagValue("query");
     }
     
     getDestinationFilename(target: string): string {

@@ -10,10 +10,6 @@ import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_
     t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen } from './lexer'
 
-function acceptableTagValue(token: Token) {
-    return token.match !== t_space && token.match !== t_newline;
-}
-
 function nextIsPayloadStart(it: TokenIterator) {
     return it.nextIs(t_double_equals);
 }
@@ -49,7 +45,8 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
         starValue = true;
     } else if (it.tryConsume(t_question)) {
         questionValue = true;
-    } else if (it.tryConsume(t_dollar)) {
+    } else if (it.nextIs(t_dollar) && it.nextIs(t_ident, 1)) {
+        it.consume();
         identifier = it.consumeNextUnquotedText();
         starValue = true;
     } else if (it.nextIs(t_lparen)) {
@@ -60,7 +57,10 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
         let iterationCount = 0;
         tagValue = '';
 
-        while (!it.finished() && acceptableTagValue(it.next())) {
+        while (!it.finished()) {
+
+            if ((!parenSyntax) && (it.nextIs(t_space) || it.nextIs(t_newline)))
+                break;
 
             if (parenSyntax && it.nextIs(t_rparen))
                 break;
@@ -69,7 +69,8 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
             if (iterationCount > 1000)
                 throw new Error('too many iterations when parsing tag value');
 
-            tagValue += it.consumeNextUnquotedText();
+            const text = it.consumeNextUnquotedText();
+            tagValue += text;
         }
     }
 

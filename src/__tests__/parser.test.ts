@@ -29,3 +29,11 @@ it('parses new style tags', () => {
     expect(pattern.tags[0].tagType).toEqual('a');
     expect(pattern.tags[0].tagValue).toEqual('b');
 });
+
+it('parses complex expressions inside new style tags', () => {
+    const pattern = parseCommandChain("set touchpoint/0.6 query(${target} touchpoint/*)").commands[0].toPattern();
+    expect(pattern.tags[0].tagType).toEqual('touchpoint');
+    expect(pattern.tags[0].tagValue).toEqual('0.6');
+    expect(pattern.tags[1].tagType).toEqual('query');
+    expect(pattern.tags[1].tagValue).toEqual('${target} touchpoint/*');
+})
