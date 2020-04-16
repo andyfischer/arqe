@@ -55,6 +55,7 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
     } else {
 
         let iterationCount = 0;
+        let parenDepth = 0;
         tagValue = '';
 
         while (!it.finished()) {
@@ -62,8 +63,15 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
             if ((!parenSyntax) && (it.nextIs(t_space) || it.nextIs(t_newline)))
                 break;
 
-            if (parenSyntax && it.nextIs(t_rparen))
-                break;
+            if (parenSyntax && it.nextIs(t_rparen)) {
+                if (parenDepth > 0)
+                    parenDepth--;
+                else
+                    break;
+            }
+
+            if (parenSyntax && it.nextIs(t_lparen))
+                parenDepth += 1;
 
             iterationCount += 1;
             if (iterationCount > 1000)

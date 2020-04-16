@@ -37,3 +37,9 @@ it('parses complex expressions inside new style tags', () => {
     expect(pattern.tags[1].tagType).toEqual('query');
     expect(pattern.tags[1].tagValue).toEqual('${target} touchpoint/*');
 })
+
+it('parses nested parens inside new style tags', () => {
+    const pattern = parseCommandChain("set tag(nested (expr) here)").commands[0].toPattern();
+    expect(pattern.tags[0].tagType).toEqual('tag');
+    expect(pattern.tags[0].tagValue).toEqual('nested (expr) here');
+});
