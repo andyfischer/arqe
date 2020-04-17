@@ -8,28 +8,31 @@ export default class API {
     }
     
     listColumns(spreadsheet: string): string[] {
-        const queryStr = `${spreadsheet} col/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${spreadsheet} col/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTag("col"));
     }
     
     listRows(spreadsheet: string): string[] {
-        const queryStr = `${spreadsheet} row/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${spreadsheet} row/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTag("row"));
     }
     
     colName(col: string): string {
-        const queryStr = `${col} name/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${col} name/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -37,15 +40,16 @@ export default class API {
     }
     
     getCellValue(col: string, row: string): string {
-        const queryStr = `${row} ${col}`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${row} ${col}`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -61,15 +65,16 @@ export default class API {
     }
     
     spreadsheetForView(spreadsheetView: string): string {
-        const queryStr = `${spreadsheetView} spreadsheet/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${spreadsheetView} spreadsheet/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -77,15 +82,16 @@ export default class API {
     }
     
     getSelectedCell(spreadsheetView: string) {
-        const queryStr = `${spreadsheetView} selection col/* row/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${spreadsheetView} selection col/* row/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -113,8 +119,9 @@ export default class API {
     }
     
     isEditing(view: string): boolean {
-        const queryStr = `${view} now-editing`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${view} now-editing`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
 }

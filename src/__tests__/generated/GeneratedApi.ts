@@ -8,16 +8,17 @@ export default class API {
     }
     
     getOneTag(): string {
-        const queryStr = `a/1 b/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get a/1 b/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -25,16 +26,17 @@ export default class API {
     }
     
     getOneTagValue(): string {
-        const queryStr = `a/1 b/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get a/1 b/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -42,16 +44,17 @@ export default class API {
     }
     
     getCurrentFlag(target: string): string {
-        const queryStr = `${target} flag/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${target} flag/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];

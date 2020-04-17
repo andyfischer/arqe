@@ -8,15 +8,16 @@ export default class API {
     }
     
     spreadsheetForView(spreadsheetView: string): string {
-        const queryStr = `${spreadsheetView} spreadsheet/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${spreadsheetView} spreadsheet/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -24,15 +25,16 @@ export default class API {
     }
     
     findKeyForBrowserName(browserName: string): string {
-        const queryStr = `key/* browsername/${browserName}`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get key/* browsername/${browserName}`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -40,15 +42,16 @@ export default class API {
     }
     
     findActionForKey(key: string): string {
-        const queryStr = `${key} action/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${key} action/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -56,16 +59,17 @@ export default class API {
     }
     
     getCurrentView(): string {
-        const queryStr = `current-view spreadsheet-view/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get current-view spreadsheet-view/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -73,16 +77,17 @@ export default class API {
     }
     
     getSpreadsheetSelectionPos(view: string) {
-        const queryStr = `${view} selection col/* row/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${view} selection col/* row/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -94,15 +99,16 @@ export default class API {
     }
     
     getMoveActionDelta(action: string) {
-        const queryStr = `${action} delta-x/* delta-y/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${action} delta-x/* delta-y/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -114,8 +120,9 @@ export default class API {
     }
     
     rowOrColExists(item: string, spreadsheet: string): boolean {
-        const queryStr = `${spreadsheet} ${item}`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${spreadsheet} ${item}`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
@@ -152,22 +159,24 @@ export default class API {
     }
     
     isEditing(view: string): boolean {
-        const queryStr = `${view} now-editing`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${view} now-editing`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
     getInputMode(view: string): string {
-        const queryStr = `${view} input-mode/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${view} input-mode/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];

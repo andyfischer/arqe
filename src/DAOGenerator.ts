@@ -310,14 +310,16 @@ export class DAOGenerator {
             }
         });
 
-        writer.writeLine(`const queryStr = \`${queryStr}\`;`);
+        writer.writeLine(`const command = \`get ${queryStr}\`;`);
 
         if (this.verboseLogging) {
             writer.writeLine();
-            writer.writeLine(`console.log('Running query (for ${name}): ' + queryStr)`);
+            writer.writeLine(`console.log('Running query (for ${name}): ' + command)`);
         }
 
-        writer.writeLine('const rels: Relation[] = this.graph.getRelationsSync(queryStr);');
+        writer.writeLine(`const rels: Relation[] = this.graph.runSync(command)`);
+        writer.writeLine('    .filter(rel => !rel.hasType("command-meta"));');
+        
 
         if (this.verboseLogging) {
             writer.writeLine();
@@ -338,14 +340,14 @@ export class DAOGenerator {
             if (outputIsOptional)
                 writer.writeLine(`return null;`)
             else
-                writer.writeLine(`throw new Error("No relation found for: " + queryStr)`)
+                writer.writeLine(`throw new Error("No relation found for: " + command)`)
 
             writer.decreaseIndent()
             writer.writeLine('}')
             writer.writeLine()
             writer.writeLine('if (rels.length > 1) {')
             writer.increaseIndent()
-            writer.writeLine(`throw new Error("Multiple results found for: " + queryStr)`)
+            writer.writeLine(`throw new Error("Multiple results found for: " + command)`)
             writer.decreaseIndent()
             writer.writeLine('}')
             writer.writeLine()

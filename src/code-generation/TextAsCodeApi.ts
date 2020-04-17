@@ -8,16 +8,17 @@ export default class API {
     }
     
     fromFile(target: string): string {
-        const queryStr = `${target} from-file`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${target} from-file`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -25,16 +26,17 @@ export default class API {
     }
     
     destinationFilename(target: string): string {
-        const queryStr = `${target} destination-filename/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${target} destination-filename/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];

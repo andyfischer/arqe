@@ -8,28 +8,31 @@ export default class API {
     }
     
     listTargets(): string[] {
-        const queryStr = `code-generation/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get code-generation/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTag("code-generation"));
     }
     
     listTouchpoints(target: string): string[] {
-        const queryStr = `${target} touchpoint/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${target} touchpoint/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTag("touchpoint"));
     }
     
     getIkImport(target: string): string {
-        const queryStr = `${target} ik-import/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${target} ik-import/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -37,22 +40,24 @@ export default class API {
     }
     
     enableVerboseLogging(target: string): boolean {
-        const queryStr = `${target} verbose-logging`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${target} verbose-logging`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
     touchpointFunctionName(touchpoint: string): string {
-        const queryStr = `${touchpoint} function-name/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} function-name/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -60,51 +65,58 @@ export default class API {
     }
     
     touchpointExpectOne(touchpoint: string): boolean {
-        const queryStr = `${touchpoint} expectOne`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} expectOne`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
     touchpointIsAsync(touchpoint: string): boolean {
-        const queryStr = `${touchpoint} async`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} async`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
     touchpointOutputIsOptional(touchpoint: string): boolean {
-        const queryStr = `${touchpoint} output optional`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output optional`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
     touchpointOutputIsValue(touchpoint: string): boolean {
-        const queryStr = `${touchpoint} output value`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output value`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
     touchpointOutputIsExists(touchpoint: string): boolean {
-        const queryStr = `${touchpoint} output exists`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output exists`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.length > 0;
     }
     
     touchpointTagValueOutputs(touchpoint: string): string[] {
-        const queryStr = `${touchpoint} output tagValue/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output tagValue/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTagValue("tagValue"));
     }
     
     touchpointTagValueOutput(touchpoint: string): string {
-        const queryStr = `${touchpoint} output tagValue/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output tagValue/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -112,27 +124,30 @@ export default class API {
     }
     
     touchpointTagOutputs(touchpoint: string): string[] {
-        const queryStr = `${touchpoint} output tag/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output tag/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTagValue("tag"));
     }
     
     touchpointTagOutput(touchpoint: string): string[] {
-        const queryStr = `${touchpoint} output tag/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output tag/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTagValue("tag"));
     }
     
     touchpointOutputType(touchpoint: string): string {
-        const queryStr = `${touchpoint} output type/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output type/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -140,21 +155,23 @@ export default class API {
     }
     
     touchpointInputs(touchpoint: string): string[] {
-        const queryStr = `${touchpoint} input/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} input/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTag("input"));
     }
     
     inputTagType(input: string): string {
-        const queryStr = `${input} tagType/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${input} tagType/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -162,16 +179,17 @@ export default class API {
     }
     
     inputName(input: string): string {
-        const queryStr = `${input} name/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${input} name/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -179,15 +197,16 @@ export default class API {
     }
     
     inputSortOrder(input: string): string {
-        const queryStr = `${input} sortOrder/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${input} sortOrder/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -195,15 +214,16 @@ export default class API {
     }
     
     inputType(input: string): string {
-        const queryStr = `${input} type/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${input} type/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -211,16 +231,17 @@ export default class API {
     }
     
     touchpointQueryString(touchpoint: string): string {
-        const queryStr = `${touchpoint} query/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} query/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -228,16 +249,17 @@ export default class API {
     }
     
     getDestinationFilename(target: string): string {
-        const queryStr = `${target} destination-filename/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${target} destination-filename/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -245,16 +267,17 @@ export default class API {
     }
     
     getOutputObjectdef(touchpoint: string): string {
-        const queryStr = `${touchpoint} output objectdef/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output objectdef/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -262,21 +285,23 @@ export default class API {
     }
     
     getObjectdefFields(objectdef: string): string[] {
-        const queryStr = `${objectdef} objectfield/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${objectdef} objectfield/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         return rels.map(rel => rel.getTag("objectdef"));
     }
     
     touchpointOutputObject(touchpoint: string): string {
-        const queryStr = `${touchpoint} output output-object/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${touchpoint} output output-object/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
             return null;
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -284,8 +309,9 @@ export default class API {
     }
     
     outputObjectFields(outputObject: string) {
-        const queryStr = `${outputObject} field/* tagValue/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${outputObject} field/* tagValue/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
@@ -294,8 +320,9 @@ export default class API {
     }
     
     outputObjectTagFields(outputObject: string) {
-        const queryStr = `${outputObject} field/* tag/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${outputObject} field/* tag/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
@@ -304,8 +331,9 @@ export default class API {
     }
     
     outputObjectTagValueFields(outputObject: string) {
-        const queryStr = `${outputObject} field/* tagValue/*`;
-        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        const command = `get ${outputObject} field/* tagValue/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
         
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
