@@ -60,7 +60,7 @@ export default class API {
     
     getUsingCommandChain(target: string) {
         const queryStr = `get ${target} flag/*`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
@@ -79,7 +79,7 @@ export default class API {
     
     changeFlag(target: string, val: string) {
         const queryStr = `delete ${target} flag/* | set ${target} flag/${val}`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results

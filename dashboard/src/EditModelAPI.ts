@@ -121,7 +121,7 @@ export default class API {
     
     clearSelection(spreadsheet: string) {
         const queryStr = `delete ${spreadsheet} selection row/* col/*`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -129,7 +129,7 @@ export default class API {
     
     setSelection(view: string, col: string, row: string) {
         const queryStr = `set ${view} selection ${row} ${col}`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -137,7 +137,7 @@ export default class API {
     
     startEditing(view: string) {
         const queryStr = `set ${view} now-editing`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -145,7 +145,7 @@ export default class API {
     
     stopEditing(view: string) {
         const queryStr = `delete ${view} now-editing`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -180,7 +180,7 @@ export default class API {
         }
         
         const queryStr = `delete ${view} input-mode/* | set ${view} ${inputMode}`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -188,7 +188,7 @@ export default class API {
     
     findActionForKeyInMode(view: string, key: string) {
         const queryStr = `get ${view} input-mode/$m | join ${key} action/* active-for-mode input-mode/$m`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {

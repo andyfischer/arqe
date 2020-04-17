@@ -9,7 +9,7 @@ export default class API {
     
     createUniqueConnection() {
         const queryStr = `set connection/unique`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
@@ -28,7 +28,7 @@ export default class API {
     
     deleteConnection(connection: string) {
         const queryStr = `delete ${connection}`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results

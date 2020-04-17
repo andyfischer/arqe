@@ -133,10 +133,10 @@ export class DAOGenerator {
 
         writer.writeLine(`const queryStr = \`${queryStr}\`;`);
         if (usesOutput) {
-            writer.writeLine('const rels = this.graph.runCommandChainSync(queryStr)')
+            writer.writeLine('const rels = this.graph.runSync(queryStr)')
             writer.writeLine('    .filter(rel => !rel.hasType("command-meta"));');
         } else {
-            writer.writeLine('this.graph.runCommandChainSync(queryStr);')
+            writer.writeLine('this.graph.runSync(queryStr);')
         }
         writer.writeLine();
 

@@ -54,7 +54,7 @@ export default class API {
     
     setCellValue(col: string, row: string, value: string) {
         const queryStr = `delete ${row} ${col} | set ${row} ${col} == ${value}`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -98,7 +98,7 @@ export default class API {
     
     clearSelection(spreadsheet: string) {
         const queryStr = `delete ${spreadsheet} selection row/* col/*`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -106,7 +106,7 @@ export default class API {
     
     setSelection(view: string, col: string, row: string) {
         const queryStr = `set ${view} selection ${row} ${col}`;
-        const rels = this.graph.runCommandChainSync(queryStr)
+        const rels = this.graph.runSync(queryStr)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
