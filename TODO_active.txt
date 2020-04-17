@@ -1,9 +1,10 @@
 
 Prepare for usage in sfly
-  Publish 'ik-dynamodb' to npm
 
 Support 'async' in DAO generator
 
 Serialize/Deserialize graph as YAML
 
 X New tag(value) syntax
+
+Publish 'ik-dynamodb' to npm

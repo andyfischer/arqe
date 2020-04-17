@@ -5,36 +5,36 @@ set typeinfo/testcase order(before)
 set typeinfo/typeinfo order(before)
 set typeinfo/branch order(after)
     
-set code-generation/1
-set code-generation/1 destination-filename(src/DAOGeneratorGeneratedDAO.ts)
-set code-generation/1 ik-import(.)
-set code-generation/1 strategy/dao-api
-# set code-generation/1 verbose-logging
+set code-generation/dao
+set code-generation/dao destination-filename(src/DAOGeneratorGeneratedDAO.ts)
+set code-generation/dao ik-import(.)
+set code-generation/dao strategy/dao-api
+# set code-generation/dao verbose-logging
 
-set code-generation/1 touchpoint/0.5
+set code-generation/dao touchpoint/0.5
 set touchpoint/0.5 function-name(listTargets)
 set touchpoint/0.5 query(code-generation/*)
 set touchpoint/0.5 output tag/code-generation
 
-set code-generation/1 touchpoint/0.5
+set code-generation/dao touchpoint/0.5
 set touchpoint/0.5 function-name(listTargets)
 set touchpoint/0.5 query(code-generation/*)
 set touchpoint/0.5 output tag/code-generation
 
-set code-generation/1 touchpoint/0.6
+set code-generation/dao touchpoint/0.6
 set touchpoint/0.6 function-name(listTouchpoints)
 set touchpoint/0.6 query(\${target} touchpoint/*)
 set touchpoint/0.6 output tag/touchpoint
 set touchpoint/0.6 input/0.5
 
-set code-generation/1 touchpoint/0.8
+set code-generation/dao touchpoint/0.8
 set touchpoint/0.8 function-name(getIkImport)
 set touchpoint/0.8 query(\${target} ik-import/*)
 set touchpoint/0.8 output tagValue/ik-import
 set touchpoint/0.8 expectOne
 set touchpoint/0.8 input/0.5
 
-set code-generation/1 touchpoint/1
+set code-generation/dao touchpoint/1
 set touchpoint/1 function-name(enableVerboseLogging)
 set touchpoint/1 output exists
 set touchpoint/1 query(\${target} verbose-logging)
@@ -42,7 +42,7 @@ set touchpoint/1 input/0.5
 set input/0.5 name/target
 set input/0.5 type/string
 
-set code-generation/1 touchpoint/3
+set code-generation/dao touchpoint/3
 set touchpoint/3 query(\${touchpoint} function-name/*)
 set touchpoint/3 function-name(touchpointFunctionName)
 set touchpoint/3 input/1
@@ -52,7 +52,7 @@ set input/1 type/string
 set touchpoint/3 output tagValue/function-name
 set touchpoint/3 expectOne
 
-set code-generation/1 touchpoint/4
+set code-generation/dao touchpoint/4
 set touchpoint/4 query(\${touchpoint} expectOne)
 set touchpoint/4 function-name(touchpointExpectOne)
 set touchpoint/4 input/2
@@ -60,7 +60,15 @@ set input/2 name/touchpoint
 set input/2 type/string
 set touchpoint/4 output exists
 
-set code-generation/1 touchpoint/4.1
+set code-generation/dao touchpoint/isAsync
+set touchpoint/isAsync query(\${touchpoint} async)
+set touchpoint/isAsync function-name(touchpointIsAsync)
+set touchpoint/isAsync input/2
+set input/2 name/touchpoint
+set input/2 type/string
+set touchpoint/isAsync output exists
+
+set code-generation/dao touchpoint/4.1
 set touchpoint/4.1 query(\${touchpoint} output optional)
 set touchpoint/4.1 function-name(touchpointOutputIsOptional)
 set touchpoint/4.1 input/2
@@ -68,7 +76,7 @@ set input/2 name/touchpoint
 set input/2 type/string
 set touchpoint/4.1 output exists
 
-set code-generation/1 touchpoint/5
+set code-generation/dao touchpoint/5
 set touchpoint/5 query(\${touchpoint} output value)
 set touchpoint/5 function-name(touchpointOutputIsValue)
 set touchpoint/5 input/3
@@ -76,7 +84,7 @@ set input/3 name/touchpoint
 set input/3 type/string
 set touchpoint/5 output exists
 
-set code-generation/1 touchpoint/6
+set code-generation/dao touchpoint/6
 set touchpoint/6 query(\${touchpoint} output exists)
 set touchpoint/6 function-name(touchpointOutputIsExists)
 set touchpoint/6 input/4
@@ -84,7 +92,7 @@ set input/4 name/touchpoint
 set input/4 type/string
 set touchpoint/6 output exists
 
-set code-generation/1 touchpoint/7
+set code-generation/dao touchpoint/7
 set touchpoint/7 query(\${touchpoint} output tagValue/*)
 set touchpoint/7 function-name(touchpointTagValueOutputs)
 set touchpoint/7 input/5
@@ -92,7 +100,7 @@ set touchpoint/7 output tagValue/tagValue
 set input/5 name/touchpoint
 set input/5 type/string
 
-set code-generation/1 touchpoint/7.1
+set code-generation/dao touchpoint/7.1
 set touchpoint/7.1 query(\${touchpoint} output tagValue/*)
 set touchpoint/7.1 function-name(touchpointTagValueOutput)
 set touchpoint/7.1 input/5
@@ -102,7 +110,7 @@ set touchpoint/7.1 expectOne
 set input/5 name/touchpoint
 set input/5 type/string
 
-set code-generation/1 touchpoint/8
+set code-generation/dao touchpoint/8
 set touchpoint/8 query(\${touchpoint} output tag/*)
 set touchpoint/8 function-name(touchpointTagOutputs)
 set touchpoint/8 input/6
@@ -110,7 +118,7 @@ set touchpoint/8 output tagValue/tag
 set input/6 name/touchpoint
 set input/6 type/string
 
-set code-generation/1 touchpoint/8.1
+set code-generation/dao touchpoint/8.1
 set touchpoint/8.1 query(\${touchpoint} output tag/*)
 set touchpoint/8.1 function-name(touchpointTagOutput)
 set touchpoint/8.1 input/6
@@ -119,7 +127,7 @@ set touchpoint/8.1 output optional
 set input/6 name/touchpoint
 set input/6 type/string
 
-set code-generation/1 touchpoint/9
+set code-generation/dao touchpoint/9
 set touchpoint/9 query(\${touchpoint} output type/*)
 set touchpoint/9 function-name(touchpointOutputType)
 set touchpoint/9 input/7
@@ -129,7 +137,7 @@ set touchpoint/9 expectOne
 set input/7 name/touchpoint
 set input/7 type/string
 
-set code-generation/1 touchpoint/10
+set code-generation/dao touchpoint/10
 set touchpoint/10 query(\${touchpoint} input/*)
 set touchpoint/10 function-name(touchpointInputs)
 set touchpoint/10 output tag/input
@@ -138,7 +146,7 @@ set touchpoint/10 input/touchpoint
 set input/touchpoint name/touchpoint
 set input/touchpoint type/string
 
-set code-generation/1 touchpoint/10.5
+set code-generation/dao touchpoint/10.5
 set touchpoint/10.5 query(\${input} tagType/*)
 set touchpoint/10.5 function-name(inputTagType)
 set touchpoint/10.5 expectOne
@@ -146,7 +154,7 @@ set touchpoint/10.5 output tagValue/tagType
 set touchpoint/10.5 output optional
 set touchpoint/10.5 input/input
 
-set code-generation/1 touchpoint/11
+set code-generation/dao touchpoint/11
 set touchpoint/11 query(\${input} name/*)
 set touchpoint/11 function-name(inputName)
 set touchpoint/11 output tagValue/name
@@ -157,7 +165,7 @@ set input/input name/input
 set input/input type/string
 set input/input tagType/input
 
-set code-generation/1 touchpoint/11.5
+set code-generation/dao touchpoint/11.5
 set touchpoint/11.5 query(\${input} sortOrder/*)
 set touchpoint/11.5 function-name(inputSortOrder)
 set touchpoint/11.5 output tagValue/sortOrder
@@ -165,7 +173,7 @@ set touchpoint/11.5 input/input
 set touchpoint/11.5 expectOne
 set touchpoint/11.5 output optional
 
-set code-generation/1 touchpoint/12
+set code-generation/dao touchpoint/12
 set touchpoint/12 query(\${input} type/*)
 set touchpoint/12 function-name(inputType)
 set touchpoint/12 output tagValue/type
@@ -175,7 +183,7 @@ set touchpoint/12 expectOne
 set input/12 name/input
 set input/12 type/string
 
-set code-generation/1 touchpoint/13
+set code-generation/dao touchpoint/13
 set touchpoint/13 query(\${touchpoint} query/*)
 set touchpoint/13 function-name(touchpointQueryString)
 set touchpoint/13 output tagValue/query
@@ -184,7 +192,7 @@ set touchpoint/13 expectOne
 set input/13 name/touchpoint
 set input/13 type/string
 
-set code-generation/1 touchpoint/14.1
+set code-generation/dao touchpoint/14.1
 set touchpoint/14.1 query(\${target} destination-filename/*)
 set touchpoint/14.1 function-name(getDestinationFilename)
 set touchpoint/14.1 output tagValue/destination-filename
@@ -194,7 +202,7 @@ set touchpoint/14.1 input/14.1
 set input/14.1 name/target
 set input/14.1 type/string
 
-set code-generation/1 touchpoint/15
+set code-generation/dao touchpoint/15
 set touchpoint/15 query(\${touchpoint} output objectdef/*)
 set touchpoint/15 function-name(getOutputObjectdef)
 set touchpoint/15 output tag/objectdef
@@ -204,7 +212,7 @@ set touchpoint/15 input/15
 set input/15 name/touchpoint
 set input/15 type/string
 
-set code-generation/1 touchpoint/16
+set code-generation/dao touchpoint/16
 set touchpoint/16 query(\${objectdef} objectfield/*)
 set touchpoint/16 function-name(getObjectdefFields)
 set touchpoint/16 output tag/objectdef
@@ -271,7 +279,7 @@ set touchpoint/socket2 input/connection
 set input/connection name/connection
 set input/connection type/string
 
-set code-generation/1 touchpoint/20
+set code-generation/dao touchpoint/20
 set touchpoint/20 function-name(touchpointOutputObject)
 set touchpoint/20 query(\${touchpoint} output output-object/*)
 set touchpoint/20 output tag/output-object
@@ -282,7 +290,7 @@ set touchpoint/20 input/touchpoint
 set input/output-object name/outputObject
 set input/output-object type/string
 
-set code-generation/1 touchpoint/22
+set code-generation/dao touchpoint/22
 set touchpoint/22 function-name(outputObjectFields)
 set touchpoint/22 query(\${outputObject} field/* tagValue/*)
 set touchpoint/22 input/output-object
@@ -291,7 +299,7 @@ set touchpoint/22 output output-object/field-tag
 set output-object/field-tag field/field tagValue/field
 set output-object/field-tag field/tagValue tagValue/tagValue
 
-set code-generation/1 touchpoint/23
+set code-generation/dao touchpoint/23
 set touchpoint/23 function-name(outputObjectTagFields)
 set touchpoint/23 query(\${outputObject} field/* tag/*)
 set touchpoint/23 input/output-object
@@ -300,7 +308,7 @@ set touchpoint/23 output output-object/field-tag2
 set output-object/field-tag2 field/field tagValue/field
 set output-object/field-tag2 field/tag tagValue/tag
 
-set code-generation/1 touchpoint/24
+set code-generation/dao touchpoint/24
 set touchpoint/24 function-name(outputObjectTagValueFields)
 set touchpoint/24 query(\${outputObject} field/* tagValue/*)
 set touchpoint/24 input/output-object
@@ -587,6 +595,11 @@ set touchpoint/db20 input/key
 set touchpoint/db20 expectOne
 set touchpoint/db20 output optional
 set touchpoint/db20 output tag/action
+
+set code-generation/watch-file
+set code-generation/watch-file destination-filename(src/WatchFileApi.ts)
+set code-generation/watch-file ik-import(.)
+set code-generation/watch-file strategy/dao-api
 
 set input/row name/row
 set input/row type/string

@@ -1,9 +1,9 @@
-import { Graph, Relation } from 'ik'
+import { GraphLike, Relation } from 'ik'
 
 export default class API {
-    graph: Graph
+    graph: GraphLike
 
-    constructor(graph: Graph) {
+    constructor(graph: GraphLike) {
         this.graph = graph;
     }
     

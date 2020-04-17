@@ -5,12 +5,12 @@ import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
 
 function javascriptTemplate(vars) {
     return (
-`import { Graph, Relation } from '${vars.ikImport}'
+`import { GraphLike, Relation } from '${vars.ikImport}'
 
 export default class API {
-    graph: Graph
+    graph: GraphLike
 
-    constructor(graph: Graph) {
+    constructor(graph: GraphLike) {
         this.graph = graph;
     }
 ${vars.methodSource}
@@ -271,6 +271,7 @@ export class DAOGenerator {
 
         const name = this.api.touchpointFunctionName(touchpoint);
         const expectOne = this.api.touchpointExpectOne(touchpoint);
+        const isAsync = this.api.touchpointIsAsync(touchpoint);
         const outputIsOptional = this.api.touchpointOutputIsOptional(touchpoint);
         const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
         const outputObject = this.api.touchpointOutputObject(touchpoint);

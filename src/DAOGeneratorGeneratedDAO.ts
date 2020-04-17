@@ -1,9 +1,9 @@
-import { Graph, Relation } from '.'
+import { GraphLike, Relation } from '.'
 
 export default class API {
-    graph: Graph
+    graph: GraphLike
 
-    constructor(graph: Graph) {
+    constructor(graph: GraphLike) {
         this.graph = graph;
     }
     
@@ -61,6 +61,12 @@ export default class API {
     
     touchpointExpectOne(touchpoint: string): boolean {
         const queryStr = `${touchpoint} expectOne`;
+        const rels: Relation[] = this.graph.getRelationsSync(queryStr);
+        return rels.length > 0;
+    }
+    
+    touchpointIsAsync(touchpoint: string): boolean {
+        const queryStr = `${touchpoint} async`;
         const rels: Relation[] = this.graph.getRelationsSync(queryStr);
         return rels.length > 0;
     }
