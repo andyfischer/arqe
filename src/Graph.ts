@@ -226,7 +226,7 @@ export default class Graph {
             throw new Error(error.getPayload())
     }
 
-    runSync(commandStr: string) {
+    runSyncOld(commandStr: string) {
         let result = null;
 
         const receiver = receiveToStringList(r => { result = r; });
@@ -237,6 +237,10 @@ export default class Graph {
             throw new Error("command didn't have sync response in runSync");
 
         return result;
+    }
+
+    runSync(commandStr: string): Relation[] {
+        return this.runCommandChainSync(commandStr);
     }
 
     runCommandChainSync(commandStr: string): Relation[] {
@@ -339,7 +343,7 @@ export default class Graph {
     }
     
     saveDumpFile(filename: string) {
-        const contents = (this.runSync('dump') as string[]).join('\n');
+        const contents = (this.runSyncOld('dump') as string[]).join('\n');
         Fs.writeFileSync(filename, contents);
     }
 

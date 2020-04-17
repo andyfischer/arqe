@@ -30,7 +30,7 @@ export default class FilesystemMounts {
     regenerateMounts() {
         const mounts = {};
 
-        const mountKeys = this.graph.runSync("get filesystem-mount/*");
+        const mountKeys = this.graph.runSyncOld("get filesystem-mount/*");
 
         for (const mountKey of mountKeys) {
             if (!mountKey.startsWith("filesystem-mount"))
@@ -38,7 +38,7 @@ export default class FilesystemMounts {
 
             const options: any = {};
             
-            for (const res of this.graph.runSync(`get ${mountKey} option/*`)) {
+            for (const res of this.graph.runSyncOld(`get ${mountKey} option/*`)) {
                 const rel = parseRelation(res);
 
                 options[rel.getTagValue("option") as string] = rel.getPayload();

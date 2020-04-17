@@ -16,7 +16,7 @@ it('correctly joins with a has-skill', () => {
 
         const teamId = team.getTagValue('team');
 
-        const result = graph.runSync(`get ${teamId} unit/$a | join unit/$a has-skill/Revive`);
+        const result = graph.runSyncOld(`get ${teamId} unit/$a | join unit/$a has-skill/Revive`);
         joinResults = joinResults.concat(result);
     }
 

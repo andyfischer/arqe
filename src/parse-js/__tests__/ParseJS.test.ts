@@ -15,6 +15,6 @@ describe('parseSourceIntoGraph', () => {
         parseSourceIntoGraph(graph, testCode);
 
         // No parse errors
-        expect(graph.runSync('get parseerror/*')).toEqual([]);
+        expect(graph.runSyncOld('get parseerror/*')).toEqual([]);
     });
 });
