@@ -18,6 +18,11 @@ ${vars.methodSource}
 `);
 }
 
+interface InputDef {
+    name: string
+    inputType?: string
+}
+
 class JavascriptCodeWriter {
     writeOut: (s: string) => void
 
@@ -63,7 +68,36 @@ class JavascriptCodeWriter {
         return this;
     }
 
-    writeInput(name: string, typeName?: string) {
+    defineMethod2(opts: { name: string, outputType?: string, isAsync?: boolean, inputs: InputDef[] }) {
+        this.line();
+        this.startNewLine()
+
+        if (opts.isAsync)
+            this.writeOut('async ');
+
+        this.writeOut(opts.name);
+        this.writeOut('(');
+
+        this.writeOut(opts.inputs.map(input => {
+            let str = input.name;
+            if (input.inputType)
+                str += ': ' + input.inputType;
+            return str;
+        }).join(', '));
+        this.writeOut(')');
+
+        if (opts.outputType) {
+            this.writeOut(': ');
+            this.writeOut(opts.outputType);
+        }
+
+        this.writeOut(' {');
+        this.indent();
+
+        return this;
+    }
+
+    input(name: string, typeName?: string) {
         if (this.inputsNeedComma)
             this.writeOut(', ')
 
@@ -95,6 +129,10 @@ class JavascriptCodeWriter {
         this.indent();
         return this;
     }
+
+    comment(s: string) {
+        this.line(`// ${s}`)
+    }
 }
 
 export class DAOGenerator {
@@ -125,7 +163,7 @@ export class DAOGenerator {
                 const inputType = this.api.inputType(input);
 
                 if (inputType)
-                    writer.writeInput(name, inputType)
+                    writer.input(name, inputType)
             }
         });
 
@@ -135,8 +173,7 @@ export class DAOGenerator {
             if (tagType) {
                 writer.If(`!${name}.startsWith("${tagType}/")`)
                     .line(`throw new Error('Expected "${tagType}/...", saw: ' + ${name});`)
-                    .unindent()
-                    .line('}')
+                    .endBlock()
                     .line();
             }
         }
@@ -164,19 +201,17 @@ export class DAOGenerator {
             if (!outputIsOptional)
                 writer.line('// Expect one result')
 
-            writer.line('if (rels.length === 0) {')
-            writer.indent()
+            writer.If('rels.length === 0')
 
             if (outputIsOptional)
                 writer.line(`return null;`)
             else
                 writer.line(`throw new Error("No relation found for: " + queryStr)`)
 
-            writer.unindent()
-            writer.line('}')
-            writer.line()
-            writer.line('if (rels.length > 1) {')
-                .indent()
+            writer.endBlock();
+            writer.line();
+
+            writer.If('rels.length > 1')
                 .line(`throw new Error("Multiple results found for: " + queryStr)`)
                 .unindent()
                 .line('}')
@@ -226,7 +261,7 @@ export class DAOGenerator {
             return;
         }
 
-        writer.line('// no output')
+        writer.comment('no output')
     }
 
     returnResult(writer: JavascriptCodeWriter, touchpoint: string) {
@@ -265,6 +300,52 @@ export class DAOGenerator {
         return entries.map(entry => entry.input);
     }
 
+    getTouchpointOutputType(touchpoint: string) {
+        const outputExists = this.api.touchpointOutputIsExists(touchpoint);
+        const outputType = this.api.touchpointOutputType(touchpoint);
+        const expectOne = this.api.touchpointExpectOne(touchpoint);
+        const isAsync = this.api.touchpointIsAsync(touchpoint);
+        const outputObject = this.api.touchpointOutputObject(touchpoint);
+
+        if (outputExists)
+            return 'boolean';
+
+        let outputTypeStr = null;
+
+        if (outputType) {
+            outputTypeStr = outputType;
+        } else if (outputObject) {
+            outputTypeStr = null;
+        } else {
+            outputTypeStr = 'string'
+        }
+
+        if (!expectOne && outputTypeStr !== null)
+            outputTypeStr += '[]'
+
+        if (isAsync)
+            outputTypeStr = `Promise<${outputTypeStr}>`;
+
+        return outputTypeStr;
+    }
+
+    startTouchpointMethod(writer: JavascriptCodeWriter, touchpoint: string) {
+        let outputTypeStr = this.getTouchpointOutputType(touchpoint);
+
+        writer.defineMethod(name, outputTypeStr, writer => {
+
+            const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
+
+            for (const input of inputs) {
+                const name = this.api.inputName(input);
+                const inputType = this.api.inputType(input);
+
+                if (inputType)
+                    writer.input(name, inputType)
+            }
+        });
+    }
+
     generateMethod(writer: JavascriptCodeWriter, touchpoint: string) {
 
         const queryStr = this.api.touchpointQueryString(touchpoint);
@@ -290,35 +371,7 @@ export class DAOGenerator {
         const tagOutput = this.api.touchpointTagOutput(touchpoint);
         const outputType = this.api.touchpointOutputType(touchpoint);
 
-        let outputTypeStr = null;
-
-        if (outputExists) {
-            outputTypeStr = 'boolean'
-        } else {
-            if (outputType) {
-                outputTypeStr = outputType;
-            } else if (outputObject) {
-                outputTypeStr = null;
-            } else {
-                outputTypeStr = 'string'
-            }
-
-            if (!expectOne && outputTypeStr !== null)
-                outputTypeStr += '[]'
-        }
-
-        writer.defineMethod(name, outputTypeStr, writer => {
-
-            const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
-
-            for (const input of inputs) {
-                const name = this.api.inputName(input);
-                const inputType = this.api.inputType(input);
-
-                if (inputType)
-                    writer.writeInput(name, inputType)
-            }
-        });
+        this.startTouchpointMethod(writer, touchpoint);
 
         writer.line(`const command = \`get ${queryStr}\`;`);
 
