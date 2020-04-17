@@ -19,70 +19,81 @@ ${vars.methodSource}
 }
 
 class JavascriptCodeWriter {
-    out: (s: string) => void
+    writeOut: (s: string) => void
 
     needsNewline = false
     inputsNeedComma = false
     indentLevel: number
 
-    increaseIndent() {
+    indent() {
         this.indentLevel += 1;
+        return this;
     }
 
-    decreaseIndent() {
+    unindent() {
         this.indentLevel -= 1;
+        return this;
     }
 
     startNewLine() {
         if (this.needsNewline)
-            this.out('\n');
+            this.writeOut('\n');
 
         for (let i = 0; i < this.indentLevel; i++)
-            this.out('    ')
+            this.writeOut('    ')
 
         this.needsNewline = true;
     }
 
-    startFunction(funcName: string, outputType: string | null, writeInputs: (writer: JavascriptCodeWriter) => void) {
-        this.writeLine()
+    defineMethod(funcName: string, outputType: string | null, writeInputs: (writer: JavascriptCodeWriter) => void) {
+        this.line()
         this.startNewLine()
-        this.out(funcName);
+        this.writeOut(funcName);
 
-        this.out('(')
+        this.writeOut('(')
         writeInputs(this)
         this.inputsNeedComma = false;
-        this.out(')')
+        this.writeOut(')')
         if (outputType) {
-            this.out(': ')
-            this.out(outputType);
+            this.writeOut(': ')
+            this.writeOut(outputType);
         }
-        this.out(' {')
+        this.writeOut(' {')
         this.indentLevel += 1;
+        return this;
     }
 
     writeInput(name: string, typeName?: string) {
         if (this.inputsNeedComma)
-            this.out(', ')
+            this.writeOut(', ')
 
-        this.out(name);
+        this.writeOut(name);
 
         if (typeName) {
-            this.out(': ')
-            this.out(typeName);
+            this.writeOut(': ')
+            this.writeOut(typeName);
         }
 
         this.inputsNeedComma = true;
     }
 
-    finishFunction() {
+    endBlock() {
         this.indentLevel -= 1;
         this.startNewLine()
-        this.out('}')
+        this.writeOut('}')
+        return this;
     }
 
-    writeLine(line: string = '') {
+    line(line: string = '') {
         this.startNewLine()
-        this.out(line);
+        this.writeOut(line);
+        return this;
+    }
+
+    If(condition: string) {
+        this.line(`if (${condition}) {`);
+        this.indent();
+        return this;
     }
 }
 
@@ -108,7 +119,7 @@ export class DAOGenerator {
 
         const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
 
-        writer.startFunction(name, null, writer => {
+        writer.defineMethod(name, null, writer => {
             for (const input of inputs) {
                 const name = this.api.inputName(input);
                 const inputType = this.api.inputType(input);
@@ -122,28 +133,27 @@ export class DAOGenerator {
             const name = this.api.inputName(input);
             const tagType = this.api.inputTagType(input);
             if (tagType) {
-                writer.writeLine(`if (!${name}.startsWith("${tagType}/")) {`);
-                writer.increaseIndent();
-                writer.writeLine(`throw new Error('Expected "${tagType}/...", saw: ' + ${name});`);
-                writer.decreaseIndent();
-                writer.writeLine('}')
-                writer.writeLine()
+                writer.If(`!${name}.startsWith("${tagType}/")`)
+                    .line(`throw new Error('Expected "${tagType}/...", saw: ' + ${name});`)
+                    .unindent()
+                    .line('}')
+                    .line();
             }
         }
 
-        writer.writeLine(`const queryStr = \`${queryStr}\`;`);
+        writer.line(`const queryStr = \`${queryStr}\`;`);
         if (usesOutput) {
-            writer.writeLine('const rels = this.graph.runSync(queryStr)')
-            writer.writeLine('    .filter(rel => !rel.hasType("command-meta"));');
+            writer.line('const rels = this.graph.runSync(queryStr)')
+            writer.line('    .filter(rel => !rel.hasType("command-meta"));');
         } else {
-            writer.writeLine('this.graph.runSync(queryStr);')
+            writer.line('this.graph.runSync(queryStr);')
         }
-        writer.writeLine();
+        writer.line();
 
         this.relationCountGuards(writer, touchpoint);
         this.returnResult(writer, touchpoint);
 
-        writer.finishFunction();
+        writer.endBlock();
     }
 
     relationCountGuards(writer: JavascriptCodeWriter, touchpoint: string) {
@@ -152,27 +162,27 @@ export class DAOGenerator {
 
         if (expectOne) {
             if (!outputIsOptional)
-                writer.writeLine('// Expect one result')
+                writer.line('// Expect one result')
 
-            writer.writeLine('if (rels.length === 0) {')
-            writer.increaseIndent()
+            writer.line('if (rels.length === 0) {')
+            writer.indent()
 
             if (outputIsOptional)
-                writer.writeLine(`return null;`)
+                writer.line(`return null;`)
             else
-                writer.writeLine(`throw new Error("No relation found for: " + queryStr)`)
+                writer.line(`throw new Error("No relation found for: " + queryStr)`)
 
-            writer.decreaseIndent()
-            writer.writeLine('}')
-            writer.writeLine()
-            writer.writeLine('if (rels.length > 1) {')
-            writer.increaseIndent()
-            writer.writeLine(`throw new Error("Multiple results found for: " + queryStr)`)
-            writer.decreaseIndent()
-            writer.writeLine('}')
-            writer.writeLine()
-            writer.writeLine('const rel = rels[0];');
-            writer.writeLine()
+            writer.unindent()
+            writer.line('}')
+            writer.line()
+            writer.line('if (rels.length > 1) {')
+                .indent()
+                .line(`throw new Error("Multiple results found for: " + queryStr)`)
+                .unindent()
+                .line('}')
+                .line()
+                .line('const rel = rels[0];')
+                .line();
         }
     }
 
@@ -180,43 +190,43 @@ export class DAOGenerator {
         const outputIsValue = this.api.touchpointOutputIsValue(touchpoint);
 
         if (outputIsValue) {
-            writer.writeLine('return rel.getPayload();');
+            writer.line('return rel.getPayload();');
             return;
         }
 
         const outputObject = this.api.touchpointOutputObject(touchpoint);
 
         if (outputObject) {
-            writer.writeLine();
-            writer.writeLine('return {');
-            writer.increaseIndent();
+            writer.line();
+            writer.line('return {');
+            writer.indent();
 
             for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
-                writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
+                writer.line(`${field}: rel.getTagValue("${tagValue}"),`);
             }
             
             for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
-                writer.writeLine(`${field}: rel.getTag("${tag}"),`);
+                writer.line(`${field}: rel.getTag("${tag}"),`);
             }
 
-            writer.decreaseIndent();
-            writer.writeLine('}');
+            writer.unindent();
+            writer.line('}');
             return;
         }
 
         const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
         if (tagValueOutput) {
-            writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
+            writer.line(`return rel.getTagValue("${tagValueOutput}");`)
             return;
         }
 
         const tagOutput = this.api.touchpointTagOutput(touchpoint);
         if (tagOutput) {
-            writer.writeLine(`return rel.getTag("${tagOutput}");`);
+            writer.line(`return rel.getTag("${tagOutput}");`);
             return;
         }
 
-        writer.writeLine('// no output')
+        writer.line('// no output')
     }
 
     returnResult(writer: JavascriptCodeWriter, touchpoint: string) {
@@ -225,7 +235,7 @@ export class DAOGenerator {
         if (expectOne)
             return this.returnOneResult(writer, touchpoint);
 
-        writer.writeLine('// TODO - handle multi results')
+        writer.line('// TODO - handle multi results')
     }
 
     sortInputs(inputs: string[]) {
@@ -297,7 +307,7 @@ export class DAOGenerator {
                 outputTypeStr += '[]'
         }
 
-        writer.startFunction(name, outputTypeStr, writer => {
+        writer.defineMethod(name, outputTypeStr, writer => {
 
             const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
 
@@ -310,75 +320,75 @@ export class DAOGenerator {
             }
         });
 
-        writer.writeLine(`const command = \`get ${queryStr}\`;`);
+        writer.line(`const command = \`get ${queryStr}\`;`);
 
         if (this.verboseLogging) {
-            writer.writeLine();
-            writer.writeLine(`console.log('Running query (for ${name}): ' + command)`);
+            writer.line();
+            writer.line(`console.log('Running query (for ${name}): ' + command)`);
         }
 
-        writer.writeLine(`const rels: Relation[] = this.graph.runSync(command)`);
-        writer.writeLine('    .filter(rel => !rel.hasType("command-meta"));');
+        writer.line(`const rels: Relation[] = this.graph.runSync(command)`);
+        writer.line('    .filter(rel => !rel.hasType("command-meta"));');
         
 
         if (this.verboseLogging) {
-            writer.writeLine();
-            writer.writeLine(`console.log('Got results: [' + rels.map(rel => rel.str()).join(', ') + ']')`)
+            writer.line();
+            writer.line(`console.log('Got results: [' + rels.map(rel => rel.str()).join(', ') + ']')`)
         }
 
         if (outputExists) {
-            writer.writeLine('return rels.length > 0;');
+            writer.line('return rels.length > 0;');
         } else if (expectOne) {
-            writer.writeLine()
+            writer.line()
 
             if (!outputIsOptional)
-                writer.writeLine('// Expect one result')
+                writer.line('// Expect one result')
 
-            writer.writeLine('if (rels.length === 0) {')
-            writer.increaseIndent()
+            writer.line('if (rels.length === 0) {')
+            writer.indent()
 
             if (outputIsOptional)
-                writer.writeLine(`return null;`)
+                writer.line(`return null;`)
             else
-                writer.writeLine(`throw new Error("No relation found for: " + command)`)
+                writer.line(`throw new Error("No relation found for: " + command)`)
 
-            writer.decreaseIndent()
-            writer.writeLine('}')
-            writer.writeLine()
-            writer.writeLine('if (rels.length > 1) {')
-            writer.increaseIndent()
-            writer.writeLine(`throw new Error("Multiple results found for: " + command)`)
-            writer.decreaseIndent()
-            writer.writeLine('}')
-            writer.writeLine()
+            writer.unindent()
+            writer.line('}')
+            writer.line()
+            writer.line('if (rels.length > 1) {')
+            writer.indent()
+            writer.line(`throw new Error("Multiple results found for: " + command)`)
+            writer.unindent()
+            writer.line('}')
+            writer.line()
             
-            writer.writeLine('const rel = rels[0];');
+            writer.line('const rel = rels[0];');
 
             if (outputIsValue) {
-                writer.writeLine('return rel.getPayload();');
+                writer.line('return rel.getPayload();');
             } else if (outputObject) {
-                writer.writeLine();
-                writer.writeLine('return {');
-                writer.increaseIndent();
+                writer.line();
+                writer.line('return {');
+                writer.indent();
 
                 for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
-                    writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
+                    writer.line(`${field}: rel.getTagValue("${tagValue}"),`);
                 }
                 
                 for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
-                    writer.writeLine(`${field}: rel.getTag("${tag}"),`);
+                    writer.line(`${field}: rel.getTag("${tag}"),`);
                 }
 
-                writer.decreaseIndent();
-                writer.writeLine('}');
+                writer.unindent();
+                writer.line('}');
 
             } else if (tagValueOutput) {
-                writer.writeLine(`return rel.getTagValue("${tagValueOutput}");`)
+                writer.line(`return rel.getTagValue("${tagValueOutput}");`)
             } else if (tagOutput) {
-                writer.writeLine(`return rel.getTag("${tagOutput}");`)
+                writer.line(`return rel.getTag("${tagOutput}");`)
 
             } else {
-                writer.writeLine('// no output')
+                writer.line('// no output')
             }
         } else {
             if (tagValueOutput) {
@@ -390,43 +400,43 @@ export class DAOGenerator {
 
                 returnStr += ';'
 
-                writer.writeLine(returnStr)
+                writer.line(returnStr)
             } else if (outputObject) {
 
-                writer.writeLine();
-                writer.writeLine('return rels.map(rel => ({');
-                writer.increaseIndent();
+                writer.line();
+                writer.line('return rels.map(rel => ({');
+                writer.indent();
 
                 for (const { field, tagValue } of this.api.outputObjectFields(outputObject)) {
-                    writer.writeLine(`${field}: rel.getTagValue("${tagValue}"),`);
+                    writer.line(`${field}: rel.getTagValue("${tagValue}"),`);
                 }
 
-                writer.decreaseIndent();
-                writer.writeLine('}));');
+                writer.unindent();
+                writer.line('}));');
 
             } else if (tagOutput) {
-                writer.writeLine(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
+                writer.line(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
 
             } else {
 
                 if (outputType === 'object') {
-                    writer.writeLine('return rels.map(rel => ({')
-                    writer.increaseIndent()
+                    writer.line('return rels.map(rel => ({')
+                    writer.indent()
 
                     const objectdef = this.api.getOutputObjectdef(touchpoint);
 
-                    writer.writeLine('return rels.map(rel => ({')
+                    writer.line('return rels.map(rel => ({')
 
                     for (const objectField of this.api.getObjectdefFields(objectdef)) {
                     }
 
                 } else {
-                    writer.writeLine('return rels.map(rel => rel.getPayload())')
+                    writer.line('return rels.map(rel => rel.getPayload())')
                 }
             }
         }
 
-        writer.finishFunction()
+        writer.endBlock()
     }
 
     generateMethods(writer: JavascriptCodeWriter) {
@@ -440,7 +450,7 @@ export class DAOGenerator {
         const methodText = [];
         const writer = new JavascriptCodeWriter();
         writer.indentLevel = 1;
-        writer.out = (s) => { methodText.push(s) }
+        writer.writeOut = (s) => { methodText.push(s) }
 
         this.generateMethods(writer);
         
