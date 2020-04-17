@@ -50,25 +50,7 @@ class JavascriptCodeWriter {
         this.needsNewline = true;
     }
 
-    defineMethod(funcName: string, outputType: string | null, writeInputs: (writer: JavascriptCodeWriter) => void) {
-        this.line()
-        this.startNewLine()
-        this.writeOut(funcName);
-
-        this.writeOut('(')
-        writeInputs(this)
-        this.inputsNeedComma = false;
-        this.writeOut(')')
-        if (outputType) {
-            this.writeOut(': ')
-            this.writeOut(outputType);
-        }
-        this.writeOut(' {')
-        this.indentLevel += 1;
-        return this;
-    }
-
-    defineMethod2(opts: { name: string, outputType?: string, isAsync?: boolean, inputs: InputDef[] }) {
+    defineMethod(opts: { name: string, outputType?: string, isAsync?: boolean, inputs: InputDef[] }) {
         this.line();
         this.startNewLine()
 
@@ -157,14 +139,12 @@ export class DAOGenerator {
 
         const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
 
-        writer.defineMethod(name, null, writer => {
-            for (const input of inputs) {
-                const name = this.api.inputName(input);
-                const inputType = this.api.inputType(input);
-
-                if (inputType)
-                    writer.input(name, inputType)
-            }
+        writer.defineMethod({
+            name,
+            inputs: inputs.map(input => ({
+                name: this.api.inputName(input),
+                inputType: this.api.inputType(input),
+            }))
         });
 
         for (const input of inputs) {
@@ -330,19 +310,16 @@ export class DAOGenerator {
     }
 
     startTouchpointMethod(writer: JavascriptCodeWriter, touchpoint: string) {
-        let outputTypeStr = this.getTouchpointOutputType(touchpoint);
+        const name = this.api.touchpointFunctionName(touchpoint);
+        const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
 
-        writer.defineMethod(name, outputTypeStr, writer => {
-
-            const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
-
-            for (const input of inputs) {
-                const name = this.api.inputName(input);
-                const inputType = this.api.inputType(input);
-
-                if (inputType)
-                    writer.input(name, inputType)
-            }
+        writer.defineMethod({
+            name,
+            outputType: this.getTouchpointOutputType(touchpoint),
+            inputs: inputs.map(input => ({
+                name: this.api.inputName(input),
+                inputType: this.api.inputType(input),
+            }))
         });
     }
 
