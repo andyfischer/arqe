@@ -61,7 +61,7 @@ export default class API {
         return rel.getTagValue("flag");
     }
     
-    getUsingCommandChain(target: string) {
+    getUsingCommandChain(target: string): string {
         const command = `get ${target} flag/*`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
@@ -76,7 +76,6 @@ export default class API {
         }
         
         const rel = rels[0];
-        
         return rel.getTagValue("flag");
     }
     

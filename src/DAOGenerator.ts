@@ -347,8 +347,15 @@ export class DAOGenerator {
         if (!queryStr)
             throw new Error(`couldn't find query for: ` + touchpoint);
 
-        if (queryStr.startsWith('get ')
-                || queryStr.startsWith('set ')
+        let command = queryStr;
+
+        if (!queryStr.startsWith('get ')
+                && !queryStr.startsWith('set ')
+                && !queryStr.startsWith('delete ')) {
+            command = 'get ' + queryStr;
+        }
+
+        if (queryStr.startsWith('set ')
                 || queryStr.startsWith('delete ')) {
             this.generateFullQuery(writer, touchpoint);
             return;
@@ -367,7 +374,7 @@ export class DAOGenerator {
 
         this.startTouchpointMethod(writer, touchpoint);
 
-        writer.line(`const command = \`get ${queryStr}\`;`);
+        writer.line(`const command = \`${command}\`;`);
 
         if (this.verboseLogging) {
             writer.line();

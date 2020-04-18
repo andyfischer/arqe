@@ -195,7 +195,7 @@ export default class API {
         // TODO - handle multi results
     }
     
-    findActionForKeyInMode(view: string, key: string) {
+    findActionForKeyInMode(view: string, key: string): string {
         const command = `get ${view} input-mode/$m | join ${key} action/* active-for-mode input-mode/$m`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
@@ -209,7 +209,6 @@ export default class API {
         }
         
         const rel = rels[0];
-        
         return rel.getTag("action");
     }
 }
