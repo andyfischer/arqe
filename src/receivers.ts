@@ -22,9 +22,9 @@ export function receiveToRelationListPromise(): { receiver: RelationReceiver, pr
                     reject(rel.stringify());
                     return;
                 }
-
-                resolve(rels);
             }
+
+            resolve(rels);
         });
     });
 

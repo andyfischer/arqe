@@ -29,7 +29,8 @@ async function main() {
 
     watchFile(filename, () => {
         console.log('saw change');
-    });
+    })
+    .catch(console.error);
 }
 
 if (require.main === module) {

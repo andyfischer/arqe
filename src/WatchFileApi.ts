@@ -27,11 +27,23 @@ export default class API {
     }
     
     async createFileWatch(filename: string): Promise<string> {
+
+        console.log('running createFileWatch..');
+
         const command = `set file-watch/(unique) filename(${filename})`;
 
         const { receiver, promise } = receiveToRelationListPromise();
 
-        this.graph.run(command, receiver)
+        this.graph.run(command, {
+            relation(rel) {
+                console.log('saw: ' + rel.stringify());
+                receiver.relation(rel);
+            },
+            finish() {
+                receiver.finish()
+            }
+        })
+
         const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
         

@@ -12,6 +12,15 @@ import runSet from './runSet'
 import runModify, { ModifyRequest } from './runModify'
 import runDelete from './runDelete'
 
+const knownCommands = {
+    'join': true,
+    'get': true,
+    'set': true,
+    'modify': true,
+    'delete': true,
+    'listen': true
+};
+
 function runStep(step: CommandStep) {
     try {
         emitCommandOutputFlags(step.command, step.output);
@@ -80,6 +89,15 @@ export function runCommandChain(graph: Graph, chain: CommandChain, output: Relat
     if (chain.commands.length === 0) {
         output.finish();
         return;
+    }
+
+    // Initial error checking
+    for (const command of chain.commands) {
+        if (!knownCommands[command.commandName]) {
+            emitCommandError(output, "unrecognized command: " + command.commandName);
+            output.finish();
+            return;
+        }
     }
 
     // Set up CommandStep objects with pipe objects. The 'output' of one step is the 'input' of

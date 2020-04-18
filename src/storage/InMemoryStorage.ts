@@ -7,12 +7,14 @@ import RelationSearch from '../RelationSearch'
 import RelationReceiver from '../RelationReceiver'
 import Graph from '../Graph'
 import { emitCommandError, emitCommandOutputFlags } from '../CommandMeta'
+import IDSource from '../utils/IDSource'
 
 type RelationModifier = (rel: Relation) => Relation
 
 export default class InMemoryStorage implements StorageProvider {
     graph: Graph
     relationsByNtag: { [ ntag: string]: Relation } = {};
+    nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
 
     constructor(graph: Graph) {
         this.graph = graph;
