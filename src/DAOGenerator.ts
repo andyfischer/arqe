@@ -5,7 +5,7 @@ import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
 
 function javascriptTemplate(vars) {
     return (
-`import { GraphLike, Relation } from '${vars.ikImport}'
+`import { GraphLike, Relation, receiveToRelationListPromise } from '${vars.ikImport}'
 
 export default class API {
     graph: GraphLike
@@ -132,7 +132,7 @@ export class DAOGenerator {
     }
     
     generateFullQuery(writer: JavascriptCodeWriter, touchpoint: string) {
-        const queryStr = this.api.touchpointQueryString(touchpoint);
+        const command = this.api.touchpointQueryString(touchpoint);
         const name = this.api.touchpointFunctionName(touchpoint);
 
         const usesOutput = true;
@@ -158,7 +158,7 @@ export class DAOGenerator {
             }
         }
 
-        writer.line(`const command = \`${queryStr}\`;`);
+        writer.line(`const command = \`${command}\`;`);
         this.fetchRels(writer, touchpoint);
         writer.line();
 
@@ -321,7 +321,17 @@ export class DAOGenerator {
     }
 
     fetchRels(writer: JavascriptCodeWriter, touchpoint: string) {
-        writer.line(`const rels: Relation[] = this.graph.runSync(command)`);
+        const isAsync = this.api.touchpointIsAsync(touchpoint);
+
+        if (isAsync) {
+            writer.line(`const { receiver, promise } = receiveToRelationListPromise();`);
+            writer.line(`this.graph.run(command, receiver)`);
+            writer.line(`const rels: Relation[] = (await promise)`);
+
+        } else {
+            writer.line(`const rels: Relation[] = this.graph.runSync(command)`);
+        }
+
         writer.line('    .filter(rel => !rel.hasType("command-meta"));');
 
         if (this.verboseLogging) {

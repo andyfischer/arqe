@@ -608,6 +608,14 @@ set touchpoint/findWatch input/filename
 set touchpoint/findWatch expectOne
 set touchpoint/findWatch async
 set touchpoint/findWatch output tag/file-watch
+set touchpoint/findWatch output optional
+
+set code-generation/watch-file touchpoint/createWatch
+set touchpoint/createWatch query(set file-watch/(unique) filename(\${filename}))
+set touchpoint/createWatch function-name/createFileWatch
+set touchpoint/createWatch input/filename
+set touchpoint/findWatch expectOne
+set touchpoint/findWatch output tag/file-watch
 
 set input/filename name/filename
 set input/filename type/string

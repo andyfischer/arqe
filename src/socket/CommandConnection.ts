@@ -4,6 +4,7 @@ import EventEmitter from 'events'
 import RelationReceiver from '../RelationReceiver'
 import { parseRelation } from '../parseCommand'
 import IDSource from '../utils/IDSource'
+import GraphLike from '../GraphLike'
 
 export type RespondFunc = (msg: string) => void
 
@@ -12,7 +13,7 @@ interface PendingQuery {
     output: RelationReceiver
 }
 
-export default class CommandConnection {
+export default class CommandConnection implements GraphLike {
     ws: WebSocket
     requestId: IDSource = new IDSource()
     connectionId: string
@@ -75,6 +76,10 @@ export default class CommandConnection {
 
         this.ws.send(JSON.stringify({reqid, query}));
         this.reqListeners[reqid] = output;
+    }
+
+    runSync(commandStr: string): any {
+        throw new Error(`CommandConnection doesn't support runSync`);
     }
 }
 

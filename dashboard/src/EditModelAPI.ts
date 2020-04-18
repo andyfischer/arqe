@@ -1,4 +1,4 @@
-import { GraphLike, Relation } from 'ik'
+import { GraphLike, Relation, receiveToRelationListPromise } from 'ik'
 
 export default class API {
     graph: GraphLike

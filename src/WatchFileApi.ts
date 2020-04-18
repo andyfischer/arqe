@@ -1,4 +1,4 @@
-import { GraphLike, Relation } from '.'
+import { GraphLike, Relation, receiveToRelationListPromise } from '.'
 
 export default class API {
     graph: GraphLike
@@ -9,12 +9,13 @@ export default class API {
     
     async findFileWatch(filename: string): Promise<string> {
         const command = `get file-watch/* filename(${filename})`;
-        const rels: Relation[] = this.graph.runSync(command)
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
         
-        // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            return null;
         }
         
         if (rels.length > 1) {
@@ -23,5 +24,13 @@ export default class API {
         
         const rel = rels[0];
         return rel.getTag("file-watch");
+    }
+    
+    createFileWatch(filename: string) {
+        const command = `set file-watch/(unique) filename(${filename})`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+        
+        // TODO - handle multi results
     }
 }
