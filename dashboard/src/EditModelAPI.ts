@@ -134,20 +134,18 @@ export default class API {
         // TODO - handle multi results
     }
     
-    setSelection(view: string, col: string, row: string) {
+    setSelection(view: string, col: string, row: string): string[] {
         const command = `set ${view} selection ${row} ${col}`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
-        
-        // TODO - handle multi results
+        return rels.map(rel => rel.getTag(""));
     }
     
-    startEditing(view: string) {
+    startEditing(view: string): string[] {
         const command = `set ${view} now-editing`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
-        
-        // TODO - handle multi results
+        return rels.map(rel => rel.getTag(""));
     }
     
     stopEditing(view: string) {

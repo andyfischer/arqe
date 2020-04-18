@@ -17,24 +17,22 @@ export async function watchFile(filename: string, callback: () => void) {
     console.log('found existing watch: ' + watch);
 
     if (!watch) {
-        // watch = await api.createFileWatch(filename);
+        console.log('creating a new watch');
+        watch = await api.createFileWatch(filename);
+        console.log('created watch: ' + watch);
     }
 }
 
 async function main() {
-    const conn = await connect();
-    // const api = new WatchFileApi(conn);
-
     const filename = process.argv[2];
+    console.log('trying to watch: ', filename);
 
-    console.log('watching filename: ', filename);
-
-    conn.run(`get file-watch/* filename/${filename}`, {
-        relation(rel) { console.log(rel.stringify()) },
-        isDone() { return false },
-        finish() {}
+    watchFile(filename, () => {
+        console.log('saw change');
     });
 }
 
-main()
-.catch(console.error);
+if (require.main === module) {
+    main()
+    .catch(console.error);
+}

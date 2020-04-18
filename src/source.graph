@@ -614,8 +614,9 @@ set code-generation/watch-file touchpoint/createWatch
 set touchpoint/createWatch query(set file-watch/(unique) filename(${filename}))
 set touchpoint/createWatch function-name/createFileWatch
 set touchpoint/createWatch input/filename
-set touchpoint/findWatch expectOne
-set touchpoint/findWatch output tag/file-watch
+set touchpoint/createWatch expectOne
+set touchpoint/createWatch async
+set touchpoint/createWatch output tag/file-watch
 
 set input/filename name/filename
 set input/filename type/string

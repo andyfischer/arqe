@@ -26,11 +26,23 @@ export default class API {
         return rel.getTag("file-watch");
     }
     
-    createFileWatch(filename: string) {
+    async createFileWatch(filename: string): Promise<string> {
         const command = `set file-watch/(unique) filename(${filename})`;
-        const rels: Relation[] = this.graph.runSync(command)
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
         
-        // TODO - handle multi results
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + command)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + command)
+        }
+        
+        const rel = rels[0];
+        return rel.getTag("file-watch");
     }
 }

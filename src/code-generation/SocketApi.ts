@@ -7,7 +7,7 @@ export default class API {
         this.graph = graph;
     }
     
-    createUniqueConnection() {
+    createUniqueConnection(): string {
         const command = `set connection/unique`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
@@ -22,7 +22,6 @@ export default class API {
         }
         
         const rel = rels[0];
-        
         return rel.getTag("connection");
     }
     

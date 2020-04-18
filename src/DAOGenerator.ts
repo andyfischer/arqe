@@ -355,8 +355,7 @@ export class DAOGenerator {
             command = 'get ' + queryStr;
         }
 
-        if (queryStr.startsWith('set ')
-                || queryStr.startsWith('delete ')) {
+        if (queryStr.startsWith('delete ')) {
             this.generateFullQuery(writer, touchpoint);
             return;
         }
