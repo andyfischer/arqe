@@ -219,7 +219,6 @@ export default class Graph {
                     error = error || rel;
                 }
             },
-            isDone() { return false; },
             finish() { }
         });
 

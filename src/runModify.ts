@@ -47,7 +47,6 @@ export default function runModify(graph: Graph, pattern: Pattern, output: Relati
 
         runDelete(graph, rel, {
             relation(rel) {},
-            isDone() { return false },
             finish() {
                 if (isDone)
                     console.error('warning: out of order in runModify');
@@ -56,7 +55,6 @@ export default function runModify(graph: Graph, pattern: Pattern, output: Relati
 
         runSet(graph, updated, {
             relation(rel) {},
-            isDone() { return false },
             finish() {
                 if (isDone)
                     console.error('warning: out of order in runModify');
@@ -66,7 +64,6 @@ export default function runModify(graph: Graph, pattern: Pattern, output: Relati
 
     runSearch(graph, relationSearchFromPattern(pattern, {
         relation: foundRelation,
-        isDone: () => output.isDone(),
         finish: () => {
             isDone = true;
             output.finish();

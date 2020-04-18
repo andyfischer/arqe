@@ -38,7 +38,6 @@ export default class ClientRepl {
 
                 console.log(' > ' + rel.stringifyRelation());
             },
-            isDone: () => false,
             finish: () => {
                 isFinished = true;
                 this.displayPrompt()

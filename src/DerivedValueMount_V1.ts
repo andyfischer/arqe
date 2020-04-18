@@ -43,9 +43,6 @@ export default class DerivedValueMount implements StorageProvider {
             finish() {
                 search.finish();
             },
-            isDone() {
-                return search.isDone()
-            }
         }
         
         runSearch(this.graph, subSearch);

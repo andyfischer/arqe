@@ -38,9 +38,6 @@ export default class InMemoryStorage implements StorageProvider {
         for (const rel of this.findAllMatches(search.pattern)) {
 
             search.relation(rel);
-
-            if (search.isDone())
-                break;
         }
 
         search.finish();

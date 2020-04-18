@@ -45,7 +45,6 @@ class Connection extends EventEmitter {
                     relation: (rel: Relation) => {
                         this.send(query, { reqid, rel: rel.stringifyRelation() });
                     },
-                    isDone: () => false,
                     finish: () => {
                         if (sentFinish)
                             throw new Error(`saw duplicate 'finish' event`);

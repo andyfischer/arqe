@@ -70,7 +70,6 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
 
             rels.push(rel);
         },
-        isDone() { return false },
         finish: () => {
             if (sawError) {
                 onDone('#error ' + sawError.getPayload());

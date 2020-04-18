@@ -29,7 +29,6 @@ export default function runSet(graph: Graph, relation: Relation, output: Relatio
         finish: () => {
             output.finish()
         },
-        isDone: () => false
     });
 }
 

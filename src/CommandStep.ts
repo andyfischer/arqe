@@ -35,7 +35,6 @@ export default class CommandStep {
         return {
             pattern: this.pattern,
             subSearchDepth: 0,
-            isDone() { return output.isDone() },
             relation(r) { output.relation(r) },
             finish() { output.finish() },
         }

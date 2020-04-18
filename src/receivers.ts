@@ -6,7 +6,6 @@ export function receiveToRelationList(onDone: (rels: Relation[]) => void): Relat
     const list: Relation[] = [];
     return {
         relation(rel) { list.push(rel) },
-        isDone() { return false; },
         finish() {
             onDone(list);
         }
