@@ -8,17 +8,17 @@ export default class API {
     }
     
     createUniqueConnection() {
-        const queryStr = `set connection/unique`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `set connection/unique`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // Expect one result
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + queryStr)
+            throw new Error("No relation found for: " + command)
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];
@@ -27,8 +27,8 @@ export default class API {
     }
     
     deleteConnection(connection: string) {
-        const queryStr = `delete ${connection}`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `delete ${connection}`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results

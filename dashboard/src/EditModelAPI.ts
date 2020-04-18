@@ -127,32 +127,32 @@ export default class API {
     }
     
     clearSelection(spreadsheet: string) {
-        const queryStr = `delete ${spreadsheet} selection row/* col/*`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `delete ${spreadsheet} selection row/* col/*`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     setSelection(view: string, col: string, row: string) {
-        const queryStr = `set ${view} selection ${row} ${col}`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `set ${view} selection ${row} ${col}`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     startEditing(view: string) {
-        const queryStr = `set ${view} now-editing`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `set ${view} now-editing`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     stopEditing(view: string) {
-        const queryStr = `delete ${view} now-editing`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `delete ${view} now-editing`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -188,16 +188,16 @@ export default class API {
             throw new Error('Expected "input-mode/...", saw: ' + inputMode);
         }
         
-        const queryStr = `delete ${view} input-mode/* | set ${view} ${inputMode}`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `delete ${view} input-mode/* | set ${view} ${inputMode}`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     findActionForKeyInMode(view: string, key: string) {
-        const queryStr = `get ${view} input-mode/$m | join ${key} action/* active-for-mode input-mode/$m`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `get ${view} input-mode/$m | join ${key} action/* active-for-mode input-mode/$m`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         if (rels.length === 0) {
@@ -205,7 +205,7 @@ export default class API {
         }
         
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + queryStr)
+            throw new Error("Multiple results found for: " + command)
         }
         
         const rel = rels[0];

@@ -57,8 +57,8 @@ export default class API {
     }
     
     setCellValue(col: string, row: string, value: string) {
-        const queryStr = `delete ${row} ${col} | set ${row} ${col} == ${value}`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `delete ${row} ${col} | set ${row} ${col} == ${value}`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
@@ -103,16 +103,16 @@ export default class API {
     }
     
     clearSelection(spreadsheet: string) {
-        const queryStr = `delete ${spreadsheet} selection row/* col/*`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `delete ${spreadsheet} selection row/* col/*`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results
     }
     
     setSelection(view: string, col: string, row: string) {
-        const queryStr = `set ${view} selection ${row} ${col}`;
-        const rels = this.graph.runSync(queryStr)
+        const command = `set ${view} selection ${row} ${col}`;
+        const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
         // TODO - handle multi results

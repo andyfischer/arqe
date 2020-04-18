@@ -9,17 +9,6 @@ export default interface RelationReceiver {
     isDone: () => boolean
 }
 
-export function receiveToRelationList(onDone: (rels: Relation[]) => void): RelationReceiver {
-    const list: Relation[] = [];
-    return {
-        relation(rel) { list.push(rel) },
-        isDone() { return false; },
-        finish() {
-            onDone(list);
-        }
-    }
-}
-
 export function receiveToRelationStream(onRel: (rel: Relation) => void, onDone: () => void): RelationReceiver {
     return {
         relation: onRel,

@@ -6,5 +6,22 @@ export default class API {
     constructor(graph: GraphLike) {
         this.graph = graph;
     }
-
+    
+    async findFileWatch(filename: string): Promise<string> {
+        const command = `get file-watch/* filename(${filename})`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + command)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + command)
+        }
+        
+        const rel = rels[0];
+        return rel.getTag("file-watch");
+    }
 }

@@ -601,6 +601,17 @@ set code-generation/watch-file destination-filename(src/WatchFileApi.ts)
 set code-generation/watch-file ik-import(.)
 set code-generation/watch-file strategy/dao-api
 
+set code-generation/watch-file touchpoint/findWatch
+set touchpoint/findWatch query(file-watch/* filename(${filename}))
+set touchpoint/findWatch function-name/findFileWatch
+set touchpoint/findWatch input/filename
+set touchpoint/findWatch expectOne
+set touchpoint/findWatch async
+set touchpoint/findWatch output tag/file-watch
+
+set input/filename name/filename
+set input/filename type/string
+
 set input/row name/row
 set input/row type/string
 set input/row sortOrder/2

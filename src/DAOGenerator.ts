@@ -158,13 +158,8 @@ export class DAOGenerator {
             }
         }
 
-        writer.line(`const queryStr = \`${queryStr}\`;`);
-        if (usesOutput) {
-            writer.line('const rels = this.graph.runSync(queryStr)')
-            writer.line('    .filter(rel => !rel.hasType("command-meta"));');
-        } else {
-            writer.line('this.graph.runSync(queryStr);')
-        }
+        writer.line(`const command = \`${queryStr}\`;`);
+        this.fetchRels(writer, touchpoint);
         writer.line();
 
         this.relationCountGuards(writer, touchpoint);
@@ -186,13 +181,13 @@ export class DAOGenerator {
             if (outputIsOptional)
                 writer.line(`return null;`)
             else
-                writer.line(`throw new Error("No relation found for: " + queryStr)`)
+                writer.line(`throw new Error("No relation found for: " + command)`)
 
             writer.endBlock();
             writer.line();
 
             writer.If('rels.length > 1')
-                .line(`throw new Error("Multiple results found for: " + queryStr)`)
+                .line(`throw new Error("Multiple results found for: " + command)`)
                 .unindent()
                 .line('}')
                 .line()
@@ -312,15 +307,27 @@ export class DAOGenerator {
     startTouchpointMethod(writer: JavascriptCodeWriter, touchpoint: string) {
         const name = this.api.touchpointFunctionName(touchpoint);
         const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
+        const isAsync = this.api.touchpointIsAsync(touchpoint);
 
         writer.defineMethod({
             name,
+            isAsync,
             outputType: this.getTouchpointOutputType(touchpoint),
             inputs: inputs.map(input => ({
                 name: this.api.inputName(input),
                 inputType: this.api.inputType(input),
             }))
         });
+    }
+
+    fetchRels(writer: JavascriptCodeWriter, touchpoint: string) {
+        writer.line(`const rels: Relation[] = this.graph.runSync(command)`);
+        writer.line('    .filter(rel => !rel.hasType("command-meta"));');
+
+        if (this.verboseLogging) {
+            writer.line();
+            writer.line(`console.log('Got results: [' + rels.map(rel => rel.str()).join(', ') + ']')`)
+        }
     }
 
     generateMethod(writer: JavascriptCodeWriter, touchpoint: string) {
@@ -357,14 +364,7 @@ export class DAOGenerator {
             writer.line(`console.log('Running query (for ${name}): ' + command)`);
         }
 
-        writer.line(`const rels: Relation[] = this.graph.runSync(command)`);
-        writer.line('    .filter(rel => !rel.hasType("command-meta"));');
-        
-
-        if (this.verboseLogging) {
-            writer.line();
-            writer.line(`console.log('Got results: [' + rels.map(rel => rel.str()).join(', ') + ']')`)
-        }
+        this.fetchRels(writer, touchpoint);
 
         if (outputExists) {
             writer.line('return rels.length > 0;');
