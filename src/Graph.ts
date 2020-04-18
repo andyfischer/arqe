@@ -31,6 +31,7 @@ import receiveToStringList from './receiveToStringList'
 import { ObjectTypeSpace } from './ObjectSpace'
 import GraphListenerV3 from './GraphListenerV3'
 import { parsePattern as pattern } from './parseCommand'
+import watchAndValidateCommand from './watchAndValidateCommand'
 
 export default class Graph {
 
@@ -204,6 +205,8 @@ export default class Graph {
             // ignore comments
             return;
         }
+
+        output = watchAndValidateCommand(str, output);
 
         const chain = parseCommandChain(str);
         runCommandChain(this, chain, output);

@@ -11,7 +11,7 @@ test('can get on an object-space column', async ({run}) => {
     expect(await run('get ot/ot2')).toEqual('#null');
 
     expect(await run('get ot/ot1 attr1/*')).toEqual(['attr1']);
-    expect(await run('set ot/ot1 attr1/test')).toEqual([]);
+    await run('set ot/ot1 attr1/test');
     expect(await run('get ot/ot1 attr1/*')).toEqual(['attr1/test']);
 });
 
@@ -49,8 +49,8 @@ test('can get multiple attributes at once', async ({run}) => {
     await run('set object-type/ot attribute/attr1');
     await run('set object-type/ot attribute/attr2');
 
-    expect(await run('set ot/ot4 attr1/a')).toEqual([]);
-    expect(await run('set ot/ot4 attr2/b')).toEqual([]);
+    await run('set ot/ot4 attr1/a');
+    await run('set ot/ot4 attr2/b');
 
     expect(await run('get ot/ot4 attr1/* attr2/*')).toEqual(['attr1/a attr2/b']);
 });

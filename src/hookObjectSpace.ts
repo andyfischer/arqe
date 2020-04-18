@@ -172,6 +172,7 @@ export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: Relatio
         object.attrs[tag.tagType] = tag.tagValue;
     }
 
+    output.relation(rel);
     output.finish();
     return true;
 }

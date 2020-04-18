@@ -44,6 +44,9 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "setupFiles": [
+      "./src/__tests__/setup.ts"
+    ],
     "testMatch": [
       "**/src/**/__tests__/**/*.test.(js|ts)",
       "**/src/**/real-world-test/*.test.(js|ts)",
