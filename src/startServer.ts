@@ -18,14 +18,16 @@ export default async function main() {
 
     serverSocket.on('send', ({ socket, query, finish, rel, error }) => {
         if (finish)
-            console.log(`  ${query} -> #done`);
+            console.log(`[server] ${query} -> #done`);
         else
-            console.log(`  ${query} -> ${rel || error}`);
+            console.log(`[server] ${query} -> ${rel || error}`);
     });
 }
 
-main()
-.catch(err => {
-    process.exitCode = -1;
-    console.error(err);
-});
+if (require.main === module) {
+    main()
+    .catch(e => {
+        console.error(e);
+        process.exitCode = -1;
+    });
+}

@@ -5,7 +5,7 @@ import CommandConnection from './socket/CommandConnection'
 
 let processClient: CommandConnection = null;
 
-export async function watchFile(filename: string, callback: () => void) {
+export default async function watchFile(filename: string, callback: () => void) {
     if (processClient === null) {
         processClient = await connect();
     }
@@ -14,13 +14,12 @@ export async function watchFile(filename: string, callback: () => void) {
 
     let watch = await api.findFileWatch(filename);
 
-    console.log('found existing watch: ' + watch);
-
     if (!watch) {
-        console.log('creating a new watch');
         watch = await api.createFileWatch(filename);
-        console.log('created watch: ' + watch);
     }
+
+
+    
 }
 
 async function main() {
