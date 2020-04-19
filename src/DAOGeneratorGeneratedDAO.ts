@@ -78,6 +78,13 @@ export default class API {
         return rels.length > 0;
     }
     
+    touchpointIsListener(touchpoint: string): boolean {
+        const command = `get ${touchpoint} listener`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+        return rels.length > 0;
+    }
+    
     touchpointOutputIsOptional(touchpoint: string): boolean {
         const command = `get ${touchpoint} output optional`;
         const rels: Relation[] = this.graph.runSync(command)

@@ -68,6 +68,12 @@ set input/2 name/touchpoint
 set input/2 type/string
 set touchpoint/isAsync output exists
 
+set code-generation/dao touchpoint/isListener
+set touchpoint/isListener query(${touchpoint} listener)
+set touchpoint/isListener function-name(touchpointIsListener)
+set touchpoint/isListener input/2
+set touchpoint/isListener output exists
+
 set code-generation/dao touchpoint/4.1
 set touchpoint/4.1 query(${touchpoint} output optional)
 set touchpoint/4.1 function-name(touchpointOutputIsOptional)
@@ -610,16 +616,27 @@ set touchpoint/findWatch async
 set touchpoint/findWatch output tag/file-watch
 set touchpoint/findWatch output optional
 
+set input/filename name/filename
+set input/filename type/string
+
 set code-generation/watch-file touchpoint/createWatch
-set touchpoint/createWatch query(set file-watch/(unique) filename(${filename}))
+set touchpoint/createWatch query(set file-watch/(unique) filename(${filename}) version/0)
 set touchpoint/createWatch function-name/createFileWatch
 set touchpoint/createWatch input/filename
 set touchpoint/createWatch expectOne
 set touchpoint/createWatch async
 set touchpoint/createWatch output tag/file-watch
 
-set input/filename name/filename
-set input/filename type/string
+set code-generation/watch-file touchpoint/listenToFile
+set touchpoint/listenToFile query(listen file-watch/${watch} version/*)
+set touchpoint/listenToFile function-name/listenToFile
+set touchpoint/listenToFile input/file-watch
+set touchpoint/listenToFile expectOne
+set touchpoint/listenToFile listener
+set touchpoint/listenToFile output tagValue/version
+
+set input/file-watch name/watch
+set input/file-watch type/string
 
 set input/row name/row
 set input/row type/string
@@ -676,3 +693,4 @@ set spreadsheet-view/1 input-mode/normal
 set object-type/file-watch
 set object-type/file-watch attribute/filename
 set object-type/file-watch attribute/last-modified
+set object-type/file-watch attribute/version

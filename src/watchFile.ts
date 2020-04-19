@@ -18,8 +18,10 @@ export default async function watchFile(filename: string, callback: () => void) 
         watch = await api.createFileWatch(filename);
     }
 
-
-    
+    api.listenToFile(watch, (evt) => {
+        console.log('saw: ' + evt.stringify());
+        callback();
+    });
 }
 
 async function main() {

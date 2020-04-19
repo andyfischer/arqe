@@ -27,23 +27,9 @@ export default class API {
     }
     
     async createFileWatch(filename: string): Promise<string> {
-
-        console.log('running createFileWatch..');
-
-        const command = `set file-watch/(unique) filename(${filename})`;
-
+        const command = `set file-watch/(unique) filename(${filename}) version/0`;
         const { receiver, promise } = receiveToRelationListPromise();
-
-        this.graph.run(command, {
-            relation(rel) {
-                console.log('saw: ' + rel.stringify());
-                receiver.relation(rel);
-            },
-            finish() {
-                receiver.finish()
-            }
-        })
-
+        this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
         
@@ -58,5 +44,13 @@ export default class API {
         
         const rel = rels[0];
         return rel.getTag("file-watch");
+    }
+    
+    listenToFile(watch: string, callback: (rel: Relation) => void) {
+        const command = `get listen file-watch/${watch} version/*`;
+        this.graph.run(command, {
+            relation(rel: Relation) { callback(rel) },
+            finish() {  }
+        });
     }
 }

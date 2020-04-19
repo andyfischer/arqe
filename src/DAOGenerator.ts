@@ -138,13 +138,17 @@ export class DAOGenerator {
         const usesOutput = true;
 
         const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
+        const inputDefs = inputs.map(input => ({
+            name: this.api.inputName(input),
+            inputType: this.api.inputType(input),
+        }));
+
+        //console.log(touchpoint + ' is listener', this.api.touchpointIsListener(touchpoint))
+            //inputDefs.push({name: 'callback', inputType: '(rel: Relation) => void'});
 
         writer.defineMethod({
             name,
-            inputs: inputs.map(input => ({
-                name: this.api.inputName(input),
-                inputType: this.api.inputType(input),
-            }))
+            inputs: inputDefs
         });
 
         for (const input of inputs) {
@@ -282,6 +286,9 @@ export class DAOGenerator {
         const isAsync = this.api.touchpointIsAsync(touchpoint);
         const outputObject = this.api.touchpointOutputObject(touchpoint);
 
+        if (this.api.touchpointIsListener(touchpoint))
+            return null;
+
         if (outputExists)
             return 'boolean';
 
@@ -309,14 +316,19 @@ export class DAOGenerator {
         const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
         const isAsync = this.api.touchpointIsAsync(touchpoint);
 
+        const inputDefs = inputs.map(input => ({
+            name: this.api.inputName(input),
+            inputType: this.api.inputType(input),
+        }));
+
+        if (this.api.touchpointIsListener(touchpoint))
+            inputDefs.push({name: 'callback', inputType: '(rel: Relation) => void'});
+
         writer.defineMethod({
             name,
             isAsync,
             outputType: this.getTouchpointOutputType(touchpoint),
-            inputs: inputs.map(input => ({
-                name: this.api.inputName(input),
-                inputType: this.api.inputType(input),
-            }))
+            inputs: inputDefs
         });
     }
 
@@ -378,6 +390,10 @@ export class DAOGenerator {
         if (this.verboseLogging) {
             writer.line();
             writer.line(`console.log('Running query (for ${name}): ' + command)`);
+        }
+
+        if (this.api.touchpointIsListener(touchpoint)) {
+            return this.listenerBody(writer, touchpoint);
         }
 
         this.fetchRels(writer, touchpoint);
@@ -482,6 +498,16 @@ export class DAOGenerator {
             }
         }
 
+        writer.endBlock()
+    }
+
+    listenerBody(writer: JavascriptCodeWriter, touchpoint: string) {
+        writer.line('this.graph.run(command, {')
+            .indent()
+            .line('relation(rel: Relation) { callback(rel) },')
+            .line('finish() {  }')
+            .unindent()
+            .line('});')
         writer.endBlock()
     }
 
