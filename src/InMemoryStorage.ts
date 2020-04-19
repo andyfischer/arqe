@@ -1,18 +1,20 @@
 
-import Relation from '../Relation'
-import Pattern, { commandTagsToRelation } from '../Pattern'
-import { normalizeExactTag } from '../stringifyQuery'
-import StorageProvider from '../StorageProvider'
-import RelationSearch from '../RelationSearch'
-import RelationReceiver from '../RelationReceiver'
-import Graph from '../Graph'
-import { emitCommandError, emitCommandOutputFlags } from '../CommandMeta'
-import IDSource from '../utils/IDSource'
+import Relation from './Relation'
+import Pattern, { commandTagsToRelation } from './Pattern'
+import { normalizeExactTag } from './stringifyQuery'
+import StorageProvider from './StorageProvider'
+import RelationSearch from './RelationSearch'
+import RelationReceiver from './RelationReceiver'
+import Graph from './Graph'
+import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
+import IDSource from './utils/IDSource'
+import { emitActionPerformed } from './CommandMeta'
 
 type RelationModifier = (rel: Relation) => Relation
 
 export default class InMemoryStorage implements StorageProvider {
     graph: Graph
+
     relationsByNtag: { [ ntag: string]: Relation } = {};
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
 
@@ -38,7 +40,6 @@ export default class InMemoryStorage implements StorageProvider {
 
     runSearch(search: RelationSearch) {
         for (const rel of this.findAllMatches(search.pattern)) {
-
             search.relation(rel);
         }
 
@@ -74,6 +75,19 @@ export default class InMemoryStorage implements StorageProvider {
 
     deleteRelation(rel: Relation) {
         delete this.relationsByNtag[rel.getNtag()];
+    }
+
+    runDelete(graph: Graph, pattern: Pattern, output: RelationReceiver) {
+        for (const rel of graph.inMemory.findAllMatches(pattern)) {
+            if (rel.hasType('typeinfo'))
+                throw new Error("can't delete a typeinfo relation");
+
+            graph.inMemory.deleteRelation(rel);
+            graph.onRelationDeleted(rel);
+        }
+
+        emitActionPerformed(output);
+        output.finish();
     }
 }
 
