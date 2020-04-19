@@ -15,17 +15,6 @@ test("set and get #exists", async ({run}) => {
     expect(found).toEqual('#exists');
 });
 
-test("set and get payload", async ({run}) => {
-    await run('delete tc27/*');
-
-    const existing = await run('get tc27/3');
-    expect(existing).toEqual('#null');
-
-    await run('set tc27/3 == 123');
-    const found = await run('get tc27/3');
-    expect(found).toEqual('123');
-});
-
 test("overwrite set and get the value", async ({run}) => {
     await run('delete tc26/*');
 
