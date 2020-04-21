@@ -6,18 +6,6 @@ import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { hookObjectSpaceSearch, hookObjectSpaceSave } from './hookObjectSpace'
 
 export default function runSet(graph: Graph, relation: Relation, output: RelationReceiver) {
-    // Validate
-    for (const tag of relation.tags) {
-        if (tag.valueExpr)
-            continue;
-
-        if (tag.starValue || tag.star || tag.doubleStar) {
-            emitCommandError(output, "can't use star pattern in 'set'");
-            output.finish();
-            return;
-        }
-    }
-
     if (hookObjectSpaceSave(graph, relation, output))
         return;
 

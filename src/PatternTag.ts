@@ -65,6 +65,15 @@ export default class PatternTag {
         return out;
     }
 
+    setStarValue(): PatternTag {
+        const out = this.copy();
+        out.starValue = true;
+        delete out.tagValue;
+        delete out.valueExpr;
+        out.freeze();
+        return out;
+    }
+
     setIdentifier(id: string): PatternTag {
         const out = this.copy();
         out.identifier = id;

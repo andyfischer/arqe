@@ -11,8 +11,18 @@ interface Validation {
 
 class SetShouldEmitRelation {
     static maybeCreate(commandStr: string, command: CommandChain) {
-        if (command.commands.length === 1 && command.commands[0].commandName === 'set')
-            return new SetShouldEmitRelation(commandStr, command.commands[0].toPattern());
+        if (command.commands.length > 1)
+            return null;
+
+        if (command.commands[0].commandName != 'set')
+            return null;
+
+        for (const tag of command.commands[0].toPattern().tags) {
+            if (tag.valueExpr)
+                return null;
+        }
+
+        return new SetShouldEmitRelation(commandStr, command.commands[0].toPattern());
     }
 
     commandStr: string;

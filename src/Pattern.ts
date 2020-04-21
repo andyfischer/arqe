@@ -25,8 +25,12 @@ export class PatternValue implements Pattern {
     byIdentifier: { [identifier: string]: PatternTag } = {}
 
     constructor(tags: PatternTag[]) {
+        if (!Array.isArray(tags))
+            throw new Error("expected 'tags' to be an Array");
+
         this.tags = tags;
         this.updateDerivedData();
+        Object.freeze(this.tags);
     }
 
     updateDerivedData() {
@@ -64,6 +68,11 @@ export class PatternValue implements Pattern {
         pattern.payload = this.payload;
         pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
+    }
+
+    remapTags(func: (tag:PatternTag) => PatternTag) {
+        const tags = this.tags.map(func);
+        return this.copyWithNewTags(tags);
     }
 
     getNtag() {
@@ -377,6 +386,7 @@ export default interface Pattern {
     findTagIndexOfType: (tagType: string) => number;
     updateTagOfType: (tagType: string, update: (t: PatternTag) => PatternTag) => Pattern
     updateTagAtIndex: (index: number, update: (t: PatternTag) => PatternTag) => Pattern
+    remapTags: (func: (PatternTag) => PatternTag) => Pattern;
 
     matches: (p: Pattern) => boolean
     isSupersetOf: (p: Pattern) => boolean

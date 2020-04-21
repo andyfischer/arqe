@@ -86,7 +86,7 @@ export class ObjectTypeSpace implements GraphListener {
     }
 
     onRelationUpdated(rel: Relation) {
-        console.log('onRelationUpdated', rel.stringify());
+        // console.log('onRelationUpdated', rel.stringify());
     }
 
     onRelationDeleted(rel: Relation) {

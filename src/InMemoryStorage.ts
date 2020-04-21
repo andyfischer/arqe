@@ -1,6 +1,7 @@
 
 import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
+import PatternTag from './PatternTag'
 import { normalizeExactTag } from './stringifyQuery'
 import StorageProvider from './StorageProvider'
 import RelationSearch from './RelationSearch'
@@ -9,8 +10,63 @@ import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { emitActionPerformed } from './CommandMeta'
+import { newTagFromObject } from './PatternTag'
 
 type RelationModifier = (rel: Relation) => Relation
+
+function expressionUpdatesExistingValue(expr: string[]) {
+    if (!expr)
+        return false;
+
+    if (expr[0] === 'increment' || expr[0] === 'set')
+        return true;
+
+    return false;
+}
+
+function applyModificationExpr(expr: string[], value: string) {
+    switch (expr[0]) {
+    case 'increment':
+        return parseInt(value, 10) + 1 + '';
+
+    case 'set':
+        return expr[1];
+    }
+}
+
+function applyModificationRelation(commandRel: Relation, data: Relation): Relation {
+    return data.remapTags((tag: PatternTag) => {
+        const modificationTag = commandRel.getOneTagForType(tag.tagType);
+        if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
+            tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));
+        }
+
+        return tag;
+    });
+}
+
+function tagModifiesExistingRelations(tag: PatternTag) {
+    if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
+        return true;
+
+    return false;
+}
+
+function modifiesExistingRelations(rel: Relation) {
+    for (const tag of rel.tags)
+        if (tagModifiesExistingRelations(tag))
+            return true
+    return false
+}
+
+function modificationToFilter(rel: Relation) {
+    return rel.remapTags((tag: PatternTag) => {
+        if (tagModifiesExistingRelations(tag))
+            return tag.setStarValue()
+        else
+            return tag;
+    });
+}
 
 export default class InMemoryStorage implements StorageProvider {
     graph: Graph
@@ -46,7 +102,37 @@ export default class InMemoryStorage implements StorageProvider {
         search.finish();
     }
 
+    runModification(commandRel: Relation, output: RelationReceiver) {
+        const filter = modificationToFilter(commandRel);
+
+        for (const ntag in this.relationsByNtag) {
+            const scanRel = this.relationsByNtag[ntag];
+
+            if (filter.isSupersetOf(scanRel)) {
+                delete this.relationsByNtag[ntag];
+
+                const modified = applyModificationRelation(commandRel, scanRel);
+                this.runSave(modified, output);
+            }
+        }
+
+        output.finish();
+    }
+
+    saveOne(relation: Relation, output: RelationReceiver) {
+        const ntag = relation.getNtag();
+        this.relationsByNtag[ntag] = relation;
+        output.relation(relation);
+        this.graph.onRelationUpdatedV3(relation);
+    }
+
     runSave(relation: Relation, output: RelationReceiver) {
+        if (modifiesExistingRelations(relation)) {
+            this.runModification(relation, output);
+            return;
+        }
+
+        // Save as new relation
         const ntag = relation.getNtag();
         const existing = this.relationsByNtag[ntag];
 
@@ -60,15 +146,12 @@ export default class InMemoryStorage implements StorageProvider {
 
         if (existing) {
             let modified = existing.setPayload(relation.getPayload());
-            this.relationsByNtag[ntag] = modified;
-            output.relation(modified);
+            this.saveOne(modified, output);
             output.finish();
-            this.graph.onRelationUpdatedV3(relation);
             return;
         }
         
-        this.relationsByNtag[ntag] = relation;
-        output.relation(this.relationsByNtag[ntag]);
+        this.saveOne(relation, output);
         output.finish();
         this.graph.onRelationCreated(relation);
     }
