@@ -1,9 +1,9 @@
 
 Prepare for usage in sfly
 
-Support 'async' in DAO generator
+X Support 'async' in DAO generator
 
-Serialize/Deserialize graph as YAML
+? Serialize/Deserialize graph as YAML
 
 X New tag(value) syntax
 
@@ -16,4 +16,4 @@ Correctness
   Listen for events when relations enter & exit a set
 
 Syntax change
-  "get a" matches "get a/1"
+X "get a" matches "get a/1"
