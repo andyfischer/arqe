@@ -1,25 +1,39 @@
 
 import Relation from './fs/Relation'
 import connect from './fs/socket/openWebSocketClient'
+import Chokidar from 'chokidar'
 
-const watches = {}
+const watchesByFilename = {
+}
 
 async function main() {
     const conn = await connect();
 
-    conn.run('listen file-watch/* **', {
-        relation(rel: Relation) {
-            console.log('saw: ' + rel.stringify())
-        },
-        isDone() { return false },
-        finish() {}
+    const watcher = Chokidar.watch('', {
+        persistent: true
     });
 
-    conn.run('listen file-watch/* filename/*', {
+    watcher.on('change', path => {
+        console.log('path has changed: ' + path);
+
+        conn.run(`set file-watch/* filename(${path}) version((increment))`);
+    });
+
+    conn.run('listen -get file-watch/* filename/*', {
         relation(rel: Relation) {
-            console.log('saw: ' + rel.stringify())
+            console.log('saw: ' + rel.stringify());
+
+            const filename = rel.getTagValue('filename');
+
+            if (!watchesByFilename[filename]) {
+                console.log('creating watch for file: ' + filename);
+
+                watchesByFilename[filename] = { }
+
+                watcher.add(filename);
+            }
+
         },
-        isDone() { return false },
         finish() {}
     });
 

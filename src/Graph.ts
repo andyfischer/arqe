@@ -16,7 +16,7 @@ import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import RelationReceiver from './RelationReceiver'
-import { receiveToRelationList } from './receivers'
+import { receiveToRelationList, fallbackReceiver } from './receivers'
 import { runCommandChain, singleCommandExecution } from './runCommand'
 import { emitCommandError, emitCommandOutputFlags, emitRelationDeleted } from './CommandMeta'
 import UpdateContext from './UpdateContext'
@@ -200,15 +200,19 @@ export default class Graph {
         }
     }
 
-    run(str: string, output: RelationReceiver) {
-        if (/^ *\#/.exec(str)) {
+    run(commandStr: string, output?: RelationReceiver) {
+        if (/^ *\#/.exec(commandStr)) {
             // ignore comments
             return;
         }
 
-        output = watchAndValidateCommand(str, output);
+        if (!output) {
+            output = fallbackReceiver(commandStr);
+        }
 
-        const chain = parseCommandChain(str);
+        output = watchAndValidateCommand(commandStr, output);
+
+        const chain = parseCommandChain(commandStr);
         runCommandChain(this, chain, output);
     }
 

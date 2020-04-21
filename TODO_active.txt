@@ -8,3 +8,6 @@ Serialize/Deserialize graph as YAML
 X New tag(value) syntax
 
 Publish 'ik-dynamodb' to npm
+
+Useful tools
+  Manage the git branches (make it easy to cleanup)

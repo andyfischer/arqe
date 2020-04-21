@@ -30,3 +30,14 @@ export function receiveToRelationListPromise(): { receiver: RelationReceiver, pr
 
     return { receiver, promise };
 }
+
+export function fallbackReceiver(commandString: string): RelationReceiver {
+    return {
+        relation(rel) {
+            if (rel.hasType('command-meta') && rel.hasType('error')) {
+                console.log(`Uncaught error for command (${commandString}): rel.stringifyRelation()`);
+            }
+        },
+        finish() { }
+    }
+}

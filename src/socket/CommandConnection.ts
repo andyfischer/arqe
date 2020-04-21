@@ -5,6 +5,7 @@ import RelationReceiver from '../RelationReceiver'
 import { parseRelation } from '../parseCommand'
 import IDSource from '../utils/IDSource'
 import GraphLike from '../GraphLike'
+import { receiveToRelationList, fallbackReceiver } from '../receivers'
 
 export type RespondFunc = (msg: string) => void
 
@@ -62,19 +63,22 @@ export default class CommandConnection implements GraphLike {
         this.ws.terminate();
     }
 
-    run(query: string, output: RelationReceiver) {
+    run(commandStr: string, output?: RelationReceiver) {
 
-        if (typeof query !== 'string')
-            throw new Error("expected string for query, saw: " + query);
+        if (typeof commandStr !== 'string')
+            throw new Error("expected string for command, saw: " + commandStr);
+
+        if (!output)
+            output = fallbackReceiver(commandStr);
 
         if (this.ws.readyState === WebSocket.CONNECTING) {
-            this.pendingForConnection.push({ query, output });
+            this.pendingForConnection.push({ query: commandStr, output });
             return;
         }
 
         const reqid = this.requestId.take();
 
-        this.ws.send(JSON.stringify({reqid, query}));
+        this.ws.send(JSON.stringify({reqid, query: commandStr}));
         this.reqListeners[reqid] = output;
     }
 

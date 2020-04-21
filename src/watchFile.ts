@@ -2,6 +2,7 @@
 import connect from './socket/openWebSocketClient'
 import WatchFileApi from './WatchFileApi'
 import CommandConnection from './socket/CommandConnection'
+import Path from 'path'
 
 let processClient: CommandConnection = null;
 
@@ -9,6 +10,8 @@ export default async function watchFile(filename: string, callback: () => void) 
     if (processClient === null) {
         processClient = await connect();
     }
+
+    filename = Path.resolve(filename);
 
     const api = new WatchFileApi(processClient);
 
