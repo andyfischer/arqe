@@ -142,7 +142,7 @@ export class PatternValue implements Pattern {
                 else if (subTag.starValue)
                     return false;
 
-                if (tag.tagValue === subTag.tagValue)
+                if (!tag.tagValue || (tag.tagValue === subTag.tagValue))
                     foundMatch = true;
             }
 
@@ -175,8 +175,8 @@ export class PatternValue implements Pattern {
                 if (!rel.hasType(arg.tagType))
                     return false;
 
-                if (rel.hasValueForType(arg.tagType))
-                    return false;
+                //if (rel.hasValueForType(arg.tagType))
+                //    return false;
 
                 continue;
             }

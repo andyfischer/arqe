@@ -36,8 +36,9 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
         parenSyntax = true;
     }
 
-    if (!hasValue)
+    if (!hasValue) {
         return {}
+    }
 
     // Tag value
 
@@ -159,7 +160,6 @@ function parseOneTag(it: TokenIterator): PatternTag {
 
     if (tagType === '/')
         throw new Error("syntax error, tagType was '/'");
-
 
     const valueOptions = parseTagValue(it);
 
