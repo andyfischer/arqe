@@ -67,6 +67,9 @@ export default function watchAndValidateCommand(commandStr: string, output: Rela
             validations.push(validation);
     }
 
+    let sentFinish = false;
+    let finishStackTrace = null;
+
     return {
         relation(rel) {
             for (const v of validations)
@@ -75,8 +78,19 @@ export default function watchAndValidateCommand(commandStr: string, output: Rela
             output.relation(rel);
         },
         finish() {
+            if (sentFinish) {
+                console.error('Validation failed, received two finish() calls: ' + commandStr);
+                console.error('First finish() call: ' + finishStackTrace.stack);
+                console.error('Second finish call: ' + (new Error()).stack);
+                internalError('Validation failed, received two finish() calls: ' + commandStr);
+                return;
+            }
+
             for (const v of validations)
                 v.finish();
+
+            sentFinish = true;
+            finishStackTrace = new Error();
 
             output.finish();
         }

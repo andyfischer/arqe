@@ -137,11 +137,21 @@ export default class API {
         return rels.map(rel => rel.getTagValue("tag"));
     }
     
-    touchpointTagOutput(touchpoint: string): string[] {
+    touchpointTagOutput(touchpoint: string): string {
         const command = `get ${touchpoint} output tag/*`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
-        return rels.map(rel => rel.getTagValue("tag"));
+        
+        if (rels.length === 0) {
+            return null;
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + command)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("tag");
     }
     
     touchpointOutputType(touchpoint: string): string {

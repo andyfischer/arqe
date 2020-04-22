@@ -17,3 +17,7 @@ Correctness
 
 Syntax change
 X "get a" matches "get a/1"
+
+Listener overhaul
+ - Tests are getting listeners triggered twice
+ - File watch is getting listeners triggered for unrelated items

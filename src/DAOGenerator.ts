@@ -282,6 +282,8 @@ export class DAOGenerator {
     getTouchpointOutputType(touchpoint: string) {
         const outputExists = this.api.touchpointOutputIsExists(touchpoint);
         const outputType = this.api.touchpointOutputType(touchpoint);
+        const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
+        const tagOutput = this.api.touchpointTagOutput(touchpoint);
         const expectOne = this.api.touchpointExpectOne(touchpoint);
         const isAsync = this.api.touchpointIsAsync(touchpoint);
         const outputObject = this.api.touchpointOutputObject(touchpoint);
@@ -298,14 +300,14 @@ export class DAOGenerator {
             outputTypeStr = outputType;
         } else if (outputObject) {
             outputTypeStr = null;
-        } else {
+        } else if (tagOutput || tagValueOutput) {
             outputTypeStr = 'string'
         }
 
         if (!expectOne && outputTypeStr !== null)
             outputTypeStr += '[]'
 
-        if (isAsync)
+        if (isAsync && outputTypeStr !== null)
             outputTypeStr = `Promise<${outputTypeStr}>`;
 
         return outputTypeStr;
@@ -363,7 +365,8 @@ export class DAOGenerator {
 
         if (!queryStr.startsWith('get ')
                 && !queryStr.startsWith('set ')
-                && !queryStr.startsWith('delete ')) {
+                && !queryStr.startsWith('delete ')
+                && !queryStr.startsWith('listen ')) {
             command = 'get ' + queryStr;
         }
 
@@ -491,9 +494,6 @@ export class DAOGenerator {
 
                     for (const objectField of this.api.getObjectdefFields(objectdef)) {
                     }
-
-                } else {
-                    writer.line('return rels.map(rel => rel.getPayload())')
                 }
             }
         }

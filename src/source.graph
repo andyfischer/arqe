@@ -86,6 +86,7 @@ set code-generation/dao touchpoint/5
 set touchpoint/5 query(${touchpoint} output value)
 set touchpoint/5 function-name(touchpointOutputIsValue)
 set touchpoint/5 input/3
+set touchpoint/5 expectOne
 set input/3 name/touchpoint
 set input/3 type/string
 set touchpoint/5 output exists
@@ -130,6 +131,7 @@ set touchpoint/8.1 function-name(touchpointTagOutput)
 set touchpoint/8.1 input/6
 set touchpoint/8.1 output tagValue/tag
 set touchpoint/8.1 output optional
+set touchpoint/8.1 expectOne
 set input/6 name/touchpoint
 set input/6 type/string
 
@@ -603,12 +605,12 @@ set touchpoint/db20 output optional
 set touchpoint/db20 output tag/action
 
 set code-generation/watch-file
-set code-generation/watch-file destination-filename(src/WatchFileApi.ts)
-set code-generation/watch-file ik-import(.)
+set code-generation/watch-file destination-filename(src/file-watch/WatchFileApi.ts)
+set code-generation/watch-file ik-import(..)
 set code-generation/watch-file strategy/dao-api
 
 set code-generation/watch-file touchpoint/findWatch
-set touchpoint/findWatch query(file-watch/* filename(${filename}))
+set touchpoint/findWatch query(file-watch/* filename(${filename}) version/*)
 set touchpoint/findWatch function-name/findFileWatch
 set touchpoint/findWatch input/filename
 set touchpoint/findWatch expectOne
@@ -628,12 +630,18 @@ set touchpoint/createWatch async
 set touchpoint/createWatch output tag/file-watch
 
 set code-generation/watch-file touchpoint/listenToFile
-set touchpoint/listenToFile query(listen file-watch/${watch} version/*)
+set touchpoint/listenToFile query(listen -get ${watch} filename/* version/*)
 set touchpoint/listenToFile function-name/listenToFile
 set touchpoint/listenToFile input/file-watch
 set touchpoint/listenToFile expectOne
 set touchpoint/listenToFile listener
 set touchpoint/listenToFile output tagValue/version
+
+set code-generation/watch-file touchpoint/postChange
+set touchpoint/postChange query(set file-watch/* filename/* version/(increment))
+set touchpoint/postChange function-name/postChange
+set touchpoint/postChange input/filename
+set touchpoint/postChange async
 
 set input/file-watch name/watch
 set input/file-watch type/string
@@ -690,7 +698,7 @@ set spreadsheet-view/1 input-mode/normal
 
 # Filesystem
 
-set object-type/file-watch
-set object-type/file-watch attribute/filename
-set object-type/file-watch attribute/last-modified
-set object-type/file-watch attribute/version
+#set object-type/file-watch
+#set object-type/file-watch attribute/filename
+#set object-type/file-watch attribute/last-modified
+#set object-type/file-watch attribute/version

@@ -39,7 +39,7 @@ export default class API {
         return rel.getTagValue("name");
     }
     
-    getCellValue(col: string, row: string): string {
+    getCellValue(col: string, row: string) {
         const command = `get ${row} ${col}`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
@@ -110,11 +110,10 @@ export default class API {
         // TODO - handle multi results
     }
     
-    setSelection(view: string, col: string, row: string): string[] {
+    setSelection(view: string, col: string, row: string) {
         const command = `set ${view} selection ${row} ${col}`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
-        return rels.map(rel => rel.getTag(""));
     }
     
     isEditing(view: string): boolean {

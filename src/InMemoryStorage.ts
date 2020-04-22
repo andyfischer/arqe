@@ -78,6 +78,29 @@ export default class InMemoryStorage implements StorageProvider {
         this.graph = graph;
     }
 
+    resolveSaveUniqueTags(rel: Relation) {
+        let hasUnique;
+
+        for (const tag of rel.tags)
+            if (tag.valueExpr && tag.valueExpr[0] === 'unique')
+                hasUnique = true;
+
+        if (hasUnique) {
+            return rel.remapTags((tag: PatternTag) => {
+                if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
+                    if (!this.nextUniqueIdPerType[tag.tagType])
+                        this.nextUniqueIdPerType[tag.tagType] = new IDSource();
+
+                    return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
+                } else {
+                    return tag;
+                }
+            });
+        }
+
+        return rel;
+    }
+
     *linearScan(pattern: Pattern) {
         for (const ntag in this.relationsByNtag) {
             const rel = this.relationsByNtag[ntag];
@@ -112,7 +135,7 @@ export default class InMemoryStorage implements StorageProvider {
                 delete this.relationsByNtag[ntag];
 
                 const modified = applyModificationRelation(commandRel, scanRel);
-                this.runSave(modified, output);
+                this.saveOne(modified, output);
             }
         }
 
@@ -123,6 +146,7 @@ export default class InMemoryStorage implements StorageProvider {
         const ntag = relation.getNtag();
         this.relationsByNtag[ntag] = relation;
         output.relation(relation);
+        this.graph.onRelationUpdated(relation);
         this.graph.onRelationUpdatedV3(relation);
     }
 
@@ -133,6 +157,7 @@ export default class InMemoryStorage implements StorageProvider {
         }
 
         // Save as new relation
+        relation = this.resolveSaveUniqueTags(relation);
         const ntag = relation.getNtag();
         const existing = this.relationsByNtag[ntag];
 

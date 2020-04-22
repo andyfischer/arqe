@@ -1,6 +1,6 @@
 
 import startServer from './startServer'
-import watchFile from './watchFile'
+import watchFile from './file-watch/watchFile'
 
 async function main() {
     await startServer();

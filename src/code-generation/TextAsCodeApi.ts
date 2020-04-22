@@ -7,7 +7,7 @@ export default class API {
         this.graph = graph;
     }
     
-    fromFile(target: string): string {
+    fromFile(target: string) {
         const command = `get ${target} from-file`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));

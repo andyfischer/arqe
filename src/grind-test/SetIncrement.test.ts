@@ -15,3 +15,8 @@ test('increment expression works', async ({run}) => {
     await run('set a/1 b/(increment)');
     expect(await run('get a/* b/*')).toEqual(['a/4 b/2']);
 });
+
+test('increment with multiple matches works', async ({run}) => {
+    await run('set file-watch/(unique) filename//test version/0')
+    await run('set file-watch/* filename//test version/(increment)')
+});
