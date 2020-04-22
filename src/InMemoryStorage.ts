@@ -147,7 +147,7 @@ export default class InMemoryStorage implements StorageProvider {
         this.relationsByNtag[ntag] = relation;
         output.relation(relation);
         this.graph.onRelationUpdated(relation);
-        this.graph.onRelationUpdatedV3(relation);
+        // this.graph.onRelationUpdatedV3(relation);
     }
 
     runSave(relation: Relation, output: RelationReceiver) {
@@ -178,7 +178,6 @@ export default class InMemoryStorage implements StorageProvider {
         
         this.saveOne(relation, output);
         output.finish();
-        this.graph.onRelationCreated(relation);
     }
 
     deleteRelation(rel: Relation) {

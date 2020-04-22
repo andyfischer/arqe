@@ -136,7 +136,7 @@ export default class Graph {
     onRelationCreated(rel: Relation) {
         for (const entry of this.listenersV3) {
             if (entry.pattern.matches(rel)) {
-                entry.listener.onRelationCreated(rel);
+                entry.listener.onRelationUpdated(rel);
             }
         }
     }

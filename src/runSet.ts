@@ -9,14 +9,6 @@ export default function runSet(graph: Graph, relation: Relation, output: Relatio
     if (hookObjectSpaceSave(graph, relation, output))
         return;
 
-    graph.inMemory.runSave(relation, {
-        relation: (rel) => {
-            graph.onRelationUpdated(relation);
-            output.relation(rel);
-        },
-        finish: () => {
-            output.finish()
-        },
-    });
+    graph.inMemory.runSave(relation, output);
 }
 
