@@ -4,12 +4,12 @@ import Command from './Command'
 import Relation from './Relation'
 import Pattern from './Pattern'
 
-export default interface GraphListenerV3 {
+export default interface GraphListener{
     onRelationUpdated: (rel: Relation) => void
     onRelationDeleted: (rel: Relation) => void
 }
 
-export class GraphListenerMountV3 {
-    listener: GraphListenerV3
+export class GraphListenerMount{
+    listener: GraphListener
     pattern: Pattern
 }

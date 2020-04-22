@@ -146,8 +146,7 @@ export default class InMemoryStorage implements StorageProvider {
         const ntag = relation.getNtag();
         this.relationsByNtag[ntag] = relation;
         output.relation(relation);
-        // this.graph.onRelationUpdated(relation);
-        this.graph.onRelationUpdatedV3(relation);
+        this.graph.onRelationUpdated(relation);
     }
 
     runSave(relation: Relation, output: RelationReceiver) {
@@ -190,7 +189,7 @@ export default class InMemoryStorage implements StorageProvider {
                 throw new Error("can't delete a typeinfo relation");
 
             graph.inMemory.deleteRelation(rel);
-            graph.onRelationDeletedV3(rel);
+            graph.onRelationDeleted(rel);
         }
 
         emitActionPerformed(output);

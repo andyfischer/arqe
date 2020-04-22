@@ -5,7 +5,6 @@ import parseCommand, { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
 import Relation from './Relation'
 import runSearch from './runSearch'
-import GraphListener from './GraphListener'
 import InMemoryStorage from './InMemoryStorage'
 import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
@@ -24,12 +23,10 @@ import Fs from 'fs'
 import TagTypeOrdering from './TagTypeOrdering'
 import runningInBrowser from './context/runningInBrowser'
 import IDSource from './utils/IDSource'
-import GraphListenerV2 from './GraphListenerV2'
-import { GraphListenerMountV3 } from './GraphListenerV3'
 import { parsePattern } from './parseCommand'
 import receiveToStringList from './receiveToStringList'
 import { ObjectTypeSpace } from './ObjectSpace'
-import GraphListenerV3 from './GraphListenerV3'
+import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import { parsePattern as pattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 
@@ -37,8 +34,7 @@ export default class Graph {
 
     inMemory = new InMemoryStorage(this)
     objectTypes = new ObjectTypeSpace(this)
-    listeners: GraphListener[] = []
-    listenersV3: GraphListenerMountV3[] = []
+    listeners: GraphListenerMount[] = []
 
     savedQueries: SavedQuery[] = []
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
@@ -52,7 +48,6 @@ export default class Graph {
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
-    graphListenersV2: { [id: string]: GraphListenerV2 } = {}
 
     constructor() {
         if (runningInBrowser())
@@ -63,7 +58,7 @@ export default class Graph {
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
-        this.addListenerV3(pattern('object-type/* **'), this.objectTypes);
+        this.addListener(pattern('object-type/* **'), this.objectTypes);
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -105,12 +100,12 @@ export default class Graph {
         return this.typeInfo[name];
     }
 
-    addListenerV3(pattern: Pattern, listener: GraphListenerV3) {
-        this.listenersV3.push({ pattern, listener });
+    addListener(pattern: Pattern, listener: GraphListener) {
+        this.listeners.push({ pattern, listener });
     }
 
-    onRelationUpdatedV3(rel: Relation) {
-        for (const entry of this.listenersV3) {
+    onRelationUpdated(rel: Relation) {
+        for (const entry of this.listeners) {
             if (entry.pattern.matches(rel))
                 entry.listener.onRelationUpdated(rel);
         }
@@ -126,8 +121,8 @@ export default class Graph {
         }
     }
 
-    onRelationDeletedV3(rel: Relation) {
-        for (const entry of this.listenersV3) {
+    onRelationDeleted(rel: Relation) {
+        for (const entry of this.listeners) {
             if (entry.pattern.matches(rel))
                 entry.listener.onRelationDeleted(rel);
         }
@@ -252,13 +247,6 @@ export default class Graph {
         return callback(cxt);
     }
 
-    addListener(patternStr: string, callback: () => void) {
-        if (typeof callback !== 'function')
-            throw new Error('expected callback function');
-
-        return new GraphListenerV2(this, parsePattern(patternStr), callback);
-    }
-    
     loadDumpFile(filename: string) {
         const contents = Fs.readFileSync(filename, 'utf8');
         for (const line of contents.split(/\r\n|\r|\n/)) {
