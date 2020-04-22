@@ -56,9 +56,10 @@ set code-generation/dao touchpoint/4
 set touchpoint/4 query(${touchpoint} expectOne)
 set touchpoint/4 function-name(touchpointExpectOne)
 set touchpoint/4 input/2
+set touchpoint/4 output exists
+
 set input/2 name/touchpoint
 set input/2 type/string
-set touchpoint/4 output exists
 
 set code-generation/dao touchpoint/isAsync
 set touchpoint/isAsync query(${touchpoint} async)

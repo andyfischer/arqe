@@ -13,19 +13,12 @@ export default function runListen(graph: Graph, step: CommandStep) {
         runSearch(graph, search);
     }
 
-    graph.listeners.push({
+    graph.addListenerV3(step.pattern, {
         onRelationUpdated(rel: Relation) {
-            if (step.pattern.matches(rel)) {
-                step.output.relation(rel);
-            }
+            step.output.relation(rel);
         },
         onRelationDeleted(rel: Relation) {
-            if (step.pattern.matches(rel)) {
-                emitRelationDeleted(rel, step.output);
-            }
-        },
-        finish() {
-            step.output.finish();
+            emitRelationDeleted(rel, step.output);
         }
-    })
+    });
 }

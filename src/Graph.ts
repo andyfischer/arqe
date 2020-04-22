@@ -109,37 +109,10 @@ export default class Graph {
         this.listenersV3.push({ pattern, listener });
     }
 
-    onRelationCreated(rel: Relation) {
-        for (const entry of this.listenersV3) {
-            if (entry.pattern.matches(rel)) {
-                entry.listener.onRelationUpdated(rel);
-            }
-        }
-    }
-
     onRelationUpdatedV3(rel: Relation) {
         for (const entry of this.listenersV3) {
             if (entry.pattern.matches(rel))
                 entry.listener.onRelationUpdated(rel);
-        }
-    }
-
-    onRelationDeletedV3(rel: Relation) {
-        for (const entry of this.listenersV3) {
-            if (entry.pattern.matches(rel))
-                entry.listener.onRelationDeleted(rel);
-        }
-    }
-
-    onRelationUpdated(rel: Relation) {
-
-        for (const listener of this.listeners)
-            listener.onRelationUpdated(rel);
-
-        for (const id in this.graphListenersV2) {
-            const listener = this.graphListenersV2[id];
-            if (listener.pattern.matches(rel))
-                listener.trigger();
         }
 
         for (const savedQuery of this.savedQueries) {
@@ -153,26 +126,20 @@ export default class Graph {
         }
     }
 
-    onRelationDeleted(rel: Relation) {
-        for (const listener of this.listeners)
-            listener.onRelationDeleted(rel);
-
-        for (const id in this.graphListenersV2) {
-            const listener = this.graphListenersV2[id];
-            if (listener.pattern.matches(rel))
-                listener.trigger();
-        }
-
-        for (const savedQuery of this.savedQueries) {
-            if (savedQuery.pattern.matches(rel)) {
-                savedQuery.changeToken += 1;
-                savedQuery.updateConnectedValues();
-            }
-        }
-
+    onRelationDeletedV3(rel: Relation) {
         for (const entry of this.listenersV3) {
             if (entry.pattern.matches(rel))
                 entry.listener.onRelationDeleted(rel);
+        }
+
+        for (const savedQuery of this.savedQueries) {
+            const matches = savedQuery.pattern.matches(rel);
+
+            if (!matches)
+                continue;
+
+            savedQuery.changeToken += 1;
+            savedQuery.updateConnectedValues();
         }
     }
 
