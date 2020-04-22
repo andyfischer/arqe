@@ -105,30 +105,6 @@ export default class Graph {
         return this.typeInfo[name];
     }
 
-    listen(step: CommandStep) {
-        if (step.flags.get) {
-            const search = step.toRelationSearch();
-            search.finish = () => null;
-            runSearch(this, search);
-        }
-
-        this.listeners.push({
-            onRelationUpdated(rel: Relation) {
-                if (step.pattern.matches(rel)) {
-                    step.output.relation(rel);
-                }
-            },
-            onRelationDeleted(rel: Relation) {
-                if (step.pattern.matches(rel)) {
-                    emitRelationDeleted(rel, step.output);
-                }
-            },
-            finish() {
-                step.output.finish();
-            }
-        })
-    }
-
     addListenerV3(pattern: Pattern, listener: GraphListenerV3) {
         this.listenersV3.push({ pattern, listener });
     }

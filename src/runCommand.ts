@@ -11,6 +11,7 @@ import { runJoinStep } from './runJoin'
 import runSet from './runSet'
 import runModify, { ModifyRequest } from './runModify'
 import runDelete from './runDelete'
+import runListen from './runListen'
 
 const knownCommands = {
     'join': true,
@@ -51,7 +52,7 @@ function runStep(step: CommandStep) {
         }
 
         case 'listen': {
-            step.graph.listen(step);
+            runListen(step.graph, step);
             return;
         }
         }
