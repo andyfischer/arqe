@@ -619,6 +619,15 @@ set touchpoint/findWatch async
 set touchpoint/findWatch output tag/file-watch
 set touchpoint/findWatch output optional
 
+set code-generation/watch-file touchpoint/findWatch2
+set touchpoint/findWatch2 query(file-watch filename(${filename}) version)
+set touchpoint/findWatch2 function-name/findFileWatch2
+set touchpoint/findWatch2 input/filename
+set touchpoint/findWatch2 expectOne
+set touchpoint/findWatch2 async
+set touchpoint/findWatch2 output tag/file-watch
+set touchpoint/findWatch2 output optional
+
 set input/filename name/filename
 set input/filename type/string
 
@@ -703,3 +712,4 @@ set spreadsheet-view/1 input-mode/normal
 #set object-type/file-watch attribute/filename
 #set object-type/file-watch attribute/last-modified
 #set object-type/file-watch attribute/version
+

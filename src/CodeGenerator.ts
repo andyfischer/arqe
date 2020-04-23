@@ -7,7 +7,7 @@ import watchFile from './file-watch/watchFile'
 
 export function runCodeGenerator(filename: string) {
 
-    function run() {
+    watchFile(filename, () => {
         const graph = Graph.loadFromDumpFile(filename);
         const api = new CodeGenerationApi(graph);
 
@@ -22,9 +22,5 @@ export function runCodeGenerator(filename: string) {
                 throw new Error("didn't understand code generation strategy: " + strategy);
             }
         }
-    }
-
-    run();
-
-    watchFile(filename, run);
+    });
 }
