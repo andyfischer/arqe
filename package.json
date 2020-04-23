@@ -7,7 +7,7 @@
     "build": "tsc -p .",
     "test": "jest --watch",
     "tsc-watch": "tsc -w",
-    "start": "tsc-watch --onSuccess \"node dist/startServer.js\"",
+    "start": "tsc-watch --onSuccess ./bin/fs-server",
     "cli": "node dist/startCli.js",
     "generate-api": "tsc-watch --onSuccess 'node dist/startCli.js -f src/source.graph --generate'",
     "generate-api-once": "node dist/startCli.js -f src/source.graph --generate"
