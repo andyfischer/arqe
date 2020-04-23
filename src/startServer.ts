@@ -7,7 +7,7 @@ import createWebSocketServer from './socket/createWebSocketServer'
 import port from './socket/serverPort'
 import Path from 'path'
 
-export default async function main() {
+export async function main() {
     const wsServer = createWebSocketServer();
 
     console.log(`Now listening on port ${port}`);
@@ -21,13 +21,5 @@ export default async function main() {
             console.log(`[server] ${query} -> #done`);
         else
             console.log(`[server] ${query} -> ${rel || error}`);
-    });
-}
-
-if (require.main === module) {
-    main()
-    .catch(e => {
-        console.error(e);
-        process.exitCode = -1;
     });
 }

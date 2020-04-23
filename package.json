@@ -10,8 +10,7 @@
     "start": "tsc-watch --onSuccess \"node dist/startServer.js\"",
     "cli": "node dist/startCli.js",
     "generate-api": "tsc-watch --onSuccess 'node dist/startCli.js -f src/source.graph --generate'",
-    "generate-api-once": "node dist/startCli.js -f src/source.graph --generate",
-    "test-server": "tsc-watch --onSuccess \"node dist/testServer.js\""
+    "generate-api-once": "node dist/startCli.js -f src/source.graph --generate"
   },
   "dependencies": {
     "bent": "^1.5.13",
