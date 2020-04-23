@@ -14,5 +14,35 @@ export default function test(name, callback) {
         return runCommand(command, { graph, ... opts });
     }
 
-    it(name, () => callback({run, graph}));
+    function set(command) {
+        if (!command.startsWith('set '))
+            command = 'set ' + command;
+
+        return run(command);
+    }
+
+    function listen(command: string) {
+        if (!command.startsWith('listen '))
+            command = 'listen ' + command;
+
+        let log = [];
+
+        graph.run(command, {
+            relation(rel) {
+                if (rel.hasType('command-meta'))
+                    return;
+                log.push(rel.stringify());
+            },
+            finish() { }
+        });
+
+        return function getLog() {
+            const out = log;
+            log = [];
+            return out;
+        }
+
+    }
+
+    it(name, () => callback({run, set, listen, graph}));
 }

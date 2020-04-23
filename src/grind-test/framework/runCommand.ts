@@ -26,3 +26,4 @@ export default function run(command, opts?: RunOptions): Promise<string | string
         opts.graph.run(command, collector);
     });
 }
+

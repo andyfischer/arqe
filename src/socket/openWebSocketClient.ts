@@ -11,7 +11,6 @@ export default async function openWebSocketClient() {
     });
 
     ws.on('close', () => {
-        console.log('Disconnected from server');
     });
 
     const commandConnection = new CommandConnection(ws);

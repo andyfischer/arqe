@@ -56,9 +56,10 @@ set code-generation/dao touchpoint/4
 set touchpoint/4 query(\${touchpoint} expectOne)
 set touchpoint/4 function-name(touchpointExpectOne)
 set touchpoint/4 input/2
+set touchpoint/4 output exists
+
 set input/2 name/touchpoint
 set input/2 type/string
-set touchpoint/4 output exists
 
 set code-generation/dao touchpoint/isAsync
 set touchpoint/isAsync query(\${touchpoint} async)
@@ -610,7 +611,7 @@ set code-generation/watch-file ik-import(..)
 set code-generation/watch-file strategy/dao-api
 
 set code-generation/watch-file touchpoint/findWatch
-set touchpoint/findWatch query(file-watch/* filename(\${filename}) version/*)
+set touchpoint/findWatch query(file-watch filename(\${filename}) version)
 set touchpoint/findWatch function-name/findFileWatch
 set touchpoint/findWatch input/filename
 set touchpoint/findWatch expectOne
@@ -630,7 +631,7 @@ set touchpoint/createWatch async
 set touchpoint/createWatch output tag/file-watch
 
 set code-generation/watch-file touchpoint/listenToFile
-set touchpoint/listenToFile query(listen -get \${watch} filename/* version/*)
+set touchpoint/listenToFile query(listen -get \${watch} filename version)
 set touchpoint/listenToFile function-name/listenToFile
 set touchpoint/listenToFile input/file-watch
 set touchpoint/listenToFile expectOne
@@ -638,7 +639,7 @@ set touchpoint/listenToFile listener
 set touchpoint/listenToFile output tagValue/version
 
 set code-generation/watch-file touchpoint/postChange
-set touchpoint/postChange query(set file-watch/* filename/* version/(increment))
+set touchpoint/postChange query(set file-watch/* filename/\${filename} version/(increment))
 set touchpoint/postChange function-name/postChange
 set touchpoint/postChange input/filename
 set touchpoint/postChange async

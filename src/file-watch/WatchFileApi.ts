@@ -8,7 +8,7 @@ export default class API {
     }
     
     async findFileWatch(filename: string): Promise<string> {
-        const command = `get file-watch/* filename(${filename}) version/*`;
+        const command = `get file-watch filename(${filename}) version`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
@@ -47,7 +47,7 @@ export default class API {
     }
     
     listenToFile(watch: string, callback: (rel: Relation) => void) {
-        const command = `listen -get ${watch} filename/* version/*`;
+        const command = `listen -get ${watch} filename version`;
         this.graph.run(command, {
             relation(rel: Relation) { callback(rel) },
             finish() {  }
@@ -55,7 +55,7 @@ export default class API {
     }
     
     async postChange(filename: string) {
-        const command = `set file-watch/* filename/* version/(increment)`;
+        const command = `set file-watch/* filename/${filename} version/(increment)`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
