@@ -611,7 +611,7 @@ set code-generation/watch-file ik-import(..)
 set code-generation/watch-file strategy/dao-api
 
 set code-generation/watch-file touchpoint/findWatch
-set touchpoint/findWatch query(file-watch/* filename(${filename}) version/*)
+set touchpoint/findWatch query(file-watch filename(${filename}) version)
 set touchpoint/findWatch function-name/findFileWatch
 set touchpoint/findWatch input/filename
 set touchpoint/findWatch expectOne
@@ -631,7 +631,7 @@ set touchpoint/createWatch async
 set touchpoint/createWatch output tag/file-watch
 
 set code-generation/watch-file touchpoint/listenToFile
-set touchpoint/listenToFile query(listen -get ${watch} filename/* version/*)
+set touchpoint/listenToFile query(listen -get ${watch} filename version)
 set touchpoint/listenToFile function-name/listenToFile
 set touchpoint/listenToFile input/file-watch
 set touchpoint/listenToFile expectOne
