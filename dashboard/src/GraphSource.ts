@@ -6,8 +6,8 @@ set typeinfo/typeinfo order(before)
 set typeinfo/branch order(after)
     
 set code-generation/dao
-set code-generation/dao destination-filename(src/DAOGeneratorGeneratedDAO.ts)
-set code-generation/dao ik-import(.)
+set code-generation/dao destination-filename(src/code-generation/DAOGeneratorGeneratedDAO.ts)
+set code-generation/dao ik-import(..)
 set code-generation/dao strategy/dao-api
 # set code-generation/dao verbose-logging
 
@@ -231,8 +231,8 @@ set input/16 name/objectdef
 set input/16 type/string
 
 set code-generation/2
-set code-generation/2 destination-filename(src/CodeGenerationApi.ts)
-set code-generation/2 ik-import(.)
+set code-generation/2 destination-filename(src/code-generation/CodeGenerationApi.ts)
+set code-generation/2 ik-import(..)
 set code-generation/2 strategy/dao-api
 
 set code-generation/2 touchpoint/17.1
@@ -713,7 +713,6 @@ set current-view spreadsheet-view/1
 set spreadsheet-view/1 input-mode/normal
 
 # Filesystem
-
 #set object-type/file-watch
 #set object-type/file-watch attribute/filename
 #set object-type/file-watch attribute/last-modified
@@ -721,4 +720,6 @@ set spreadsheet-view/1 input-mode/normal
 
 # Server
 set defaultServerPort/42940
+
+# Auto rebuilder
 `

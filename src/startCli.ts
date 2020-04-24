@@ -6,7 +6,7 @@ import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
 import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
-import { runCodeGenerator } from './CodeGenerator'
+import { runCodeGenerator } from './code-generation/CodeGenerator'
 
 async function connectToSocketServer() {
     const ws = new WebSocket('http://localhost:42940');

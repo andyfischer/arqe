@@ -1,6 +1,6 @@
 
-import Graph from './Graph'
-import { writeFileSyncIfUnchanged } from './context/fs'
+import Graph from '../Graph'
+import { writeFileSyncIfUnchanged } from '../context/fs'
 import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
 
 function javascriptTemplate(vars) {

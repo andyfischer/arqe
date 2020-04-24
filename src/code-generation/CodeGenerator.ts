@@ -1,9 +1,9 @@
 
-import Graph from './Graph'
+import Graph from '../Graph'
 import CodeGenerationApi from './CodeGenerationApi'
 import { generateAPI } from './DAOGenerator'
-import { generateTextAsCode } from './code-generation/TextAsCode'
-import watchFile from './file-watch/watchFile'
+import { generateTextAsCode } from './TextAsCode'
+import watchFile from '../file-watch/watchFile'
 
 export function runCodeGenerator(filename: string) {
 
