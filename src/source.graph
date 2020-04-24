@@ -276,7 +276,7 @@ set code-generation/socket ik-import(..)
 
 set code-generation/socket touchpoint/socket1
 set touchpoint/socket1 function-name(createUniqueConnection)
-set touchpoint/socket1 query(set connection/unique)
+set touchpoint/socket1 query(set connection/(unique))
 set touchpoint/socket1 output tag/connection
 set touchpoint/socket1 expectOne
 

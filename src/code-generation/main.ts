@@ -9,7 +9,7 @@ import runStandardProcess from '../toollib/runStandardProcess'
 
 export function main() {
 
-    runStandardProcess((graph: Graph) => {
+    runStandardProcess(async (graph: Graph) => {
         const api = new CodeGenerationApi(graph);
 
         for (const target of api.listCodeGenerationTargets()) {

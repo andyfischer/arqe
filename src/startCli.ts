@@ -6,7 +6,6 @@ import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
 import CommandConnection from './socket/CommandConnection'
 import Minimist from 'minimist'
-import { runCodeGenerator } from './code-generation/CodeGenerator'
 
 async function connectToSocketServer() {
     const ws = new WebSocket('http://localhost:42940');
@@ -33,14 +32,6 @@ export default async function main() {
     let graph;
     let useRemoteServer = true;
     let startRepl = false;
-
-    if (cliArgs.generate) {
-        if (!cliArgs.f)
-            throw new Error("should use -f with --generate");
-
-        runCodeGenerator(cliArgs.f);
-        return;
-    }
 
     if (cliArgs.f) {
         graph = Graph.loadFromDumpFile(cliArgs.f);

@@ -290,5 +290,8 @@ export default class Graph {
         graph.loadDumpFile(filename);
         return graph;
     }
+
+    close() {
+    }
 }
 

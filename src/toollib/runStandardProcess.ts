@@ -1,21 +1,24 @@
 
 import Graph from '../Graph'
 import getProcessClient from '../toollib/getProcessClient'
+import Minimist from 'minimist'
 
-// TODO:
-//   Parse command line args
-//   Allow the .graph to be loaded from a file
-//   Use this for code-generator
 export default async function runStandardProcess(handler: (graph: Graph) => Promise<void>) {
+
+    const cliArgs = Minimist(process.argv.slice(2));
 
     let graph;
 
-    try {
-        graph = await getProcessClient();
-    } catch (e) {
-        console.error('Failed to connect to server: ' + e);
-        process.exitCode = -1;
-        return;
+    if (cliArgs['graph-file']) {
+        graph = Graph.loadFromDumpFile(cliArgs['graph-file']);
+    } else {
+        try {
+            graph = await getProcessClient();
+        } catch (e) {
+            console.error('Failed to connect to server: ' + e);
+            process.exitCode = -1;
+            return;
+        }
     }
 
     try {
