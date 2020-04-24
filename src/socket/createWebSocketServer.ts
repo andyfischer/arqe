@@ -3,11 +3,7 @@ import WebSocket from 'ws'
 import Graph from '../Graph'
 import SocketApi from '../code-generation/SocketApi'
 
-export default function createWebSocketServer(graph: Graph) {
-
-    const api = new SocketApi(graph);
-    const port = api.getServerPort();
-
+function createServer(graph: Graph, port: number): Promise<WebSocket.Server> {
     const server = new WebSocket.Server({
       port,
       perMessageDeflate: {
@@ -31,7 +27,42 @@ export default function createWebSocketServer(graph: Graph) {
       }
     });
 
-    console.log(`Now listening on port ${port}`);
+    return new Promise((resolve, reject) => {
+        server.on('listening', () => resolve(server));
+        server.on('error', reject);
+    });
+}
 
-    return server;
+function isAddressInUseError(e) {
+    return e.code === 'EADDRINUSE';
+}
+
+export default async function createWebSocketServer(graph: Graph) {
+
+    const api = new SocketApi(graph);
+    let port = parseInt(api.getServerPort());
+    let attempt = 0;
+
+    while (true) {
+        if (attempt > 5)
+            throw new Error('passed max attempts');
+
+        try {
+            const server = await createServer(graph, port);
+            console.log(`[server] Now listening on port ${port}`);
+            return server;
+
+        } catch (e) {
+            if (isAddressInUseError(e)) {
+                console.log(`[server] port ${port} is already in use, trying next port..`);
+                attempt += 1;
+                port += 1;
+                continue;
+            }
+
+            throw e;
+        }
+    }
+
+    return null;
 }
