@@ -5,10 +5,11 @@ import { generateAPI } from './DAOGenerator'
 import { generateTextAsCode } from './TextAsCode'
 import watchFile from '../file-watch/watchFile'
 
-export function runCodeGenerator(filename: string) {
+import runStandardProcess from '../toollib/runStandardProcess'
 
-    watchFile(filename, () => {
-        const graph = Graph.loadFromDumpFile(filename);
+export function main() {
+
+    runStandardProcess((graph: Graph) => {
         const api = new CodeGenerationApi(graph);
 
         for (const target of api.listCodeGenerationTargets()) {

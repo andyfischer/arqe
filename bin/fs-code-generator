@@ -1,3 +1,5 @@
 #! /usr/bin/env node
 
-const { main } require(
+const { main } = require('../dist/code-generation/main');
+
+main();

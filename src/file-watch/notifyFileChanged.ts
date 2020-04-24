@@ -1,11 +1,10 @@
 
-import getProcessClient from '../toollib/getProcessClient'
 import Path from 'path'
 import WatchFileApi from './WatchFileApi'
 import runStandardProcess from '../toollib/runStandardProcess'
 import Graph from '../Graph'
 
-export async function main() {
+export function main() {
     runStandardProcess(async (graph: Graph) => {
         let filename = process.argv[2];
 

@@ -2,6 +2,10 @@
 import Graph from '../Graph'
 import getProcessClient from '../toollib/getProcessClient'
 
+// TODO:
+//   Parse command line args
+//   Allow the .graph to be loaded from a file
+//   Use this for code-generator
 export default async function runStandardProcess(handler: (graph: Graph) => Promise<void>) {
 
     let graph;
