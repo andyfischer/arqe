@@ -3,7 +3,3 @@
 const { main } = require('../dist/file-watch/notifyFileChanged');
 
 main()
-.catch(e => {
-    process.exitCode = -1;
-    console.error(e);
-});
