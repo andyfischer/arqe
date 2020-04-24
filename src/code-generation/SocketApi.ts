@@ -8,7 +8,7 @@ export default class API {
     }
     
     createUniqueConnection(): string {
-        const command = `set connection/unique`;
+        const command = `set connection/(unique)`;
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
         
