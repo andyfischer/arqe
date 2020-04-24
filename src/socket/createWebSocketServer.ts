@@ -1,9 +1,14 @@
 
 import WebSocket from 'ws'
-import port from './serverPort'
+import Graph from '../Graph'
+import SocketApi from '../code-generation/SocketApi'
 
-export default function createWebSocketServer() {
-    return new WebSocket.Server({
+export default function createWebSocketServer(graph: Graph) {
+
+    const api = new SocketApi(graph);
+    const port = api.getServerPort();
+
+    const server = new WebSocket.Server({
       port,
       perMessageDeflate: {
         zlibDeflateOptions: {
@@ -25,4 +30,8 @@ export default function createWebSocketServer() {
         // should not be compressed.
       }
     });
+
+    console.log(`Now listening on port ${port}`);
+
+    return server;
 }

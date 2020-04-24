@@ -25,6 +25,24 @@ export default class API {
         return rel.getTag("connection");
     }
     
+    getServerPort(): string {
+        const command = `get defaultServerPort/*`;
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + command)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + command)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("defaultServerPort");
+    }
+    
     deleteConnection(connection: string) {
         const command = `delete ${connection}`;
         const rels: Relation[] = this.graph.runSync(command)

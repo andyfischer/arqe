@@ -280,6 +280,12 @@ set touchpoint/socket1 query(set connection/unique)
 set touchpoint/socket1 output tag/connection
 set touchpoint/socket1 expectOne
 
+set code-generation/socket touchpoint/socket11
+set touchpoint/socket11 function-name(getServerPort)
+set touchpoint/socket11 query(get defaultServerPort/*)
+set touchpoint/socket11 output tagValue/defaultServerPort
+set touchpoint/socket11 expectOne
+
 set code-generation/socket touchpoint/socket2
 set touchpoint/socket2 function-name(deleteConnection)
 set touchpoint/socket2 query(delete \${connection})
@@ -713,4 +719,6 @@ set spreadsheet-view/1 input-mode/normal
 #set object-type/file-watch attribute/last-modified
 #set object-type/file-watch attribute/version
 
+# Server
+set defaultServerPort/42940
 `
