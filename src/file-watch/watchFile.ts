@@ -1,9 +1,11 @@
 
 import Path from 'path'
+import Graph from '../Graph'
 import WatchFileApi from './WatchFileApi'
 import getProcessClient from '../toollib/getProcessClient'
+import runStandardProcess from '../toollib/runStandardProcess'
 
-export default async function watchFile(filename: string, callback: () => void) {
+export default async function watchFile(filename: string, callback: (version: string) => void) {
     const graph = await getProcessClient();
 
     filename = Path.resolve(filename);
@@ -15,21 +17,18 @@ export default async function watchFile(filename: string, callback: () => void) 
         watch = await api.createFileWatch(filename);
     }
 
-    api.listenToFile(watch, (evt) => {
-        callback();
+    api.listenToFile(watch, callback);
+}
+
+export async function main() {
+    runStandardProcess(async (graph: Graph) => {
+        const filename = process.argv[2];
+
+        watchFile(filename, (version) => {
+            console.log(`file ${filename} changed: ` + version);
+        })
+        .catch(console.error);
+
+        await new Promise((resolve,reject) => {});
     });
-}
-
-async function main() {
-    const filename = process.argv[2];
-
-    watchFile(filename, () => {
-        console.log('watchFile saw change');
-    })
-    .catch(console.error);
-}
-
-if (require.main === module) {
-    main()
-    .catch(console.error);
 }
