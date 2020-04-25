@@ -1,4 +1,5 @@
 
+import 'source-map-support'
 import Graph from './fs/Graph'
 import runStandardProcess from './fs/toollib/runStandardProcess'
 import path from 'path'
@@ -6,24 +7,34 @@ import fs from 'fs-extra'
 import BuildBotAPI from './BuildBotAPI'
 
 let graph: Graph;
+let api: BuildBotAPI;
 
 function ignoreFile(filename: string) {
     return (/COMMIT_EDITMSG/.exec(filename));
 }
 
-async function findProjectRoot(filename: string) {
+async function scheduleCommandIfNeeded(cmd: string) {
+    const tasks = await api.findTasksByCommand(cmd);
 
-    console.log('findProjectRoot: ' + filename);
+    for (const task of tasks) {
+        const status = await api.taskStatus(task);
+        if (status === 'scheduled') {
+            console.log('already have this scheduled: ' + cmd);
+            return;
+        }
+    }
 
+    console.log('scheduling command: ' + cmd);
+    await api.createBuildTask(cmd, 'scheduled');
+}
+
+async function findProjectRoot(filename: string): Promise<string> {
     const dirname = path.dirname(filename);
-
-    console.log(' dirname: ' + dirname);
 
     if (dirname === filename || dirname === '/' || dirname === '/Users')
         return null;
     
     if (await fs.exists(path.join(dirname, 'package.json'))) {
-        console.log(`package root dir of ${filename} is: ${dirname}`);
         return dirname;
     }
 
@@ -32,9 +43,7 @@ async function findProjectRoot(filename: string) {
 
 async function fileWasChanged(filename: string) {
 
-    console.log('file was changed: ', filename);
-
-    const packageRoot = findProjectRoot(filename);
+    const packageRoot = await findProjectRoot(filename);
     const packageJsonFilename = path.join(packageRoot, 'package.json');
     const hasPackageJson = await fs.exists(packageJsonFilename);
 
@@ -55,18 +64,16 @@ async function fileWasChanged(filename: string) {
         return;
     }
 
-    console.log('trigger rebuild: ', packageRoot);
+    scheduleCommandIfNeeded(`cd ${packageRoot} && yarn build`);
 }
 
 async function start() {
-    const api = new BuildBotAPI(graph);
 
     // Watch all changed files
     api.listenToFileChanges((filename: string) => {
         if (ignoreFile(filename))
             return;
 
-        console.log('Saw file change: ', filename);
         fileWasChanged(filename);
     });
 
@@ -91,6 +98,7 @@ async function start() {
 export async function main() {
     runStandardProcess((_graph: Graph) => {
         graph = _graph;
+        api = new BuildBotAPI(graph);
         return start();
     });
 }

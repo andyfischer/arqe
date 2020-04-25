@@ -18,4 +18,53 @@ export default class API {
             finish() {  }
         });
     }
+    
+    async findTasksByCommand(cmd: string): Promise<string[]> {
+        const command = `get build-task/* cmd/${cmd} status`;
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+        return rels.map(rel => rel.getTag("build-task"));
+    }
+    
+    async createBuildTask(cmd: string, status: string): Promise<string> {
+        const command = `set build-task/(unique) cmd/${cmd} status/${status}`;
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + command)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + command)
+        }
+        
+        const rel = rels[0];
+        return rel.getTag("build-task");
+    }
+    
+    async taskStatus(task: string): Promise<string> {
+        const command = `get build-task/${task} cmd status`;
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+        
+        // Expect one result
+        if (rels.length === 0) {
+            throw new Error("No relation found for: " + command)
+        }
+        
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + command)
+        }
+        
+        const rel = rels[0];
+        return rel.getTagValue("status");
+    }
 }

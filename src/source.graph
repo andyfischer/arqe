@@ -748,3 +748,36 @@ set touchpoint/listenToFileChanges function-name/listenToFileChanges
 set touchpoint/listenToFileChanges listener
 set touchpoint/listenToFileChanges output tagValue/filename
 
+set code-generation/autobuildbot touchpoint/findTasksByCommand
+set touchpoint/findTasksByCommand query(get build-task/* cmd/${cmd} status)
+set touchpoint/findTasksByCommand function-name/findTasksByCommand
+set touchpoint/findTasksByCommand input/cmd
+set touchpoint/findTasksByCommand output tag/build-task
+set touchpoint/findTasksByCommand async
+
+set code-generation/autobuildbot touchpoint/createBuildTask
+set touchpoint/createBuildTask query(set build-task/(unique) cmd/${cmd} status/${status})
+set touchpoint/createBuildTask function-name/createBuildTask
+set touchpoint/createBuildTask input/cmd
+set touchpoint/createBuildTask input/status
+set touchpoint/createBuildTask expectOne
+set touchpoint/createBuildTask output tag/build-task
+set touchpoint/createBuildTask async
+
+set code-generation/autobuildbot touchpoint/taskStatus
+set touchpoint/taskStatus query(get build-task/${task} cmd status)
+set touchpoint/taskStatus function-name/taskStatus
+set touchpoint/taskStatus input/task
+set touchpoint/taskStatus expectOne
+set touchpoint/taskStatus output tagValue/status
+set touchpoint/taskStatus async
+
+set input/cmd name/cmd
+set input/cmd type/string
+
+set input/status name/status
+set input/status type/string
+
+set input/task name/task
+set input/task type/string
+

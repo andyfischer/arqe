@@ -42,7 +42,7 @@ export default class CommandConnection implements GraphLike {
             }
 
             if (rel === undefined) {
-                console.log('CommandConnection internal error: missing "rel" field');
+                console.log('CommandConnection internal error: missing "rel" field, messageStr = ' + messageStr);
                 return;
             }
             
