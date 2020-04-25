@@ -1,22 +1,77 @@
 
 import Graph from './fs/Graph'
 import runStandardProcess from './fs/toollib/runStandardProcess'
-import Path from 'path'
+import path from 'path'
+import fs from 'fs-extra'
 import BuildBotAPI from './BuildBotAPI'
 
-async function run(graph: Graph) {
+let graph: Graph;
 
+function ignoreFile(filename: string) {
+    return (/COMMIT_EDITMSG/.exec(filename));
+}
+
+async function findProjectRoot(filename: string) {
+
+    console.log('findProjectRoot: ' + filename);
+
+    const dirname = path.dirname(filename);
+
+    console.log(' dirname: ' + dirname);
+
+    if (dirname === filename || dirname === '/' || dirname === '/Users')
+        return null;
+    
+    if (await fs.exists(path.join(dirname, 'package.json'))) {
+        console.log(`package root dir of ${filename} is: ${dirname}`);
+        return dirname;
+    }
+
+    return findProjectRoot(dirname);
+}
+
+async function fileWasChanged(filename: string) {
+
+    console.log('file was changed: ', filename);
+
+    const packageRoot = findProjectRoot(filename);
+    const packageJsonFilename = path.join(packageRoot, 'package.json');
+    const hasPackageJson = await fs.exists(packageJsonFilename);
+
+    if (!hasPackageJson)
+        return;
+
+    const inSrcDir = filename.startsWith(path.join(packageRoot, 'src'));
+
+    if (!inSrcDir)
+        return;
+
+    const packageJson = await JSON.parse(await fs.readFile(packageJsonFilename, 'utf8'));
+
+    const hasBuildScript = packageJson.scripts && packageJson.scripts.build;
+
+    if (!hasBuildScript) {
+        console.log('No build script in: ' + packageJsonFilename)
+        return;
+    }
+
+    console.log('trigger rebuild: ', packageRoot);
+}
+
+async function start() {
     const api = new BuildBotAPI(graph);
 
+    // Watch all changed files
     api.listenToFileChanges((filename: string) => {
-        console.log('Saw file change: ', filename);
-    });
+        if (ignoreFile(filename))
+            return;
 
-    console.log('Launched Build Bot..');
+        console.log('Saw file change: ', filename);
+        fileWasChanged(filename);
+    });
 
     await new Promise((resolve,reject) => {});
 
-    // Watch all changed files
     // Look for certain file extensions
     // If we see a rebuildable file..
     // Find the parent package.json file
@@ -34,5 +89,8 @@ async function run(graph: Graph) {
 //   Delete job
 //   Get color list
 export async function main() {
-    runStandardProcess(run);
+    runStandardProcess((_graph: Graph) => {
+        graph = _graph;
+        return start();
+    });
 }
