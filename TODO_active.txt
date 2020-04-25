@@ -11,6 +11,7 @@ Publish 'ik-dynamodb' to npm
 
 Useful tools
   Manage the git branches (make it easy to cleanup)
+  Autotrigger build scripts on file changes
 
 Correctness
   Listen for events when relations enter & exit a set
@@ -20,4 +21,6 @@ X "get a" matches "get a/1"
 
 Listener overhaul
  X Tests are getting listeners triggered twice
- - File watch is getting listeners triggered for unrelated items
+ X File watch is getting listeners triggered for unrelated items
+
+

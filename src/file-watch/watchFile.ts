@@ -16,9 +16,6 @@ export default async function watchFile(filename: string, callback: () => void) 
     }
 
     api.listenToFile(watch, (evt) => {
-        if (evt.hasType('command-meta'))
-            return;
-
         callback();
     });
 }

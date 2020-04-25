@@ -722,3 +722,15 @@ set spreadsheet-view/1 input-mode/normal
 set defaultServerPort/42940
 
 # Auto rebuilder
+
+set code-generation/autobuildbot
+set code-generation/autobuildbot destination-filename(autobuildbot/src/BuildBotAPI.ts)
+set code-generation/autobuildbot ik-import(./fs)
+set code-generation/autobuildbot strategy/dao-api
+
+set code-generation/autobuildbot touchpoint/listenToFileChanges
+set touchpoint/listenToFileChanges query(listen file-watch/* filename/* version)
+set touchpoint/listenToFileChanges function-name/listenToFileChanges
+set touchpoint/listenToFileChanges listener
+set touchpoint/listenToFileChanges output tagValue/filename
+

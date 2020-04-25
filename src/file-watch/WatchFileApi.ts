@@ -65,10 +65,14 @@ export default class API {
         return rel.getTag("file-watch");
     }
     
-    listenToFile(watch: string, callback: (rel: Relation) => void) {
+    listenToFile(watch: string, callback: (version: string) => void) {
         const command = `listen -get ${watch} filename version`;
         this.graph.run(command, {
-            relation(rel: Relation) { callback(rel) },
+            relation(rel: Relation) {
+                if (rel.hasType('command-meta'))
+                    return;
+                callback(rel.getTagValue("version"));
+            },
             finish() {  }
         });
     }
