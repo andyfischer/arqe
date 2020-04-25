@@ -54,7 +54,6 @@ export default class CommandConnection implements GraphLike {
             this.pendingForConnection = [];
 
             for (const { query, output } of pending) {
-                console.log('running pending: ', query, output)
                 this.run(query, output)
             }
         });
@@ -66,8 +65,6 @@ export default class CommandConnection implements GraphLike {
 
     run(commandStr: string, output?: RelationReceiver) {
 
-        console.log('CommandConnection.run: ', commandStr)
-
         if (typeof commandStr !== 'string')
             throw new Error("expected string for command, saw: " + commandStr);
 
@@ -75,14 +72,12 @@ export default class CommandConnection implements GraphLike {
             output = fallbackReceiver(commandStr);
 
         if (this.ws.readyState === WebSocket.CONNECTING) {
-            console.log('placed command on pending: ', commandStr);
             this.pendingForConnection.push({ query: commandStr, output });
             return;
         }
 
         const reqid = this.requestId.take();
 
-        console.log('send: ', JSON.stringify({reqid, query: commandStr}))
         this.ws.send(JSON.stringify({reqid, query: commandStr}));
         this.reqListeners[reqid] = output;
     }

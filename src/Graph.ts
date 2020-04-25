@@ -105,9 +105,16 @@ export default class Graph {
     }
 
     onRelationUpdated(rel: Relation) {
+
+        // console.log('onRelationUpdated: ' + rel.stringify() + ` (${this.listeners.length} listenrers)`);
+
         for (const entry of this.listeners) {
-            if (entry.pattern.matches(rel))
+            if (entry.pattern.matches(rel)) {
+                // console.log(' listener matches: ' + entry.pattern.stringify())
                 entry.listener.onRelationUpdated(rel);
+            } else {
+                // console.log(' listener does not match: ' + entry.pattern.stringify())
+            }
         }
 
         for (const savedQuery of this.savedQueries) {

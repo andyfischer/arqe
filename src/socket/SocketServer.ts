@@ -39,11 +39,13 @@ class Connection extends EventEmitter {
 
             if (!query) {
                 this.send(null, { reqid, err: "#error protocal error, missing 'query'" });
+                console.log(`received malformed request (missing 'query'): ${query}`)
                 return;
             }
 
             try {
 
+                console.log('[server] running: ' + query);
                 this.graph.run(query, {
                     relation: (rel: Relation) => {
                         this.send(query, { reqid, rel: rel.stringifyRelation() });
