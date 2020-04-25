@@ -8,7 +8,7 @@ export default class API {
     }
     
     listenToFileChanges(callback: (filename: string) => void) {
-        const command = `listen file-watch/* filename/* version`;
+        const command = `listen file-watch filename/* version`;
         this.graph.run(command, {
             relation(rel: Relation) {
                 if (rel.hasType('command-meta'))

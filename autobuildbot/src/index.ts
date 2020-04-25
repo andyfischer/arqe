@@ -4,13 +4,17 @@ import runStandardProcess from './fs/toollib/runStandardProcess'
 import Path from 'path'
 import BuildBotAPI from './BuildBotAPI'
 
-async function main(graph: Graph) {
+async function run(graph: Graph) {
 
     const api = new BuildBotAPI(graph);
 
     api.listenToFileChanges((filename: string) => {
-        console.log('saw change: ', filename);
+        console.log('Saw file change: ', filename);
     });
+
+    console.log('Launched Build Bot..');
+
+    await new Promise((resolve,reject) => {});
 
     // Watch all changed files
     // Look for certain file extensions
@@ -29,5 +33,6 @@ async function main(graph: Graph) {
 //   Create job
 //   Delete job
 //   Get color list
-
-runStandardProcess(main);
+export async function main() {
+    runStandardProcess(run);
+}

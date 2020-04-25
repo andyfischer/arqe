@@ -25,11 +25,13 @@ class Connection extends EventEmitter {
         this.ws = ws;
         this.api = new SocketApi(graph);
         const id = this.api.createUniqueConnection();
-        console.log(`[server] opened connection/${id}`);
+        console.log(`[server] opened ${id}`);
 
         ws.on('message', async (message) => {
 
             this.emit('received', message);
+
+            console.log('Server received: ', message)
 
             const data = JSON.parse(message);
             const { reqid, query } = data;
@@ -63,7 +65,7 @@ class Connection extends EventEmitter {
 
         ws.on('close', async () => {
             this.api.deleteConnection(id);
-            console.log(`[server] closed connection/${id}`);
+            console.log(`[server] closed ${id}`);
         });
     }
 }

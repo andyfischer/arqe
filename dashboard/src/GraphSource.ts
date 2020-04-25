@@ -729,7 +729,7 @@ set code-generation/autobuildbot ik-import(./fs)
 set code-generation/autobuildbot strategy/dao-api
 
 set code-generation/autobuildbot touchpoint/listenToFileChanges
-set touchpoint/listenToFileChanges query(listen file-watch/* filename/* version)
+set touchpoint/listenToFileChanges query(listen file-watch filename/* version)
 set touchpoint/listenToFileChanges function-name/listenToFileChanges
 set touchpoint/listenToFileChanges listener
 set touchpoint/listenToFileChanges output tagValue/filename
