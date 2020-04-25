@@ -313,6 +313,19 @@ export class DAOGenerator {
         return outputTypeStr;
     }
 
+    getTypeForListenerCallback(touchpoint: string) {
+        const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
+        const tagOutput = this.api.touchpointTagOutput(touchpoint);
+
+        if (tagValueOutput)
+            return `(${tagValueOutput}: string) => void`
+
+        if (tagOutput)
+            return `(${tagOutput}: string) => void`
+
+        return `(rel: Relation) => void`
+    }
+
     startTouchpointMethod(writer: JavascriptCodeWriter, touchpoint: string) {
         const name = this.api.touchpointFunctionName(touchpoint);
         const inputs = this.sortInputs(this.api.touchpointInputs(touchpoint));
@@ -324,7 +337,10 @@ export class DAOGenerator {
         }));
 
         if (this.api.touchpointIsListener(touchpoint))
-            inputDefs.push({name: 'callback', inputType: '(rel: Relation) => void'});
+            inputDefs.push({
+                name: 'callback',
+                inputType: this.getTypeForListenerCallback(touchpoint)
+            });
 
         writer.defineMethod({
             name,
@@ -501,10 +517,34 @@ export class DAOGenerator {
         writer.endBlock()
     }
 
+    relationOutputExpression(touchpoint: string) {
+        const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
+        const tagOutput = this.api.touchpointTagOutput(touchpoint);
+
+        if (tagValueOutput)
+            return `rel.getTagValue("${tagValueOutput}")`
+
+        if (tagOutput)
+            return `rel.getTag("${tagOutput}")`
+
+        return `rel`;
+    }
+
     listenerBody(writer: JavascriptCodeWriter, touchpoint: string) {
+        const tagValueOutput = this.api.touchpointTagValueOutput(touchpoint);
+        const tagOutput = this.api.touchpointTagOutput(touchpoint);
+        
         writer.line('this.graph.run(command, {')
             .indent()
-            .line('relation(rel: Relation) { callback(rel) },')
+            .line('relation(rel: Relation) {')
+            .indent()
+            .line(`if (rel.hasType('command-meta'))`)
+            .indent()
+            .line(`return;`)
+            .unindent()
+            .line(`callback(${this.relationOutputExpression(touchpoint)});`)
+            .unindent()
+            .line('},')
             .line('finish() {  }')
             .unindent()
             .line('});')
