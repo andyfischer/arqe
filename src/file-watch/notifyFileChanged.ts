@@ -17,7 +17,10 @@ export function main() {
         filename = Path.resolve(filename);
 
         const api = new WatchFileApi(graph);
-        await api.postChange(filename);
+        if ((await api.findWatchesForFilename(filename)).length === 0)
+            await api.createWatch(filename);
+        else
+            await api.incrementVersion(filename);
     });
 }
 

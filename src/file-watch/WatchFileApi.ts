@@ -45,8 +45,37 @@ export default class API {
         return rel.getTag("file-watch");
     }
     
-    async createFileWatch(filename: string): Promise<string> {
-        const command = `set file-watch/(unique) filename(${filename}) version/0`;
+    listenToFile(watch: string, callback: (version: string) => void) {
+        const command = `listen -get ${watch} filename version`;
+        this.graph.run(command, {
+            relation(rel: Relation) {
+                if (rel.hasType('command-meta'))
+                    return;
+                callback(rel.getTagValue("version"));
+            },
+            finish() {  }
+        });
+    }
+    
+    async postChange(filename: string) {
+        const command = `set file-watch/* filename/${filename} version/(increment)`;
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+    }
+    
+    async findWatchesForFilename(filename: string): Promise<string[]> {
+        const command = `get file-watch/* filename/${filename} version`;
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+        return rels.map(rel => rel.getTag("file-watch"));
+    }
+    
+    async createWatch(filename: string): Promise<string> {
+        const command = `set file-watch/(unique) filename/${filename} version/0`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
@@ -65,19 +94,7 @@ export default class API {
         return rel.getTag("file-watch");
     }
     
-    listenToFile(watch: string, callback: (version: string) => void) {
-        const command = `listen -get ${watch} filename version`;
-        this.graph.run(command, {
-            relation(rel: Relation) {
-                if (rel.hasType('command-meta'))
-                    return;
-                callback(rel.getTagValue("version"));
-            },
-            finish() {  }
-        });
-    }
-    
-    async postChange(filename: string) {
+    async incrementVersion(filename: string) {
         const command = `set file-watch/* filename/${filename} version/(increment)`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)

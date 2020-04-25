@@ -637,14 +637,6 @@ set touchpoint/findWatch2 output optional
 set input/filename name/filename
 set input/filename type/string
 
-set code-generation/watch-file touchpoint/createWatch
-set touchpoint/createWatch query(set file-watch/(unique) filename(${filename}) version/0)
-set touchpoint/createWatch function-name/createFileWatch
-set touchpoint/createWatch input/filename
-set touchpoint/createWatch expectOne
-set touchpoint/createWatch async
-set touchpoint/createWatch output tag/file-watch
-
 set code-generation/watch-file touchpoint/listenToFile
 set touchpoint/listenToFile query(listen -get ${watch} filename version)
 set touchpoint/listenToFile function-name/listenToFile
@@ -658,6 +650,28 @@ set touchpoint/postChange query(set file-watch/* filename/${filename} version/(i
 set touchpoint/postChange function-name/postChange
 set touchpoint/postChange input/filename
 set touchpoint/postChange async
+
+set code-generation/watch-file touchpoint/findWatchesForFilename
+set touchpoint/findWatchesForFilename query(get file-watch/* filename/${filename} version)
+set touchpoint/findWatchesForFilename function-name/findWatchesForFilename
+set touchpoint/findWatchesForFilename input/filename
+set touchpoint/findWatchesForFilename async
+set touchpoint/findWatchesForFilename output tag/file-watch
+set code-generation/watch-file touchpoint/findWatchesForFilename
+
+set code-generation/watch-file touchpoint/createWatch
+set touchpoint/createWatch query(set file-watch/(unique) filename/${filename} version/0)
+set touchpoint/createWatch function-name/createWatch
+set touchpoint/createWatch input/filename
+set touchpoint/createWatch async
+set touchpoint/createWatch expectOne
+set touchpoint/createWatch output tag/file-watch
+
+set code-generation/watch-file touchpoint/incrementVersion
+set touchpoint/incrementVersion query(set file-watch/* filename/${filename} version/(increment))
+set touchpoint/incrementVersion function-name/incrementVersion
+set touchpoint/incrementVersion input/filename
+set touchpoint/incrementVersion async
 
 set input/file-watch name/watch
 set input/file-watch type/string

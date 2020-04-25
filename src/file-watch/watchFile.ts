@@ -14,7 +14,7 @@ export default async function watchFile(filename: string, callback: (version: st
 
     let watch = await api.findFileWatch(filename);
     if (!watch) {
-        watch = await api.createFileWatch(filename);
+        watch = await api.createWatch(filename);
     }
 
     api.listenToFile(watch, callback);

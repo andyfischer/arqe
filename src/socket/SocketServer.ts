@@ -31,8 +31,6 @@ class Connection extends EventEmitter {
 
             this.emit('received', message);
 
-            console.log('Server received: ', message)
-
             const data = JSON.parse(message);
             const { reqid, query } = data;
             let sentFinish = false;
