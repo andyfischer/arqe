@@ -29,6 +29,7 @@ import { ObjectTypeSpace } from './ObjectSpace'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import { parsePattern as pattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
+import ExpireAtListener from './ExpireAtListener'
 
 export default class Graph {
 
@@ -59,6 +60,7 @@ export default class Graph {
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
         this.addListener(pattern('object-type/* **'), this.objectTypes);
+        this.addListener(pattern('expires-at/* **'), new ExpireAtListener(this));
     }
 
     savedQuery(queryStr: string): SavedQuery {

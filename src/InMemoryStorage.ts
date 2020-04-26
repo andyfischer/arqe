@@ -78,27 +78,22 @@ export default class InMemoryStorage implements StorageProvider {
         this.graph = graph;
     }
 
-    resolveSaveUniqueTags(rel: Relation) {
-        let hasUnique;
+    resolveExpressionValues(rel: Relation) {
+        return rel.remapTags((tag: PatternTag) => {
+            if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
+                if (!this.nextUniqueIdPerType[tag.tagType])
+                    this.nextUniqueIdPerType[tag.tagType] = new IDSource();
 
-        for (const tag of rel.tags)
-            if (tag.valueExpr && tag.valueExpr[0] === 'unique')
-                hasUnique = true;
+                return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
+            }
 
-        if (hasUnique) {
-            return rel.remapTags((tag: PatternTag) => {
-                if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
-                    if (!this.nextUniqueIdPerType[tag.tagType])
-                        this.nextUniqueIdPerType[tag.tagType] = new IDSource();
+            if (tag.valueExpr && tag.valueExpr[0] === 'seconds-from-now') {
+                const seconds = parseInt(tag.valueExpr[1]);
+                return tag.setValue(Date.now() + (seconds * 1000) + '');
+            }
 
-                    return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
-                } else {
-                    return tag;
-                }
-            });
-        }
-
-        return rel;
+            return tag;
+        });
     }
 
     *linearScan(pattern: Pattern) {
@@ -156,7 +151,7 @@ export default class InMemoryStorage implements StorageProvider {
         }
 
         // Save as new relation
-        relation = this.resolveSaveUniqueTags(relation);
+        relation = this.resolveExpressionValues(relation);
         const ntag = relation.getNtag();
         const existing = this.relationsByNtag[ntag];
 
