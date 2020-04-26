@@ -25,7 +25,7 @@ class Connection extends EventEmitter {
         this.ws = ws;
         this.api = new SocketApi(graph);
         const id = this.api.createUniqueConnection();
-        console.log(`[server] opened ${id}`);
+        console.log(`[${id} connected]`);
 
         ws.on('message', async (message) => {
 
@@ -43,7 +43,7 @@ class Connection extends EventEmitter {
 
             try {
 
-                console.log('[server] running: ' + query);
+                console.log(`[${id}] ${query}`);
                 this.graph.run(query, {
                     relation: (rel: Relation) => {
                         this.send(query, { reqid, rel: rel.stringifyRelation() });
@@ -65,7 +65,7 @@ class Connection extends EventEmitter {
 
         ws.on('close', async () => {
             this.api.deleteConnection(id);
-            console.log(`[server] closed ${id}`);
+            console.log(`[${id} closed]`);
         });
     }
 }

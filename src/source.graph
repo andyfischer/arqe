@@ -749,14 +749,14 @@ set touchpoint/listenToFileChanges listener
 set touchpoint/listenToFileChanges output tagValue/filename
 
 set code-generation/autobuildbot touchpoint/findTasksByCommand
-set touchpoint/findTasksByCommand query(get build-task/* cmd/${cmd} status)
+set touchpoint/findTasksByCommand query(get build-task/* cmd(${cmd}) status)
 set touchpoint/findTasksByCommand function-name/findTasksByCommand
 set touchpoint/findTasksByCommand input/cmd
 set touchpoint/findTasksByCommand output tag/build-task
 set touchpoint/findTasksByCommand async
 
 set code-generation/autobuildbot touchpoint/createBuildTask
-set touchpoint/createBuildTask query(set build-task/(unique) cmd/${cmd} status/${status})
+set touchpoint/createBuildTask query(set build-task/(unique) cmd(${cmd}) status/${status})
 set touchpoint/createBuildTask function-name/createBuildTask
 set touchpoint/createBuildTask input/cmd
 set touchpoint/createBuildTask input/status

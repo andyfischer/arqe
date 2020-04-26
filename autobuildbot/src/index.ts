@@ -52,8 +52,10 @@ async function fileWasChanged(filename: string) {
 
     const inSrcDir = filename.startsWith(path.join(packageRoot, 'src'));
 
-    if (!inSrcDir)
+    if (!inSrcDir) {
+        console.log('Not in src directory: ' + filename);
         return;
+    }
 
     const packageJson = await JSON.parse(await fs.readFile(packageJsonFilename, 'utf8'));
 
@@ -64,10 +66,13 @@ async function fileWasChanged(filename: string) {
         return;
     }
 
+    console.log('Trggering build in: ' + packageRoot);
     scheduleCommandIfNeeded(`cd ${packageRoot} && yarn build`);
 }
 
 async function start() {
+
+    console.log('Build bot starting..');
 
     // Watch all changed files
     api.listenToFileChanges((filename: string) => {

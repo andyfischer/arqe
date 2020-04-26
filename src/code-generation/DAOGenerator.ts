@@ -5,7 +5,7 @@ import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
 
 function javascriptTemplate(vars) {
     return (
-`import { GraphLike, Relation, receiveToRelationListPromise } from '${vars.ikImport}'
+`import { GraphLike, Relation, receiveToRelationListPromise } from '${vars.fsImportPath}'
 
 export default class API {
     graph: GraphLike
@@ -567,7 +567,7 @@ export class DAOGenerator {
         this.generateMethods(writer);
         
         return javascriptTemplate({
-            ikImport: this.api.getIkImport(this.target),
+            fsImportPath: this.api.getIkImport(this.target),
             methodSource: methodText.join('')
         });
     }

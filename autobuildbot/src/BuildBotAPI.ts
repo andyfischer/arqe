@@ -20,7 +20,7 @@ export default class API {
     }
     
     async findTasksByCommand(cmd: string): Promise<string[]> {
-        const command = `get build-task/* cmd/${cmd} status`;
+        const command = `get build-task/* cmd(${cmd}) status`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
@@ -29,7 +29,7 @@ export default class API {
     }
     
     async createBuildTask(cmd: string, status: string): Promise<string> {
-        const command = `set build-task/(unique) cmd/${cmd} status/${status}`;
+        const command = `set build-task/(unique) cmd(${cmd}) status/${status}`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
