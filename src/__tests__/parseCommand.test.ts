@@ -188,8 +188,8 @@ it('stringifies tag identifiers', () => {
     expect((new PatternValue([newTagFromObject({identifier: 'foo', tagType: 'type', tagValue: 'value'})])).stringify()).toEqual('[from $foo] type/value');
 });
 
-it('stringifies tag values that need quotes', () => {
-    testRestringify('get tag/"string value"')
+it('handles paren sections', () => {
+    testRestringify('get tag(string value)')
 });
 
 it('stringifies expressions', () => {

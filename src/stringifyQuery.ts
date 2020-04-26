@@ -5,7 +5,7 @@ import parseCommand from './parseCommand'
 import PatternTag, { newTag } from './PatternTag'
 import { stringifyExpr } from './parseExpr'
 
-function tagValueStringNeedsQuote(s: string) {
+function tagValueNeedsParens(s: string) {
     for (let i = 0; i < s.length; i++)
         if (s.charAt(i) === ' ')
             return true;
@@ -35,20 +35,20 @@ export function patternTagToString(tag: PatternTag) {
             s += `[from \$${tag.identifier}] `;
         }
 
-        if (tag.tagType === 'option')
+        const needsParens = tagValueNeedsParens(tag.tagValue);
+
+        if (needsParens) {
+            s += tag.tagType + '(';
+        } else if (tag.tagType === 'option') {
             s += '.'
-        else
+        } else {
             s += tag.tagType + '/';
-
-        const needsQuote = tagValueStringNeedsQuote(tag.tagValue);
-
-        if (needsQuote)
-            s += '"';
+        }
 
         s += tag.tagValue;
 
-        if (needsQuote)
-            s += '"';
+        if (needsParens)
+            s += ')';
 
         return s;
     }

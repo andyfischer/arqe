@@ -13,3 +13,9 @@ it('works', () => {
     testRestringify('get a b $c | join b $c d');
     testRestringify('get a | join b | join c');
 });
+
+it('safely stringifies tag values that have spaces', () => {
+    testRestringify('get a/(a b c)');
+    testRestringify('get a(a b c)');
+});
+
