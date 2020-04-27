@@ -1,6 +1,5 @@
 
 import Repl from 'repl'
-import CommandConnection from './socket/CommandConnection'
 import Graph from './Graph'
 import RelationReceiver, { receiveToRelationStream } from './RelationReceiver'
 import Runnable from './Runnable'

@@ -14,7 +14,7 @@ interface PendingQuery {
     output: RelationReceiver
 }
 
-export default class CommandConnection implements GraphLike {
+export default class ClientConnection implements GraphLike {
     ws: WebSocket
     requestId: IDSource = new IDSource()
     connectionId: string
@@ -31,7 +31,7 @@ export default class CommandConnection implements GraphLike {
 
             const listener = this.reqListeners[reqid]
             if (!listener) {
-                console.log('CommandConnection internal error: unrecognized reqid: ' + messageStr);
+                console.log('ClientConnection protocol error: unrecognized reqid: ' + messageStr);
                 return;
             }
 
@@ -42,7 +42,7 @@ export default class CommandConnection implements GraphLike {
             }
 
             if (rel === undefined) {
-                console.log('CommandConnection internal error: missing "rel" field, messageStr = ' + messageStr);
+                console.log('ClientConnection protocol error: missing "rel" field, messageStr = ' + messageStr);
                 return;
             }
             
@@ -83,13 +83,13 @@ export default class CommandConnection implements GraphLike {
     }
 
     runSync(commandStr: string): any {
-        throw new Error(`CommandConnection doesn't support runSync`);
+        throw new Error(`ClientConnection doesn't support runSync`);
     }
 }
 
-export function connectToServer(host: string): CommandConnection {
+export function connectToServer(host: string): ClientConnection {
 
     const ws = new WebSocket('http://localhost:42940');
-    const conn = new CommandConnection(ws);
+    const conn = new ClientConnection(ws);
     return conn;
 }

@@ -1,13 +1,13 @@
 
 import Command from './Command'
-import CommandConnection, { connectToServer } from './socket/CommandConnection'
+import ClientConnection, { connectToServer } from './socket/ClientConnection'
 import Pattern, { parsePattern } from './Pattern'
 import UpdateContext from './UpdateContext'
 
 export default class WebSocketProvider {
 
     host: string
-    connection: CommandConnection
+    connection: ClientConnection
     pattern: Pattern
 
     constructor(host: string, pattern: Pattern) {
@@ -15,13 +15,6 @@ export default class WebSocketProvider {
         this.pattern = pattern;
         this.connection = connectToServer(host);
     }
-
-    /*
-    handle(command: Command, respond: RespondFunc) {
-        console.log('ws handling command: ', command.stringify())
-        // provider.connection.run(command.stringify(), respond);
-    }
-    */
 }
 
 export function updateWebSocketProviders(cxt: UpdateContext) {

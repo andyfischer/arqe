@@ -1,7 +1,7 @@
-import CommandConnection from '../socket/CommandConnection'
+import ClientConnection from '../socket/ClientConnection'
 import connect from '../socket/openWebSocketClient'
 
-let _processClient: CommandConnection = null;
+let _processClient: ClientConnection = null;
 
 export default async function getProcessClient() {
     if (_processClient === null) {

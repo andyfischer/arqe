@@ -1,6 +1,6 @@
 
 import WebSocket from 'ws'
-import CommandConnection from './CommandConnection'
+import ClientConnection from './ClientConnection'
 
 const defaultUrl = 'http://localhost:42940'
 
@@ -15,6 +15,6 @@ export default async function openWebSocketClient() {
     ws.on('close', () => {
     });
 
-    const commandConnection = new CommandConnection(ws);
+    const commandConnection = new ClientConnection(ws);
     return commandConnection;
 }

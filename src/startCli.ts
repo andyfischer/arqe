@@ -4,7 +4,7 @@ import 'source-map-support'
 import Graph from './Graph'
 import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
-import CommandConnection from './socket/CommandConnection'
+import ClientConnection from './socket/ClientConnection'
 import Minimist from 'minimist'
 
 async function connectToSocketServer() {
@@ -18,7 +18,7 @@ async function connectToSocketServer() {
         process.exit();
     });
 
-    const commandConnection = new CommandConnection(ws);
+    const commandConnection = new ClientConnection(ws);
 
     const repl = new ClientRepl(commandConnection);
     repl.start();
@@ -40,7 +40,7 @@ export default async function main() {
     }
 
     if (useRemoteServer) {
-        console.log('connecting to remove server..')
+        console.log('connecting to remote server..')
         await connectToSocketServer();
     }
 
