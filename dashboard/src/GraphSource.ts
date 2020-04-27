@@ -772,11 +772,29 @@ set touchpoint/taskStatus expectOne
 set touchpoint/taskStatus output tagValue/status
 set touchpoint/taskStatus async
 
+set code-generation/autobuildbot touchpoint/setPendingTaskTimer
+set touchpoint/setPendingTaskTimer query(set build-task(\${task}) pending-task-timer expires-at(\${expiresAt}))
+set touchpoint/setPendingTaskTimer function-name/setPendingTaskTimer
+set touchpoint/setPendingTaskTimer input/task
+set touchpoint/setPendingTaskTimer input/expiresAt
+set touchpoint/setPendingTaskTimer expectOne
+set touchpoint/setPendingTaskTimer output tagValue/status
+set touchpoint/setPendingTaskTimer async
+
+set code-generation/autobuildbot touchpoint/listenToPendingTasks
+set touchpoint/listenToPendingTasks query(listen build-task/* pending-task-timer expires-at)
+set touchpoint/listenToPendingTasks function-name/listenToPendingTasks
+set touchpoint/listenToPendingTasks output tagValue/status
+set touchpoint/listenToPendingTasks listener
+
 set input/cmd name/cmd
 set input/cmd type/string
 
 set input/status name/status
 set input/status type/string
+
+set input/expiresAt name/expiresAt
+set input/expiresAt type/string
 
 set input/task name/task
 set input/task type/string
