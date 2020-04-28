@@ -14,7 +14,43 @@ interface PendingQuery {
     output: RelationReceiver
 }
 
+type ConnectError = {
+    error: Error
+}
+
+type ConnectSuccess = {
+    ws: WebSocket
+}
+
+type ConnectResult = ConnectSuccess | ConnectError
+
+function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function tryToConnect(url: string): Promise<ConnectResult> {
+
+    const ws = new WebSocket(url);
+
+    // Wait for 'open' event.
+    return new Promise((resolve, reject) => {
+        const open = () => {
+            ws.removeListener('open', open);
+            ws.removeListener('error', error);
+            resolve({ws});
+        }
+
+        const error = (e) => {
+            resolve({ error: e });
+        }
+
+        ws.on('open', open);
+        ws.on('error', error);
+    });
+}
+
 export default class ClientConnection implements GraphLike {
+    url: string
     ws: WebSocket
     requestId: IDSource = new IDSource()
     connectionId: string
@@ -22,10 +58,64 @@ export default class ClientConnection implements GraphLike {
     pendingForConnection: PendingQuery[] = []
     reqListeners: { [id: string]: RelationReceiver } = {}
 
-    constructor(ws: WebSocket) {
-        this.ws = ws;
+    connectAttemptInProgress = false;
+    maxReconnectAttempts = 10;
 
-        ws.on('message', messageStr => {
+    shouldLogReconnect = false
+
+    constructor(url: string) {
+        if (!url)
+            throw new Error('missing url value');
+
+        this.url = url;
+    }
+
+    async openSocket() {
+
+        if (this.connectAttemptInProgress)
+            return;
+
+        this.connectAttemptInProgress = true;
+
+        let reconnectAttempts = 0;
+
+        while (true) {
+
+            const result = await tryToConnect(this.url);
+
+            if ((result as ConnectError).error) {
+                if (reconnectAttempts >= this.maxReconnectAttempts) {
+                    this.connectAttemptInProgress = false;
+                    throw new Error(`Couldn't connect after ${this.maxReconnectAttempts} attempts`);
+                }
+
+                reconnectAttempts += 1;
+                await delay(1000);
+                continue;
+            }
+
+            this.ws = (result as ConnectSuccess).ws;
+            this.connectAttemptInProgress = false;
+            this.setupWebsocket();
+
+            if (this.shouldLogReconnect) {
+                console.log('websocket has reconnected');
+                this.shouldLogReconnect = false;
+            }
+
+            return;
+        }
+    }
+
+    async start() {
+        if (this.connectAttemptInProgress)
+            throw new Error('socket is already connecting');
+
+        await this.openSocket();
+    }
+
+    setupWebsocket() {
+        this.ws.on('message', messageStr => {
 
             const { reqid, rel, finish } = JSON.parse(messageStr);
 
@@ -49,13 +139,17 @@ export default class ClientConnection implements GraphLike {
             listener.relation(parseRelation(rel));
         });
 
-        ws.on('open', str => {
-            const pending = this.pendingForConnection;
-            this.pendingForConnection = [];
+        this.ws.on('close', () => {
+            console.log('websocket closed, trying to reconnect');
 
-            for (const { query, output } of pending) {
-                this.run(query, output)
-            }
+            this.shouldLogReconnect = true;
+
+            this.openSocket()
+            .catch(console.error);
+        });
+
+        this.ws.on('error', (e) => {
+            console.error(e);
         });
     }
 
@@ -87,9 +181,9 @@ export default class ClientConnection implements GraphLike {
     }
 }
 
-export function connectToServer(host: string): ClientConnection {
+export async function connectToServer(): Promise<ClientConnection> {
 
-    const ws = new WebSocket('http://localhost:42940');
-    const conn = new ClientConnection(ws);
+    const conn = new ClientConnection('http://localhost:42940');
+    await conn.start();
     return conn;
 }

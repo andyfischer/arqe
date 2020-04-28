@@ -13,7 +13,6 @@ export default class WebSocketProvider {
     constructor(host: string, pattern: Pattern) {
         this.host = host;
         this.pattern = pattern;
-        this.connection = connectToServer(host);
     }
 }
 

@@ -646,13 +646,13 @@ set touchpoint/listenToFile listener
 set touchpoint/listenToFile output tagValue/version
 
 set code-generation/watch-file touchpoint/postChange
-set touchpoint/postChange query(set file-watch/* filename/\${filename} version/(increment))
+set touchpoint/postChange query(set file-watch/* filename(\${filename}) version/(increment))
 set touchpoint/postChange function-name/postChange
 set touchpoint/postChange input/filename
 set touchpoint/postChange async
 
 set code-generation/watch-file touchpoint/findWatchesForFilename
-set touchpoint/findWatchesForFilename query(get file-watch/* filename/\${filename} version)
+set touchpoint/findWatchesForFilename query(get file-watch/* filename(\${filename}) version)
 set touchpoint/findWatchesForFilename function-name/findWatchesForFilename
 set touchpoint/findWatchesForFilename input/filename
 set touchpoint/findWatchesForFilename async
@@ -660,7 +660,7 @@ set touchpoint/findWatchesForFilename output tag/file-watch
 set code-generation/watch-file touchpoint/findWatchesForFilename
 
 set code-generation/watch-file touchpoint/createWatch
-set touchpoint/createWatch query(set file-watch/(unique) filename/\${filename} version/0)
+set touchpoint/createWatch query(set file-watch/(unique) filename(\${filename}) version/0)
 set touchpoint/createWatch function-name/createWatch
 set touchpoint/createWatch input/filename
 set touchpoint/createWatch async
@@ -668,7 +668,7 @@ set touchpoint/createWatch expectOne
 set touchpoint/createWatch output tag/file-watch
 
 set code-generation/watch-file touchpoint/incrementVersion
-set touchpoint/incrementVersion query(set file-watch/* filename/\${filename} version/(increment))
+set touchpoint/incrementVersion query(set file-watch/* filename(\${filename}) version/(increment))
 set touchpoint/incrementVersion function-name/incrementVersion
 set touchpoint/incrementVersion input/filename
 set touchpoint/incrementVersion async

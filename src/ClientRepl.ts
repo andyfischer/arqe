@@ -35,6 +35,9 @@ export default class ClientRepl {
                 if (isFinished)
                     throw new Error('got relation after finish()');
 
+                if (rel.hasType('command-meta'))
+                    return;
+
                 console.log(' > ' + rel.stringifyRelation());
             },
             finish: () => {

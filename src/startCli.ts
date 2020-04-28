@@ -4,23 +4,13 @@ import 'source-map-support'
 import Graph from './Graph'
 import WebSocket from 'ws'
 import ClientRepl from './ClientRepl'
-import ClientConnection from './socket/ClientConnection'
+import { connectToServer } from './socket/ClientConnection'
 import Minimist from 'minimist'
 
 async function connectToSocketServer() {
-    const ws = new WebSocket('http://localhost:42940');
-    await new Promise((resolve, reject) => {
-        ws.on('open', resolve);
-    });
+    const client = await connectToServer();
 
-    ws.on('close', () => {
-        console.log('Disconnected from server');
-        process.exit();
-    });
-
-    const commandConnection = new ClientConnection(ws);
-
-    const repl = new ClientRepl(commandConnection);
+    const repl = new ClientRepl(client);
     repl.start();
 }
 
@@ -53,5 +43,5 @@ export default async function main() {
 main()
 .catch(err => {
     process.exitCode = -1;
-    console.error(err);
+    console.error(err.stack || err);
 });
