@@ -4,6 +4,7 @@ import CodeGenerationApi from './CodeGenerationApi'
 import { generateAPI } from './DAOGenerator'
 import { generateTextAsCode } from './TextAsCode'
 import watchFile from '../file-watch/watchFile'
+import { notifyFileChanged } from '../file-watch/notifyFileChanged'
 import Minimist from 'minimist'
 import runStandardProcess from '../toollib/runStandardProcess'
 

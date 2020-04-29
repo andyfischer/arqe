@@ -15,7 +15,9 @@ Useful tools
     Timers
 
 Useful fixes
-  Autoreconnect to server
+X Autoreconnect to server
+  Need to restore listeners on reconnect
+    Client should use a graph in "shallow" mode
 
 Correctness
   Listen for events when relations enter & exit a set
@@ -28,3 +30,6 @@ Listener overhaul
  X File watch is getting listeners triggered for unrelated items
 
 
+Autobuildbot
+ - Need the listener to find out about deletion events
+ - Need the listener to have a customizable variable name

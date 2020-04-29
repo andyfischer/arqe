@@ -49,7 +49,7 @@ export default class API {
     }
     
     async taskStatus(task: string): Promise<string> {
-        const command = `get build-task/${task} cmd status`;
+        const command = `get ${task} cmd status`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
@@ -69,7 +69,7 @@ export default class API {
     }
     
     async setPendingTaskTimer(expiresAt: string, task: string): Promise<string> {
-        const command = `set build-task(${task}) pending-task-timer expires-at(${expiresAt})`;
+        const command = `set ${task} pending-task-timer expires-at(${expiresAt})`;
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
@@ -88,13 +88,13 @@ export default class API {
         return rel.getTagValue("status");
     }
     
-    listenToPendingTasks(callback: (status: string) => void) {
+    listenToPendingTasks(callback: (rel: Relation) => void) {
         const command = `listen build-task/* pending-task-timer expires-at`;
         this.graph.run(command, {
             relation(rel: Relation) {
                 if (rel.hasType('command-meta'))
                     return;
-                callback(rel.getTagValue("status"));
+                callback(rel);
             },
             finish() {  }
         });

@@ -82,6 +82,9 @@ async function start() {
         fileWasChanged(filename);
     });
 
+    api.listenToPendingTasks((task: string) => {
+    });
+
     await new Promise((resolve,reject) => {});
 
     // Look for certain file extensions

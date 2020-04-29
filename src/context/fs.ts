@@ -1,5 +1,6 @@
 
 import runningInBrowser from './runningInBrowser'
+import { notifyFileChanged } from '../file-watch/notifyFileChanged'
 
 let _readFile;
 let _readFileSync;
@@ -36,5 +37,9 @@ export function writeFileSyncIfUnchanged(filename: string, contents: string) {
     }
 
     Fs.writeFileSync(filename, contents);
+
+    notifyFileChanged(filename)
+    .catch(console.error)
+
     return true;
 }

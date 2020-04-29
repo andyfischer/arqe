@@ -2,7 +2,19 @@
 import Path from 'path'
 import WatchFileApi from './WatchFileApi'
 import runStandardProcess from '../toollib/runStandardProcess'
+import getProcessClient from '../toollib/getProcessClient'
 import Graph from '../Graph'
+
+export async function notifyFileChanged(filename: string) {
+    const graph = await getProcessClient();
+
+    filename = Path.resolve(filename);
+    const api = new WatchFileApi(graph);
+    if ((await api.findWatchesForFilename(filename)).length === 0)
+        await api.createWatch(filename);
+    else
+        await api.incrementVersion(filename);
+}
 
 export function main() {
     runStandardProcess(async (graph: Graph) => {
@@ -14,13 +26,7 @@ export function main() {
             return;
         }
 
-        filename = Path.resolve(filename);
-
-        const api = new WatchFileApi(graph);
-        if ((await api.findWatchesForFilename(filename)).length === 0)
-            await api.createWatch(filename);
-        else
-            await api.incrementVersion(filename);
+        await notifyFileChanged(filename);
     });
 }
 
