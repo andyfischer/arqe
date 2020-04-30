@@ -275,9 +275,10 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     
     if (tagOutput) {
         block.addRaw(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
-        return;
+        return;');
     }
 
+    block.addRaw('// no output?');
     /*
     if (outputType === 'object') {
         writer.line('return rels.map(rel => ({')

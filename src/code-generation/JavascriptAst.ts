@@ -248,6 +248,9 @@ class LineWriter {
 }
 
 function shouldAddSpacerBetween(a: Statement, b: Statement) {
+    if (a.statementType === 'blank' || b.statementType === 'blank')
+        return false;
+
     if (a.contents || b.contents)
         return true;
 
