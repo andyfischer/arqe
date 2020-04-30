@@ -36,6 +36,12 @@ export class Block {
         this.statements.push(decl);
         return decl;
     }
+
+    addIf() {
+        const ifBlock = new IfBlock();
+        this.statements.push(ifBlock);
+        return ifBlock;
+    }
 }
 
 class ImportStatement implements Statement {
@@ -144,6 +150,7 @@ class FunctionDecl implements Statement {
     inputs: { name: string, tsType: string }[] = []
     outputType: string
     contents: Block
+    isAsync = false
 
     constructor(format: string, name: string) {
         this.format = format;
@@ -167,17 +174,37 @@ class FunctionDecl implements Statement {
             return s;
         }).join(', ');
 
-        let str;
+        let str = '';
+
+        if (this.isAsync)
+            str += 'async '
 
         if (this.format === 'method')
-            str = `${this.name}(${inputs})`
+            str += `${this.name}(${inputs})`
         else
-            str = `function ${this.name}(${inputs})`
+            str += `function ${this.name}(${inputs})`
 
         if (this.outputType)
             str += ': ' + this.outputType;
 
         return str;
+    }
+}
+
+class IfBlock implements Statement {
+    conditionExpr: string
+    contents: Block
+
+    constructor() {
+        this.contents = new Block('if', this)
+    }
+
+    setCondition(s: string) {
+        this.conditionExpr = s;
+    }
+
+    line() {
+        return `if (${this.conditionExpr})`;
     }
 }
 
