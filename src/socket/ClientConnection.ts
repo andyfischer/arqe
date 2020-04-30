@@ -54,6 +54,7 @@ export default class ClientConnection implements GraphLike {
     ws: WebSocket
     requestId: IDSource = new IDSource()
     connectionId: string
+    autoReconnect = false
 
     pendingForConnection: PendingQuery[] = []
     reqListeners: { [id: string]: RelationReceiver } = {}
@@ -140,12 +141,14 @@ export default class ClientConnection implements GraphLike {
         });
 
         this.ws.on('close', () => {
-            console.log('websocket closed, trying to reconnect');
+            if (this.autoReconnect) {
+                console.log('websocket closed, trying to reconnect');
 
-            this.shouldLogReconnect = true;
+                this.shouldLogReconnect = true;
 
-            this.openSocket()
-            .catch(console.error);
+                this.openSocket()
+                .catch(console.error);
+            }
         });
 
         this.ws.on('error', (e) => {
