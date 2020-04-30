@@ -249,7 +249,7 @@ set touchpoint/17 input/0.5
 
 set code-generation/3
 set code-generation/3 destination-filename(src/code-generation/TextAsCodeApi.ts)
-set code-generation/3 strategy/dao-api2
+set code-generation/3 strategy/dao-api
 set code-generation/3 ik-import(..)
 
 set code-generation/3 touchpoint/18
@@ -271,7 +271,7 @@ set input/touchpoint type/string
 
 set code-generation/socket
 set code-generation/socket destination-filename(src/code-generation/SocketApi.ts)
-set code-generation/socket strategy/dao-api2
+set code-generation/socket strategy/dao-api
 set code-generation/socket ik-import(..)
 
 set code-generation/socket touchpoint/socket1
@@ -334,7 +334,7 @@ set output-object/field-tagValue field/tagValue tagValue/tagValue
 
 set code-generation/test-api
 set code-generation/test-api destination-filename(src/__tests__/generated/GeneratedApi.ts)
-set code-generation/test-api strategy/dao-api2
+set code-generation/test-api strategy/dao-api
 set code-generation/test-api ik-import(../..)
 
 set code-generation/test-api touchpoint/25
@@ -614,7 +614,7 @@ set touchpoint/db20 output tag/action
 set code-generation/watch-file
 set code-generation/watch-file destination-filename(src/file-watch/WatchFileApi.ts)
 set code-generation/watch-file ik-import(..)
-set code-generation/watch-file strategy/dao-api2
+set code-generation/watch-file strategy/dao-api
 
 set code-generation/watch-file touchpoint/findWatch
 set touchpoint/findWatch query(file-watch filename(${filename}) version)
@@ -740,7 +740,7 @@ set defaultServerPort/42940
 set code-generation/autobuildbot
 set code-generation/autobuildbot destination-filename(autobuildbot/src/BuildBotAPI.ts)
 set code-generation/autobuildbot ik-import(./fs)
-set code-generation/autobuildbot strategy/dao-api2
+set code-generation/autobuildbot strategy/dao-api
 
 set code-generation/autobuildbot touchpoint/listenToFileChanges
 set touchpoint/listenToFileChanges query(listen file-watch filename/* version)

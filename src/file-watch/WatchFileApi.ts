@@ -68,6 +68,7 @@ export default class API {
         const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
+        // no output?
     }
 
     async findWatchesForFilename(filename: string): Promise<string[]> {
@@ -111,5 +112,6 @@ export default class API {
         const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
+        // no output?
     }
 }

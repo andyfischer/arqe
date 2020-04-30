@@ -225,11 +225,11 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
         } else if (outputObject) {
             block.addRaw('return {');
 
-            for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
+            for (const { field, tagValue } of api.outputObjectTagValueFields(outputObject)) {
                 block.addRaw(`    ${field}: oneRel.getTagValue("${tagValue}"),`);
             }
             
-            for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
+            for (const { field, tag } of api.outputObjectTagFields(outputObject)) {
                 block.addRaw(`    ${field}: oneRel.getTag("${tag}"),`);
             }
 
@@ -264,7 +264,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
 
         block.addRaw('return rels.map(rel => ({');
 
-        for (const { field, tagValue } of this.api.outputObjectFields(outputObject)) {
+        for (const { field, tagValue } of api.outputObjectFields(outputObject)) {
             block.addRaw(`    ${field}: rel.getTagValue("${tagValue}"),`);
         }
 
@@ -275,7 +275,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     
     if (tagOutput) {
         block.addRaw(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
-        return;');
+        return;
     }
 
     block.addRaw('// no output?');

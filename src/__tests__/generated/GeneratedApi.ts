@@ -93,5 +93,6 @@ export default class API {
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
+        // no output?
     }
 }

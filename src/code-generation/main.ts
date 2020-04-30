@@ -1,7 +1,6 @@
 
 import Graph from '../Graph'
 import CodeGenerationApi from './CodeGenerationApi'
-import { runDAOGenerator } from './DAOGenerator'
 import { runDAOGenerator2 } from './DAOGenerator2'
 import { generateTextAsCode } from './TextAsCode'
 import watchFile from '../file-watch/watchFile'
@@ -25,7 +24,7 @@ async function runGeneration(graph: Graph) {
             const strategy = api.codeGenerationTargetStrategy(target);
 
             if (strategy === 'dao-api') {
-                runDAOGenerator(dataSource, target);
+                runDAOGenerator2(dataSource, target);
             } else if (strategy === 'dao-api2') {
                 runDAOGenerator2(dataSource, target);
             } else if (strategy == 'text-as-code') {
