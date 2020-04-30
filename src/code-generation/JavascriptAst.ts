@@ -1,6 +1,5 @@
 
-
-class Block {
+export class Block {
     blockType: string
     statements: Statement[] = []
     parent: Statement
@@ -26,6 +25,16 @@ class Block {
 
     addRaw(text: string) {
         this.statements.push(new RawStatement(text));
+    }
+
+    addBlank() {
+        this.statements.push(new BlankLine());
+    }
+
+    addMethod(name: string) {
+        const decl = new FunctionDecl('method', name);
+        this.statements.push(decl);
+        return decl;
     }
 }
 
@@ -55,6 +64,13 @@ class RawStatement {
     }
 }
 
+class BlankLine implements Statement {
+
+    line() {
+        return ''
+    }
+}
+
 class FunctionInputDef {
     name: string
     tsType?: string
@@ -80,6 +96,8 @@ class StringStatement implements Statement {
 class ClassDef implements Statement {
     name: string
     contents: Block
+    isExport = false
+    isExportDefault = false
 
     constructor(name: string) {
         this.name = name;
@@ -90,14 +108,14 @@ class ClassDef implements Statement {
         this.contents.statements.push(new FieldDecl(name, tsType));
     }
 
-    addMethod(name: string) {
-        const decl = new FunctionDecl('method', name);
-        this.contents.statements.push(decl);
-        return decl;
-    }
-
     line() {
-        return `class ${this.name}`
+        let s = `class ${this.name}`
+        if (this.isExportDefault)
+            s = 'export default ' + s;
+        else if (this.isExport)
+            s = 'export ' + s;
+
+        return s;
     }
 }
 

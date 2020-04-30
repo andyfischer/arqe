@@ -2,21 +2,7 @@
 import Graph from '../Graph'
 import { writeFileSyncIfUnchanged } from '../context/fs'
 import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
-
-function javascriptTemplate(vars) {
-    return (
-`import { GraphLike, Relation, receiveToRelationListPromise } from '${vars.fsImportPath}'
-
-export default class API {
-    graph: GraphLike
-
-    constructor(graph: GraphLike) {
-        this.graph = graph;
-    }
-${vars.methodSource}
-}
-`);
-}
+import { startFile, Block } from './JavascriptAst'
 
 interface InputDef {
     name: string
@@ -115,6 +101,171 @@ class JavascriptCodeWriter {
     comment(s: string) {
         this.line(`// ${s}`)
     }
+}
+
+function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: string) {
+    const queryStr = api.touchpointQueryString(touchpoint);
+
+    if (!queryStr)
+        throw new Error(`couldn't find query for: ` + touchpoint);
+
+    let command = queryStr;
+
+    if (!queryStr.startsWith('get ')
+            && !queryStr.startsWith('set ')
+            && !queryStr.startsWith('delete ')
+            && !queryStr.startsWith('listen ')) {
+        command = 'get ' + queryStr;
+    }
+
+    // const verboseLogging = api.enableVerboseLogging(target);
+    const name = api.touchpointFunctionName(touchpoint);
+    const expectOne = api.touchpointExpectOne(touchpoint);
+    const isAsync = api.touchpointIsAsync(touchpoint);
+    const outputIsOptional = api.touchpointOutputIsOptional(touchpoint);
+    const outputIsValue = api.touchpointOutputIsValue(touchpoint);
+    const outputObject = api.touchpointOutputObject(touchpoint);
+    const outputExists = api.touchpointOutputIsExists(touchpoint);
+    const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
+    const tagOutput = api.touchpointTagOutput(touchpoint);
+    const outputType = api.touchpointOutputType(touchpoint);
+
+    const func = block.addMethod(name);
+    // startTouchpointMethod(writer, touchpoint);
+
+    func.contents.addRaw(`const command = \`${command}\`;`);
+
+    /*if (verboseLogging) {
+        block.addBlank();
+        block.addRaw(`console.log('Running query (for ${name}): ' + command)`);
+    }*/
+
+    if (api.touchpointIsListener(touchpoint)) {
+        //return listenerBody(writer, touchpoint);
+        return;
+    }
+
+    /*
+    fetchRels(writer, touchpoint);
+
+    if (outputExists) {
+        writer.line('return rels.length > 0;');
+    } else if (expectOne) {
+        writer.line()
+
+        if (!outputIsOptional)
+            writer.line('// Expect one result')
+
+        writer.line('if (rels.length === 0) {')
+        writer.indent()
+
+        if (outputIsOptional)
+            writer.line(`return null;`)
+        else
+            writer.line(`throw new Error("No relation found for: " + command)`)
+
+        writer.unindent()
+        writer.line('}')
+        writer.line()
+        writer.line('if (rels.length > 1) {')
+        writer.indent()
+        writer.line(`throw new Error("Multiple results found for: " + command)`)
+        writer.unindent()
+        writer.line('}')
+        writer.line()
+        
+        writer.line('const rel = rels[0];');
+
+        if (outputIsValue) {
+            writer.line('return rel.getPayload();');
+        } else if (outputObject) {
+            writer.line();
+            writer.line('return {');
+            writer.indent();
+
+            for (const { field, tagValue } of this.api.outputObjectTagValueFields(outputObject)) {
+                writer.line(`${field}: rel.getTagValue("${tagValue}"),`);
+            }
+            
+            for (const { field, tag } of this.api.outputObjectTagFields(outputObject)) {
+                writer.line(`${field}: rel.getTag("${tag}"),`);
+            }
+
+            writer.unindent();
+            writer.line('}');
+
+        } else if (tagValueOutput) {
+            writer.line(`return rel.getTagValue("${tagValueOutput}");`)
+        } else if (tagOutput) {
+            writer.line(`return rel.getTag("${tagOutput}");`)
+
+        } else {
+            writer.line('// no output')
+        }
+    } else {
+        if (tagValueOutput) {
+            let returnStr = `return rels.map(rel => rel.getTagValue("${tagValueOutput}"))`
+
+            if (outputType === 'integer') {
+                returnStr += '.map(str => parseInt(str, 10))'
+            }
+
+            returnStr += ';'
+
+            writer.line(returnStr)
+        } else if (outputObject) {
+
+            writer.line();
+            writer.line('return rels.map(rel => ({');
+            writer.indent();
+
+            for (const { field, tagValue } of this.api.outputObjectFields(outputObject)) {
+                writer.line(`${field}: rel.getTagValue("${tagValue}"),`);
+            }
+
+            writer.unindent();
+            writer.line('}));');
+
+        } else if (tagOutput) {
+            writer.line(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
+
+        } else {
+
+            if (outputType === 'object') {
+                writer.line('return rels.map(rel => ({')
+                writer.indent()
+
+                const objectdef = this.api.getOutputObjectdef(touchpoint);
+
+                writer.line('return rels.map(rel => ({')
+
+                for (const objectField of this.api.getObjectdefFields(objectdef)) {
+                }
+            }
+        }
+    }
+    */
+}
+
+function createAst(api: DAOGeneratorGeneratedDAO, target: string) {
+    const file = startFile();
+    const importPath = api.getIkImport(target);
+    file.addImport('{ GraphLike, Relation, receiveToRelationListPromise }', importPath);
+
+    const apiClass = file.addClass('API');
+    apiClass.isExportDefault = true;
+    apiClass.addField('graph', 'GraphLike');
+
+    const contructorFunc = apiClass.contents.addMethod('constructor');
+    contructorFunc.addInput('graph', 'GraphLike');
+    contructorFunc.contents.addRaw('this.graph = graph;');
+
+    // methods
+    for (const touchpoint of api.listTouchpoints(target)) {
+        defineMethod(api, apiClass.contents, touchpoint);
+    }
+
+    return file;
 }
 
 export class DAOGenerator {
@@ -550,35 +701,13 @@ export class DAOGenerator {
             .line('});')
         writer.endBlock()
     }
-
-    generateMethods(writer: JavascriptCodeWriter) {
-
-        for (const touchpoint of this.api.listTouchpoints(this.target)) {
-            this.generateMethod(writer, touchpoint);
-        }
-    }
-
-    asJavascript() {
-        const methodText = [];
-        const writer = new JavascriptCodeWriter();
-        writer.indentLevel = 1;
-        writer.writeOut = (s) => { methodText.push(s) }
-
-        this.generateMethods(writer);
-        
-        return javascriptTemplate({
-            fsImportPath: this.api.getIkImport(this.target),
-            methodSource: methodText.join('')
-        });
-    }
 }
 
-export function runDAOGenerator(graph: Graph, target: string) {
+export function runDAOGenerator2(graph: Graph, target: string) {
 
     const api = new DAOGeneratorGeneratedDAO(graph);
-
-    const generator = new DAOGenerator(api, target);
-
-    writeFileSyncIfUnchanged(generator.destinationFilename, generator.asJavascript());
-    console.log('generated file is up-to-date: ' + generator.destinationFilename);
+    const ast = createAst(api, target);
+    const destinationFilename = api.getDestinationFilename(target)
+    writeFileSyncIfUnchanged(destinationFilename, ast.stringify());
+    console.log('generated file is up-to-date: ' + destinationFilename);
 }

@@ -740,7 +740,7 @@ set defaultServerPort/42940
 set code-generation/autobuildbot
 set code-generation/autobuildbot destination-filename(autobuildbot/src/BuildBotAPI.ts)
 set code-generation/autobuildbot ik-import(./fs)
-set code-generation/autobuildbot strategy/dao-api
+set code-generation/autobuildbot strategy/dao-api2
 
 set code-generation/autobuildbot touchpoint/listenToFileChanges
 set touchpoint/listenToFileChanges query(listen file-watch filename/* version)

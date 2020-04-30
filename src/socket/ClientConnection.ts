@@ -157,6 +157,7 @@ export default class ClientConnection implements GraphLike {
     }
 
     async close() {
+        this.autoReconnect = false;
         this.ws.terminate();
     }
 

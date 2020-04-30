@@ -1,7 +1,8 @@
 
 import Graph from '../Graph'
 import CodeGenerationApi from './CodeGenerationApi'
-import { generateAPI } from './DAOGenerator'
+import { runDAOGenerator } from './DAOGenerator'
+import { runDAOGenerator2 } from './DAOGenerator2'
 import { generateTextAsCode } from './TextAsCode'
 import watchFile from '../file-watch/watchFile'
 import { notifyFileChanged } from '../file-watch/notifyFileChanged'
@@ -13,11 +14,9 @@ async function runGeneration(graph: Graph) {
     const cliArgs = Minimist(process.argv.slice(2));
     const filename = cliArgs['file'];
 
-    console.log('runGeneration: ', filename);
-
     watchFile(filename, () => {
 
-        console.log('running code generation..');
+        console.log(`running code generation (using ${filename})`);
 
         const dataSource = Graph.loadFromDumpFile(filename);
         const api = new CodeGenerationApi(dataSource);
@@ -26,7 +25,9 @@ async function runGeneration(graph: Graph) {
             const strategy = api.codeGenerationTargetStrategy(target);
 
             if (strategy === 'dao-api') {
-                generateAPI(dataSource, target);
+                runDAOGenerator(dataSource, target);
+            } else if (strategy === 'dao-api2') {
+                runDAOGenerator2(dataSource, target);
             } else if (strategy == 'text-as-code') {
                 generateTextAsCode(dataSource, target);
             } else {

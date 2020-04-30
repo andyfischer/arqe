@@ -13,7 +13,7 @@ it('can declare a class', () => {
     const file = startFile();
     const clss = file.addClass('API');
     clss.addField('graph', 'GraphLike');
-    const c = clss.addMethod('constructor');
+    const c = clss.contents.addMethod('constructor');
     c.addInput('graph', 'GraphLike');
     c.contents.addRaw('this.graph = graph;')
 
