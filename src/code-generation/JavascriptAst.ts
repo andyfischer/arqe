@@ -45,6 +45,7 @@ export class Block {
 }
 
 class ImportStatement implements Statement {
+    statementType = 'import'
     lhs: string
     rhs: string
 
@@ -59,6 +60,7 @@ class ImportStatement implements Statement {
 }
 
 class RawStatement {
+    statementType = 'raw'
     text: string
 
     constructor(text: string) {
@@ -72,6 +74,7 @@ class RawStatement {
 
 class BlankLine implements Statement {
 
+    statementType = 'blank'
     line() {
         return ''
     }
@@ -83,23 +86,20 @@ class FunctionInputDef {
 }
 
 interface Statement {
+    statementType: string
     line: () => string
     contents?: Block
 }
 
 class Whitespace implements Statement {
-    line() {
-        return ''
-    }
-}
-
-class StringStatement implements Statement {
+    statementType = 'whitespace'
     line() {
         return ''
     }
 }
 
 class ClassDef implements Statement {
+    statementType = 'classDef'
     name: string
     contents: Block
     isExport = false
@@ -126,6 +126,7 @@ class ClassDef implements Statement {
 }
 
 class FieldDecl implements Statement {
+    statementType = 'fieldDecl'
     name: string
     tsType?: string
     initializerExr: string
@@ -192,6 +193,7 @@ class FunctionDecl implements Statement {
 }
 
 class IfBlock implements Statement {
+    statementType = 'ifBlock'
     conditionExpr: string
     contents: Block
 
@@ -245,14 +247,40 @@ class LineWriter {
     }
 }
 
-function* iterateBlock(block: Block) {
+function shouldAddSpacerBetween(a: Statement, b: Statement) {
+    if (a.contents || b.contents)
+        return true;
+
+    if (a.statementType === 'import' && b.statementType !== 'import')
+        return true;
+
+    return false;
+}
+
+function* iterateBlockDfs(block: Block) {
     for (const statement of block.statements) {
         yield ({ statement })
 
         if (statement.contents) {
             yield ({ startBlock: statement.contents })
-            yield* iterateBlock(statement.contents);
+            yield* iterateBlockDfs(statement.contents);
             yield ({ finishBlock: statement.contents })
+        }
+    }
+}
+
+export function formatBlock(block: Block) {
+
+    for (let i = 0; i < block.statements.length; i += 1) {
+        const statement = block.statements[i];
+        const next = block.statements[i + 1];
+
+        if (statement.contents)
+            formatBlock(statement.contents);
+
+        if (next && shouldAddSpacerBetween(statement, next)) {
+            block.statements.splice(i + 1, 0, new BlankLine());
+            i += 1;
         }
     }
 }
@@ -261,17 +289,13 @@ export function stringifyBlock(block: Block) {
     const out = [];
     const writer = new LineWriter();
 
-    for (const it of iterateBlock(block)) {
+    for (const it of iterateBlockDfs(block)) {
 
         if (it.startBlock) {
             writer.indent()
         }
 
         if (it.statement) {
-            if (it.statement.statementType === 'functionDecl') {
-                writer.writeln('')
-            }
-
             let line = it.statement.line();
 
             if (it.statement.contents) {

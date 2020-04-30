@@ -1,4 +1,5 @@
 import { GraphLike, Relation, receiveToRelationListPromise } from "./fs"
+
 export default class API {
     graph: GraphLike
 
@@ -15,8 +16,7 @@ export default class API {
                     return;
                 callback(rel.getTagValue("filename"));
             },
-            finish() {
-            }
+            finish() { }
         });
     }
 
@@ -40,12 +40,15 @@ export default class API {
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
+
         if (rels.length === 0) {
             throw new Error("No relation found for: " + command)
         }
+
         if (rels.length > 1) {
             throw new Error("Multiple results found for: " + command)
         }
+
         const oneRel = rels[0];
         return oneRel.getTag("build-task");
     }
@@ -59,12 +62,15 @@ export default class API {
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
+
         if (rels.length === 0) {
             throw new Error("No relation found for: " + command)
         }
+
         if (rels.length > 1) {
             throw new Error("Multiple results found for: " + command)
         }
+
         const oneRel = rels[0];
         return oneRel.getTagValue("status");
     }
@@ -78,12 +84,15 @@ export default class API {
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
+
         if (rels.length === 0) {
             throw new Error("No relation found for: " + command)
         }
+
         if (rels.length > 1) {
             throw new Error("Multiple results found for: " + command)
         }
+
         const oneRel = rels[0];
         return oneRel.getTagValue("status");
     }
@@ -97,8 +106,7 @@ export default class API {
                     return;
                 callback(rel);
             },
-            finish() {
-            }
+            finish() { }
         });
     }
 }

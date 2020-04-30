@@ -2,7 +2,7 @@
 import Graph from '../Graph'
 import { writeFileSyncIfUnchanged } from '../context/fs'
 import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
-import { startFile, Block } from './JavascriptAst'
+import { startFile, Block, formatBlock } from './JavascriptAst'
 
 interface InputDef {
     name: string
@@ -181,8 +181,7 @@ function methodBodyForListener(api: DAOGeneratorGeneratedDAO, touchpoint: string
     block.addRaw(`            return;`)
     block.addRaw(`        callback(${relationOutputExpression(api, touchpoint)});`)
     block.addRaw(`    },`)
-    block.addRaw(`    finish() {`)
-    block.addRaw(`    }`)
+    block.addRaw(`    finish() { }`)
     block.addRaw(`});`);
 }
 
@@ -319,6 +318,7 @@ export function runDAOGenerator2(graph: Graph, target: string) {
 
     const api = new DAOGeneratorGeneratedDAO(graph);
     const ast = createAst(api, target);
+    formatBlock(ast);
     const destinationFilename = api.getDestinationFilename(target)
     writeFileSyncIfUnchanged(destinationFilename, ast.stringify());
     console.log('generated file is up-to-date: ' + destinationFilename);
