@@ -111,6 +111,7 @@ export default class API {
     }
 
     eventListener(handler: (evt) => void) {
+
         // eventType/anyFileChange
         this.graph.run("listen file-watch filename/* version", {
             relation(rel: Relation) {
@@ -120,6 +121,7 @@ export default class API {
             },
             finish() { }
         });
+
         // eventType/taskTimerExpired
         this.graph.run("listen build-task/* pending-task-timer expires-at", {
             relation(rel: Relation) {

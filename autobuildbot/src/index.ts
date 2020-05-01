@@ -76,6 +76,9 @@ async function start() {
 
     // Watch all changed files
     api.eventListener((evt) => {
+
+        console.log('received event: ', evt);
+        
         switch (evt.id) {
         case 'fileChanged':
 

@@ -170,6 +170,9 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
 
     for (const eventType of api.touchpointEventTypes(touchpoint)) {
         const id = api.eventTypeId(eventType);
+        const provides = api.eventTypeProvides(eventType);
+
+        contents.addBlank();
         contents.addRaw('// ' + eventType);
 
         contents.addRaw(`this.graph.run("${api.eventTypeQuery(eventType)}", {`);
