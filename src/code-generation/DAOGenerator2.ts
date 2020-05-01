@@ -190,15 +190,30 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
     }
 }
 
-function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: string, relVarName = 'rel') {
-    const outputFrom = api.touchpointOutput(touchpoint);
+function oneRelationOutputExpression(api: DAOGeneratorGeneratedDAO, fromStr: string, relVarName) {
+    if (fromStr.endsWith('/*')) {
+        return `${relVarName}.getTagValue("${fromStr.replace('/*', '')}")`
+    } else {
+        return `${relVarName}.getTag("${fromStr}")`
+    }
+}
 
-    if (outputFrom) {
-        if (outputFrom.endsWith('/*')) {
-            return `${relVarName}.getTagValue("${outputFrom.replace('/*', '')}")`
-        } else {
-            return `${relVarName}.getTag("${outputFrom}")`
+function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: string, relVarName = 'rel') {
+    const outputs = api.touchpointOutputs2(touchpoint);
+
+    if (outputs.length === 1) {
+        return oneRelationOutputExpression(api, outputs[0].fromStr, relVarName);
+    }
+
+    if (outputs.length > 1) {
+        let out = '({\n';
+
+        for (const { fromStr, varStr } of outputs) {
+            out += `    ${varStr}: ${oneRelationOutputExpression(api, fromStr, relVarName)},\n`
         }
+
+        out += '})'
+        return out;
     }
 
     return `rel`;

@@ -121,6 +121,13 @@ set touchpoint/7.3 function-name(touchpointOutputs)
 set touchpoint/7.3 input/5
 set touchpoint/7.3 output from(from/*) var
 
+set code-generation/dao touchpoint/touchpointOutputs2
+set touchpoint/touchpointOutputs2 query(${touchpoint} output from var)
+set touchpoint/touchpointOutputs2 function-name(touchpointOutputs2)
+set touchpoint/touchpointOutputs2 input/5
+set touchpoint/touchpointOutputs2 output from(from/*) var/fromStr
+set touchpoint/touchpointOutputs2 output from(var/*) var/varStr
+
 set code-generation/dao touchpoint/10
 set touchpoint/10 query(${touchpoint} input/*)
 set touchpoint/10 function-name(touchpointInputs)
