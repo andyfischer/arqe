@@ -38,7 +38,7 @@ function sortInputs(api: DAOGeneratorGeneratedDAO, inputs: string[]) {
 
 function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
     const outputExists = api.touchpointOutputIsExists(touchpoint);
-    const outputFrom = api.touchpointOutput(touchpoint);
+    const outputFrom = api.touchpointOutputs(touchpoint);
     const expectOne = api.touchpointExpectOne(touchpoint);
     const isAsync = api.touchpointIsAsync(touchpoint);
     const outputObject = api.touchpointOutputObject(touchpoint);
@@ -53,7 +53,7 @@ function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: stri
 
     if (outputObject) {
         outputTypeStr = null;
-    } else if (outputFrom) {
+    } else if (outputFrom.length === 1) {
         outputTypeStr = 'string'
     }
 
@@ -222,7 +222,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     const outputIsOptional = api.touchpointOutputIsOptional(touchpoint);
     const outputObject = api.touchpointOutputObject(touchpoint);
     const outputExists = api.touchpointOutputIsExists(touchpoint);
-    const outputFrom = api.touchpointOutput(touchpoint);
+    const outputFrom = api.touchpointOutputs(touchpoint);
 
     if (outputExists) {
         block.addRaw('return rels.length > 0;');
@@ -260,7 +260,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
 
             block.addRaw('}');
 
-        } else if (outputFrom) {
+        } else if (outputFrom.length > 0) {
             block.addRaw(`return ${relationOutputExpression(api, touchpoint, 'oneRel')};`);
 
         } else {
@@ -270,7 +270,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
         return;
     }
 
-    if (outputFrom) {
+    if (outputFrom.length > 0) {
         let returnStr = `return rels.map(rel => ${relationOutputExpression(api, touchpoint)});`
         block.addRaw(returnStr)
         return;
