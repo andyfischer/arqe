@@ -1,0 +1,10 @@
+#! /usr/bin/env node
+
+const { runStandardProcess } = require('..')
+
+runStandardProcess(async (graph) => {
+
+    const rels = await graph.run('
+
+    const { receiver, promise } = receiveToRelationListPromise();
+});

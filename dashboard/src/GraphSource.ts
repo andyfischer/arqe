@@ -20,17 +20,20 @@ set code-generation/dao touchpoint/0.5
 set touchpoint/0.5 function-name(listTargets)
 set touchpoint/0.5 query(code-generation/*)
 set touchpoint/0.5 output tag/code-generation
+set touchpoint/0.5 output from(code-generation) var
 
 set code-generation/dao touchpoint/0.6
 set touchpoint/0.6 function-name(listTouchpoints)
 set touchpoint/0.6 query(\${target} touchpoint/*)
 set touchpoint/0.6 output tag/touchpoint
+set touchpoint/0.5 output from(touchpoint) var
 set touchpoint/0.6 input/0.5
 
 set code-generation/dao touchpoint/0.8
 set touchpoint/0.8 function-name(getIkImport)
 set touchpoint/0.8 query(\${target} ik-import/*)
 set touchpoint/0.8 output tagValue/ik-import
+set touchpoint/0.5 output from(ik-import/*) var
 set touchpoint/0.8 expectOne
 set touchpoint/0.8 input/0.5
 
@@ -49,7 +52,19 @@ set touchpoint/3 input/1
 set input/1 name/touchpoint
 set input/1 type/string
 
+set code-generation/dao touchpoint/touchpointStyle
+set touchpoint/touchpointStyle query(\${touchpoint} style/*)
+set touchpoint/touchpointStyle function-name(touchpointStyle)
+set touchpoint/touchpointStyle expectOne
+set touchpoint/touchpointStyle output optional
+set touchpoint/touchpointStyle output tagValue/style
+set touchpoint/touchpointStyle output from(style/*) var
+set touchpoint/touchpointStyle input/1
+set input/1 name/touchpoint
+set input/1 type/string
+
 set touchpoint/3 output tagValue/function-name
+set touchpoint/3 output from(function-name/*) var
 set touchpoint/3 expectOne
 
 set code-generation/dao touchpoint/4
@@ -105,6 +120,7 @@ set touchpoint/7 query(\${touchpoint} output tagValue/*)
 set touchpoint/7 function-name(touchpointTagValueOutputs)
 set touchpoint/7 input/5
 set touchpoint/7 output tagValue/tagValue
+set touchpoint/7 output from(tagValue/*) var
 set input/5 name/touchpoint
 set input/5 type/string
 
@@ -113,6 +129,7 @@ set touchpoint/7.1 query(\${touchpoint} output tagValue/*)
 set touchpoint/7.1 function-name(touchpointTagValueOutput)
 set touchpoint/7.1 input/5
 set touchpoint/7.1 output tagValue/tagValue
+set touchpoint/7.1 output from(tagValue/*) var
 set touchpoint/7.1 output optional
 set touchpoint/7.1 expectOne
 set input/5 name/touchpoint
@@ -123,6 +140,7 @@ set touchpoint/8 query(\${touchpoint} output tag/*)
 set touchpoint/8 function-name(touchpointTagOutputs)
 set touchpoint/8 input/6
 set touchpoint/8 output tagValue/tag
+set touchpoint/8 output from(tag/*) var
 set input/6 name/touchpoint
 set input/6 type/string
 
@@ -131,6 +149,7 @@ set touchpoint/8.1 query(\${touchpoint} output tag/*)
 set touchpoint/8.1 function-name(touchpointTagOutput)
 set touchpoint/8.1 input/6
 set touchpoint/8.1 output tagValue/tag
+set touchpoint/8.1 output from(tag/*) var
 set touchpoint/8.1 output optional
 set touchpoint/8.1 expectOne
 set input/6 name/touchpoint
@@ -786,6 +805,29 @@ set touchpoint/listenToPendingTasks query(listen build-task/* pending-task-timer
 set touchpoint/listenToPendingTasks function-name/listenToPendingTasks
 set touchpoint/listenToPendingTasks listener
 
+set code-generation/autobuildbot touchpoint/eventListener
+set touchpoint/eventListener style/eventListener
+set touchpoint/eventListener listener
+set touchpoint/eventListener function-name/eventListener
+
+set touchpoint/eventListener eventType/anyFileChange
+set touchpoint/eventListener eventType/taskTimerExpired
+
+set eventType/anyFileChange query(listen file-watch filename/* version)
+set eventType/anyFileChange provide var/filename from(filename/*)
+set eventType/anyFileChange id/fileChanged
+
+set eventType/taskTimerExpired query(listen build-task/* pending-task-timer expires-at)
+set eventType/taskTimerExpired deletion
+set eventType/taskTimerExpired provide var/buildTask from(build-task/*)
+set eventType/taskTimerExpired id/taskTimerExpired
+
+set code-generation/dao touchpoint/eventTypes
+set touchpoint/eventTypes query(\${touchpoint} eventType/*)
+set touchpoint/eventTypes function-name(touchpointEventTypes)
+set touchpoint/eventTypes input/2
+set touchpoint/eventTypes output tag/eventType
+
 set input/cmd name/cmd
 set input/cmd type/string
 
@@ -798,5 +840,30 @@ set input/expiresAt type/string
 set input/task name/task
 set input/task type/string
 
+set code-generation/dao touchpoint/eventTypeQuery
+set touchpoint/eventTypeQuery query(\${eventType} query/*)
+set touchpoint/eventTypeQuery function-name(eventTypeQuery)
+set touchpoint/eventTypeQuery input/eventType
+set touchpoint/eventTypeQuery output tagValue/query
 
+set code-generation/dao touchpoint/eventTypeIsDeletion
+set touchpoint/eventTypeIsDeletion query(\${eventType} deletion)
+set touchpoint/eventTypeIsDeletion function-name(eventTypeIsDeletion)
+set touchpoint/eventTypeIsDeletion input/eventType
+set touchpoint/eventTypeIsDeletion output exists
+
+set code-generation/dao touchpoint/eventTypeId
+set touchpoint/eventTypeId query(\${eventType} id/*)
+set touchpoint/eventTypeId function-name(eventTypeId)
+set touchpoint/eventTypeId input/eventType
+set touchpoint/eventTypeId output tagValue/id
+
+set code-generation/dao touchpoint/eventTypeProvides
+set touchpoint/eventTypeProvides query(\${eventType} provide var from)
+set touchpoint/eventTypeProvides function-name(eventTypeProvides)
+set touchpoint/eventTypeProvides input/eventType
+set touchpoint/eventTypeProvides output tagValue/id
+
+set input/eventType name/eventType
+set input/eventType type/string
 `

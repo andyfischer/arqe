@@ -30,6 +30,7 @@ import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import { parsePattern as pattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import ExpireAtListener from './ExpireAtListener'
+import { receiveToRelationListPromise } from './receivers'
 
 export default class Graph {
 
@@ -292,6 +293,14 @@ export default class Graph {
     saveDumpFile(filename: string) {
         const contents = (this.runSyncOld('dump') as string[]).join('\n');
         Fs.writeFileSync(filename, contents);
+    }
+
+    async runAsync(cmd: string): Promise<Relation[]> {
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.run(cmd, receiver);
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+        return rels;
     }
 
     static loadFromDumpFile(filename: string) {

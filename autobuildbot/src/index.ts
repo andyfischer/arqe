@@ -75,12 +75,29 @@ async function start() {
     console.log('Build bot starting..');
 
     // Watch all changed files
-    api.listenToFileChanges((filename: string) => {
-        if (ignoreFile(filename))
+    api.eventListener((evt) => {
+        switch (evt.id) {
+        case 'fileChanged':
+
+            const { filename } = evt;
+
+            if (ignoreFile(filename))
+                return;
+
+            fileWasChanged(filename);
             return;
 
-        fileWasChanged(filename);
+        case 'taskTimerExpired':
+            console.log('task timer expired: ', evt);
+            return;
+
+        default:
+            console.error('unrecognized event: ', evt)
+        }
     });
+
+    //api.listenToFileChanges((filename: string) => {
+    //});
 
     //api.listenToPendingTasks((task: string) => {
     //});

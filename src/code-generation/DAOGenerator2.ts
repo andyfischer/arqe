@@ -84,6 +84,13 @@ function getTypeForListenerCallback(api: DAOGeneratorGeneratedDAO, touchpoint: s
 }
 
 function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: string) {
+
+    const touchpointStyle = api.touchpointStyle(touchpoint);
+    if (touchpointStyle === 'eventListener') {
+        defineEventListener(api, block, touchpoint);
+        return;
+    }
+
     const queryStr = api.touchpointQueryString(touchpoint);
 
     if (!queryStr)
@@ -156,6 +163,37 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
 
     // Return output
     methodReturnResult(api, touchpoint, func.contents);
+}
+
+function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: string) {
+
+    const name = api.touchpointFunctionName(touchpoint);
+    const func = block.addMethod(name);
+    const contents = func.contents;
+
+    func.addInput('handler', '(evt) => void');
+
+    for (const eventType of api.touchpointEventTypes(touchpoint)) {
+        const id = api.eventTypeId(eventType);
+        contents.addRaw('// ' + eventType);
+
+        contents.addRaw(`this.graph.run("${api.eventTypeQuery(eventType)}", {`);
+        contents.addRaw('    relation(rel: Relation) {')
+
+        if (api.eventTypeIsDeletion(eventType)) {
+            contents.addRaw(`        if (rel.hasType('command-meta') && rel.hasType('deleted')) {`)
+            contents.addRaw(`            handler({ id: "${id}" });`)
+            contents.addRaw(`        }`);
+        } else {
+            contents.addRaw(`        if (rel.hasType('command-meta'))`);
+            contents.addRaw(`            return;`);
+            contents.addRaw(`        handler({ id: '${id}' });`);
+        }
+
+        contents.addRaw(`    },`)
+        contents.addRaw(`    finish() { }`)
+        contents.addRaw(`});`);
+    }
 }
 
 function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
@@ -279,19 +317,6 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     }
 
     block.addRaw('// no output?');
-    /*
-    if (outputType === 'object') {
-        writer.line('return rels.map(rel => ({')
-        writer.indent()
-
-        const objectdef = this.api.getOutputObjectdef(touchpoint);
-
-        writer.line('return rels.map(rel => ({')
-
-        for (const objectField of this.api.getObjectdefFields(objectdef)) {
-        }
-    }
-    */
 }
 
 function createAst(api: DAOGeneratorGeneratedDAO, target: string) {

@@ -74,6 +74,24 @@ export default class API {
         return oneRel.getTagValue("function-name");
     }
 
+    touchpointStyle(touchpoint: string): string {
+        const command = `get ${touchpoint} style/*`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        if (rels.length === 0) {
+            return null;
+        }
+
+        if (rels.length > 1) {
+            throw new Error("Multiple results found for: " + command)
+        }
+
+        const oneRel = rels[0];
+        return oneRel.getTagValue("style");
+    }
+
     touchpointExpectOne(touchpoint: string): boolean {
         const command = `get ${touchpoint} expectOne`;
 
@@ -404,5 +422,50 @@ export default class API {
             field: rel.getTagValue("field"),
             tagValue: rel.getTagValue("tagValue"),
         }));
+    }
+
+    touchpointEventTypes(touchpoint: string): string[] {
+        const command = `get ${touchpoint} eventType/*`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTag("eventType"));
+    }
+
+    eventTypeQuery(eventType: string): string[] {
+        const command = `get ${eventType} query/*`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTagValue("query"));
+    }
+
+    eventTypeIsDeletion(eventType: string): boolean {
+        const command = `get ${eventType} deletion`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.length > 0;
+    }
+
+    eventTypeId(eventType: string): string[] {
+        const command = `get ${eventType} id/*`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTagValue("id"));
+    }
+
+    eventTypeProvides(eventType: string): string[] {
+        const command = `get ${eventType} provide var from`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTagValue("id"));
     }
 }
