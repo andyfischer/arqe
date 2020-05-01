@@ -135,6 +135,17 @@ set touchpoint/7.1 expectOne
 set input/5 name/touchpoint
 set input/5 type/string
 
+set code-generation/dao touchpoint/7.2
+set touchpoint/7.2 query(${touchpoint} output from var)
+set touchpoint/7.2 function-name(touchpointOutput)
+set touchpoint/7.2 input/5
+set touchpoint/7.2 output tagValue/from
+set touchpoint/7.2 output from(tagValue/*) var
+set touchpoint/7.2 output optional
+set touchpoint/7.2 expectOne
+set input/5 name/touchpoint
+set input/5 type/string
+
 set code-generation/dao touchpoint/8
 set touchpoint/8 query(${touchpoint} output tag/*)
 set touchpoint/8 function-name(touchpointTagOutputs)
@@ -866,3 +877,53 @@ set touchpoint/eventTypeProvides output tagValue/id
 
 set input/eventType name/eventType
 set input/eventType type/string
+
+set touchpoint/0.5 output from/code-generation var
+set touchpoint/0.6 output from/touchpoint var
+set touchpoint/10 output from/input var
+set touchpoint/15 output from/objectdef var
+set touchpoint/16 output from/objectdef var
+set touchpoint/17.1 output from/code-generation var
+set touchpoint/socket1 output from/connection var
+set touchpoint/20 output from/output-object var
+set touchpoint/25 output from/b var
+set touchpoint/db1 output from/col var
+set touchpoint/db2 output from/row var
+set touchpoint/db5 output from/spreadsheet var
+set touchpoint/db7 output from/key var
+set touchpoint/db8 output from/action var
+set touchpoint/db9 output from/spreadsheet-view var
+set touchpoint/db10 output from/spreadsheet-view var
+set touchpoint/db20 output from/action var
+set touchpoint/findWatch output from/file-watch var
+set touchpoint/findWatch2 output from/file-watch var
+set touchpoint/findWatchesForFilename output from/file-watch var
+set touchpoint/createWatch output from/file-watch var
+set touchpoint/findTasksByCommand output from/build-task var
+set touchpoint/createBuildTask output from/build-task var
+
+set touchpoint/0.8 output from(ik-import/*) var
+set touchpoint/3 output from(function-name/*) var
+set touchpoint/7 output from(tagValue/*) var
+set touchpoint/7.1 output from(tagValue/*) var
+set touchpoint/8 output from(tag/*) var
+set touchpoint/8.1 output from(tag/*) var
+set touchpoint/9 output from(type/*) var
+set touchpoint/10.5 output from(tagType/*) var
+set touchpoint/11 output from(name/*) var
+set touchpoint/11.5 output from(sortOrder/*) var
+set touchpoint/12 output from(type/*) var
+set touchpoint/13 output from(query/*) var
+set touchpoint/14.1 output from(destination-filename/*) var
+set touchpoint/17 output from(strategy/*) var
+set touchpoint/19 output from(destination-filename/*) var
+set touchpoint/socket11 output from(defaultServerPort/*) var
+set touchpoint/26 output from(b/*) var
+set touchpoint/27 output from(flag/*) var
+set touchpoint/28 output from(flag/*) var
+set touchpoint/db3 output from(name/*) var
+set touchpoint/db18 output from(input-mode/*) var
+set touchpoint/listenToFile output from(version/*) var
+set touchpoint/listenToFileChanges output from(filename/*) var
+set touchpoint/taskStatus output from(status/*) var
+set touchpoint/setPendingTaskTimer output from(status/*) var

@@ -7,7 +7,7 @@ import { stringifyExpr } from './parseExpr'
 
 function tagValueNeedsParens(s: string) {
     for (let i = 0; i < s.length; i++)
-        if (s.charAt(i) === ' ')
+        if (s.charAt(i) === ' ' || s.charAt(i) === '*' || s.charAt(i) === '/')
             return true;
 
     return false;

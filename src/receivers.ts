@@ -1,4 +1,5 @@
 
+import Graph from './Graph'
 import Relation from './Relation'
 import RelationReceiver from './RelationReceiver'
 
@@ -29,6 +30,14 @@ export function receiveToRelationListPromise(): { receiver: RelationReceiver, pr
     });
 
     return { receiver, promise };
+}
+
+export async function runAsync(graph: Graph, command: string) {
+    const { receiver, promise } = receiveToRelationListPromise();
+    graph.run(command, receiver);
+    const rels: Relation[] = (await promise)
+        .filter(rel => !rel.hasType("command-meta"));
+    return rels;
 }
 
 export function fallbackReceiver(commandString: string): RelationReceiver {

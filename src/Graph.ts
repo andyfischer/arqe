@@ -295,14 +295,6 @@ export default class Graph {
         Fs.writeFileSync(filename, contents);
     }
 
-    async runAsync(cmd: string): Promise<Relation[]> {
-        const { receiver, promise } = receiveToRelationListPromise();
-        this.run(cmd, receiver);
-        const rels: Relation[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
-        return rels;
-    }
-
     static loadFromDumpFile(filename: string) {
         const graph = new Graph();
         graph.loadDumpFile(filename);

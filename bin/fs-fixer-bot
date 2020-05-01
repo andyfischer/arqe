@@ -1,10 +1,16 @@
 #! /usr/bin/env node
 
-const { runStandardProcess } = require('..')
+const { runStandardProcess, runAsync } = require('..')
 
 runStandardProcess(async (graph) => {
 
-    const rels = await graph.run('
+    const rels = await runAsync(graph, 'get touchpoint output tagValue');
 
-    const { receiver, promise } = receiveToRelationListPromise();
+    for (const rel of rels) {
+        console.log(rel
+                    .addTag('from(' + rel.getTagValue('tagValue') + '/*)')
+                    .removeType('tagValue')
+                    .addTag('var')
+                    .stringify())
+    }
 });
