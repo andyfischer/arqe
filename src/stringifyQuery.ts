@@ -87,10 +87,6 @@ export function parsedCommandToString(command: Command) {
     
     str += ' ' + commandTagsToString(command.tags);
 
-    if (command.payloadStr != null) {
-        str += ' == ' + command.payloadStr;
-    }
-
     return str;
 }
 

@@ -58,13 +58,7 @@ export default class UpdateContext {
     }
 
     getOptionsObject(tags: string): any {
-        const out = {};
-
-        for (const option of this.getRelations(`${tags} option/*`)) {
-            out[option.getTagValue("option") as string] = option.getPayload();
-        }
-
-        return out;
+        throw new Error(`don't use getOptionsObject`)
     }
 
     savedQueriesForUsedSearches(): SavedQuery[] {

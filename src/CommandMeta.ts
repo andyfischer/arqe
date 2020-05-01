@@ -21,10 +21,11 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
 
     const tags = [
         newTag('command-meta'),
-        newTag('error')
+        newTag('error'),
+        newTag('message', msg)
     ];
 
-    output.relation(commandTagsToRelation(tags, msg));
+    output.relation(commandTagsToRelation(tags, null));
 }
 
 export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver) {

@@ -168,8 +168,7 @@ export default class InMemoryStorage implements StorageProvider {
         }
 
         if (existing) {
-            let modified = existing.setPayload(relation.getPayload());
-            this.saveOne(modified, output);
+            this.saveOne(relation, output);
             output.finish();
             return;
         }

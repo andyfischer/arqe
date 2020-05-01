@@ -26,7 +26,6 @@ export default class PlainFileStorage implements StorageProvider {
                     filename
                 )]);
                 const rel = commandTagsToRelation(tags, null);
-                rel.payloadUnavailable = true;
                 search.relation(rel);
             }
 

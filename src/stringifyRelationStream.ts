@@ -26,7 +26,7 @@ export default function stringifyRelationStream() {
             }
 
             if (rel.hasType('error')) {
-                return '#error ' + sawError.getPayload();
+                return '#error ' + sawError.getTagValue('message');
             }
 
             if (rel.hasType('deleted')) {
@@ -46,9 +46,6 @@ export default function stringifyRelationStream() {
         const tagStrs = tags.map(patternTagToString);
 
         let str = tagStrs.join(' ');
-        
-        if (!outputList)
-            str += (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
 
         return str;
     }

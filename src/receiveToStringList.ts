@@ -28,9 +28,6 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
         tagStrs.sort();
 
         let str = tagStrs.join(' ');
-        
-        if (!outputList)
-            str += (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
 
         return str;
     }
@@ -72,7 +69,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
         },
         finish: () => {
             if (sawError) {
-                onDone('#error ' + sawError.getPayload());
+                onDone('#error ' + sawError.getTagValue('message'));
                 return;
             }
 
@@ -85,9 +82,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
                 if (rels.length === 0) {
                     onDone('#null');
                 } else {
-                    if (rels[0].hasPayload()) {
-                        onDone(rels[0].getPayload());
-                    } else if (outputExtended) {
+                    if (outputExtended) {
                         onDone('set ' + rels[0].stringifyRelation());
                     } else {
                         onDone('#exists');

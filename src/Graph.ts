@@ -170,7 +170,7 @@ export default class Graph {
         this.run(str, {
             relation(rel) {
                 if (rel.hasType('command-meta') && rel.hasType('error')) {
-                    console.log('error: ' + rel.getPayload());
+                    console.log('error: ' + rel.getTagValue('message'));
                     error = error || rel;
                 }
             },
@@ -178,7 +178,7 @@ export default class Graph {
         });
 
         if (error)
-            throw new Error(error.getPayload())
+            throw new Error(error.getTagValue('message'))
     }
 
     runSyncOld(commandStr: string) {

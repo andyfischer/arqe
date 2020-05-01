@@ -9,10 +9,6 @@ export class PatternValue implements Pattern {
     
     tags: PatternTag[] = []
 
-    // relation data
-    payload: string | null
-    payloadUnavailable?: true
-
     // derived data
     hasDerivedData: boolean
     starValueTags: PatternTag[] = []
@@ -65,8 +61,6 @@ export class PatternValue implements Pattern {
 
     copyWithNewTags(tags: PatternTag[]) {
         const pattern = new PatternValue(tags);
-        pattern.payload = this.payload;
-        pattern.payloadUnavailable = this.payloadUnavailable;
         return pattern;
     }
 
@@ -84,38 +78,6 @@ export class PatternValue implements Pattern {
 
     tagCount() {
         return this.tags.length;
-    }
-
-    hasPayload() {
-        if (this.payloadUnavailable)
-            throw new Error("Payload is unavailable for this relation");
-
-        return this.payload != null;
-    }
-
-    getValue() {
-        if (this.payloadUnavailable)
-            throw new Error("Payload is unavailable for this relation");
-
-        return this.payload;
-    }
-
-    getPayload() {
-        return this.getValue();
-    }
-
-    setValue(payload: any) {
-        if (payload === '#exists') {
-            throw new Error("don't use #exists as payload");
-            payload = null;
-        }
-
-        this.payload = payload;
-    }
-
-    setPayload(payload: string | null) {
-        this.setValue(payload);
-        return this;
     }
 
     isSupersetOf(subPattern: Pattern) {
@@ -208,7 +170,7 @@ export class PatternValue implements Pattern {
             outTags.push(patternTagToString(tag));
         }
 
-        const str = outTags.join(' ') + (rel.hasPayload() ? ` == ${rel.getPayload()}` : '');
+        const str = outTags.join(' ');
         return str;
     }
 
@@ -345,8 +307,7 @@ export class PatternValue implements Pattern {
     }
 
     stringifyRelation() {
-        const payloadStr = (this.payload != null) ? (' == ' + this.payload) : '';
-        return this.stringify() + payloadStr;
+        return this.stringify();
     }
 
     stringifyToCommand() {
@@ -371,10 +332,6 @@ export default interface Pattern {
     getTagString: (t: string) => string
     getOneTagForType: (t: string) => PatternTag
     hasValueForType: (t: string) => boolean
-    payloadUnavailable?: boolean
-    getPayload: () => string
-    hasPayload: () => boolean
-    setPayload: (val: string) => Pattern
 
     addTag: (t: string) => Pattern
     addTags: (t: string[]) => Pattern
@@ -412,9 +369,8 @@ export function patternFromMap(map: Map<string,string>) {
     return new PatternValue(tags);
 }
 
-export function commandTagsToRelation(tags: PatternTag[], payload: string): Pattern {
+export function commandTagsToRelation(tags: PatternTag[], payload?: string): Pattern {
     const pattern = new PatternValue(tags)
-    pattern.setPayload(payload);
     return pattern;
 }
 

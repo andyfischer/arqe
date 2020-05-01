@@ -17,12 +17,10 @@ export default class Command {
     commandName: string
     tags: PatternTag[]
     flags: CommandFlags
-    payloadStr: string
 
-    constructor(commandName: string, tags: PatternTag[], payload: string, flags: FlagMap) {
+    constructor(commandName: string, tags: PatternTag[], flags: FlagMap) {
         this.commandName = commandName;
         this.tags = tags;
-        this.payloadStr = payload;
         this.flags = flags;
     }
 
@@ -32,7 +30,6 @@ export default class Command {
 
     toRelation() {
         const rel = new PatternValue(this.tags);
-        rel.setPayload(this.payloadStr);
         return rel;
     }
 

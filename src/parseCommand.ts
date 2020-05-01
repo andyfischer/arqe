@@ -10,14 +10,10 @@ import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_
     t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen } from './lexer'
 
-function nextIsPayloadStart(it: TokenIterator) {
-    return it.nextIs(t_double_equals);
-}
 
 interface InProgressQuery {
     tags: PatternTag[]
     flags: { [flag: string]: any }
-    payload: string | null
 }
 
 function parseTagValue(it: TokenIterator): PatternTagOptions {
@@ -188,7 +184,7 @@ function parseArgs(it: TokenIterator, query: InProgressQuery) {
     while (true) {
         it.skipSpaces();
 
-        if (it.finished() || it.nextIs(t_newline) || it.nextIs(t_bar) || nextIsPayloadStart(it))
+        if (it.finished() || it.nextIs(t_newline) || it.nextIs(t_bar))
             break;
 
         if (it.nextIs(t_dash)) {
@@ -213,14 +209,13 @@ function parseOneCommand(it: TokenIterator): Command {
 
     const query: InProgressQuery = {
         tags: [],
-        flags: {},
-        payload: null
+        flags: {}
     }
 
     // Parse tag args
     parseArgs(it, query);
 
-    return new Command(command, query.tags, query.payload, query.flags);
+    return new Command(command, query.tags, query.flags);
 }
 
 function parseOneCommandChain(it: TokenIterator): CommandChain {
@@ -252,8 +247,7 @@ export function parseRelation(str: string): Relation {
 
     const query: InProgressQuery = {
         tags: [],
-        flags: {},
-        payload: null
+        flags: {}
     }
 
     parseArgs(it, query);
@@ -262,7 +256,7 @@ export function parseRelation(str: string): Relation {
         throw new Error("didn't expect any flags in parseRelation(): " + str)
     }
 
-    return commandTagsToRelation(query.tags as FixedTag[], query.payload);
+    return commandTagsToRelation(query.tags as FixedTag[], null);
 }
 
 export function parseTag(str: string): PatternTag {
