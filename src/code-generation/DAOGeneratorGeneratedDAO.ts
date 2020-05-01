@@ -146,33 +146,6 @@ export default class API {
         return rels.length > 0;
     }
 
-    touchpointTagValueOutputs(touchpoint: string): string[] {
-        const command = `get ${touchpoint} output tagValue/*`;
-
-        const rels: Relation[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
-
-        return rels.map(rel => rel.getTagValue("tagValue"));
-    }
-
-    touchpointTagValueOutput(touchpoint: string): string {
-        const command = `get ${touchpoint} output tagValue/*`;
-
-        const rels: Relation[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
-
-        if (rels.length === 0) {
-            return null;
-        }
-
-        if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
-        }
-
-        const oneRel = rels[0];
-        return oneRel.getTagValue("tagValue");
-    }
-
     touchpointOutput(touchpoint: string): string {
         const command = `get ${touchpoint} output from var`;
 
@@ -189,33 +162,6 @@ export default class API {
 
         const oneRel = rels[0];
         return oneRel.getTagValue("from");
-    }
-
-    touchpointTagOutputs(touchpoint: string): string[] {
-        const command = `get ${touchpoint} output tag/*`;
-
-        const rels: Relation[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
-
-        return rels.map(rel => rel.getTagValue("tag"));
-    }
-
-    touchpointTagOutput(touchpoint: string): string {
-        const command = `get ${touchpoint} output tag/*`;
-
-        const rels: Relation[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
-
-        if (rels.length === 0) {
-            return null;
-        }
-
-        if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
-        }
-
-        const oneRel = rels[0];
-        return oneRel.getTagValue("tag");
     }
 
     touchpointOutputType(touchpoint: string): string {
