@@ -104,7 +104,6 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
     const expectOne = api.touchpointExpectOne(touchpoint);
     const isAsync = api.touchpointIsAsync(touchpoint);
     const outputIsOptional = api.touchpointOutputIsOptional(touchpoint);
-    const outputIsValue = api.touchpointOutputIsValue(touchpoint);
     const outputObject = api.touchpointOutputObject(touchpoint);
     const outputExists = api.touchpointOutputIsExists(touchpoint);
 
@@ -221,7 +220,6 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     const expectOne = api.touchpointExpectOne(touchpoint);
     const isAsync = api.touchpointIsAsync(touchpoint);
     const outputIsOptional = api.touchpointOutputIsOptional(touchpoint);
-    const outputIsValue = api.touchpointOutputIsValue(touchpoint);
     const outputObject = api.touchpointOutputObject(touchpoint);
     const outputExists = api.touchpointOutputIsExists(touchpoint);
     const outputFrom = api.touchpointOutput(touchpoint);
@@ -249,9 +247,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
         
         block.addRaw('const oneRel = rels[0];');
 
-        if (outputIsValue) {
-            block.addRaw('return oneRel.getPayload();');
-        } else if (outputObject) {
+        if (outputObject) {
             block.addRaw('return {');
 
             for (const { field, tagValue } of api.outputObjectTagValueFields(outputObject)) {

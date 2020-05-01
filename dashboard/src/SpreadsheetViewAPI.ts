@@ -45,8 +45,8 @@ export default class API {
         return oneRel.getTagValue("name");
     }
 
-    getCellValue(col: string, row: string) {
-        const command = `get ${row} ${col}`;
+    getCellValue(col: string, row: string): string {
+        const command = `get ${row} ${col} value/*`;
 
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
@@ -60,7 +60,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getPayload();
+        return oneRel.getTagValue("value");
     }
 
     setCellValue(col: string, row: string, value: string) {

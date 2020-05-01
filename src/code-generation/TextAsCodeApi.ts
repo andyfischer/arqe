@@ -7,7 +7,7 @@ export default class API {
         this.graph = graph;
     }
 
-    fromFile(target: string) {
+    fromFile(target: string): string {
         const command = `get ${target} from-file`;
 
         const rels: Relation[] = this.graph.runSync(command)
@@ -24,7 +24,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getPayload();
+        return oneRel.getTagValue("from-file");
     }
 
     destinationFilename(target: string): string {

@@ -219,7 +219,7 @@ set code-generation/3 ik-import(..)
 set code-generation/3 touchpoint/18
 set touchpoint/18 function-name(fromFile)
 set touchpoint/18 query(\${target} from-file)
-set touchpoint/18 output value
+set touchpoint/18 output from(from-file/*) var
 set touchpoint/18 expectOne
 set touchpoint/18 input/0.5
 
@@ -359,9 +359,9 @@ set touchpoint/db3 input/col
 
 set code-generation/spreadsheet-view touchpoint/db4
 set touchpoint/db4 function-name(getCellValue)
-set touchpoint/db4 query(\${row} \${col})
+set touchpoint/db4 query(\${row} \${col} value/*)
 set touchpoint/db4 expectOne
-set touchpoint/db4 output value
+set touchpoint/db4 output from(value/*) var
 set touchpoint/db4 output optional
 set touchpoint/db4 input/col
 set touchpoint/db4 input/row
@@ -386,7 +386,7 @@ set input/value sortOrder/5
 set code-generation/db2
 set code-generation/db2 destination-filename(dashboard/src/GraphSource.ts)
 set code-generation/db2 strategy/text-as-code
-set code-generation/db2 from-file == src/source.graph
+set code-generation/db2 from-file(src/source.graph)
 
 set spreadsheet/1
 
@@ -400,13 +400,13 @@ set col/1 name/"Customer Name"
 set col/2 name/"Customer Email"
 set col/3 name/Status
 
-set row/1 col/1 == Bob
-set row/1 col/2 == bob@email.com
-set row/1 col/3 == Active
+set row/1 col/1 value(Bob)
+set row/1 col/2 value(bob@email.com)
+set row/1 col/3 value(Active)
 
-set row/2 col/1 == Karen
-set row/2 col/2 == karen@email.com
-set row/2 col/3 == Inactive
+set row/2 col/1 value(Karen)
+set row/2 col/2 value(karen@email.com)
+set row/2 col/3 value(Inactive)
 
 set code-generation/spreadsheet-view touchpoint/db5
 set code-generation/edit-model touchpoint/db5
