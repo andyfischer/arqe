@@ -15,25 +15,20 @@ set code-generation/dao touchpoint/0.5
 set touchpoint/0.5 function-name(listTargets)
 set touchpoint/0.5 query(code-generation/*)
 set touchpoint/0.5 output tag/code-generation
-
-set code-generation/dao touchpoint/0.5
-set touchpoint/0.5 function-name(listTargets)
-set touchpoint/0.5 query(code-generation/*)
-set touchpoint/0.5 output tag/code-generation
 set touchpoint/0.5 output from(code-generation) var
 
 set code-generation/dao touchpoint/0.6
 set touchpoint/0.6 function-name(listTouchpoints)
 set touchpoint/0.6 query(${target} touchpoint/*)
 set touchpoint/0.6 output tag/touchpoint
-set touchpoint/0.5 output from(touchpoint) var
+set touchpoint/0.6 output from(touchpoint) var
 set touchpoint/0.6 input/0.5
 
 set code-generation/dao touchpoint/0.8
 set touchpoint/0.8 function-name(getIkImport)
 set touchpoint/0.8 query(${target} ik-import/*)
 set touchpoint/0.8 output tagValue/ik-import
-set touchpoint/0.5 output from(ik-import/*) var
+set touchpoint/0.8 output from(ik-import/*) var
 set touchpoint/0.8 expectOne
 set touchpoint/0.8 input/0.5
 
@@ -838,6 +833,7 @@ set touchpoint/eventTypes query(${touchpoint} eventType/*)
 set touchpoint/eventTypes function-name(touchpointEventTypes)
 set touchpoint/eventTypes input/2
 set touchpoint/eventTypes output tag/eventType
+set touchpoint/eventTypes output from(eventType) var
 
 set input/cmd name/cmd
 set input/cmd type/string
@@ -856,6 +852,7 @@ set touchpoint/eventTypeQuery query(${eventType} query/*)
 set touchpoint/eventTypeQuery function-name(eventTypeQuery)
 set touchpoint/eventTypeQuery input/eventType
 set touchpoint/eventTypeQuery output tagValue/query
+set touchpoint/eventTypeQuery output from(query/*) var
 
 set code-generation/dao touchpoint/eventTypeIsDeletion
 set touchpoint/eventTypeIsDeletion query(${eventType} deletion)
@@ -868,17 +865,18 @@ set touchpoint/eventTypeId query(${eventType} id/*)
 set touchpoint/eventTypeId function-name(eventTypeId)
 set touchpoint/eventTypeId input/eventType
 set touchpoint/eventTypeId output tagValue/id
+set touchpoint/eventTypeId output from(id/*) var
 
 set code-generation/dao touchpoint/eventTypeProvides
 set touchpoint/eventTypeProvides query(${eventType} provide var from)
 set touchpoint/eventTypeProvides function-name(eventTypeProvides)
 set touchpoint/eventTypeProvides input/eventType
 set touchpoint/eventTypeProvides output tagValue/id
+set touchpoint/eventTypeProvides output from(id/*) var
 
 set input/eventType name/eventType
 set input/eventType type/string
 
-set touchpoint/0.5 output from/code-generation var
 set touchpoint/0.6 output from/touchpoint var
 set touchpoint/10 output from/input var
 set touchpoint/15 output from/objectdef var

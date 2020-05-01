@@ -41,6 +41,7 @@ function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: stri
     const outputType = api.touchpointOutputType(touchpoint);
     const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
     const tagOutput = api.touchpointTagOutput(touchpoint);
+    const outputFrom = api.touchpointOutput(touchpoint);
     const expectOne = api.touchpointExpectOne(touchpoint);
     const isAsync = api.touchpointIsAsync(touchpoint);
     const outputObject = api.touchpointOutputObject(touchpoint);
@@ -57,7 +58,7 @@ function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: stri
         outputTypeStr = outputType;
     } else if (outputObject) {
         outputTypeStr = null;
-    } else if (tagOutput || tagValueOutput) {
+    } else if (outputFrom) {
         outputTypeStr = 'string'
     }
 
