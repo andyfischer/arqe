@@ -70,13 +70,9 @@ function modificationToFilter(rel: Relation) {
 
 export default class InMemoryStorage implements StorageProvider {
     graph: Graph
-
-    relationsByNtag: { [ ntag: string]: Relation } = {};
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
-
-    stored: { [ storageId: string]: Relation } = {}
-
-    storageId: IDSource = new IDSource()
+    stored: { [ storageId: string]: Relation } = {};
+    nextStorageId: IDSource = new IDSource();
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -100,25 +96,19 @@ export default class InMemoryStorage implements StorageProvider {
         });
     }
 
-    *linearScan(pattern: Pattern) {
-        for (const ntag in this.relationsByNtag) {
-            const rel = this.relationsByNtag[ntag];
- 
-            if (pattern.matches(rel)) {
-                yield rel;
-            }
-        }
-    }
+    *findStored(pattern: Pattern): Iterable<{storageId:string, relation: Relation}> {
 
-    *findAllMatches(pattern: Pattern) {
-        for (const rel of this.linearScan(pattern)) {
-            yield rel;
+        // Full scan
+        for (const storageId in this.stored) {
+            const relation = this.stored[storageId];
+            if (pattern.matches(relation))
+                yield { storageId, relation: this.stored[storageId] }
         }
     }
 
     runSearch(search: RelationSearch) {
-        for (const rel of this.findAllMatches(search.pattern)) {
-            search.relation(rel);
+        for (const { storageId, relation } of this.findStored(search.pattern)) {
+            search.relation(relation);
         }
 
         search.finish();
@@ -127,25 +117,20 @@ export default class InMemoryStorage implements StorageProvider {
     runModification(commandRel: Relation, output: RelationReceiver) {
         const filter = modificationToFilter(commandRel);
 
-        for (const ntag in this.relationsByNtag) {
-            const scanRel = this.relationsByNtag[ntag];
+        const changes: { storageId: string, modified: Relation}[] = [];
 
-            if (filter.isSupersetOf(scanRel)) {
-                delete this.relationsByNtag[ntag];
+        for (const { storageId, relation } of this.findStored(filter)) {
+            const modified = applyModificationRelation(commandRel, relation);
+            changes.push({storageId, modified});
+        }
 
-                const modified = applyModificationRelation(commandRel, scanRel);
-                this.saveOne(modified, output);
-            }
+        for (const change of changes) {
+            this.stored[change.storageId] = change.modified;
+            output.relation(change.modified);
+            this.graph.onRelationUpdated(change.modified);
         }
 
         output.finish();
-    }
-
-    saveOne(relation: Relation, output: RelationReceiver) {
-        const ntag = relation.getNtag();
-        this.relationsByNtag[ntag] = relation;
-        output.relation(relation);
-        this.graph.onRelationUpdated(relation);
     }
 
     runSave(relation: Relation, output: RelationReceiver) {
@@ -156,8 +141,6 @@ export default class InMemoryStorage implements StorageProvider {
 
         // Save as new relation
         relation = this.resolveExpressionValues(relation);
-        const ntag = relation.getNtag();
-        const existing = this.relationsByNtag[ntag];
 
         for (const tag of relation.tags) {
             if (tag.valueExpr) {
@@ -167,27 +150,25 @@ export default class InMemoryStorage implements StorageProvider {
             }
         }
 
-        if (existing) {
-            this.saveOne(relation, output);
+        // Check if already stored
+        for (const existing of this.findStored(relation)) {
+            // Already stored
             output.finish();
             return;
         }
-        
-        this.saveOne(relation, output);
+
+        // Store a new relation
+        this.stored[this.nextStorageId.take()] = relation;
+        output.relation(relation);
+        this.graph.onRelationUpdated(relation);
         output.finish();
     }
 
-    deleteRelation(rel: Relation) {
-        delete this.relationsByNtag[rel.getNtag()];
-    }
-
     runDelete(graph: Graph, pattern: Pattern, output: RelationReceiver) {
-        for (const rel of graph.inMemory.findAllMatches(pattern)) {
-            if (rel.hasType('typeinfo'))
-                throw new Error("can't delete a typeinfo relation");
 
-            graph.inMemory.deleteRelation(rel);
-            graph.onRelationDeleted(rel);
+        for (const { storageId, relation } of this.findStored(pattern)) {
+            delete this.stored[storageId];
+            graph.onRelationDeleted(relation);
         }
 
         emitActionPerformed(output);
