@@ -3,6 +3,7 @@ export class Block {
     blockType: string
     statements: Statement[] = []
     parent: Statement
+    formatOneLine: boolean = false
 
     constructor(blockType: string, parent: Statement) {
         this.blockType = blockType;
@@ -41,6 +42,12 @@ export class Block {
         const ifBlock = new IfBlock();
         this.statements.push(ifBlock);
         return ifBlock;
+    }
+
+    addObjectField(name: string, value: string) {
+        const field = new ObjectField(name, value);
+        this.statements.push(field);
+        return field;
     }
 }
 
@@ -144,6 +151,21 @@ class FieldDecl implements Statement {
     }
 }
 
+class ObjectField implements Statement {
+    statementType = 'objectField'
+    name: string
+    valueExpr: string
+
+    constructor(name: string, valueExpr: string) {
+        this.name = name;
+        this.valueExpr = valueExpr;
+    }
+
+    line() {
+        return `${this.name}: ${this.valueExpr}`
+    }
+}
+
 class FunctionDecl implements Statement {
     statementType = 'functionDecl'
     format: string
@@ -210,23 +232,28 @@ class IfBlock implements Statement {
     }
 }
 
-export function startFile() {
-    return new Block('file', null);
-}
 
 class LineWriter {
     currentIndent: number = 0
     indentStr: string
     out: string[] = []
+    startedNewLine = true;
 
-    writeln(s: string) {
-        if (this.out.length > 0)
-            this.out.push('\n');
+    write(s?: string) {
 
         if (s) {
-            this.out.push(this.indentStr);
+            if (this.startedNewLine)
+                this.out.push(this.indentStr);
             this.out.push(s);
         }
+
+        this.startedNewLine = false;
+    }
+
+    writeln(s?: string) {
+        this.write(s);
+        this.out.push('\n');
+        this.startedNewLine = true;
     }
 
     indent() {
@@ -243,6 +270,8 @@ class LineWriter {
     }
 
     stringify() {
+        if (this.out[this.out.length - 1] === '\n')
+            this.out.pop();
         return this.out.join('');
     }
 }
@@ -260,19 +289,32 @@ function shouldAddSpacerBetween(a: Statement, b: Statement) {
     return false;
 }
 
-function* iterateBlockDfs(block: Block) {
+export function startFile() {
+    return new Block('file', null);
+}
+
+export function startObjectLiteral() {
+    return new Block('object-literal', null);
+}
+
+function* iterateBlock(block: Block) {
+    yield ({ startBlock: block });
+
     for (const statement of block.statements) {
-        yield ({ statement })
+        yield ({ statement, currentBlock: block })
 
         if (statement.contents) {
-            yield ({ startBlock: statement.contents })
-            yield* iterateBlockDfs(statement.contents);
-            yield ({ finishBlock: statement.contents })
+            yield* iterateBlock(statement.contents);
         }
     }
+
+    yield ({ finishBlock: block });
 }
 
 export function formatBlock(block: Block) {
+
+    if (block.blockType === 'object-literal' && block.statements.length === 1)
+        block.formatOneLine = true;
 
     for (let i = 0; i < block.statements.length; i += 1) {
         const statement = block.statements[i];
@@ -292,25 +334,70 @@ export function stringifyBlock(block: Block) {
     const out = [];
     const writer = new LineWriter();
 
-    for (const it of iterateBlockDfs(block)) {
+    for (const it of iterateBlock(block)) {
 
         if (it.startBlock) {
-            writer.indent()
+            switch (it.startBlock.blockType) {
+            case 'file':
+                continue;
+
+            case 'class':
+            case 'function':
+                writer.writeln(' {')
+                writer.indent();
+                continue;
+
+            default:
+                if (it.startBlock.formatOneLine) {
+                    writer.write('{ ')
+                } else {
+                    writer.writeln('{')
+                    writer.indent();
+                }
+                continue;
+            }
         }
 
         if (it.statement) {
-            let line = it.statement.line();
+            const text = it.statement.line();
+            writer.write(text);
 
-            if (it.statement.contents) {
-                line += ' {';
+            if (it.currentBlock.formatOneLine)
+                continue;
+
+            if (it.currentBlock.blockType === 'object-literal') {
+                writer.writeln(',')
+                continue;
             }
 
-            writer.writeln(line);
+            switch(it.statement.statementType) {
+                case 'classDef':
+                case 'functionDecl':
+                    continue;
+            }
+
+            writer.writeln();
         }
 
         if (it.finishBlock) {
-            writer.unindent()
-            writer.writeln('}');
+            switch (it.finishBlock.blockType) {
+            case 'file':
+                continue;
+
+            case 'class':
+                writer.unindent();
+                writer.writeln('}')
+                continue;
+            
+            default:
+                if (it.finishBlock.formatOneLine) {
+                    writer.write(' }')
+                } else {
+                    writer.unindent();
+                    writer.writeln('}')
+                }
+                continue;
+            }
         }
     }
 

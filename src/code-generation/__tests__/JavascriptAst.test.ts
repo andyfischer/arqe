@@ -1,5 +1,5 @@
 
-import { startFile, formatBlock } from '../JavascriptAst'
+import { startFile, startObjectLiteral, formatBlock } from '../JavascriptAst'
 
 it('can declare an import', () => {
     const file = startFile();
@@ -67,8 +67,29 @@ it('formats spaces between fields & constructor', () => {
     }
 }`);
 
-
     expect(classDef.contents.statements[0].statementType).toEqual('fieldDecl');
     expect(classDef.contents.statements[1].statementType).toEqual('blank');
     expect(classDef.contents.statements[2].statementType).toEqual('functionDecl');
+});
+
+it('can declare one-line object literals', () => {
+    const obj = startObjectLiteral();
+
+    obj.addObjectField('a', '1');
+    formatBlock(obj);
+    expect(obj.stringify()).toEqual('{ a: 1 }');
+});
+
+it('can declare multi-line object literals', () => {
+    const obj = startObjectLiteral();
+
+    obj.addObjectField('a', '1');
+    obj.addObjectField('b', '2');
+    obj.addObjectField('c', '3');
+    formatBlock(obj);
+    expect(obj.stringify()).toEqual(`{
+    a: 1,
+    b: 2,
+    c: 3,
+}`);
 });
