@@ -427,12 +427,15 @@ export default class API {
         return rels.map(rel => rel.getTagValue("id"));
     }
 
-    eventTypeProvides(eventType: string): string[] {
+    eventTypeProvides(eventType: string) {
         const command = `get ${eventType} provide var/* from/*`;
 
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
-        return rels.map(rel => rel.getTagValue("from"));
+        return rels.map(rel => ({
+    fromStr: rel.getTagValue("from"),
+    varStr: rel.getTagValue("var"),
+}));
     }
 }

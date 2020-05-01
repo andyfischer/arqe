@@ -343,6 +343,7 @@ export function stringifyBlock(block: Block) {
 
             case 'class':
             case 'function':
+            case 'if':
                 writer.writeln(' {')
                 writer.indent();
                 continue;
@@ -373,6 +374,7 @@ export function stringifyBlock(block: Block) {
             switch(it.statement.statementType) {
                 case 'classDef':
                 case 'functionDecl':
+                case 'ifBlock':
                     continue;
             }
 

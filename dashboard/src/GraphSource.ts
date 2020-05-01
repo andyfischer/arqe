@@ -786,7 +786,8 @@ set code-generation/dao touchpoint/eventTypeProvides
 set touchpoint/eventTypeProvides query(\${eventType} provide var/* from/*)
 set touchpoint/eventTypeProvides function-name(eventTypeProvides)
 set touchpoint/eventTypeProvides input/eventType
-set touchpoint/eventTypeProvides output from(from/*) var
+set touchpoint/eventTypeProvides output from(from/*) var/fromStr
+set touchpoint/eventTypeProvides output from(var/*) var/varStr
 
 set input/eventType name/eventType
 set input/eventType type/string
