@@ -13,22 +13,22 @@ beforeEach(() => {
 
         // Concatenate a bunch of strings
         callCount += 1;
-        const rels = cxt.getRelations("string/*");
+        const rels = cxt.getRelations("string/* value/*");
         rels.sort((a,b) => (a.getTagValue('string') as string)
                     .localeCompare(b.getTagValue('string') as string));
 
-        let strs = rels.map(r => r.getPayload());
+        let strs = rels.map(r => r.getTagValue('value'));
 
         // Just to add complication, delete strings from ignorestring/* tags.
-        for (const ignore of cxt.getRelations("ignorestring/*")) {
-            strs = strs.filter(s => s !== ignore.getPayload());
+        for (const ignore of cxt.getRelations("ignorestring/* value/*")) {
+            strs = strs.filter(s => s !== ignore.getTagValue('value'));
         }
 
         return strs.join(' ');
     });
 
-    graph.runSilent('set string/1 == apple');
-    graph.runSilent('set string/2 == banana');
+    graph.runSilent('set string/1 value(apple)');
+    graph.runSilent('set string/2 value(banana)');
 });
 
 it('uses the correct initial value', () => {
@@ -47,23 +47,23 @@ it("doesn't recompute if there are no changes", () => {
 it("recomputes if there are related changes", () => {
     expect(cachedValue.get()).toEqual('apple banana');
 
-    graph.runSilent('set string/3 == cheese');
+    graph.runSilent('set string/3 value(cheese)');
     expect(cachedValue.get()).toEqual('apple banana cheese');
 
-    graph.runSilent('delete string/2 == cheese');
+    graph.runSilent('delete string/2 value');
     expect(cachedValue.get()).toEqual('apple cheese');
 });
 
 it('handles updates to multiple queries', () => {
 
-    graph.runSilent('set ignorestring/1 == apple');
+    graph.runSilent('set ignorestring/1 value(apple)');
     expect(cachedValue.get()).toEqual('banana');
 
-    graph.runSilent('set string/4 == danish')
+    graph.runSilent('set string/4 value(danish)')
 
     expect(cachedValue.get()).toEqual('banana danish');
 
-    graph.runSilent('set ignorestring/2 == danish');
+    graph.runSilent('set ignorestring/2 value(danish)');
 
     expect(cachedValue.get()).toEqual('banana');
 });

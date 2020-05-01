@@ -88,19 +88,6 @@ it('parses option syntax', () => {
     expect(parsed.tags[0].tagValue).toEqual('foo')
 });
 
-it('parses payload', () => {
-    const parsed = parseCommand('test == 1');
-    expect(parsed.commandName).toEqual('test')
-    expect(parsed.tags).toEqual([])
-    expect(parsed.payloadStr).toEqual('1')
-});
-
-it('payload can have whitespace', () => {
-    const parsed = parseCommand('test == 1 2 3');
-    expect(parsed.commandName).toEqual('test')
-    expect(parsed.tags).toEqual([])
-    expect(parsed.payloadStr).toEqual('1 2 3')
-});
 
 it('parses flags', () => {
     const parsed = parseCommand('test -a 1');
@@ -159,17 +146,11 @@ describe("parsedCommandToString", () => {
         const parsed = parseCommand('get x y');
         expect(parsedCommandToString(parsed)).toEqual('get x y');
     });
-
-    it("handles payloads", () => {
-        const parsed = parseCommand('set x y == 123');
-        expect(parsedCommandToString(parsed)).toEqual('set x y == 123');
-    });
 });
 
 describe("appendTagInCommand", () => {
     it("works", () => {
         expect(appendTagInCommand('get x y', 'extra')).toEqual('get x y extra');
-        expect(appendTagInCommand('set x y == 1', 'extra')).toEqual('set x y extra == 1');
     });
 });
 

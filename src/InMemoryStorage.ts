@@ -74,6 +74,10 @@ export default class InMemoryStorage implements StorageProvider {
     relationsByNtag: { [ ntag: string]: Relation } = {};
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
 
+    stored: { [ storageId: string]: Relation } = {}
+
+    storageId: IDSource = new IDSource()
+
     constructor(graph: Graph) {
         this.graph = graph;
     }

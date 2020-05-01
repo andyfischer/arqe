@@ -200,24 +200,6 @@ function parseArgs(it: TokenIterator, query: InProgressQuery) {
 
         query.tags.push(tag);
     }
-
-    parsePayload(it, query);
-}
-
-function parsePayload(it: TokenIterator, query: InProgressQuery): string | null {
-    if (!nextIsPayloadStart(it)) {
-        return null;
-    }
-
-    it.consume(t_double_equals);
-    it.skipSpaces();
-
-    let str = "";
-
-    while (!it.nextIs(t_newline) && !it.finished())
-        str += it.consumeNextText();
-
-    return query.payload = str;
 }
 
 function parseOneCommand(it: TokenIterator): Command {
