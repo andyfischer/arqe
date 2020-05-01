@@ -194,14 +194,14 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
     }
 }
 
-function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
+function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: string, relVarName = 'rel') {
     const outputFrom = api.touchpointOutput(touchpoint);
 
     if (outputFrom) {
         if (outputFrom.endsWith('/*')) {
-            return `rel.getTagValue("${outputFrom.replace('/*', '')}")`
+            return `${relVarName}.getTagValue("${outputFrom.replace('/*', '')}")`
         } else {
-            return `rel.getTag("${outputFrom}")`
+            return `${relVarName}.getTag("${outputFrom}")`
         }
     }
 
@@ -269,12 +269,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
             block.addRaw('}');
 
         } else if (outputFrom) {
-
-            if (outputFrom.endsWith('/*')) {
-                block.addRaw(`return oneRel.getTagValue("${outputFrom.replace('/*', '')}");`)
-            } else {
-                block.addRaw(`return oneRel.getTag("${outputFrom}");`)
-            }
+            block.addRaw(`return ${relationOutputExpression(api, touchpoint, 'oneRel')};`);
 
         } else {
             block.addRaw('// no output')
@@ -284,7 +279,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     }
 
     if (outputFrom && outputFrom.endsWith('/*')) {
-        let returnStr = `return rels.map(rel => rel.getTagValue("${outputFrom.replace('/*', '')}"))`
+        let returnStr = `return rels.map(rel => ${relationOutputExpression(api, touchpoint)})`
 
         if (outputType === 'integer') {
             returnStr += '.map(str => parseInt(str, 10))'
@@ -310,7 +305,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     }
     
     if (outputFrom) {
-        block.addRaw(`return rels.map(rel => rel.getTag("${outputFrom}"));`)
+        block.addRaw(`return rels.map(rel => ${relationOutputExpression(api, touchpoint)});`)
         return;
     }
 
