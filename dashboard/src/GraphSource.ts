@@ -115,14 +115,11 @@ set touchpoint/7.2 expectOne
 set input/5 name/touchpoint
 set input/5 type/string
 
-set code-generation/dao touchpoint/9
-set touchpoint/9 query(\${touchpoint} output type/*)
-set touchpoint/9 function-name(touchpointOutputType)
-set touchpoint/9 input/7
-set touchpoint/9 output optional
-set touchpoint/9 expectOne
-set input/7 name/touchpoint
-set input/7 type/string
+set code-generation/dao touchpoint/7.3
+set touchpoint/7.3 query(\${touchpoint} output from var)
+set touchpoint/7.3 function-name(touchpointOutputs)
+set touchpoint/7.3 input/5
+set touchpoint/7.3 output from(from/*) var
 
 set code-generation/dao touchpoint/10
 set touchpoint/10 query(\${touchpoint} input/*)

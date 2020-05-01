@@ -38,7 +38,6 @@ function sortInputs(api: DAOGeneratorGeneratedDAO, inputs: string[]) {
 
 function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
     const outputExists = api.touchpointOutputIsExists(touchpoint);
-    const outputType = api.touchpointOutputType(touchpoint);
     const outputFrom = api.touchpointOutput(touchpoint);
     const expectOne = api.touchpointExpectOne(touchpoint);
     const isAsync = api.touchpointIsAsync(touchpoint);
@@ -52,9 +51,7 @@ function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: stri
 
     let outputTypeStr = null;
 
-    if (outputType) {
-        outputTypeStr = outputType;
-    } else if (outputObject) {
+    if (outputObject) {
         outputTypeStr = null;
     } else if (outputFrom) {
         outputTypeStr = 'string'
@@ -228,7 +225,6 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     const outputObject = api.touchpointOutputObject(touchpoint);
     const outputExists = api.touchpointOutputIsExists(touchpoint);
     const outputFrom = api.touchpointOutput(touchpoint);
-    const outputType = api.touchpointOutputType(touchpoint);
 
     if (outputExists) {
         block.addRaw('return rels.length > 0;');
@@ -278,15 +274,8 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
         return;
     }
 
-    if (outputFrom && outputFrom.endsWith('/*')) {
-        let returnStr = `return rels.map(rel => ${relationOutputExpression(api, touchpoint)})`
-
-        if (outputType === 'integer') {
-            returnStr += '.map(str => parseInt(str, 10))'
-        }
-
-        returnStr += ';'
-
+    if (outputFrom) {
+        let returnStr = `return rels.map(rel => ${relationOutputExpression(api, touchpoint)});`
         block.addRaw(returnStr)
         return;
     }
@@ -301,11 +290,6 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
 
         block.addRaw('}));');
 
-        return;
-    }
-    
-    if (outputFrom) {
-        block.addRaw(`return rels.map(rel => ${relationOutputExpression(api, touchpoint)});`)
         return;
     }
 
