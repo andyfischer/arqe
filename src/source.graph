@@ -135,7 +135,7 @@ set touchpoint/7.2 query(${touchpoint} output from var)
 set touchpoint/7.2 function-name(touchpointOutput)
 set touchpoint/7.2 input/5
 set touchpoint/7.2 output tagValue/from
-set touchpoint/7.2 output from(tagValue/*) var
+set touchpoint/7.2 output from(from/*) var
 set touchpoint/7.2 output optional
 set touchpoint/7.2 expectOne
 set input/5 name/touchpoint

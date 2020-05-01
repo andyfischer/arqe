@@ -39,8 +39,6 @@ function sortInputs(api: DAOGeneratorGeneratedDAO, inputs: string[]) {
 function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
     const outputExists = api.touchpointOutputIsExists(touchpoint);
     const outputType = api.touchpointOutputType(touchpoint);
-    const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
-    const tagOutput = api.touchpointTagOutput(touchpoint);
     const outputFrom = api.touchpointOutput(touchpoint);
     const expectOne = api.touchpointExpectOne(touchpoint);
     const isAsync = api.touchpointIsAsync(touchpoint);
@@ -72,14 +70,12 @@ function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: stri
 }
 
 function getTypeForListenerCallback(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
-    const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
-    const tagOutput = api.touchpointTagOutput(touchpoint);
+    const outputFrom = api.touchpointOutput(touchpoint);
 
-    if (tagValueOutput)
-        return `(${tagValueOutput}: string) => void`
-
-    if (tagOutput)
-        return `(${tagOutput}: string) => void`
+    if (outputFrom) {
+        const varName = outputFrom.replace('/*', '');
+        return `(${varName}: string) => void`
+    }
 
     return `(rel: Relation) => void`
 }
@@ -114,8 +110,6 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
     const outputIsValue = api.touchpointOutputIsValue(touchpoint);
     const outputObject = api.touchpointOutputObject(touchpoint);
     const outputExists = api.touchpointOutputIsExists(touchpoint);
-    const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
-    const tagOutput = api.touchpointTagOutput(touchpoint);
 
     const func = block.addMethod(name);
 
@@ -198,22 +192,20 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
 }
 
 function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
-    const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
-    const tagOutput = api.touchpointTagOutput(touchpoint);
+    const outputFrom = api.touchpointOutput(touchpoint);
 
-    if (tagValueOutput)
-        return `rel.getTagValue("${tagValueOutput}")`
-
-    if (tagOutput)
-        return `rel.getTag("${tagOutput}")`
+    if (outputFrom) {
+        if (outputFrom.endsWith('/*')) {
+            return `rel.getTagValue("${outputFrom.replace('/*', '')}")`
+        } else {
+            return `rel.getTag("${outputFrom}")`
+        }
+    }
 
     return `rel`;
 }
 
 function methodBodyForListener(api: DAOGeneratorGeneratedDAO, touchpoint: string, block: Block) {
-    const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
-    const tagOutput = api.touchpointTagOutput(touchpoint);
-    
     block.addRaw('this.graph.run(command, {')
     block.addRaw('    relation(rel: Relation) {')
     block.addRaw(`        if (rel.hasType('command-meta'))`)
@@ -232,8 +224,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     const outputIsValue = api.touchpointOutputIsValue(touchpoint);
     const outputObject = api.touchpointOutputObject(touchpoint);
     const outputExists = api.touchpointOutputIsExists(touchpoint);
-    const tagValueOutput = api.touchpointTagValueOutput(touchpoint);
-    const tagOutput = api.touchpointTagOutput(touchpoint);
+    const outputFrom = api.touchpointOutput(touchpoint);
     const outputType = api.touchpointOutputType(touchpoint);
 
     if (outputExists) {
@@ -274,10 +265,13 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
 
             block.addRaw('}');
 
-        } else if (tagValueOutput) {
-            block.addRaw(`return oneRel.getTagValue("${tagValueOutput}");`)
-        } else if (tagOutput) {
-            block.addRaw(`return oneRel.getTag("${tagOutput}");`)
+        } else if (outputFrom) {
+
+            if (outputFrom.endsWith('/*')) {
+                block.addRaw(`return oneRel.getTagValue("${outputFrom.replace('/*', '')}");`)
+            } else {
+                block.addRaw(`return oneRel.getTag("${outputFrom}");`)
+            }
 
         } else {
             block.addRaw('// no output')
@@ -286,8 +280,8 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
         return;
     }
 
-    if (tagValueOutput) {
-        let returnStr = `return rels.map(rel => rel.getTagValue("${tagValueOutput}"))`
+    if (outputFrom && outputFrom.endsWith('/*')) {
+        let returnStr = `return rels.map(rel => rel.getTagValue("${outputFrom.replace('/*', '')}"))`
 
         if (outputType === 'integer') {
             returnStr += '.map(str => parseInt(str, 10))'
@@ -312,8 +306,8 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
         return;
     }
     
-    if (tagOutput) {
-        block.addRaw(`return rels.map(rel => rel.getTag("${tagOutput}"));`)
+    if (outputFrom) {
+        block.addRaw(`return rels.map(rel => rel.getTag("${outputFrom}"));`)
         return;
     }
 
