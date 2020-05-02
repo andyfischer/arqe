@@ -12,6 +12,6 @@ runStandardProcess(async (graph) => {
         const name = (await runAsync(graph, `get ${input} name`))[0].getTagValue('name');
         const type = (await runAsync(graph, `get ${input} type`))[0].getTagValue('type');
 
-        console.log('set ' + rel.removeType('input').addTag('input').addTag(`var/${name}`).addTag(`type/${type}`).stringify());
+        console.log('set ' + rel.removeType('input').addTagStr('input').addTagStr(`var/${name}`).addTagStr(`type/${type}`).stringify());
     }
 });
