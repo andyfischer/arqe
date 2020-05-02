@@ -5,7 +5,7 @@ import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
 import PatternTag, { FixedTag } from './PatternTag'
 
-export class PatternValue implements Pattern {
+export default class Pattern {
     
     tags: PatternTag[] = []
 
@@ -60,7 +60,7 @@ export class PatternValue implements Pattern {
     }
 
     copyWithNewTags(tags: PatternTag[]) {
-        const pattern = new PatternValue(tags);
+        const pattern = new Pattern(tags);
         return pattern;
     }
 
@@ -326,43 +326,6 @@ export class PatternValue implements Pattern {
     }
 }
 
-export default interface Pattern {
-    tags: PatternTag[]
-    tagCount: () => number
-    fixedTags: FixedTag[]
-    starValueTags: PatternTag[]
-    tagsForType: { [typename: string]: PatternTag[] }
-    byIdentifier: { [identifier: string]: PatternTag }
-    hasType: (t: string) => boolean
-
-    getNtag: () => string
-    getTag: (t: string) => string
-    getTagValue: (t: string) => string | boolean | any
-    getTagString: (t: string) => string
-    getOneTagForType: (t: string) => PatternTag
-    hasValueForType: (t: string) => boolean
-
-    addTag: (t: string) => Pattern
-    addTagObj: (tag: PatternTag) => Pattern
-    addTags: (t: string[]) => Pattern
-    removeType: (t: string) => Pattern
-    removeTypes: (t: string[]) => Pattern
-    dropTagIndex: (n: number) => Pattern
-    setTagValueAtIndex: (index: number, value: any) => Pattern;
-    findTagWithType: (tagType: string) => PatternTag
-    findTagIndexOfType: (tagType: string) => number;
-    updateTagOfType: (tagType: string, update: (t: PatternTag) => PatternTag) => Pattern
-    updateTagAtIndex: (index: number, update: (t: PatternTag) => PatternTag) => Pattern
-    remapTags: (func: (PatternTag) => PatternTag) => Pattern;
-    modifyTagsList: (func: (tags: PatternTag[]) => PatternTag[]) => Pattern;
-
-    matches: (p: Pattern) => boolean
-    isSupersetOf: (p: Pattern) => boolean
-
-    stringify: () => string
-    stringifyRelation: () => string
-}
-
 export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
     return parsed.pattern;
@@ -377,11 +340,11 @@ export function patternFromMap(map: Map<string,string>) {
         tags.push(tag);
     }
 
-    return new PatternValue(tags);
+    return new Pattern(tags);
 }
 
 export function commandTagsToRelation(tags: PatternTag[], payload?: string): Pattern {
-    const pattern = new PatternValue(tags)
+    const pattern = new Pattern(tags)
     return pattern;
 }
 

@@ -4,7 +4,7 @@ import CommandStep from './CommandStep'
 import runSearch from './runSearch'
 import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList } from './receivers'
-import Pattern, { PatternValue } from './Pattern'
+import Pattern from './Pattern'
 import Relation from './Relation'
 import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
@@ -107,7 +107,7 @@ function combineRelations(a: Pattern, b: Pattern) {
         tags.push(tag);
     }
 
-    return new PatternValue(tags);
+    return new Pattern(tags);
 }
 
 function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: RelationReceiver) {

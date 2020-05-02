@@ -1,5 +1,5 @@
 
-import Pattern, { PatternValue } from './Pattern'
+import Pattern from './Pattern'
 import { parsedCommandToString } from './stringifyQuery'
 import PatternTag from './PatternTag'
 
