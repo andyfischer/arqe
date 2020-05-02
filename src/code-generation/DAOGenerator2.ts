@@ -116,11 +116,17 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
     if (outputType)
         func.setOutputType(outputType);
 
+    
     const inputs = sortInputs(api, api.touchpointInputs(touchpoint));
-
     for (const input of inputs) {
         func.addInput(api.inputName(input), api.inputType(input));
     }
+
+    /*
+    for (const { varStr, typeStr } of api.touchpointInputs2(touchpoint)) {
+        func.addInput(varStr, typeStr);
+    }
+    */
 
     if (api.touchpointIsListener(touchpoint))
         func.addInput('callback', getTypeForListenerCallback(api, touchpoint));

@@ -41,6 +41,7 @@ set code-generation/dao touchpoint/touchpointFunctionName
 set touchpoint/touchpointFunctionName query(\${touchpoint} function-name/*)
 set touchpoint/touchpointFunctionName function-name(touchpointFunctionName)
 set touchpoint/touchpointFunctionName input/1
+set touchpoint/touchpointFunctionName input var/touchpoint type/string
 set touchpoint/touchpointFunctionName output from(function-name/*) var
 set touchpoint/touchpointFunctionName expectOne
 set input/1 name/touchpoint
