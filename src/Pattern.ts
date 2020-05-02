@@ -295,7 +295,7 @@ export default class Pattern {
         return this.copyWithNewTags(this.tags.filter(tag => typeNames.indexOf(tag.tagType) === -1));
     }
 
-    addTag(s: string) {
+    addTagStr(s: string) {
         return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
     }
 

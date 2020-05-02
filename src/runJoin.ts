@@ -115,7 +115,6 @@ function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: 
     if (!inputSearchPattern)
         throw new Error('missing inputSearchPattern');
 
-
     emitSearchPatternMeta(combineRelations(inputSearchPattern, searchPattern), output)
 
     // For each search result

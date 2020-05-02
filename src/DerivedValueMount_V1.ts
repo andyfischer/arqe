@@ -35,8 +35,8 @@ export default class DerivedValueMount implements StorageProvider {
                 const derivedValue = this.callback(cxt, rel);
 
                 const foundPattern = rel
-                    .addTag(this.mountTypename)
-                    .addTag('value/' + derivedValue);
+                    .addTagStr(this.mountTypename)
+                    .addTagStr('value/' + derivedValue);
 
                 search.relation(foundPattern);
             },
