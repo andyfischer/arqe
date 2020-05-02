@@ -11,4 +11,4 @@ runStandardProcess(async (graph: Graph) => {
     });
 
     await new Promise(() => {});
-})
+});

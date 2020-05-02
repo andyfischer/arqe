@@ -48,4 +48,32 @@ export default class API {
             finish() { }
         });
     }
+
+    pushValueChange(val: string) {
+        const command = `set test-event-handler val/(set ${val})`;
+
+        console.log('running: ' + command);
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
+    }
+
+    pushObject(obj: string) {
+        const command = `set test-event-handler ${obj}`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
+    }
+
+    deleteObject(obj: string) {
+        const command = `delete test-event-handler obj}`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
+    }
 }
