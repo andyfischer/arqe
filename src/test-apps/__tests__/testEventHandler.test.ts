@@ -17,15 +17,21 @@ beforeEach(() => {
     api = new TestEventHandlerAPI(graph);
     log = [];
     api.eventListener(evt => {
-        console.log(evt);
         log.push(evt);
     });
 });
 
 it('works', () => {
-    // api.pushInitialValue('123');
-
-    expect(readLog()).toEqual(['123']);
+    api.pushInitialValue('123');
+    expect(readLog()).toEqual([{id: 'valueChanged', val: '123'}]);
 
     api.pushValueChange('456');
+    api.pushValueChange('789');
+    expect(readLog()).toEqual([{id: 'valueChanged', val: '456'},{id: 'valueChanged', val: '789'}]);
+
+    api.pushObject('obj/123')
+    expect(readLog()).toEqual([{id: 'objectChanged', obj: 'obj/123'}]);
+
+    api.deleteObject('obj/123')
+    expect(readLog()).toEqual([{id: 'objectDeleted', obj: 'obj/123'}]);
 });

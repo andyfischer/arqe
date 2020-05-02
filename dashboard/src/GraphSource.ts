@@ -879,20 +879,25 @@ set eventType/testDeletionEvent deletion
 set eventType/testDeletionEvent provide var/obj from(obj)
 set eventType/testDeletionEvent id/objectDeleted
 
-set code-generation/testEventHandler touchpoint/pushValueChange
 set code-generation/testEventHandler touchpoint/pushObject
 set code-generation/testEventHandler touchpoint/deleteObject
 
+set code-generation/testEventHandler touchpoint/pushValueChange
 set touchpoint/pushValueChange function-name(pushValueChange)
 set touchpoint/pushValueChange query(set test-event-handler val/(set \${val}))
 set touchpoint/pushValueChange input var/val type/string
+
+set code-generation/testEventHandler touchpoint/pushInitialValue
+set touchpoint/pushInitialValue function-name(pushInitialValue)
+set touchpoint/pushInitialValue query(set test-event-handler val/\${val})
+set touchpoint/pushInitialValue input var/val type/string
 
 set touchpoint/pushObject function-name(pushObject)
 set touchpoint/pushObject query(set test-event-handler \${obj})
 set touchpoint/pushObject input var/obj type/string
 
 set touchpoint/deleteObject function-name(deleteObject)
-set touchpoint/deleteObject query(delete test-event-handler obj})
+set touchpoint/deleteObject query(delete test-event-handler \${obj})
 set touchpoint/deleteObject input var/obj type/string
 
 set touchpoint/0.6 input var/target type/string

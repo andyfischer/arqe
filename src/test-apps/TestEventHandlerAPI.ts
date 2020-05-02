@@ -49,16 +49,6 @@ export default class API {
         });
     }
 
-    pushValueChange(val: string) {
-        const command = `set test-event-handler val/(set ${val})`;
-
-        console.log('running: ' + command);
-        const rels: Relation[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
-
-        // no output?
-    }
-
     pushObject(obj: string) {
         const command = `set test-event-handler ${obj}`;
 
@@ -69,7 +59,25 @@ export default class API {
     }
 
     deleteObject(obj: string) {
-        const command = `delete test-event-handler obj}`;
+        const command = `delete test-event-handler ${obj}`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
+    }
+
+    pushValueChange(val: string) {
+        const command = `set test-event-handler val/(set ${val})`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
+    }
+
+    pushInitialValue(val: string) {
+        const command = `set test-event-handler val/${val}`;
 
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
