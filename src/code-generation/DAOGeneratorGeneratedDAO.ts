@@ -194,6 +194,15 @@ export default class API {
         return rels.map(rel => rel.getTag("input"));
     }
 
+    touchpointInputs2(touchpoint: string): string[] {
+        const command = `get ${touchpoint} input var type`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTagValue("var"));
+    }
+
     inputTagType(input: string): string {
         const command = `get ${input} tagType/*`;
 

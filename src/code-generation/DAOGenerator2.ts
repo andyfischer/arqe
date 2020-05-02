@@ -2,7 +2,7 @@
 import Graph from '../Graph'
 import { writeFileSyncIfUnchanged } from '../context/fs'
 import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
-import { startFile, Block, formatBlock } from './JavascriptAst'
+import { startFile, startObjectLiteral, Block, formatBlock } from './JavascriptAst'
 
 interface InputDef {
     name: string
@@ -166,6 +166,16 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
 
     for (const eventType of api.touchpointEventTypes(touchpoint)) {
         const id = api.eventTypeId(eventType);
+
+        const handlerInput = startObjectLiteral();
+        handlerInput.addObjectField('id', `'${id}'`);
+
+        for (const { fromStr, varStr } of api.eventTypeProvides(eventType)) {
+            handlerInput.addObjectField(varStr, oneRelationOutputExpression(api, fromStr));
+        }
+
+        formatBlock(handlerInput);
+
         const provides = api.eventTypeProvides(eventType);
 
         contents.addBlank();
@@ -176,12 +186,12 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
 
         if (api.eventTypeIsDeletion(eventType)) {
             contents.addRaw(`        if (rel.hasType('command-meta') && rel.hasType('deleted')) {`)
-            contents.addRaw(`            handler({ id: "${id}" });`)
+            contents.addRaw(`            handler(${handlerInput.stringify()});`)
             contents.addRaw(`        }`);
         } else {
             contents.addRaw(`        if (rel.hasType('command-meta'))`);
             contents.addRaw(`            return;`);
-            contents.addRaw(`        handler({ id: '${id}' });`);
+            contents.addRaw(`        handler(${handlerInput.stringify()});`);
         }
 
         contents.addRaw(`    },`)
@@ -190,7 +200,7 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
     }
 }
 
-function oneRelationOutputExpression(api: DAOGeneratorGeneratedDAO, fromStr: string, relVarName) {
+function oneRelationOutputExpression(api: DAOGeneratorGeneratedDAO, fromStr: string, relVarName = 'rel') {
     if (fromStr.endsWith('/*')) {
         return `${relVarName}.getTagValue("${fromStr.replace('/*', '')}")`
     } else {
@@ -209,10 +219,10 @@ function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: str
         let out = '({\n';
 
         for (const { fromStr, varStr } of outputs) {
-            out += `    ${varStr}: ${oneRelationOutputExpression(api, fromStr, relVarName)},\n`
+            out += `    ${varStr}: ${oneRelationOutputExpression(api, fromStr, relVarName)},\n`;
         }
 
-        out += '})'
+        out += '})';
         return out;
     }
 

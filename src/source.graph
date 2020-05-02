@@ -37,10 +37,12 @@ set touchpoint/1 input/0.5
 set input/0.5 name/target
 set input/0.5 type/string
 
-set code-generation/dao touchpoint/3
-set touchpoint/3 query(${touchpoint} function-name/*)
-set touchpoint/3 function-name(touchpointFunctionName)
-set touchpoint/3 input/1
+set code-generation/dao touchpoint/touchpointFunctionName
+set touchpoint/touchpointFunctionName query(${touchpoint} function-name/*)
+set touchpoint/touchpointFunctionName function-name(touchpointFunctionName)
+set touchpoint/touchpointFunctionName input/1
+set touchpoint/touchpointFunctionName output from(function-name/*) var
+set touchpoint/touchpointFunctionName expectOne
 set input/1 name/touchpoint
 set input/1 type/string
 
@@ -54,8 +56,6 @@ set touchpoint/touchpointStyle input/1
 set input/1 name/touchpoint
 set input/1 type/string
 
-set touchpoint/3 output from(function-name/*) var
-set touchpoint/3 expectOne
 
 set code-generation/dao touchpoint/4
 set touchpoint/4 query(${touchpoint} expectOne)
@@ -128,10 +128,17 @@ set touchpoint/touchpointOutputs2 input/5
 set touchpoint/touchpointOutputs2 output from(from/*) var/fromStr
 set touchpoint/touchpointOutputs2 output from(var/*) var/varStr
 
-set code-generation/dao touchpoint/10
-set touchpoint/10 query(${touchpoint} input/*)
-set touchpoint/10 function-name(touchpointInputs)
-set touchpoint/10 input/touchpoint
+set code-generation/dao touchpoint/touchpointInputs
+set touchpoint/touchpointInputs query(${touchpoint} input/*)
+set touchpoint/touchpointInputs function-name(touchpointInputs)
+set touchpoint/touchpointInputs input/touchpoint
+
+set code-generation/dao touchpoint/touchpointInputs2
+set touchpoint/touchpointInputs2 query(${touchpoint} input var type)
+set touchpoint/touchpointInputs2 function-name(touchpointInputs2)
+set touchpoint/touchpointInputs2 input/touchpoint
+set touchpoint/touchpointInputs2 output var/varStr from(var/*)
+set touchpoint/touchpointInputs2 output type/typeStr from(type/*)
 
 set input/touchpoint name/touchpoint
 set input/touchpoint type/string
@@ -793,7 +800,7 @@ set input/eventType name/eventType
 set input/eventType type/string
 
 set touchpoint/0.6 output from/touchpoint var
-set touchpoint/10 output from/input var
+set touchpoint/touchpointInputs output from/input var
 set touchpoint/15 output from/objectdef var
 set touchpoint/16 output from/objectdef var
 set touchpoint/17.1 output from/code-generation var
@@ -840,3 +847,123 @@ set touchpoint/listenToFile output from(version/*) var
 set touchpoint/listenToFileChanges output from(filename/*) var
 set touchpoint/taskStatus output from(status/*) var
 set touchpoint/setPendingTaskTimer output from(status/*) var
+
+set code-generation/testEventHandler
+set code-generation/testEventHandler destination-filename(src/test-apps/TestEventHandlerAPI.ts)
+set code-generation/testEventHandler ik-import(..)
+set code-generation/testEventHandler strategy/dao-api
+
+set code-generation/testEventHandler touchpoint/testEventListener
+set touchpoint/testEventListener style/eventListener
+set touchpoint/testEventListener listener
+set touchpoint/testEventListener function-name/eventListener
+
+set touchpoint/testEventListener eventType/testEvent1
+set touchpoint/testEventListener eventType/testEvent2
+set touchpoint/testEventListener eventType/testDeletionEvent
+
+set eventType/testEvent1 query(listen test-event-handler val/*)
+set eventType/testEvent1 provide var/val from(val/*)
+set eventType/testEvent1 id/valueChanged
+
+set eventType/testEvent2 query(listen test-event-handler obj/*)
+set eventType/testEvent2 provide var/obj from(obj)
+set eventType/testEvent2 id/objectChanged
+
+set eventType/testDeletionEvent query(listen test-event-handler obj/*)
+set eventType/testDeletionEvent deletion
+set eventType/testDeletionEvent provide var/obj from(obj)
+set eventType/testDeletionEvent id/objectDeleted
+
+set code-generation/testEventListener touchpoint/pushValueChange
+
+set touchpoint/pushObjectChange function-name(pushObjectChange)
+set touchpoint/pushObjectChange query(set test-event-handler val/${val})
+set touchpoint/pushObjectChange input/val
+
+set input/val name/val
+set input/val type/string
+
+#set code-generation/testEventListener touchpoint/pushObjectChange
+#set code-generation/testEventListener touchpoint/deleteObject
+
+set touchpoint/0.6 input var/target type/string
+set touchpoint/0.8 input var/target type/string
+set touchpoint/1 input var/target type/string
+set touchpoint/3 input var/touchpoint type/string
+set touchpoint/touchpointStyle input var/touchpoint type/string
+set touchpoint/4 input var/touchpoint type/string
+set touchpoint/isAsync input var/touchpoint type/string
+set touchpoint/isListener input var/touchpoint type/string
+set touchpoint/4.1 input var/touchpoint type/string
+set touchpoint/5 input var/touchpoint type/string
+set touchpoint/6 input var/touchpoint type/string
+set touchpoint/7.2 input var/touchpoint type/string
+set touchpoint/7.3 input var/touchpoint type/string
+set touchpoint/10 input var/touchpoint type/string
+set touchpoint/10.5 input var/input type/string
+set touchpoint/11 input var/input type/string
+set touchpoint/11.5 input var/input type/string
+set touchpoint/12 input var/input type/string
+set touchpoint/13 input var/touchpoint type/string
+set touchpoint/14.1 input var/target type/string
+set touchpoint/15 input var/touchpoint type/string
+set touchpoint/16 input var/objectdef type/string
+set touchpoint/17 input var/target type/string
+set touchpoint/18 input var/target type/string
+set touchpoint/19 input var/target type/string
+set touchpoint/socket2 input var/connection type/string
+set touchpoint/20 input var/touchpoint type/string
+set touchpoint/22 input var/outputObject type/string
+set touchpoint/23 input var/outputObject type/string
+set touchpoint/24 input var/outputObject type/string
+set touchpoint/27 input var/target type/string
+set touchpoint/28 input var/target type/string
+set touchpoint/30 input var/target type/string
+set touchpoint/30 input var/val type/string
+set touchpoint/db1 input var/spreadsheet type/string
+set touchpoint/db2 input var/spreadsheet type/string
+set touchpoint/db3 input var/col type/string
+set touchpoint/db4 input var/col type/string
+set touchpoint/db4 input var/row type/string
+set touchpoint/db4.1 input var/col type/string
+set touchpoint/db4.1 input var/row type/string
+set touchpoint/db4.1 input var/value type/string
+set touchpoint/db5 input var/spreadsheetView type/string
+set touchpoint/db6 input var/spreadsheetView type/string
+set touchpoint/db7 input var/browserName type/string
+set touchpoint/db8 input var/key type/string
+set touchpoint/db10 input var/view type/string
+set touchpoint/db11 input var/action type/string
+set touchpoint/db12 input var/item type/string
+set touchpoint/db12 input var/spreadsheet type/string
+set touchpoint/db13 input var/spreadsheet type/string
+set touchpoint/db14 input var/view type/string
+set touchpoint/db14 input var/row type/string
+set touchpoint/db14 input var/col type/string
+set touchpoint/db15 input var/view type/string
+set touchpoint/db16 input var/view type/string
+set touchpoint/db17 input var/view type/string
+set touchpoint/db18 input var/view type/string
+set touchpoint/db19 input var/view type/string
+set touchpoint/db19 input var/inputMode type/string
+set touchpoint/db20 input var/view type/string
+set touchpoint/db20 input var/key type/string
+set touchpoint/findWatch input var/filename type/string
+set touchpoint/findWatch2 input var/filename type/string
+set touchpoint/listenToFile input var/watch type/string
+set touchpoint/postChange input var/filename type/string
+set touchpoint/findWatchesForFilename input var/filename type/string
+set touchpoint/createWatch input var/filename type/string
+set touchpoint/incrementVersion input var/filename type/string
+set touchpoint/findTasksByCommand input var/cmd type/string
+set touchpoint/createBuildTask input var/cmd type/string
+set touchpoint/createBuildTask input var/status type/string
+set touchpoint/taskStatus input var/task type/string
+set touchpoint/setPendingTaskTimer input var/task type/string
+set touchpoint/setPendingTaskTimer input var/expiresAt type/string
+set touchpoint/eventTypes input var/touchpoint type/string
+set touchpoint/eventTypeQuery input var/eventType type/string
+set touchpoint/eventTypeIsDeletion input var/eventType type/string
+set touchpoint/eventTypeId input var/eventType type/string
+set touchpoint/eventTypeProvides input var/eventType type/string

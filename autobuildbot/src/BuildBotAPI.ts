@@ -117,7 +117,10 @@ export default class API {
             relation(rel: Relation) {
                 if (rel.hasType('command-meta'))
                     return;
-                handler({ id: 'fileChanged' });
+                handler({
+    id: 'fileChanged',
+    filename: rel.getTagValue("filename"),
+});
             },
             finish() { }
         });
@@ -126,7 +129,10 @@ export default class API {
         this.graph.run("listen build-task/* pending-task-timer expires-at", {
             relation(rel: Relation) {
                 if (rel.hasType('command-meta') && rel.hasType('deleted')) {
-                    handler({ id: "taskTimerExpired" });
+                    handler({
+    id: 'taskTimerExpired',
+    buildTask: rel.getTagValue("build-task"),
+});
                 }
             },
             finish() { }

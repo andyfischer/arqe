@@ -1,0 +1,17 @@
+#! /usr/bin/env node
+
+const { runStandardProcess, runAsync } = require('..')
+
+runStandardProcess(async (graph) => {
+
+    const rels = await runAsync(graph, 'get touchpoint input');
+
+    for (const rel of rels) {
+        const input = rel.getTag('input');
+
+        const name = (await runAsync(graph, `get ${input} name`))[0].getTagValue('name');
+        const type = (await runAsync(graph, `get ${input} type`))[0].getTagValue('type');
+
+        console.log(rel.removeType('input').addTag('input').addTag(`var/${name}`).addTag(`type/${type}`).stringify());
+    }
+});

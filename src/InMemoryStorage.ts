@@ -153,6 +153,7 @@ export default class InMemoryStorage implements StorageProvider {
         // Check if already stored
         for (const existing of this.findStored(relation)) {
             // Already stored
+            output.relation(relation);
             output.finish();
             return;
         }
