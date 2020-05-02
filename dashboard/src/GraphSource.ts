@@ -707,23 +707,25 @@ set touchpoint/listenToFileChanges function-name/listenToFileChanges
 set touchpoint/listenToFileChanges listener
 
 set code-generation/autobuildbot touchpoint/findTasksByCommand
-set touchpoint/findTasksByCommand query(get build-task/* cmd(\${cmd}) status)
+set touchpoint/findTasksByCommand query(get build-task/* cmd(\${cmd}) cwd(\${cwd}) status)
 set touchpoint/findTasksByCommand function-name/findTasksByCommand
 set touchpoint/findTasksByCommand async
 set touchpoint/findTasksByCommand input var/cmd type/string
+set touchpoint/findTasksByCommand input var/cwd type/string
 set touchpoint/findTasksByCommand output from/build-task var
 
 set code-generation/autobuildbot touchpoint/createBuildTask
-set touchpoint/createBuildTask query(set build-task/(unique) cmd(\${cmd}) status/\${status})
+set touchpoint/createBuildTask query(set build-task/(unique) cmd(\${cmd}) cwd(\${cwd}) status/\${status})
 set touchpoint/createBuildTask function-name/createBuildTask
 set touchpoint/createBuildTask input var/cmd type/string
+set touchpoint/createBuildTask input var/cwd type/string
 set touchpoint/createBuildTask input var/status type/string
 set touchpoint/createBuildTask output from/build-task var
 set touchpoint/createBuildTask expectOne
 set touchpoint/createBuildTask async
 
 set code-generation/autobuildbot touchpoint/taskStatus
-set touchpoint/taskStatus query(get \${task} cmd status)
+set touchpoint/taskStatus query(get \${task} cmd cwd status)
 set touchpoint/taskStatus function-name/taskStatus
 set touchpoint/taskStatus input/task
 set touchpoint/taskStatus expectOne
@@ -749,24 +751,39 @@ set touchpoint/eventListener function-name/eventListener
 set code-generation/autobuildbot touchpoint/getTaskInfo
 set touchpoint/getTaskInfo async
 set touchpoint/getTaskInfo expectOne
-set touchpoint/getTaskInfo query(get \${task} cmd status)
+set touchpoint/getTaskInfo query(get \${task} cmd cwd status)
 set touchpoint/getTaskInfo function-name/getTaskInfo
 set touchpoint/getTaskInfo input var/task type/string
 set touchpoint/getTaskInfo output var/cmd from(cmd/*)
+set touchpoint/getTaskInfo output var/cwd from(cwd/*)
 set touchpoint/getTaskInfo output var/status from(status/*)
 
 set code-generation/autobuildbot touchpoint/setTaskStatus
 set touchpoint/setTaskStatus async
-set touchpoint/setTaskStatus query(set \${task} cmd status/(set \${status}))
+set touchpoint/setTaskStatus query(set \${task} cmd cwd status/(set \${status}))
 set touchpoint/setTaskStatus function-name/setTaskStatus
 set touchpoint/setTaskStatus input var/task type/string
 set touchpoint/setTaskStatus input var/status type/string
 
 set code-generation/autobuildbot touchpoint/deleteTask
 set touchpoint/deleteTask async
-set touchpoint/deleteTask query(delete \${task} cmd status)
+set touchpoint/deleteTask query(delete \${task} cmd cwd status)
 set touchpoint/deleteTask function-name/deleteTask
 set touchpoint/deleteTask input var/task type/string
+
+set code-generation/autobuildbot touchpoint/setTaskWaitingFor
+set touchpoint/setTaskWaitingFor async
+set touchpoint/setTaskWaitingFor query(set \${task} waitingFor(\${waitingForTask}))
+set touchpoint/setTaskWaitingFor function-name/setTaskWaitingFor
+set touchpoint/setTaskWaitingFor input var/task type/string
+set touchpoint/setTaskWaitingFor input var/waitingForTask type/string
+
+set code-generation/autobuildbot touchpoint/getTaskWaitingFor
+set touchpoint/getTaskWaitingFor async
+set touchpoint/getTaskWaitingFor query(get \${task} waitingFor/*)
+set touchpoint/getTaskWaitingFor function-name/getTaskWaitingFor
+set touchpoint/getTaskWaitingFor input var/task type/string
+set touchpoint/getTaskWaitingFor output from(waitingFor/*) var
 
 set touchpoint/eventListener eventType/anyFileChange
 set eventType/anyFileChange query(listen file-watch filename/* version)
@@ -785,9 +802,6 @@ set touchpoint/eventTypes query(\${touchpoint} eventType/*)
 set touchpoint/eventTypes function-name(touchpointEventTypes)
 set touchpoint/eventTypes input/2
 set touchpoint/eventTypes output from(eventType) var
-
-set input/cmd name/cmd
-set input/cmd type/string
 
 set input/status name/status
 set input/status type/string

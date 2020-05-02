@@ -14,22 +14,21 @@ function ignoreFile(filename: string) {
     return (/COMMIT_EDITMSG/.exec(filename));
 }
 
-async function scheduleCommandIfNeeded(cmd: string) {
-    const tasks = await api.findTasksByCommand(cmd);
+async function scheduleCommandIfNeeded(cmd: string, cwd: string) {
+    const tasks = await api.findTasksByCommand(cmd, cwd);
 
     for (const task of tasks) {
         const status = await api.taskStatus(task);
         if (status === 'scheduled') {
-            console.log('already have this scheduled: ' + cmd);
-
-            console.log('temp: deleting existing task');
-            await api.deleteTask(task);
-
-            //return;
+            console.log('already have this scheduled: ' + {cmd, cwd});
+            return;
+        } else if (status === 'running') {
+            console.log('already running, TODO, schedule build for after: ' + {cmd, cwd});
+            return;
         }
     }
 
-    const task = await api.createBuildTask(cmd, 'scheduled');
+    const task = await api.createBuildTask(cmd, cwd, 'scheduled');
     await api.setPendingTaskTimer(task);
 }
 
@@ -71,17 +70,20 @@ async function fileWasChanged(filename: string) {
         return;
     }
 
-    console.log('Trggering build in: ' + packageRoot);
-    scheduleCommandIfNeeded(`cd ${packageRoot} && yarn build`);
+    console.log('scheduling build: ' + packageRoot);
+    scheduleCommandIfNeeded(`yarn build`, packageRoot);
 }
 
 async function startTask(task: string) {
     const info = await api.getTaskInfo(task);
     api.setTaskStatus(task, 'running');
 
-    console.log(`starting ${task}: ${info.cmd}`);
+    console.log(`[starting ${task}] ${info.cmd} (cwd = ${info.cwd})`);
 
-    const proc = ChildProcess.spawn('bash', ['-c', '"' + info.cmd + '"'], {
+    const args = info.cmd.split(' ');
+
+    const proc = ChildProcess.spawn(args[0], args.slice(1), {
+        cwd: info.cwd,
         stdio: 'pipe'
     });
 
@@ -98,7 +100,7 @@ async function startTask(task: string) {
     });
 
     proc.on('exit', (evt) => {
-        console.log(`finished ${task}: ${evt}`);
+        console.log(`[finished ${task}]: ${evt}`);
         api.deleteTask(task);
     });
 }
@@ -125,8 +127,6 @@ async function start() {
 
         case 'taskTimerExpired':
             const info = await api.getTaskInfo(evt.buildTask);
-
-            console.log('expired task info: ', info);
 
             if (info.status === 'scheduled') {
                 startTask(evt.buildTask)

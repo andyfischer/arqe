@@ -20,8 +20,8 @@ export default class API {
         });
     }
 
-    async findTasksByCommand(cmd: string): Promise<string[]> {
-        const command = `get build-task/* cmd(${cmd}) status`;
+    async findTasksByCommand(cmd: string, cwd: string): Promise<string[]> {
+        const command = `get build-task/* cmd(${cmd}) cwd(${cwd}) status`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -31,8 +31,8 @@ export default class API {
         return rels.map(rel => rel.getTag("build-task"));
     }
 
-    async createBuildTask(cmd: string, status: string): Promise<string> {
-        const command = `set build-task/(unique) cmd(${cmd}) status/${status}`;
+    async createBuildTask(cmd: string, cwd: string, status: string): Promise<string> {
+        const command = `set build-task/(unique) cmd(${cmd}) cwd(${cwd}) status/${status}`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -54,7 +54,7 @@ export default class API {
     }
 
     async taskStatus(task: string): Promise<string> {
-        const command = `get ${task} cmd status`;
+        const command = `get ${task} cmd cwd status`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -140,7 +140,7 @@ export default class API {
     }
 
     async getTaskInfo(task: string) {
-        const command = `get ${task} cmd status`;
+        const command = `get ${task} cmd cwd status`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -160,12 +160,13 @@ export default class API {
         const oneRel = rels[0];
         return ({
     cmd: oneRel.getTagValue("cmd"),
+    cwd: oneRel.getTagValue("cwd"),
     status: oneRel.getTagValue("status"),
 });
     }
 
     async setTaskStatus(task: string, status: string) {
-        const command = `set ${task} cmd status/(set ${status})`;
+        const command = `set ${task} cmd cwd status/(set ${status})`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -176,7 +177,7 @@ export default class API {
     }
 
     async deleteTask(task: string) {
-        const command = `delete ${task} cmd status`;
+        const command = `delete ${task} cmd cwd status`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -184,5 +185,27 @@ export default class API {
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
+    }
+
+    async setTaskWaitingFor(task: string, waitingForTask: string) {
+        const command = `set ${task} waitingFor(${waitingForTask})`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
+    }
+
+    async getTaskWaitingFor(task: string): Promise<string[]> {
+        const command = `get ${task} waitingFor/*`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTagValue("waitingFor"));
     }
 }
