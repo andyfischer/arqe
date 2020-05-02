@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import Relation from './Relation'
-import Pattern, { commandTagsToRelation } from './Pattern'
+import Pattern, { PatternValue, commandTagsToRelation } from './Pattern'
 import PatternTag, { newTagFromObject, PatternTagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
@@ -215,7 +215,8 @@ function parseOneCommand(it: TokenIterator): Command {
     // Parse tag args
     parseArgs(it, query);
 
-    return new Command(command, query.tags, query.flags);
+    const pattern = new PatternValue(query.tags);
+    return new Command(command, pattern, query.flags);
 }
 
 function parseOneCommandChain(it: TokenIterator): CommandChain {

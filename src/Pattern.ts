@@ -69,6 +69,11 @@ export class PatternValue implements Pattern {
         return this.copyWithNewTags(tags);
     }
 
+    modifyTagsList(func: (tags: PatternTag[]) => PatternTag[]) {
+        const tags = func(this.tags);
+        return this.copyWithNewTags(tags);
+    }
+
     getNtag() {
         if (this.ntag == null)
             this.ntag = normalizeExactTag(this.tags);
@@ -294,6 +299,10 @@ export class PatternValue implements Pattern {
         return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
     }
 
+    addTagObj(tag: PatternTag) {
+        return this.copyWithNewTags(this.tags.concat([tag]));
+    }
+
     addTags(strs: string[]) {
         return this.copyWithNewTags(this.tags.concat(strs.map(parseTag)));
     }
@@ -334,6 +343,7 @@ export default interface Pattern {
     hasValueForType: (t: string) => boolean
 
     addTag: (t: string) => Pattern
+    addTagObj: (tag: PatternTag) => Pattern
     addTags: (t: string[]) => Pattern
     removeType: (t: string) => Pattern
     removeTypes: (t: string[]) => Pattern
@@ -344,6 +354,7 @@ export default interface Pattern {
     updateTagOfType: (tagType: string, update: (t: PatternTag) => PatternTag) => Pattern
     updateTagAtIndex: (index: number, update: (t: PatternTag) => PatternTag) => Pattern
     remapTags: (func: (PatternTag) => PatternTag) => Pattern;
+    modifyTagsList: (func: (tags: PatternTag[]) => PatternTag[]) => Pattern;
 
     matches: (p: Pattern) => boolean
     isSupersetOf: (p: Pattern) => boolean
@@ -354,7 +365,7 @@ export default interface Pattern {
 
 export function commandToRelationPattern(str: string) {
     const parsed = parseCommand(str);
-    return new PatternValue(parsed.tags)
+    return parsed.pattern;
 }
 
 export function patternFromMap(map: Map<string,string>) {
@@ -376,6 +387,6 @@ export function commandTagsToRelation(tags: PatternTag[], payload?: string): Pat
 
 export function parsePattern(query: string) {
     const parsed = parseCommand('get ' + query);
-    return new PatternValue(parsed.tags)
+    return parsed.pattern;
 }
 

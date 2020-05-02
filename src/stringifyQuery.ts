@@ -85,7 +85,7 @@ export function parsedCommandToString(command: Command) {
         str += ' -' + flag;
     }
     
-    str += ' ' + commandTagsToString(command.tags);
+    str += ' ' + commandTagsToString(command.pattern.tags);
 
     return str;
 }
@@ -96,7 +96,7 @@ export function stringifyCommandChain(chain: CommandChain) {
 
 export function appendTagInCommand(str: string, tag: string) {
     const parsed = parseCommand(str);
-    parsed.tags.push(newTag(tag));
+    parsed.pattern = parsed.pattern.addTagObj(newTag(tag));
     return parsedCommandToString(parsed);
 }
 
@@ -106,7 +106,7 @@ export function parseAsSet(str: string) {
     if (command.commandName !== 'set')
         throw new Error("Expected 'set' command: " + str);
 
-    return command.tags;
+    return command.pattern.tags;
 }
 
 export function normalizeExactTag(tags: PatternTag[]) {

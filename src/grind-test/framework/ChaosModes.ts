@@ -50,7 +50,7 @@ export const InsertExtraTag: ChaosMode = {
                 if (pattern.hasType('typeinfo') || pattern.hasType('filesystem-mount'))
                     return;
 
-                command.tags.push(newTag('extra'));
+                command.pattern = command.pattern.addTagObj(newTag('extra'));
             }
         });
     }
@@ -66,7 +66,7 @@ export const GetInheritedBranch: ChaosMode = {
         return withParsed(s, chain => {
             for (const command of chain.commands) {
                 if (command.commandName === 'get')
-                    command.tags.push(newTag('chaosbranch', '123'));
+                    command.pattern = command.pattern.addTagObj(newTag('chaosbranch', '123'));
             }
         })
     }
@@ -97,7 +97,7 @@ export const ScrambleTagOrder: ChaosMode = {
     modifyRunCommand(command: string) {
         return withParsed(command, chain => {
             for (const command of chain.commands)
-                command.tags = shuffle(command.tags);
+                command.pattern = command.pattern.modifyTagsList(tags => shuffle(tags));
         });
     }
 }

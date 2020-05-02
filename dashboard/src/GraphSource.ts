@@ -796,12 +796,11 @@ set eventType/taskTimerExpired deletion
 set eventType/taskTimerExpired provide var/buildTask from(build-task)
 set eventType/taskTimerExpired id/taskTimerExpired
 
-
 set code-generation/dao touchpoint/eventTypes
 set touchpoint/eventTypes query(\${touchpoint} eventType/*)
 set touchpoint/eventTypes function-name(touchpointEventTypes)
-set touchpoint/eventTypes input/2
 set touchpoint/eventTypes output from(eventType) var
+set touchpoint/eventTypes input var/touchpoint type/string
 
 set input/status name/status
 set input/status type/string
@@ -1004,7 +1003,6 @@ set touchpoint/findWatchesForFilename input var/filename type/string
 set touchpoint/createWatch input var/filename type/string
 set touchpoint/incrementVersion input var/filename type/string
 set touchpoint/taskStatus input var/task type/string
-set touchpoint/eventTypes input var/touchpoint type/string
 set touchpoint/eventTypeQuery input var/eventType type/string
 set touchpoint/eventTypeIsDeletion input var/eventType type/string
 set touchpoint/eventTypeId input var/eventType type/string

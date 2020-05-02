@@ -7,7 +7,7 @@ X Support 'async' in DAO generator
 
 X New tag(value) syntax
 
-Publish 'ik-dynamodb' to npm
+? Publish 'ik-dynamodb' to npm
 
 Useful tools
   Manage the git branches (make it easy to cleanup)
@@ -30,5 +30,7 @@ Listener overhaul
  X File watch is getting listeners triggered for unrelated items
 
 Autobuildbot
- - Need the listener to find out about deletion events
- - Need the listener to have a customizable variable name
+ X Need the listener to find out about deletion events
+ X Need the listener to have a customizable variable name
+
+Tables

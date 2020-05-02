@@ -15,22 +15,21 @@ export interface CommandFlags {
 
 export default class Command {
     commandName: string
-    tags: PatternTag[]
     flags: CommandFlags
+    pattern: Pattern
 
-    constructor(commandName: string, tags: PatternTag[], flags: FlagMap) {
+    constructor(commandName: string, pattern: Pattern, flags: FlagMap) {
         this.commandName = commandName;
-        this.tags = tags;
+        this.pattern = pattern;
         this.flags = flags;
     }
 
     toPattern() {
-        return new PatternValue(this.tags);
+        return this.pattern;
     }
 
     toRelation() {
-        const rel = new PatternValue(this.tags);
-        return rel;
+        return this.pattern;
     }
 
     stringify() {
