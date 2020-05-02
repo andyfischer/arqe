@@ -16,11 +16,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getOneTag) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getOneTag) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -36,11 +36,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getOneTagValue) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getOneTagValue) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -56,11 +56,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getCurrentFlag) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getCurrentFlag) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -76,11 +76,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getUsingCommandChain) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getUsingCommandChain) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];

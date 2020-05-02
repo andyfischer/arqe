@@ -18,7 +18,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(spreadsheetForView) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -36,7 +36,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(findKeyForBrowserName) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -54,7 +54,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(findActionForKey) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -70,11 +70,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getCurrentView) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getCurrentView) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -90,11 +90,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getSpreadsheetSelectionPos) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getSpreadsheetSelectionPos) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -115,7 +115,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getMoveActionDelta) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -188,11 +188,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getInputMode) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getInputMode) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -219,7 +219,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(findActionForKeyInMode) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];

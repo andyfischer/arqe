@@ -42,11 +42,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(createBuildTask) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(createBuildTask) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -64,19 +64,19 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(taskStatus) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(taskStatus) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
         return oneRel.getTagValue("status");
     }
 
-    async setPendingTaskTimer(task: string, expiresAt: string): Promise<string> {
-        const command = `set ${task} pending-task-timer expires-at(${expiresAt})`;
+    async setPendingTaskTimer(task: string) {
+        const command = `set ${task} pending-task-timer expires-at/(seconds-from-now 1)`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -86,15 +86,15 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(setPendingTaskTimer) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(setPendingTaskTimer) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("status");
+        // no output
     }
 
     listenToPendingTasks(callback: (rel: Relation) => void) {
@@ -131,11 +131,58 @@ export default class API {
                 if (rel.hasType('command-meta') && rel.hasType('deleted')) {
                     handler({
     id: 'taskTimerExpired',
-    buildTask: rel.getTagValue("build-task"),
+    buildTask: rel.getTag("build-task"),
 });
                 }
             },
             finish() { }
         });
+    }
+
+    async getTaskInfo(task: string) {
+        const command = `get ${task} cmd status`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // Expect one result
+
+        if (rels.length === 0) {
+            throw new Error("(getTaskInfo) No relation found for: " + command)
+        }
+
+        if (rels.length > 1) {
+            throw new Error("(getTaskInfo) Multiple results found for: " + command)
+        }
+
+        const oneRel = rels[0];
+        return ({
+    cmd: oneRel.getTagValue("cmd"),
+    status: oneRel.getTagValue("status"),
+});
+    }
+
+    async setTaskStatus(task: string, status: string) {
+        const command = `set ${task} cmd status/(set ${status})`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
+    }
+
+    async deleteTask(task: string) {
+        const command = `delete ${task} cmd status`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
     }
 }

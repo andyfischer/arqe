@@ -262,11 +262,11 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
         if (outputIsOptional)
             zeroCheck.contents.addRaw(`return null;`)
         else
-            zeroCheck.contents.addRaw(`throw new Error("No relation found for: " + command)`)
+            zeroCheck.contents.addRaw(`throw new Error("(${name}) No relation found for: " + command)`)
 
         const multiCheck = block.addIf();
         multiCheck.setCondition('rels.length > 1');
-        multiCheck.contents.addRaw('throw new Error("Multiple results found for: " + command)')
+        multiCheck.contents.addRaw(`throw new Error("(${name}) Multiple results found for: " + command)`)
         
         block.addRaw('const oneRel = rels[0];');
 

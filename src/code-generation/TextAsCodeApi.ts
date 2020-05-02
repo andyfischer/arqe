@@ -16,11 +16,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(fromFile) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(fromFile) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -36,11 +36,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(destinationFilename) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(destinationFilename) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];

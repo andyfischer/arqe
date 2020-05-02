@@ -5,6 +5,7 @@ import runStandardProcess from './fs/toollib/runStandardProcess'
 import path from 'path'
 import fs from 'fs-extra'
 import BuildBotAPI from './BuildBotAPI'
+import ChildProcess from 'child_process'
 
 let graph: Graph;
 let api: BuildBotAPI;
@@ -20,12 +21,16 @@ async function scheduleCommandIfNeeded(cmd: string) {
         const status = await api.taskStatus(task);
         if (status === 'scheduled') {
             console.log('already have this scheduled: ' + cmd);
-            return;
+
+            console.log('temp: deleting existing task');
+            await api.deleteTask(task);
+
+            //return;
         }
     }
 
-    console.log('scheduling command: ' + cmd);
-    await api.createBuildTask(cmd, 'scheduled');
+    const task = await api.createBuildTask(cmd, 'scheduled');
+    await api.setPendingTaskTimer(task);
 }
 
 async function findProjectRoot(filename: string): Promise<string> {
@@ -70,12 +75,40 @@ async function fileWasChanged(filename: string) {
     scheduleCommandIfNeeded(`cd ${packageRoot} && yarn build`);
 }
 
+async function startTask(task: string) {
+    const info = await api.getTaskInfo(task);
+    api.setTaskStatus(task, 'running');
+
+    console.log(`starting ${task}: ${info.cmd}`);
+
+    const proc = ChildProcess.spawn('bash', ['-c', '"' + info.cmd + '"'], {
+        stdio: 'pipe'
+    });
+
+    proc.stdout.on('data', (msg) => {
+        msg = msg.toString();
+        msg = msg.replace(/\n$/, '');
+        console.log(`[${task}] ${msg}`);
+    });
+
+    proc.stderr.on('data', (msg) => {
+        msg = msg.toString();
+        msg = msg.replace(/\n$/, '');
+        console.log(`[${task} err] ${msg}`);
+    });
+
+    proc.on('exit', (evt) => {
+        console.log(`finished ${task}: ${evt}`);
+        api.deleteTask(task);
+    });
+}
+
 async function start() {
 
     console.log('Build bot starting..');
 
     // Watch all changed files
-    api.eventListener((evt) => {
+    api.eventListener(async (evt) => {
 
         console.log('received event: ', evt);
         
@@ -91,7 +124,15 @@ async function start() {
             return;
 
         case 'taskTimerExpired':
-            console.log('task timer expired: ', evt);
+            const info = await api.getTaskInfo(evt.buildTask);
+
+            console.log('expired task info: ', info);
+
+            if (info.status === 'scheduled') {
+                startTask(evt.buildTask)
+                .catch(console.error);
+            }
+
             return;
 
         default:

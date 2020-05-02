@@ -709,14 +709,16 @@ set touchpoint/listenToFileChanges listener
 set code-generation/autobuildbot touchpoint/findTasksByCommand
 set touchpoint/findTasksByCommand query(get build-task/* cmd(${cmd}) status)
 set touchpoint/findTasksByCommand function-name/findTasksByCommand
-set touchpoint/findTasksByCommand input/cmd
 set touchpoint/findTasksByCommand async
+set touchpoint/findTasksByCommand input var/cmd type/string
+set touchpoint/findTasksByCommand output from/build-task var
 
 set code-generation/autobuildbot touchpoint/createBuildTask
 set touchpoint/createBuildTask query(set build-task/(unique) cmd(${cmd}) status/${status})
 set touchpoint/createBuildTask function-name/createBuildTask
-set touchpoint/createBuildTask input/cmd
-set touchpoint/createBuildTask input/status
+set touchpoint/createBuildTask input var/cmd type/string
+set touchpoint/createBuildTask input var/status type/string
+set touchpoint/createBuildTask output from/build-task var
 set touchpoint/createBuildTask expectOne
 set touchpoint/createBuildTask async
 
@@ -728,10 +730,9 @@ set touchpoint/taskStatus expectOne
 set touchpoint/taskStatus async
 
 set code-generation/autobuildbot touchpoint/setPendingTaskTimer
-set touchpoint/setPendingTaskTimer query(set ${task} pending-task-timer expires-at(${expiresAt}))
+set touchpoint/setPendingTaskTimer query(set ${task} pending-task-timer expires-at/(seconds-from-now 1))
 set touchpoint/setPendingTaskTimer function-name/setPendingTaskTimer
-set touchpoint/setPendingTaskTimer input/task
-set touchpoint/setPendingTaskTimer input/expiresAt
+set touchpoint/setPendingTaskTimer input var/task type/string
 set touchpoint/setPendingTaskTimer expectOne
 set touchpoint/setPendingTaskTimer async
 
@@ -745,17 +746,39 @@ set touchpoint/eventListener style/eventListener
 set touchpoint/eventListener listener
 set touchpoint/eventListener function-name/eventListener
 
-set touchpoint/eventListener eventType/anyFileChange
-set touchpoint/eventListener eventType/taskTimerExpired
+set code-generation/autobuildbot touchpoint/getTaskInfo
+set touchpoint/getTaskInfo async
+set touchpoint/getTaskInfo expectOne
+set touchpoint/getTaskInfo query(get ${task} cmd status)
+set touchpoint/getTaskInfo function-name/getTaskInfo
+set touchpoint/getTaskInfo input var/task type/string
+set touchpoint/getTaskInfo output var/cmd from(cmd/*)
+set touchpoint/getTaskInfo output var/status from(status/*)
 
+set code-generation/autobuildbot touchpoint/setTaskStatus
+set touchpoint/setTaskStatus async
+set touchpoint/setTaskStatus query(set ${task} cmd status/(set ${status}))
+set touchpoint/setTaskStatus function-name/setTaskStatus
+set touchpoint/setTaskStatus input var/task type/string
+set touchpoint/setTaskStatus input var/status type/string
+
+set code-generation/autobuildbot touchpoint/deleteTask
+set touchpoint/deleteTask async
+set touchpoint/deleteTask query(delete ${task} cmd status)
+set touchpoint/deleteTask function-name/deleteTask
+set touchpoint/deleteTask input var/task type/string
+
+set touchpoint/eventListener eventType/anyFileChange
 set eventType/anyFileChange query(listen file-watch filename/* version)
 set eventType/anyFileChange provide var/filename from(filename/*)
 set eventType/anyFileChange id/fileChanged
 
+set touchpoint/eventListener eventType/taskTimerExpired
 set eventType/taskTimerExpired query(listen build-task/* pending-task-timer expires-at)
 set eventType/taskTimerExpired deletion
-set eventType/taskTimerExpired provide var/buildTask from(build-task/*)
+set eventType/taskTimerExpired provide var/buildTask from(build-task)
 set eventType/taskTimerExpired id/taskTimerExpired
+
 
 set code-generation/dao touchpoint/eventTypes
 set touchpoint/eventTypes query(${touchpoint} eventType/*)
@@ -823,8 +846,6 @@ set touchpoint/findWatch output from/file-watch var
 set touchpoint/findWatch2 output from/file-watch var
 set touchpoint/findWatchesForFilename output from/file-watch var
 set touchpoint/createWatch output from/file-watch var
-set touchpoint/findTasksByCommand output from/build-task var
-set touchpoint/createBuildTask output from/build-task var
 
 set touchpoint/0.8 output from(ik-import/*) var
 set touchpoint/3 output from(function-name/*) var
@@ -850,7 +871,6 @@ set touchpoint/db18 output from(input-mode/*) var
 set touchpoint/listenToFile output from(version/*) var
 set touchpoint/listenToFileChanges output from(filename/*) var
 set touchpoint/taskStatus output from(status/*) var
-set touchpoint/setPendingTaskTimer output from(status/*) var
 
 set code-generation/testEventHandler
 set code-generation/testEventHandler destination-filename(src/test-apps/TestEventHandlerAPI.ts)
@@ -969,12 +989,7 @@ set touchpoint/postChange input var/filename type/string
 set touchpoint/findWatchesForFilename input var/filename type/string
 set touchpoint/createWatch input var/filename type/string
 set touchpoint/incrementVersion input var/filename type/string
-set touchpoint/findTasksByCommand input var/cmd type/string
-set touchpoint/createBuildTask input var/cmd type/string
-set touchpoint/createBuildTask input var/status type/string
 set touchpoint/taskStatus input var/task type/string
-set touchpoint/setPendingTaskTimer input var/task type/string
-set touchpoint/setPendingTaskTimer input var/expiresAt type/string
 set touchpoint/eventTypes input var/touchpoint type/string
 set touchpoint/eventTypeQuery input var/eventType type/string
 set touchpoint/eventTypeIsDeletion input var/eventType type/string

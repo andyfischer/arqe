@@ -34,11 +34,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getIkImport) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getIkImport) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -63,11 +63,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(touchpointFunctionName) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(touchpointFunctionName) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -85,7 +85,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(touchpointStyle) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -157,7 +157,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(touchpointOutput) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -217,7 +217,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(inputTagType) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -233,11 +233,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(inputName) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(inputName) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -255,7 +255,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(inputSortOrder) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -273,7 +273,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(inputType) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -289,11 +289,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(touchpointQueryString) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(touchpointQueryString) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -309,11 +309,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getDestinationFilename) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getDestinationFilename) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -329,11 +329,11 @@ export default class API {
         // Expect one result
 
         if (rels.length === 0) {
-            throw new Error("No relation found for: " + command)
+            throw new Error("(getOutputObjectdef) No relation found for: " + command)
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(getOutputObjectdef) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
@@ -360,7 +360,7 @@ export default class API {
         }
 
         if (rels.length > 1) {
-            throw new Error("Multiple results found for: " + command)
+            throw new Error("(touchpointOutputObject) Multiple results found for: " + command)
         }
 
         const oneRel = rels[0];
