@@ -116,22 +116,8 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
     if (outputType)
         func.setOutputType(outputType);
 
-    if (true) {
-        const inputs = sortInputs(api, api.touchpointInputs(touchpoint));
-        for (const input of inputs) {
-            func.addInput(api.inputName(input), api.inputType(input));
-        }
-
-        const newInputs = api.touchpointInputs2(touchpoint);
-        if (inputs.length !== newInputs.length)
-            console.log('input count changed: ' + touchpoint);
-    } else {
-
-        /*
-        for (const { varStr, typeStr } of api.touchpointInputs2(touchpoint)) {
-            func.addInput(varStr, typeStr);
-        }
-        */
+    for (const { varStr, typeStr } of api.touchpointInputs2(touchpoint)) {
+        func.addInput(varStr, typeStr);
     }
 
     if (api.touchpointIsListener(touchpoint))

@@ -75,7 +75,7 @@ export default class API {
         return oneRel.getTagValue("status");
     }
 
-    async setPendingTaskTimer(expiresAt: string, task: string): Promise<string> {
+    async setPendingTaskTimer(task: string, expiresAt: string): Promise<string> {
         const command = `set ${task} pending-task-timer expires-at(${expiresAt})`;
 
         const { receiver, promise } = receiveToRelationListPromise();

@@ -120,7 +120,7 @@ export default class API {
         // no output?
     }
 
-    setSelection(view: string, col: string, row: string) {
+    setSelection(view: string, row: string, col: string) {
         const command = `set ${view} selection ${row} ${col}`;
 
         const rels: Relation[] = this.graph.runSync(command)
