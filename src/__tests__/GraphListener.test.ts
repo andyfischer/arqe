@@ -16,17 +16,17 @@ it("fires callbacks when a related item is saved", () => {
 
     expect(recentCalls()).toEqual([]);
 
-    graph.runSilent('set a/1');
+    graph.run('set a/1');
     expect(recentCalls()).toEqual(["a/1"]);
 
-    graph.runSilent('set a/2');
-    graph.runSilent('set a/3');
-    graph.runSilent('set b/2');
+    graph.run('set a/2');
+    graph.run('set a/3');
+    graph.run('set b/2');
     expect(recentCalls()).toEqual(["a/2", "a/3"]);
 
-    graph.runSilent('delete a/2');
+    graph.run('delete a/2');
     expect(recentCalls()).toEqual(["delete a/2"]);
 
-    graph.runSilent('delete a/2');
+    graph.run('delete a/2');
     expect(recentCalls()).toEqual([]);
 })

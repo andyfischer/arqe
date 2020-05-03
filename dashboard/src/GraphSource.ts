@@ -706,6 +706,11 @@ set touchpoint/listenToFileChanges query(listen file-watch filename/* version)
 set touchpoint/listenToFileChanges function-name/listenToFileChanges
 set touchpoint/listenToFileChanges listener
 
+set table-schema/build-task
+set table-schema/build-task column name/cmd
+set table-schema/build-task column name/cwd
+set table-schema/build-task column name/status
+
 set code-generation/autobuildbot touchpoint/findTasksByCommand
 set touchpoint/findTasksByCommand query(get build-task/* cmd(\${cmd}) cwd(\${cwd}) status)
 set touchpoint/findTasksByCommand function-name/findTasksByCommand
@@ -801,15 +806,6 @@ set touchpoint/eventTypes query(\${touchpoint} eventType/*)
 set touchpoint/eventTypes function-name(touchpointEventTypes)
 set touchpoint/eventTypes output from(eventType) var
 set touchpoint/eventTypes input var/touchpoint type/string
-
-set input/status name/status
-set input/status type/string
-
-set input/expiresAt name/expiresAt
-set input/expiresAt type/string
-
-set input/task name/task
-set input/task type/string
 
 set code-generation/dao touchpoint/eventTypeQuery
 set touchpoint/eventTypeQuery query(\${eventType} query/*)

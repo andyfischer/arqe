@@ -1,4 +1,5 @@
 
+import Fs from 'fs'
 import Command from './Command'
 import CommandStep from './CommandStep'
 import parseCommand, { parseCommandChain } from './parseCommand'
@@ -17,9 +18,7 @@ import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider
 import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList, fallbackReceiver } from './receivers'
 import { runCommandChain, singleCommandExecution } from './runCommand'
-import { emitCommandError, emitCommandOutputFlags, emitRelationDeleted } from './CommandMeta'
 import UpdateContext from './UpdateContext'
-import Fs from 'fs'
 import TagTypeOrdering from './TagTypeOrdering'
 import runningInBrowser from './context/runningInBrowser'
 import IDSource from './utils/IDSource'
@@ -164,23 +163,6 @@ export default class Graph {
         runCommandChain(this, chain, output);
     }
 
-    runSilent(str: string) {
-        let error = null;
-
-        this.run(str, {
-            relation(rel) {
-                if (rel.hasType('command-meta') && rel.hasType('error')) {
-                    console.log('error: ' + rel.getTagValue('message'));
-                    error = error || rel;
-                }
-            },
-            finish() { }
-        });
-
-        if (error)
-            throw new Error(error.getTagValue('message'))
-    }
-
     runSyncOld(commandStr: string) {
         let result = null;
 
@@ -215,43 +197,6 @@ export default class Graph {
         return rels;
     }
 
-    relationPattern(commandStr: string) {
-        const parsed = parseCommand(commandStr);
-        return parsed.toPattern();
-    }
-
-    getRelationsSync(tags: string): Relation[] {
-        let rels: Relation[] = null;
-        const commandStr = 'get ' + tags;
-        const parsedCommand = parseCommand(commandStr);
-        const commandExec = singleCommandExecution(this, parsedCommand);
-        commandExec.output.waitForAll(l => { rels = l });
-        const search = commandExec.toRelationSearch();
-        runSearch(this, search);
-        if (rels === null)
-            throw new Error("getRelationsSync search didn't finish synchronously: " + tags);
-        return rels;
-    }
-
-    getOneRelationSync(tags: string): Relation {
-        const rels = this.getRelationsSync(tags);
-        if (rels.length === 0)
-            throw new Error("no relations found for: " + tags);
-
-        if (rels.length > 1)
-            throw new Error("getOneRelationSync found multiple results found for: " + tags);
-
-        return rels[0];
-    }
-
-    getOneRelationOptionalSync(tags: string): Relation|null {
-        const rels = this.getRelationsSync(tags);
-        if (rels.length > 1)
-            throw new Error("getOneRelationOptionalSync found multiple results found for: " + tags);
-
-        return rels[0] || null;
-    }
-
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
@@ -264,7 +209,7 @@ export default class Graph {
                 continue;
 
             try {
-                this.runSilent(line);
+                this.run(line);
             } catch (e) {
                 console.log('Failed on command: ' + line);
             }
@@ -286,7 +231,7 @@ export default class Graph {
 
     loadDump(contents: string) {
         for (const line of contents.split(/\r\n|\r|\n/)) {
-            this.runSilent(line);
+            this.run(line);
         }
     }
     

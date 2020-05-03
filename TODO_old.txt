@@ -1,6 +1,43 @@
+# April 2020 part 2 #
+
+
+Prepare for usage in sfly
+
+X Support 'async' in DAO generator
+
+? Serialize/Deserialize graph as YAML
+
+X New tag(value) syntax
+
+? Publish 'ik-dynamodb' to npm
+
+Useful tools
+  Manage the git branches (make it easy to cleanup)
+  Autotrigger build scripts on file changes
+    Timers
+
+Useful fixes
+X Autoreconnect to server
+  Need to restore listeners on reconnect
+    Client should use a graph in "shallow" mode
+
+Correctness
+  Listen for events when relations enter & exit a set
+
+Syntax change
+X "get a" matches "get a/1"
+
+Listener overhaul
+ X Tests are getting listeners triggered twice
+ X File watch is getting listeners triggered for unrelated items
+
+Autobuildbot
+ X Need the listener to find out about deletion events
+ X Need the listener to have a customizable variable name
+
+Tables
 
 # April 2020 #
-
 
  / Fetch a relation set
  / Organize relations into schema patterns

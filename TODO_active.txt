@@ -1,36 +1,17 @@
 
-Prepare for usage in sfly
-
-X Support 'async' in DAO generator
-
-? Serialize/Deserialize graph as YAML
-
-X New tag(value) syntax
-
-? Publish 'ik-dynamodb' to npm
-
-Useful tools
-  Manage the git branches (make it easy to cleanup)
-  Autotrigger build scripts on file changes
-    Timers
-
-Useful fixes
-X Autoreconnect to server
-  Need to restore listeners on reconnect
-    Client should use a graph in "shallow" mode
-
-Correctness
-  Listen for events when relations enter & exit a set
-
-Syntax change
-X "get a" matches "get a/1"
-
-Listener overhaul
- X Tests are getting listeners triggered twice
- X File watch is getting listeners triggered for unrelated items
+Themes
+  - Autobuildbot is awesome
+  - Let's add some features to make it fully functional
 
 Autobuildbot
- X Need the listener to find out about deletion events
- X Need the listener to have a customizable variable name
+  - Color coding
+  - Data associated with directory
 
-Tables
+Table schema
+  - Implement
+  - Fix data-backed patterns
+    - Mount a raw object with a get/set/modify API
+
+Logging
+  - Opt-in log streams
+    - In-memory data structure about whether to broadcast logging or not

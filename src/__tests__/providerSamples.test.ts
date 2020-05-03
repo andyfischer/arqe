@@ -4,8 +4,8 @@ import UpdateContext, { runUpdateOnce } from '../UpdateContext'
 
 it('test with getRelations', () => {
     const graph = new Graph();
-    graph.runSilent('set a b/123')
-    graph.runSilent('set a b/456')
+    graph.run('set a b/123')
+    graph.run('set a b/456')
 
     const result = runUpdateOnce(graph, cxt => {
         const out = []

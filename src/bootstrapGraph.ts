@@ -2,9 +2,9 @@
 import Graph from './Graph'
 
 export default function bootstrapGraph(graph: Graph) {
-    graph.runSilent('set typeinfo/branch .inherits')
-    graph.runSilent('set typeinfo/testcase .inherits')
-    graph.runSilent('set typeinfo/testcase .order == before')
-    graph.runSilent('set typeinfo/typeinfo .order == before')
-    graph.runSilent('set typeinfo/branch .order == after')
+    graph.run('set typeinfo/branch .inherits')
+    graph.run('set typeinfo/testcase .inherits')
+    graph.run('set typeinfo/testcase .order == before')
+    graph.run('set typeinfo/typeinfo .order == before')
+    graph.run('set typeinfo/branch .order == after')
 }

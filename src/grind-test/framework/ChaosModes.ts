@@ -60,7 +60,7 @@ export const GetInheritedBranch: ChaosMode = {
     name: 'getInheritedBranch',
     shortDescription: 'get inherited branch',
     setupNewGraph(graph: Graph) {
-        graph.runSilent('set typeinfo/chaosbranch .inherits')
+        graph.run('set typeinfo/chaosbranch .inherits')
     },
     modifyRunCommand(s: string) {
         return withParsed(s, chain => {

@@ -20,10 +20,10 @@ async function scheduleCommandIfNeeded(cmd: string, cwd: string) {
     for (const task of tasks) {
         const status = await api.taskStatus(task);
         if (status === 'scheduled') {
-            console.log('already have this scheduled: ' + {cmd, cwd});
+            console.log('already have this scheduled: ' + JSON.stringify({cmd, cwd}));
             return;
         } else if (status === 'running') {
-            console.log('already running, TODO, schedule build for after: ' + {cmd, cwd});
+            console.log('already running, TODO, schedule build for after: ' + JSON.stringify({cmd, cwd}));
             return;
         }
     }
@@ -57,7 +57,7 @@ async function fileWasChanged(filename: string) {
     const inSrcDir = filename.startsWith(path.join(packageRoot, 'src'));
 
     if (!inSrcDir) {
-        console.log('Not in src directory: ' + filename);
+        // console.log('ignoring, not in a src directory: ' + filename);
         return;
     }
 
@@ -112,7 +112,7 @@ async function start() {
     // Watch all changed files
     api.eventListener(async (evt) => {
 
-        console.log('received event: ', evt);
+        // console.log('received event: ' + JSON.stringify(evt));
         
         switch (evt.id) {
         case 'fileChanged':
