@@ -91,6 +91,10 @@ function get_after_inherit(graph: Graph, search: RelationSearch) {
         return;
 
     // Fall back to in-memory
-    graph.inMemory.runSearch(search);
+    for (const slot of graph.inMemory.runSearch2(search.pattern)) {
+        search.relation(slot.relation);
+    }
+
+    search.finish();
 }
 

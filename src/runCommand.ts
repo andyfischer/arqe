@@ -63,10 +63,6 @@ function runStep(step: CommandStep) {
     }
 }
 
-function runGetStep(step: CommandStep) {
-    return;
-}
-
 export function singleCommandExecution(graph: Graph, command: Command): CommandStep {
     const step = new CommandStep(graph, command);
     step.input = new RelationPipe();

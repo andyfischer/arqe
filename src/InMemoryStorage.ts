@@ -9,66 +9,17 @@ import RelationReceiver from './RelationReceiver'
 import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
-import { emitActionPerformed } from './CommandMeta'
 import { newTagFromObject } from './PatternTag'
 
 type RelationModifier = (rel: Relation) => Relation
 
-function expressionUpdatesExistingValue(expr: string[]) {
-    if (!expr)
-        return false;
-
-    if (expr[0] === 'increment' || expr[0] === 'set')
-        return true;
-
-    return false;
+interface Slot {
+    relation: Pattern
+    modify: (f: (rel: Pattern) => Pattern) => Pattern
+    del: () => void
 }
 
-function applyModificationExpr(expr: string[], value: string) {
-    switch (expr[0]) {
-    case 'increment':
-        return parseInt(value, 10) + 1 + '';
-
-    case 'set':
-        return expr[1];
-    }
-}
-
-function applyModificationRelation(commandRel: Relation, data: Relation): Relation {
-    return data.remapTags((tag: PatternTag) => {
-        const modificationTag = commandRel.getOneTagForType(tag.tagType);
-        if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
-            tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));
-        }
-
-        return tag;
-    });
-}
-
-function tagModifiesExistingRelations(tag: PatternTag) {
-    if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
-        return true;
-
-    return false;
-}
-
-function modifiesExistingRelations(rel: Relation) {
-    for (const tag of rel.tags)
-        if (tagModifiesExistingRelations(tag))
-            return true
-    return false
-}
-
-function modificationToFilter(rel: Relation) {
-    return rel.remapTags((tag: PatternTag) => {
-        if (tagModifiesExistingRelations(tag))
-            return tag.setStarValue()
-        else
-            return tag;
-    });
-}
-
-export default class InMemoryStorage implements StorageProvider {
+export default class InMemoryStorage {
     graph: Graph
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
     stored: { [ storageId: string]: Relation } = {};
@@ -97,7 +48,6 @@ export default class InMemoryStorage implements StorageProvider {
     }
 
     *findStored(pattern: Pattern): Iterable<{storageId:string, relation: Relation}> {
-
         // Full scan
         for (const storageId in this.stored) {
             const relation = this.stored[storageId];
@@ -106,38 +56,8 @@ export default class InMemoryStorage implements StorageProvider {
         }
     }
 
-    runSearch(search: RelationSearch) {
-        for (const { storageId, relation } of this.findStored(search.pattern)) {
-            search.relation(relation);
-        }
 
-        search.finish();
-    }
-
-    runModification(commandRel: Relation, output: RelationReceiver) {
-        const filter = modificationToFilter(commandRel);
-
-        const changes: { storageId: string, modified: Relation}[] = [];
-
-        for (const { storageId, relation } of this.findStored(filter)) {
-            const modified = applyModificationRelation(commandRel, relation);
-            changes.push({storageId, modified});
-        }
-
-        for (const change of changes) {
-            this.stored[change.storageId] = change.modified;
-            output.relation(change.modified);
-            this.graph.onRelationUpdated(change.modified);
-        }
-
-        output.finish();
-    }
-
-    runSave(relation: Relation, output: RelationReceiver) {
-        if (modifiesExistingRelations(relation)) {
-            this.runModification(relation, output);
-            return;
-        }
+    saveNewRelation(relation: Relation, output: RelationReceiver) {
 
         // Save as new relation
         relation = this.resolveExpressionValues(relation);
@@ -165,15 +85,20 @@ export default class InMemoryStorage implements StorageProvider {
         output.finish();
     }
 
-    runDelete(graph: Graph, pattern: Pattern, output: RelationReceiver) {
-
+    *runSearch2(pattern: Pattern): Iterable<Slot> {
         for (const { storageId, relation } of this.findStored(pattern)) {
-            delete this.stored[storageId];
-            graph.onRelationDeleted(relation);
+            yield {
+                relation,
+                modify: (func: (rel: Pattern) => Pattern) => {
+                    const modified = func(this.stored[storageId]);
+                    this.stored[storageId] = modified;
+                    return modified;
+                },
+                del: () => {
+                    delete this.stored[storageId];
+                }
+            }
         }
-
-        emitActionPerformed(output);
-        output.finish();
     }
 }
 

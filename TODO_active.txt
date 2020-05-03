@@ -11,7 +11,14 @@ Table schema
   - Implement
   - Fix data-backed patterns
     - Mount a raw object with a get/set/modify API
+    - Refactor runSearch so that it iterates "slots"
 
 Logging
   - Opt-in log streams
     - In-memory data structure about whether to broadcast logging or not
+
+
+Slot {
+    relation: Relation
+    set(rel => rel)
+}

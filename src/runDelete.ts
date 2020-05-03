@@ -5,5 +5,12 @@ import Pattern from './Pattern'
 import RelationReceiver from './RelationReceiver'
 
 export default function runDelete(graph: Graph, pattern: Pattern, output: RelationReceiver) {
-    graph.inMemory.runDelete(graph, pattern, output);
+
+    for (const slot of graph.inMemory.runSearch2(pattern)) {
+        slot.del();
+        graph.onRelationDeleted(slot.relation);
+    }
+
+    emitActionPerformed(output);
+    output.finish();
 }
