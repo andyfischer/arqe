@@ -85,7 +85,7 @@ export default class InMemoryStorage {
         output.finish();
     }
 
-    *runSearch2(pattern: Pattern): Iterable<Slot> {
+    *iterateSlots(pattern: Pattern): Iterable<Slot> {
         for (const { storageId, relation } of this.findStored(pattern)) {
             yield {
                 relation,

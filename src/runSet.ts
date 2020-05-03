@@ -67,7 +67,7 @@ export default function runSet(graph: Graph, relation: Relation, output: Relatio
     if (modifiesExistingRelations(relation)) {
         const filter = modificationToFilter(relation);
 
-        for (const slot of graph.inMemory.runSearch2(filter)) {
+        for (const slot of graph.inMemory.iterateSlots(filter)) {
 
             const modified = slot.modify(existing =>
                 applyModificationRelation(relation, existing)

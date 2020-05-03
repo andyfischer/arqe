@@ -6,7 +6,7 @@ import RelationReceiver from './RelationReceiver'
 
 export default function runDelete(graph: Graph, pattern: Pattern, output: RelationReceiver) {
 
-    for (const slot of graph.inMemory.runSearch2(pattern)) {
+    for (const slot of graph.inMemory.iterateSlots(pattern)) {
         slot.del();
         graph.onRelationDeleted(slot.relation);
     }
