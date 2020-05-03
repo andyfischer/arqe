@@ -46,18 +46,17 @@ function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: stri
     if (api.touchpointIsListener(touchpoint))
         return null;
 
-    if (outputExists)
-        return 'boolean';
-
     let outputTypeStr = null;
 
-    if (outputObject) {
+    if (outputExists) {
+        outputTypeStr = 'boolean';
+    } else if (outputObject) {
         outputTypeStr = null;
     } else if (outputFrom.length === 1) {
         outputTypeStr = 'string'
     }
 
-    if (!expectOne && outputTypeStr !== null)
+    if (!expectOne && outputTypeStr !== null && !outputExists)
         outputTypeStr += '[]'
 
     if (isAsync && outputTypeStr !== null)

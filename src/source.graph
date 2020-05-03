@@ -1003,3 +1003,45 @@ set touchpoint/eventTypeQuery input var/eventType type/string
 set touchpoint/eventTypeIsDeletion input var/eventType type/string
 set touchpoint/eventTypeId input var/eventType type/string
 set touchpoint/eventTypeProvides input var/eventType type/string
+
+set command-line-tool/jsfixer
+set command-line-tool/jsfixer cli-input name/file
+
+set code-generation/cliApi
+set code-generation/cliApi destination-filename(src/toollib/CommandLineToolApi.ts)
+set code-generation/cliApi ik-import(..)
+set code-generation/cliApi strategy/dao-api
+
+set code-generation/cliApi touchpoint/getCliInput 
+set touchpoint/getCliInput function-name(getCliInput)
+set touchpoint/getCliInput query(get cli-input(${name}) value/*)
+set touchpoint/getCliInput input var/name type/string
+set touchpoint/getCliInput output from(value/*) var
+set touchpoint/getCliInput expectOne
+
+set code-generation/cliShell
+set code-generation/cliShell destination-filename(src/toollib/ToolShellApi.ts)
+set code-generation/cliShell ik-import(..)
+set code-generation/cliShell strategy/dao-api
+
+set code-generation/cliShell touchpoint/listCliInputs
+set touchpoint/listCliInputs function-name(listCliInputs)
+set touchpoint/listCliInputs query(get ${tool} cli-input/* value)
+set touchpoint/listCliInputs input var/tool type/string
+set touchpoint/listCliInputs async
+
+set code-generation/cliShell touchpoint/cliInputIsRequired
+set touchpoint/cliInputIsRequired function-name(cliInputIsRequired)
+set touchpoint/cliInputIsRequired query(get ${tool} cli-input/* required)
+set touchpoint/cliInputIsRequired input var/tool type/string
+set touchpoint/cliInputIsRequired input var/name type/string
+set touchpoint/cliInputIsRequired output exists
+set touchpoint/cliInputIsRequired async
+
+set code-generation/cliShell touchpoint/setCliInput 
+set touchpoint/setCliInput function-name(setCliInput)
+set touchpoint/setCliInput query(set cli-input(${name}) value/(set ${value}))
+set touchpoint/setCliInput input var/name type/string
+set touchpoint/setCliInput input var/value type/string
+set touchpoint/setCliInput async
+
