@@ -7,19 +7,19 @@ export default class API {
         this.graph = graph;
     }
 
-    async listCliInputs(tool: string) {
-        const command = `get ${tool} cli-input/* value`;
+    async listCliInputs(toolname: string): Promise<string[]> {
+        const command = `get command-line-tool(${toolname}) cli-input name/*`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
         const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
-        // no output?
+        return rels.map(rel => rel.getTagValue("name"));
     }
 
-    async cliInputIsRequired(tool: string, name: string): Promise<boolean> {
-        const command = `get ${tool} cli-input/* required`;
+    async cliInputIsRequired(toolname: string, name: string): Promise<boolean> {
+        const command = `get command-line-tool(${toolname}) cli-input name/* required`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)
@@ -29,8 +29,19 @@ export default class API {
         return rels.length > 0;
     }
 
-    async setCliInput(name: string, value: string) {
-        const command = `set cli-input(${name}) value/(set ${value})`;
+    async createToolExecution(): Promise<string[]> {
+        const command = `set cli-tool-execution/(unique)`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTag("cli-tool-execution"));
+    }
+
+    async setCliInput(exec: string, name: string, value: string) {
+        const command = `set $exec cli-input(${name}) value/(set ${value})`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)

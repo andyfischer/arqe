@@ -17,11 +17,28 @@ export default async function runStandardProcess2(toolName: string, handler: (gr
         return;
     }
 
-    const args = Minimist.parse(process.argv.slice(2));
+    const args = Minimist(process.argv.slice(2));
+    let failedLaunch = false;
 
     const shellApi = new ToolShellApi(graph);
-    //for (const input of shellApi.listCliInputs(toolName)) {
-    //}
+    for (const input of await shellApi.listCliInputs(toolName)) {
+        console.log('tool uses input: ' + input);
+
+        if (args[input]) {
+            // await shellApi.setCliInput(input, args[input]);
+        }
+
+        if (await shellApi.cliInputIsRequired(toolName, input)) {
+            if (!args[input]) {
+                console.log('Missing required param: --' + input);
+                failedLaunch = true;
+            }
+        }
+    }
+
+    if (failedLaunch) {
+        process.exit(-1);
+    }
 
     try {
         const cliApi = new CommandLineToolApi(graph);

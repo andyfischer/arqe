@@ -3,9 +3,9 @@ import { Graph, runStandardProcess2 } from './fs'
 
 runStandardProcess2('jsfixer', async (graph: Graph, api) => {
 
-    const filename = api.getCliInput('filename');
+    const filename = await api.getCliInput('filename');
 
-    console.log('filename: ', filename);
+    // console.log('filename: ', filename);
 
     // load the file
     // parse with esprima

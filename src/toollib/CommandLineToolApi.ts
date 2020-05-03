@@ -7,10 +7,12 @@ export default class API {
         this.graph = graph;
     }
 
-    getCliInput(name: string): string {
-        const command = `get cli-input(${name}) value/*`;
+    async getCliInput(exec: string, name: string): Promise<string> {
+        const command = `get $exec cli-input(${name}) value/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
