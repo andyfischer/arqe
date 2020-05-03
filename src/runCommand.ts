@@ -9,15 +9,14 @@ import runSearch from './runSearch'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
 import runSet from './runSet'
-import runModify, { ModifyRequest } from './runModify'
 import runDelete from './runDelete'
 import runListen from './runListen'
+import { newRelationSearch } from './RelationSearch'
 
 const knownCommands = {
     'join': true,
     'get': true,
     'set': true,
-    'modify': true,
     'delete': true,
     'listen': true
 };
@@ -32,17 +31,14 @@ function runStep(step: CommandStep) {
             runJoinStep(step);
             return;
 
-        case 'get':
-            runGetStep(step);
+        case 'get': {
+            emitSearchPatternMeta(step.command.pattern, step.output);
+            runSearch(step.graph, newRelationSearch(step.command.pattern, step.output));
             return;
+        }
         
         case 'set': {
             runSet(step.graph, step.command.toRelation(), step.output);
-            return;
-        }
-
-        case 'modify': {
-            runModify(step.graph, step.command.toRelation(), step.output);
             return;
         }
 
@@ -68,9 +64,6 @@ function runStep(step: CommandStep) {
 }
 
 function runGetStep(step: CommandStep) {
-    const search = step.toRelationSearch();
-    emitSearchPatternMeta(step.command.toPattern(), search);
-    runSearch(step.graph, search);
     return;
 }
 

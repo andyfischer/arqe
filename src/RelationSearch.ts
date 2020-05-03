@@ -11,7 +11,7 @@ export default interface RelationSearch extends RelationReceiver {
     finish: () => void
 }
 
-export function relationSearchFromPattern(pattern: Pattern, output: RelationReceiver): RelationSearch {
+export function newRelationSearch(pattern: Pattern, output: RelationReceiver): RelationSearch {
     return {
         pattern,
         subSearchDepth: 0,
