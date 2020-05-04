@@ -17,6 +17,12 @@ export async function notifyFileChanged(filename: string) {
 }
 
 export function main() {
+
+    setTimeout(() => {
+        console.log('timed out');
+        process.exit(-1);
+    }, 250);
+
     runStandardProcess(async (graph: Graph) => {
         let filename = process.argv[2];
 
