@@ -3,9 +3,11 @@ import { Graph, runStandardProcess2 } from './fs'
 
 runStandardProcess2('jsfixer', async (graph: Graph, api) => {
 
-    const filename = await api.getCliInput('filename');
+    const filename = await api.getCliInput('file');
 
-    // console.log('filename: ', filename);
+    console.log('filename: ', filename);
+
+    // TODO- the (set) expression should create the row if needed
 
     // load the file
     // parse with esprima

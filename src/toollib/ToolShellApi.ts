@@ -29,7 +29,7 @@ export default class API {
         return rels.length > 0;
     }
 
-    async createToolExecution(): Promise<string[]> {
+    async createToolExecution(): Promise<string> {
         const command = `set cli-tool-execution/(unique)`;
 
         const { receiver, promise } = receiveToRelationListPromise();
@@ -37,11 +37,22 @@ export default class API {
         const rels: Relation[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
-        return rels.map(rel => rel.getTag("cli-tool-execution"));
+        // Expect one result
+
+        if (rels.length === 0) {
+            throw new Error("(createToolExecution) No relation found for: " + command)
+        }
+
+        if (rels.length > 1) {
+            throw new Error("(createToolExecution) Multiple results found for: " + command)
+        }
+
+        const oneRel = rels[0];
+        return oneRel.getTag("cli-tool-execution");
     }
 
-    async setCliInput(exec: string, name: string, value: string) {
-        const command = `set $exec cli-input(${name}) value/(set ${value})`;
+    async setCliInput(execId: string, name: string, value: string) {
+        const command = `set ${execId} cli-input(${name}) value/(set ${value})`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)

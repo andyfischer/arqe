@@ -21,11 +21,13 @@ export default async function runStandardProcess2(toolName: string, handler: (gr
     let failedLaunch = false;
 
     const shellApi = new ToolShellApi(graph);
+    const execId = await shellApi.createToolExecution();
+
     for (const input of await shellApi.listCliInputs(toolName)) {
         console.log('tool uses input: ' + input);
 
         if (args[input]) {
-            // await shellApi.setCliInput(input, args[input]);
+            await shellApi.setCliInput(execId, input, args[input]);
         }
 
         if (await shellApi.cliInputIsRequired(toolName, input)) {
@@ -42,6 +44,8 @@ export default async function runStandardProcess2(toolName: string, handler: (gr
 
     try {
         const cliApi = new CommandLineToolApi(graph);
+        cliApi.execId = execId;
+
         await handler(graph, cliApi);
     } catch (e) {
         console.error('Unhandled exception in runStandardProcess')

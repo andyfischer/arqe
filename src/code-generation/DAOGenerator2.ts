@@ -117,11 +117,11 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
 
     for (const { varStr, typeStr } of api.touchpointInputs2(touchpoint)) {
 
-        /*
         const dataFrom = api.touchpointInputDataFrom(touchpoint, varStr);
-        if (dataFrom && dataFrom === 'apiObject')
+        if (dataFrom && dataFrom === 'apiObject') {
+            func.contents.addRaw(`const ${varStr} = this.${varStr};`);
             continue;
-            */
+        }
 
         func.addInput(varStr, typeStr);
     }
@@ -329,6 +329,10 @@ function createAst(api: DAOGeneratorGeneratedDAO, target: string) {
     const apiClass = file.addClass('API');
     apiClass.isExportDefault = true;
     apiClass.addField('graph', 'GraphLike');
+
+    for (const { field, typeStr } of api.getInterfaceFields(target)) {
+        apiClass.addField(field, typeStr);
+    }
 
     const contructorFunc = apiClass.contents.addMethod('constructor');
     contructorFunc.addInput('graph', 'GraphLike');

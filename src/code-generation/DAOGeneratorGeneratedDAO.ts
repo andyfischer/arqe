@@ -16,6 +16,18 @@ export default class API {
         return rels.map(rel => rel.getTag("code-generation"));
     }
 
+    getInterfaceFields(target: string) {
+        const command = `get ${target} field/* type/*`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => ({
+    field: rel.getTagValue("field"),
+    typeStr: rel.getTagValue("type"),
+}));
+    }
+
     listTouchpoints(target: string): string[] {
         const command = `get ${target} touchpoint/*`;
 
@@ -185,8 +197,8 @@ export default class API {
 }));
     }
 
-    touchpointInputDataFrom(touchpoint: string): string {
-        const command = `get ${touchpoint} input var dataFrom`;
+    touchpointInputDataFrom(touchpoint: string, varStr: string): string {
+        const command = `get ${touchpoint} input var(${varStr}) dataFrom`;
 
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));

@@ -2,13 +2,15 @@ import { GraphLike, Relation, receiveToRelationListPromise } from ".."
 
 export default class API {
     graph: GraphLike
+    execId: string
 
     constructor(graph: GraphLike) {
         this.graph = graph;
     }
 
-    async getCliInput(exec: string, name: string): Promise<string> {
-        const command = `get $exec cli-input(${name}) value/*`;
+    async getCliInput(name: string): Promise<string> {
+        const execId = this.execId;
+        const command = `get ${execId} cli-input(${name}) value/*`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)

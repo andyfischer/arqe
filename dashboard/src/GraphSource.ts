@@ -16,11 +16,18 @@ set touchpoint/0.5 function-name(listTargets)
 set touchpoint/0.5 query(code-generation/*)
 set touchpoint/0.5 output from(code-generation) var
 
+set code-generation/dao touchpoint/getInterfaceFields
+set touchpoint/getInterfaceFields function-name(getInterfaceFields)
+set touchpoint/getInterfaceFields query(\${target} field/* type/*)
+set touchpoint/getInterfaceFields input var/target type/string
+set touchpoint/getInterfaceFields output from(field/*) var/field
+set touchpoint/getInterfaceFields output from(type/*) var/typeStr
+
 set code-generation/dao touchpoint/0.6
 set touchpoint/0.6 function-name(listTouchpoints)
 set touchpoint/0.6 query(\${target} touchpoint/*)
-set touchpoint/0.6 output from(touchpoint) var
-set touchpoint/0.6 input/0.5
+set touchpoint/0.6 input var/target type/string
+set touchpoint/0.6 output from(touchpoint) var/touchpoint
 
 set code-generation/dao touchpoint/0.8
 set touchpoint/0.8 function-name(getIkImport)
@@ -120,9 +127,10 @@ set touchpoint/touchpointOutputs2 output from(from/*) var/fromStr
 set touchpoint/touchpointOutputs2 output from(var/*) var/varStr
 
 set code-generation/dao touchpoint/touchpointInputDataFrom
-set touchpoint/touchpointInputDataFrom query(\${touchpoint} input var dataFrom)
+set touchpoint/touchpointInputDataFrom query(\${touchpoint} input var(\${varStr}) dataFrom)
 set touchpoint/touchpointInputDataFrom function-name(touchpointInputDataFrom)
 set touchpoint/touchpointInputDataFrom input var/touchpoint type/string
+set touchpoint/touchpointInputDataFrom input var/varStr type/string
 set touchpoint/touchpointInputDataFrom output from(dataFrom/*) var/dataFrom
 set touchpoint/touchpointInputDataFrom expectOne
 set touchpoint/touchpointInputDataFrom output optional
@@ -926,7 +934,6 @@ set touchpoint/deleteObject function-name(deleteObject)
 set touchpoint/deleteObject query(delete test-event-handler \${obj})
 set touchpoint/deleteObject input var/obj type/string
 
-set touchpoint/0.6 input var/target type/string
 set touchpoint/0.8 input var/target type/string
 set touchpoint/1 input var/target type/string
 set touchpoint/3 input var/touchpoint type/string
@@ -1026,11 +1033,12 @@ set touchpoint/createToolExecution function-name(createToolExecution)
 set touchpoint/createToolExecution query(set cli-tool-execution/(unique))
 set touchpoint/createToolExecution output from(cli-tool-execution) var
 set touchpoint/createToolExecution async
+set touchpoint/createToolExecution expectOne
 
 set code-generation/cliShell touchpoint/setCliInput 
 set touchpoint/setCliInput function-name(setCliInput)
-set touchpoint/setCliInput query(set \$exec cli-input(\${name}) value/(set \${value}))
-set touchpoint/setCliInput input var/exec type/string
+set touchpoint/setCliInput query(set \${execId} cli-input(\${name}) value/(set \${value}))
+set touchpoint/setCliInput input var/execId type/string
 set touchpoint/setCliInput input var/name type/string
 set touchpoint/setCliInput input var/value type/string
 set touchpoint/setCliInput async
@@ -1039,12 +1047,13 @@ set code-generation/cliApi
 set code-generation/cliApi destination-filename(src/toollib/CommandLineToolApi.ts)
 set code-generation/cliApi ik-import(..)
 set code-generation/cliApi strategy/dao-api
+set code-generation/cliApi field/execId type/string
 
 set code-generation/cliApi touchpoint/getCliInput 
 set touchpoint/getCliInput function-name(getCliInput)
-set touchpoint/getCliInput query(get \$exec cli-input(\${name}) value/*)
-set touchpoint/getCliInput input var/exec type/string
-set touchpoint/getCliInput input var/exec dataFrom/apiObject
+set touchpoint/getCliInput query(get \${execId} cli-input(\${name}) value/*)
+set touchpoint/getCliInput input var/execId type/string
+set touchpoint/getCliInput input var/execId dataFrom/apiObject
 set touchpoint/getCliInput input var/name type/string
 set touchpoint/getCliInput output from(value/*) var
 set touchpoint/getCliInput expectOne
