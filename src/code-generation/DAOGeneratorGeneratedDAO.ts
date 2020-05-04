@@ -185,6 +185,24 @@ export default class API {
 }));
     }
 
+    touchpointInputDataFrom(touchpoint: string): string {
+        const command = `get ${touchpoint} input var dataFrom`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        if (rels.length === 0) {
+            return null;
+        }
+
+        if (rels.length > 1) {
+            throw new Error("(touchpointInputDataFrom) Multiple results found for: " + command)
+        }
+
+        const oneRel = rels[0];
+        return oneRel.getTagValue("dataFrom");
+    }
+
     touchpointInputs(touchpoint: string): string[] {
         const command = `get ${touchpoint} input/*`;
 

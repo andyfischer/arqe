@@ -64,15 +64,10 @@ set touchpoint/4 function-name(touchpointExpectOne)
 set touchpoint/4 input/2
 set touchpoint/4 output exists
 
-set input/2 name/touchpoint
-set input/2 type/string
-
 set code-generation/dao touchpoint/isAsync
 set touchpoint/isAsync query(\${touchpoint} async)
 set touchpoint/isAsync function-name(touchpointIsAsync)
 set touchpoint/isAsync input/2
-set input/2 name/touchpoint
-set input/2 type/string
 set touchpoint/isAsync output exists
 
 set code-generation/dao touchpoint/isListener
@@ -85,8 +80,6 @@ set code-generation/dao touchpoint/4.1
 set touchpoint/4.1 query(\${touchpoint} output optional)
 set touchpoint/4.1 function-name(touchpointOutputIsOptional)
 set touchpoint/4.1 input/2
-set input/2 name/touchpoint
-set input/2 type/string
 set touchpoint/4.1 output exists
 
 set code-generation/dao touchpoint/5
@@ -94,16 +87,12 @@ set touchpoint/5 query(\${touchpoint} output value)
 set touchpoint/5 function-name(touchpointOutputIsValue)
 set touchpoint/5 input/3
 set touchpoint/5 expectOne
-set input/3 name/touchpoint
-set input/3 type/string
 set touchpoint/5 output exists
 
 set code-generation/dao touchpoint/6
 set touchpoint/6 query(\${touchpoint} output exists)
 set touchpoint/6 function-name(touchpointOutputIsExists)
 set touchpoint/6 input/4
-set input/4 name/touchpoint
-set input/4 type/string
 set touchpoint/6 output exists
 
 set code-generation/dao touchpoint/7.2
@@ -129,6 +118,14 @@ set touchpoint/touchpointOutputs2 input/5
 set touchpoint/touchpointOutputs2 input var/touchpoint type/string
 set touchpoint/touchpointOutputs2 output from(from/*) var/fromStr
 set touchpoint/touchpointOutputs2 output from(var/*) var/varStr
+
+set code-generation/dao touchpoint/touchpointInputDataFrom
+set touchpoint/touchpointInputDataFrom query(\${touchpoint} input var dataFrom)
+set touchpoint/touchpointInputDataFrom function-name(touchpointInputDataFrom)
+set touchpoint/touchpointInputDataFrom input var/touchpoint type/string
+set touchpoint/touchpointInputDataFrom output from(dataFrom/*) var/dataFrom
+set touchpoint/touchpointInputDataFrom expectOne
+set touchpoint/touchpointInputDataFrom output optional
 
 set code-generation/dao touchpoint/touchpointInputs
 set touchpoint/touchpointInputs query(\${touchpoint} input/*)
@@ -1047,7 +1044,7 @@ set code-generation/cliApi touchpoint/getCliInput
 set touchpoint/getCliInput function-name(getCliInput)
 set touchpoint/getCliInput query(get \$exec cli-input(\${name}) value/*)
 set touchpoint/getCliInput input var/exec type/string
-set touchpoint/getCliInput input var/exec type/string fromApiObject
+set touchpoint/getCliInput input var/exec dataFrom/apiObject
 set touchpoint/getCliInput input var/name type/string
 set touchpoint/getCliInput output from(value/*) var
 set touchpoint/getCliInput expectOne

@@ -116,6 +116,13 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
         func.setOutputType(outputType);
 
     for (const { varStr, typeStr } of api.touchpointInputs2(touchpoint)) {
+
+        /*
+        const dataFrom = api.touchpointInputDataFrom(touchpoint, varStr);
+        if (dataFrom && dataFrom === 'apiObject')
+            continue;
+            */
+
         func.addInput(varStr, typeStr);
     }
 
