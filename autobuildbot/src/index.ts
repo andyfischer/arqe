@@ -6,6 +6,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import BuildBotAPI from './BuildBotAPI'
 import ChildProcess from 'child_process'
+import Chalk from 'chalk'
 
 let graph: Graph;
 let api: BuildBotAPI;
@@ -57,7 +58,6 @@ async function fileWasChanged(filename: string) {
     const inSrcDir = filename.startsWith(path.join(packageRoot, 'src'));
 
     if (!inSrcDir) {
-        // console.log('ignoring, not in a src directory: ' + filename);
         return;
     }
 
@@ -70,15 +70,30 @@ async function fileWasChanged(filename: string) {
         return;
     }
 
-    console.log('scheduling build: ' + packageRoot);
     scheduleCommandIfNeeded(`yarn build`, packageRoot);
+}
+
+function randInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+async function getOrInitColor(dir: string): Promise<number[]> {
+    const existing = await api.getDirectoryColor(dir);
+    if (existing)
+        return JSON.parse(existing)
+
+    const color = [randInt(255), randInt(255), randInt(255)];
+    await api.setDirectoryColor(dir, JSON.stringify(color));
+    return color;
 }
 
 async function startTask(task: string) {
     const info = await api.getTaskInfo(task);
     api.setTaskStatus(task, 'running');
+    const color = await getOrInitColor(info.cwd);
+    const logLabel = Chalk.rgb(color[0], color[1], color[2])(`[${task}]`);
 
-    console.log(`[starting ${task}] ${info.cmd} (cwd = ${info.cwd})`);
+    console.log(`${logLabel}: starting, cmd = "${info.cmd}", cwd = ${info.cwd}`);
 
     const args = info.cmd.split(' ');
 
@@ -90,17 +105,17 @@ async function startTask(task: string) {
     proc.stdout.on('data', (msg) => {
         msg = msg.toString();
         msg = msg.replace(/\n$/, '');
-        console.log(`[${task}] ${msg}`);
+        console.log(`${logLabel} ${msg}`);
     });
 
     proc.stderr.on('data', (msg) => {
         msg = msg.toString();
         msg = msg.replace(/\n$/, '');
-        console.log(`[${task} err] ${msg}`);
+        console.log(`${logLabel} ${msg}`);
     });
 
     proc.on('exit', (evt) => {
-        console.log(`[finished ${task}]: ${evt}`);
+        console.log(`${logLabel}: finished`);
         api.deleteTask(task);
     });
 }
@@ -140,30 +155,9 @@ async function start() {
         }
     });
 
-    //api.listenToFileChanges((filename: string) => {
-    //});
-
-    //api.listenToPendingTasks((task: string) => {
-    //});
-
     await new Promise((resolve,reject) => {});
-
-    // Look for certain file extensions
-    // If we see a rebuildable file..
-    // Find the parent package.json file
-    // Check if a rebuild is in progress
-    //   If so schedule one for later
-    //   If not, start one
-    // Run rebuild
-    // Print to stdout with different colors
 }
 
-// API
-//   Listen to all changed files
-//   Find existing job
-//   Create job
-//   Delete job
-//   Get color list
 export async function main() {
     runStandardProcess((_graph: Graph) => {
         graph = _graph;

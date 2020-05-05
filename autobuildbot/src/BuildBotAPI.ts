@@ -158,7 +158,11 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        // no output
+        return ({
+    cmd: oneRel.getTagValue("cmd"),
+    cwd: oneRel.getTagValue("cwd"),
+    status: oneRel.getTagValue("status"),
+});
     }
 
     async setTaskStatus(task: string, status: string) {
@@ -203,5 +207,36 @@ export default class API {
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTagValue("waitingFor"));
+    }
+
+    async getDirectoryColor(directory: string): Promise<string> {
+        const command = `get directory/${directory} color`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        if (rels.length === 0) {
+            return null;
+        }
+
+        if (rels.length > 1) {
+            throw new Error("(getDirectoryColor) Multiple results found for: " + command)
+        }
+
+        const oneRel = rels[0];
+        return oneRel.getTagValue("color");
+    }
+
+    async setDirectoryColor(directory: string, color: string) {
+        const command = `set directory/${directory} color/${color}`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        // no output?
     }
 }

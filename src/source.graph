@@ -795,6 +795,22 @@ set touchpoint/getTaskWaitingFor function-name/getTaskWaitingFor
 set touchpoint/getTaskWaitingFor input var/task type/string
 set touchpoint/getTaskWaitingFor output from(waitingFor/*) var
 
+set code-generation/autobuildbot touchpoint/getDirectoryColor
+set touchpoint/getDirectoryColor async
+set touchpoint/getDirectoryColor function-name(getDirectoryColor)
+set touchpoint/getDirectoryColor query(get directory/${directory} color)
+set touchpoint/getDirectoryColor input var/directory type/string
+set touchpoint/getDirectoryColor output from(color/*) var
+set touchpoint/getDirectoryColor expectOne
+set touchpoint/getDirectoryColor output optional
+
+set code-generation/autobuildbot touchpoint/setDirectoryColor
+set touchpoint/setDirectoryColor async
+set touchpoint/setDirectoryColor function-name(setDirectoryColor)
+set touchpoint/setDirectoryColor query(set directory/${directory} color/${color})
+set touchpoint/setDirectoryColor input var/directory type/string
+set touchpoint/setDirectoryColor input var/color type/string
+
 set touchpoint/eventListener eventType/anyFileChange
 set eventType/anyFileChange query(listen file-watch filename/* version)
 set eventType/anyFileChange provide var/filename from(filename/*)
