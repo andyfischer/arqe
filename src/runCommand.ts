@@ -8,7 +8,7 @@ import Command from './Command'
 import runSearch from './runSearch'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
-import runSet from './runSet'
+import runSave from './runSave'
 import runDelete from './runDelete'
 import runListen from './runListen'
 import { newRelationSearch } from './RelationSearch'
@@ -38,7 +38,7 @@ function runStep(step: CommandStep) {
         }
         
         case 'set': {
-            runSet(step.graph, step.command.toRelation(), step.output);
+            runSave(step.graph, step.command.toRelation(), step.output);
             return;
         }
 
