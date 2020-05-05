@@ -19,11 +19,21 @@ interface Slot {
     del: () => void
 }
 
+function getImpliedTableName(rel: Relation) {
+    for (const tag of rel.tags)
+        if (tag.star || tag.doubleStar)
+            return null;
+    
+    const els = rel.tags.map(r => r.tagType);
+    return els.join('-');
+}
+
 export default class InMemoryStorage {
     graph: Graph
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
     stored: { [ storageId: string]: Relation } = {};
     nextStorageId: IDSource = new IDSource();
+    byImpliedTableName: { [tn: string]: { [storageId: string]: true } } = {}
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -47,15 +57,28 @@ export default class InMemoryStorage {
         });
     }
 
-    *findStored(pattern: Pattern): Iterable<{storageId:string, relation: Relation}> {
+    *findStored(search: Pattern): Iterable<{storageId:string, relation: Relation}> {
+
+        const itn = getImpliedTableName(search);
+        if (itn) {
+            const indexedStorageIds = this.byImpliedTableName[itn] || [];
+            for (const storageId in indexedStorageIds) {
+                const stored = this.stored[storageId];
+                const relation = this.stored[storageId];
+                if (search.matches(relation))
+                    yield { storageId, relation: this.stored[storageId] }
+            }
+            
+            return;
+        }
+
         // Full scan
         for (const storageId in this.stored) {
             const relation = this.stored[storageId];
-            if (pattern.matches(relation))
+            if (search.matches(relation))
                 yield { storageId, relation: this.stored[storageId] }
         }
     }
-
 
     saveNewRelation(relation: Relation, output: RelationReceiver) {
 
@@ -79,8 +102,13 @@ export default class InMemoryStorage {
         }
 
         // Store a new relation
-        this.stored[this.nextStorageId.take()] = relation;
+        const storageId = this.nextStorageId.take();
+        this.stored[storageId] = relation;
         output.relation(relation);
+
+        const itn = getImpliedTableName(relation);
+        this.byImpliedTableName[itn] = this.byImpliedTableName[itn] || {};
+        this.byImpliedTableName[itn][storageId] = true;
         this.graph.onRelationUpdated(relation);
         output.finish();
     }
@@ -96,6 +124,8 @@ export default class InMemoryStorage {
                 },
                 del: () => {
                     delete this.stored[storageId];
+                    const itn = getImpliedTableName(relation);
+                    delete (this.byImpliedTableName[itn] || {})[storageId];
                 }
             }
         }
