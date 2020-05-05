@@ -6,15 +6,28 @@ import PatternTag from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { hookObjectSpaceSearch, hookObjectSpaceSave } from './hookObjectSpace'
 
-function expressionUpdatesExistingValue(expr: string[]) {
-    if (!expr)
-        return false;
+const exprFuncEffects = {
+    increment: {
+        modifiesExisting: true,
+        initializeIfMissing: false
+    },
+    set: {
+        modifiesExisting: true,
+        canInitialize: true
+    }
+};
 
-    if (expr[0] === 'increment' || expr[0] === 'set')
-        return true;
-
-    return false;
+interface RelationEffects {
+    modifiesExisting: boolean
+    initializeIfMissing: boolean
 }
+
+function expressionUpdatesExistingValue(expr: string[]) {
+
+    const effects = expr && expr[0] && exprFuncEffects[expr[0]];
+    return effects && effects.modifiesExisting;
+}
+
 
 function tagModifiesExistingRelations(tag: PatternTag) {
     if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
@@ -42,6 +55,7 @@ function modificationToFilter(rel: Relation) {
 function applyModificationRelation(changeOperation: Relation, storedRel: Relation): Relation {
     return storedRel.remapTags((tag: PatternTag) => {
         const modificationTag = changeOperation.getOneTagForType(tag.tagType);
+
         if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
             tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));
         }
@@ -60,28 +74,73 @@ function applyModificationExpr(expr: string[], value: string) {
     }
 }
 
+function toInitialization(rel: Relation) {
+    return rel.remapTags((tag: PatternTag) => {
+        if (tag.valueExpr && tag.valueExpr[0] === 'set')
+            return tag.setValue(tag.valueExpr[1]);
+        return tag;
+    });
+}
+
+function getEffects(relation: Relation) {
+
+    let modifiesExisting = false;
+    let canInitializeMissing = true;
+
+    for (const tag of relation.tags) {
+        const expr = tag.valueExpr;
+        const tagEffects = expr && expr[0] && exprFuncEffects[expr[0]];
+
+        if (!tagEffects)
+            continue;
+
+        if (tagEffects.modifiesExisting)
+            modifiesExisting = true;
+
+        if (tagEffects.modifiesExisting && !tagEffects.canInitialize)
+            canInitializeMissing = false;
+    }
+
+    let initializeIfMissing = modifiesExisting && canInitializeMissing;
+
+    return {
+        modifiesExisting,
+        initializeIfMissing
+    }
+}
+
 export default function runSet(graph: Graph, relation: Relation, output: RelationReceiver) {
     if (hookObjectSpaceSave(graph, relation, output))
         return;
 
-    if (modifiesExistingRelations(relation)) {
-        const filter = modificationToFilter(relation);
+    const effects = getEffects(relation);
 
-        for (const slot of graph.inMemory.iterateSlots(filter)) {
-
-            const modified = slot.modify(existing =>
-                applyModificationRelation(relation, existing)
-            );
-
-            output.relation(modified);
-            graph.onRelationUpdated(modified);
-        }
-
-        output.finish();
-        return;
-
-    } else {
+    if (!effects.modifiesExisting) {
         graph.inMemory.saveNewRelation(relation, output);
+        return;
     }
+
+    const filter = modificationToFilter(relation);
+    let anyFound = false;
+
+    for (const slot of graph.inMemory.iterateSlots(filter)) {
+
+        anyFound = true;
+
+        const modified = slot.modify(existing =>
+            applyModificationRelation(relation, existing)
+        );
+
+        output.relation(modified);
+        graph.onRelationUpdated(modified);
+    }
+
+    if (!anyFound && effects.initializeIfMissing) {
+        graph.inMemory.saveNewRelation(toInitialization(relation), output);
+        return;
+    }
+
+    output.finish();
+    return;
 }
 
