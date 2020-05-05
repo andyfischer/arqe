@@ -158,11 +158,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return ({
-    cmd: oneRel.getTagValue("cmd"),
-    cwd: oneRel.getTagValue("cwd"),
-    status: oneRel.getTagValue("status"),
-});
+        // no output
     }
 
     async setTaskStatus(task: string, status: string) {

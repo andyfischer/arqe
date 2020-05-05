@@ -25,7 +25,8 @@ function getImpliedTableName(rel: Relation) {
             return null;
     
     const els = rel.tags.map(r => r.tagType);
-    return els.join('-');
+    els.sort();
+    return els.join(' ');
 }
 
 export default class InMemoryStorage {
@@ -61,12 +62,12 @@ export default class InMemoryStorage {
 
         const itn = getImpliedTableName(search);
         if (itn) {
-            const indexedStorageIds = this.byImpliedTableName[itn] || [];
+            const indexedStorageIds = this.byImpliedTableName[itn] || {};
+
             for (const storageId in indexedStorageIds) {
-                const stored = this.stored[storageId];
                 const relation = this.stored[storageId];
                 if (search.matches(relation))
-                    yield { storageId, relation: this.stored[storageId] }
+                    yield { storageId, relation }
             }
             
             return;
@@ -76,7 +77,7 @@ export default class InMemoryStorage {
         for (const storageId in this.stored) {
             const relation = this.stored[storageId];
             if (search.matches(relation))
-                yield { storageId, relation: this.stored[storageId] }
+                yield { storageId, relation }
         }
     }
 
