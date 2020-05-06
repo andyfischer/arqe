@@ -1,8 +1,6 @@
 
 import Fs from 'fs'
-import Command from './Command'
-import CommandStep from './CommandStep'
-import parseCommand, { parseCommandChain } from './parseCommand'
+import { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
 import Relation from './Relation'
 import runSearch from './runSearch'
@@ -22,11 +20,10 @@ import UpdateContext from './UpdateContext'
 import TagTypeOrdering from './TagTypeOrdering'
 import runningInBrowser from './context/runningInBrowser'
 import IDSource from './utils/IDSource'
-import { parsePattern } from './parseCommand'
 import receiveToStringList from './receiveToStringList'
 import { ObjectTypeSpace } from './ObjectSpace'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
-import { parsePattern as pattern } from './parseCommand'
+import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
@@ -59,8 +56,8 @@ export default class Graph {
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
-        this.addListener(pattern('object-type/* **'), this.objectTypes);
-        this.addListener(pattern('expires-at/* **'), new ExpireAtListener(this));
+        this.addListener(parsePattern('object-type/* **'), this.objectTypes);
+        this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
     }
 
     savedQuery(queryStr: string): SavedQuery {

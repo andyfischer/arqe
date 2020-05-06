@@ -1,7 +1,7 @@
 
 import 'source-map-support'
 import Graph from './fs/Graph'
-import runStandardProcess from './fs/toollib/runStandardProcess'
+import runStandardProcess from './fs/toollib/runStandardProcess2'
 import path from 'path'
 import fs from 'fs-extra'
 import BuildBotAPI from './BuildBotAPI'
@@ -49,6 +49,9 @@ async function findProjectRoot(filename: string): Promise<string> {
 async function fileWasChanged(filename: string) {
 
     const packageRoot = await findProjectRoot(filename);
+    if (!packageRoot)
+        return;
+
     const packageJsonFilename = path.join(packageRoot, 'package.json');
     const hasPackageJson = await fs.exists(packageJsonFilename);
 
@@ -159,7 +162,7 @@ async function start() {
 }
 
 export async function main() {
-    runStandardProcess((_graph: Graph) => {
+    runStandardProcess('autobuildbot', (_graph: Graph) => {
         graph = _graph;
         api = new BuildBotAPI(graph);
         return start();

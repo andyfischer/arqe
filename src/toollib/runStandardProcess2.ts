@@ -7,6 +7,8 @@ import Minimist from 'minimist'
 
 export default async function runStandardProcess2(toolName: string, handler: (graph: Graph, api: CommandLineToolApi) => Promise<void>) {
 
+    require('source-map-support').install();
+
     let graph;
 
     try {
@@ -22,6 +24,10 @@ export default async function runStandardProcess2(toolName: string, handler: (gr
 
     const shellApi = new ToolShellApi(graph);
     const execId = await shellApi.createToolExecution();
+
+    process.on('unhandledRejection', (error:any) => {
+        console.error(`unhandledRejection during ${execId}: `, (error.stack || error));
+    });
 
     for (const input of await shellApi.listCliInputs(toolName)) {
         console.log('tool uses input: ' + input);

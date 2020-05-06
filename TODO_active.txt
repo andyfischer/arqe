@@ -4,8 +4,8 @@ Themes
   - Let's add some features to make it fully functional
 
 Autobuildbot
-  - Color coding
-  - Data associated with directory
+  X Color coding
+  X Data associated with directory
 
 Table schema
   - Implement
@@ -17,8 +17,17 @@ Logging
   - Opt-in log streams
     - In-memory data structure about whether to broadcast logging or not
 
-
 X Slot {
     relation: Relation
     set(rel => rel)
 }
+
+Dashboard
+ - Show all relations
+   - Replica graph
+ - Show usage
+
+Replica graph
+ - Get everything on startup
+ - Listen to all changes
+ - Update replica on changes (and trigger local listeners)
