@@ -1,10 +1,7 @@
 
-import Repl from 'repl'
 import Graph from './Graph'
 import RelationReceiver, { receiveToRelationStream } from './RelationReceiver'
 import Runnable from './Runnable'
-
-const prompt = '~ '
 
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
@@ -13,7 +10,7 @@ function trimEndline(str) {
     return str;
 }
 
-export default class ClientRepl {
+export default class GraphRepl {
     graph: Runnable
     repl: any
 
@@ -21,12 +18,12 @@ export default class ClientRepl {
         this.graph = graph;
     }
 
-    async eval(line) {
+    async eval(line, onDone) {
         let isFinished = false;
         line = trimEndline(line);
 
         if (line === '') {
-            this.displayPrompt();
+            onDone();
             return;
         }
 
@@ -42,25 +39,9 @@ export default class ClientRepl {
             },
             finish: () => {
                 isFinished = true;
-                this.displayPrompt()
+                onDone();
             }
         });
     }
-
-    displayPrompt() {
-        this.repl.displayPrompt()
-    }
-
-    start() {
-        this.repl = Repl.start({
-            prompt,
-            eval: line => this.eval(line)
-        });
-    }
 }
 
-export function startRepl(graph: Graph) {
-        const repl = new ClientRepl(graph);
-        repl.start();
-        return repl;
-}
