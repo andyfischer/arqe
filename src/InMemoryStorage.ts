@@ -32,9 +32,9 @@ function getImpliedTableName(rel: Relation) {
 export default class InMemoryStorage {
     graph: Graph
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
-    stored: { [ storageId: string]: Relation } = {};
-    nextStorageId: IDSource = new IDSource();
-    byImpliedTableName: { [tn: string]: { [storageId: string]: true } } = {}
+    slots: { [ slotId: string]: Relation } = {};
+    nextSlotId: IDSource = new IDSource();
+    byImpliedTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -58,26 +58,26 @@ export default class InMemoryStorage {
         });
     }
 
-    *findStored(search: Pattern): Iterable<{storageId:string, relation: Relation}> {
+    *findStored(search: Pattern): Iterable<{slotId:string, relation: Relation}> {
 
         const itn = getImpliedTableName(search);
         if (itn) {
             const indexedStorageIds = this.byImpliedTableName[itn] || {};
 
-            for (const storageId in indexedStorageIds) {
-                const relation = this.stored[storageId];
+            for (const slotId in indexedStorageIds) {
+                const relation = this.slots[slotId];
                 if (search.matches(relation))
-                    yield { storageId, relation }
+                    yield { slotId, relation }
             }
             
             return;
         }
 
         // Full scan
-        for (const storageId in this.stored) {
-            const relation = this.stored[storageId];
+        for (const slotId in this.slots) {
+            const relation = this.slots[slotId];
             if (search.matches(relation))
-                yield { storageId, relation }
+                yield { slotId, relation }
         }
     }
 
@@ -94,39 +94,39 @@ export default class InMemoryStorage {
             }
         }
 
-        // Check if already stored
+        // Check if already slots
         for (const existing of this.findStored(relation)) {
-            // Already stored
+            // Already slots
             output.relation(relation);
             output.finish();
             return;
         }
 
         // Store a new relation
-        const storageId = this.nextStorageId.take();
-        this.stored[storageId] = relation;
+        const slotId = this.nextSlotId.take();
+        this.slots[slotId] = relation;
         output.relation(relation);
 
         const itn = getImpliedTableName(relation);
         this.byImpliedTableName[itn] = this.byImpliedTableName[itn] || {};
-        this.byImpliedTableName[itn][storageId] = true;
+        this.byImpliedTableName[itn][slotId] = true;
         this.graph.onRelationUpdated(relation);
         output.finish();
     }
 
     *iterateSlots(pattern: Pattern): Iterable<Slot> {
-        for (const { storageId, relation } of this.findStored(pattern)) {
+        for (const { slotId, relation } of this.findStored(pattern)) {
             yield {
                 relation,
                 modify: (func: (rel: Pattern) => Pattern) => {
-                    const modified = func(this.stored[storageId]);
-                    this.stored[storageId] = modified;
+                    const modified = func(this.slots[slotId]);
+                    this.slots[slotId] = modified;
                     return modified;
                 },
                 del: () => {
-                    delete this.stored[storageId];
+                    delete this.slots[slotId];
                     const itn = getImpliedTableName(relation);
-                    delete (this.byImpliedTableName[itn] || {})[storageId];
+                    delete (this.byImpliedTableName[itn] || {})[slotId];
                 }
             }
         }
