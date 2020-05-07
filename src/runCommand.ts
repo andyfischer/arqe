@@ -9,9 +9,9 @@ import runSearch from './runSearch'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
 import runSave from './runSave'
-import runDelete from './runDelete'
 import runListen from './runListen'
 import { newRelationSearch } from './SearchOperation'
+import { newTag } from './PatternTag'
 
 const knownCommands = {
     'join': true,
@@ -43,7 +43,9 @@ function runStep(step: CommandStep) {
         }
 
         case 'delete': {
-            runDelete(step.graph, step.pattern, step.output);
+            let relation = step.pattern;
+            relation = relation.addTagObj(newTag('deleted').setValueExpr(['set']));
+            runSave({graph: step.graph, relation, output: step.output});
             return;
         }
 

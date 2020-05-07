@@ -80,6 +80,15 @@ export default class PatternTag {
         out.freeze();
         return out;
     }
+
+    setValueExpr(expr: string[]): PatternTag {
+        const out = this.copy();
+        out.valueExpr = expr;
+        delete out.tagValue;
+        // TODO: don't set starValue for expr
+        out.starValue = true;
+        return out;
+    }
 }
 
 export type FixedTag = PatternTag;

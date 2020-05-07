@@ -3,7 +3,7 @@ import Command from './Command'
 import Graph from './Graph'
 import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
-import PatternTag, { FixedTag } from './PatternTag'
+import PatternTag, { newTag, FixedTag } from './PatternTag'
 
 export default class Pattern {
     
@@ -65,7 +65,8 @@ export default class Pattern {
     }
 
     remapTags(func: (tag:PatternTag) => PatternTag) {
-        const tags = this.tags.map(func);
+        const tags = this.tags.map(func)
+            .filter(tag => tag);
         return this.copyWithNewTags(tags);
     }
 
@@ -301,6 +302,10 @@ export default class Pattern {
 
     addTagObj(tag: PatternTag) {
         return this.copyWithNewTags(this.tags.concat([tag]));
+    }
+
+    addNewTag(tagType: string, tagValue?: string) {
+        return this.addTagObj(newTag(tagType, tagValue));
     }
 
     addTags(strs: string[]) {

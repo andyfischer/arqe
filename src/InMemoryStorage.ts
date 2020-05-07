@@ -16,7 +16,6 @@ type RelationModifier = (rel: Relation) => Relation
 interface Slot {
     relation: Pattern
     modify: (f: (rel: Pattern) => Pattern) => Pattern
-    del: () => void
 }
 
 function getImpliedTableName(rel: Relation) {
@@ -24,7 +23,10 @@ function getImpliedTableName(rel: Relation) {
         if (tag.star || tag.doubleStar)
             return null;
     
-    const els = rel.tags.map(r => r.tagType);
+    const els = rel.tags
+        .filter(r => r.tagType !== 'deleted')
+        .map(r => r.tagType);
+
     els.sort();
     return els.join(' ');
 }
@@ -120,13 +122,16 @@ export default class InMemoryStorage {
                 relation,
                 modify: (func: (rel: Pattern) => Pattern) => {
                     const modified = func(this.slots[slotId]);
-                    this.slots[slotId] = modified;
+
+                    if (modified.hasType('deleted')) {
+                        delete this.slots[slotId];
+                        const itn = getImpliedTableName(relation);
+                        delete (this.byImpliedTableName[itn] || {})[slotId];
+                    } else {
+                        this.slots[slotId] = modified;
+                    }
+
                     return modified;
-                },
-                del: () => {
-                    delete this.slots[slotId];
-                    const itn = getImpliedTableName(relation);
-                    delete (this.byImpliedTableName[itn] || {})[slotId];
                 }
             }
         }

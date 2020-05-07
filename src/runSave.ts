@@ -2,14 +2,14 @@
 import Graph from './Graph'
 import Relation from './Relation'
 import RelationReceiver from './RelationReceiver'
-import PatternTag from './PatternTag'
+import PatternTag, { newTag } from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import SaveOperation from './SaveOperation'
 
 const exprFuncEffects = {
     increment: {
         modifiesExisting: true,
-        initializeIfMissing: false
+        canInitialize: false
     },
     set: {
         modifiesExisting: true,
@@ -44,6 +44,9 @@ function modifiesExistingRelations(rel: Relation) {
 
 function modificationToFilter(rel: Relation) {
     return rel.remapTags((tag: PatternTag) => {
+        if (tag.tagType === 'deleted')
+            return null;
+
         if (tagModifiesExistingRelations(tag))
             return tag.setStarValue()
         else
@@ -52,7 +55,8 @@ function modificationToFilter(rel: Relation) {
 }
 
 function applyModificationRelation(changeOperation: Relation, storedRel: Relation): Relation {
-    return storedRel.remapTags((tag: PatternTag) => {
+
+    storedRel = storedRel.remapTags((tag: PatternTag) => {
         const modificationTag = changeOperation.getOneTagForType(tag.tagType);
 
         if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
@@ -61,6 +65,15 @@ function applyModificationRelation(changeOperation: Relation, storedRel: Relatio
 
         return tag;
     });
+
+    if (changeOperation.hasType('deleted')) {
+        const deletedExpr = changeOperation.getTagObject('deleted');
+        if (deletedExpr && deletedExpr.valueExpr && deletedExpr.valueExpr[0] === 'set') {
+            storedRel = storedRel.addNewTag('deleted');
+        }
+    }
+
+    return storedRel;
 }
 
 function applyModificationExpr(expr: string[], value: string) {
@@ -109,6 +122,7 @@ function getEffects(relation: Relation) {
 }
 
 export default function runSave(save: SaveOperation) {
+
     const { graph, relation, output } = save;
 
     for (const hook of graph.saveSearchHooks) {
@@ -135,7 +149,11 @@ export default function runSave(save: SaveOperation) {
         );
 
         output.relation(modified);
-        graph.onRelationUpdated(modified);
+
+        if (modified.hasType('deleted'))
+            graph.onRelationDeleted(modified.removeType('deleted'));
+        else
+            graph.onRelationUpdated(modified);
     }
 
     if (!anyFound && effects.initializeIfMissing) {
