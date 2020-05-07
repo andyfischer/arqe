@@ -32,8 +32,13 @@ export default class GraphRepl {
                 if (isFinished)
                     throw new Error('got relation after finish()');
 
-                if (rel.hasType('command-meta'))
+                if (rel.hasType('command-meta')) {
+                    if (rel.hasType('error')) {
+                        console.log('error: ' + rel.getTagValue('message'));
+                    }
+
                     return;
+                }
 
                 console.log(' > ' + rel.stringifyRelation());
             },
