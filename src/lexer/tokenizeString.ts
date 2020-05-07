@@ -85,11 +85,13 @@ function consumeNext(input: Context) {
     if (c === c_hash)
         return input.consumeWhile(t_line_comment, c => c !== c_newline);
 
+    /*
     if (c === c_single_quote)
         return consumeQuotedString(input, c_single_quote);
     
     if (c === c_double_quote)
         return consumeQuotedString(input, c_double_quote);
+        */
 
     if (c === c_space)
         return input.consumeWhile(t_space, c => c === c_space);

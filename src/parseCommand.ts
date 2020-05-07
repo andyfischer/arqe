@@ -275,6 +275,7 @@ export function parsePattern(str: string) {
 }
 
 export default function parseCommand(str: string): Command {
+
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
 
@@ -295,7 +296,6 @@ export default function parseCommand(str: string): Command {
         console.error('Error trying to parse: ' + str);
         throw e;
     }
-
 }
 
 export function parseCommandChain(str: string): CommandChain {

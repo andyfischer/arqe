@@ -1,5 +1,5 @@
 
-import 'source-map-support'
+import 'source-map-support/register'
 
 import Graph from './Graph'
 import GraphRepl from './GraphRepl'

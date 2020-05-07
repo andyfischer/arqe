@@ -127,7 +127,7 @@ it('parses unbound variables 2', () => {
     expect(parsed.pattern.tags[0].starValue).toEqual(true);
 });
 
-it('parses quoted tag values', () => {
+xit('parses quoted tag values', () => {
     const parsed = parseCommand('test tagtype/"string value"');
     expect(parsed.commandName).toEqual('test')
     expect(parsed.pattern.tags[0].tagType).toEqual('tagtype');
@@ -168,7 +168,8 @@ it('stringifies tag identifiers', () => {
 });
 
 it('handles paren sections', () => {
-    testRestringify('get tag(string value)')
+    testRestringify('get tag(string value)');
+    testRestringify(`get message(can't use dir(*))`);
 });
 
 it('stringifies expressions', () => {
