@@ -1,6 +1,5 @@
 
 import Graph from './Graph'
-import SearchOperation from './SearchOperation'
 import CommandStep from './CommandStep'
 import Relation from './Relation'
 import Pattern, { patternFromMap } from './Pattern'
@@ -11,6 +10,7 @@ import PatternTag from './PatternTag'
 import ObjectSpace from './ObjectSpace'
 import SaveSearchHook from './SaveSearchHook'
 import SaveOperation from './SaveOperation'
+import SearchOperation from './SearchOperation'
 
 function findObjectType(graph: Graph, pattern: Pattern) {
     for (const tag of pattern.tags) {
@@ -124,8 +124,6 @@ export function hookObjectSpaceSearch(search: SearchOperation): boolean {
     search.relation(outRelation);
     search.finish();
 
-    //emitCommandError(search, `don't know how to get relation from '${columnName}' object type`);
-    //search.finish();
     return true;
 }
 

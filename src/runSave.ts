@@ -28,7 +28,6 @@ function expressionUpdatesExistingValue(expr: string[]) {
     return effects && effects.modifiesExisting;
 }
 
-
 function tagModifiesExistingRelations(tag: PatternTag) {
     if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
         return true;

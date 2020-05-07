@@ -29,6 +29,7 @@ import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
 import { getObjectSpaceHooks } from './hookObjectSpace'
+import setupGitHooks from './hooks/Git'
 
 export default class Graph {
 
@@ -63,6 +64,7 @@ export default class Graph {
         this.addListener(parsePattern('object-type/* **'), this.objectTypes);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
         this.saveSearchHooks.push(getObjectSpaceHooks());
+        this.saveSearchHooks.push(setupGitHooks(this));
     }
 
     savedQuery(queryStr: string): SavedQuery {
