@@ -3,14 +3,14 @@ import Graph from './Graph'
 import Relation from './Relation'
 import StorageProvider from './StorageProvider'
 import Pattern from './Pattern'
-import RelationSearch from './RelationSearch'
+import SearchOperation from './SearchOperation'
 import UpdateContext from './UpdateContext'
 import runSearch from './runSearch'
 import { parsePattern } from './parseCommand'
 import RelationReceiver from './RelationReceiver'
 import Command from './Command'
 
-type SearchCallback = (cxt: UpdateContext, search: RelationSearch) => void
+type SearchCallback = (cxt: UpdateContext, search: SearchOperation) => void
 
 export default class DerivedValueMount implements StorageProvider {
 
@@ -22,13 +22,13 @@ export default class DerivedValueMount implements StorageProvider {
         this.callback = callback;
     }
 
-    runSearch(search: RelationSearch) {
+    runSearch(search: SearchOperation) {
         
         const cxt = new UpdateContext(this.graph);
         this.callback(cxt, search)
 
         /*
-        const subSearch: RelationSearch = {
+        const subSearch: SearchOperation = {
             pattern: search.pattern.removeType(this.mountTypename),
             subSearchDepth: search.subSearchDepth + 1,
             start() {},

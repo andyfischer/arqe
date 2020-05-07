@@ -5,7 +5,7 @@ import Relation from './Relation'
 import Pattern from './Pattern'
 import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList } from './receivers'
-import RelationSearch from './RelationSearch'
+import SearchOperation from './SearchOperation'
 import RelationPipe from './RelationPipe'
 
 export default class CommandStep {
@@ -25,7 +25,7 @@ export default class CommandStep {
         this.pattern = command.toPattern();
     }
 
-    toRelationSearch(): RelationSearch {
+    toRelationSearch(): SearchOperation {
 
         if (!this.output)
             throw new Error('missing this.output');
@@ -33,6 +33,7 @@ export default class CommandStep {
         const output = this.output;
 
         return {
+            graph: this.graph,
             pattern: this.pattern,
             subSearchDepth: 0,
             relation(r) { output.relation(r) },

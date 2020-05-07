@@ -11,7 +11,7 @@ import { runJoinStep } from './runJoin'
 import runSave from './runSave'
 import runDelete from './runDelete'
 import runListen from './runListen'
-import { newRelationSearch } from './RelationSearch'
+import { newRelationSearch } from './SearchOperation'
 
 const knownCommands = {
     'join': true,
@@ -33,7 +33,7 @@ function runStep(step: CommandStep) {
 
         case 'get': {
             emitSearchPatternMeta(step.command.pattern, step.output);
-            runSearch(step.graph, newRelationSearch(step.command.pattern, step.output));
+            runSearch(newRelationSearch(step.graph, step.command.pattern, step.output));
             return;
         }
         

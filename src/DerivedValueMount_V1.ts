@@ -3,7 +3,7 @@ import Graph from './Graph'
 import Relation from './Relation'
 import StorageProvider from './StorageProvider'
 import Pattern from './Pattern'
-import RelationSearch from './RelationSearch'
+import SearchOperation from './SearchOperation'
 import UpdateContext from './UpdateContext'
 import runSearch from './runSearch'
 import { parsePattern } from './parseCommand'
@@ -24,9 +24,10 @@ export default class DerivedValueMount implements StorageProvider {
         this.callback = callback;
     }
 
-    runSearch(search: RelationSearch) {
+    runSearch(search: SearchOperation) {
         
-        const subSearch: RelationSearch = {
+        const subSearch: SearchOperation = {
+            graph: search.graph,
             pattern: search.pattern.removeType(this.mountTypename),
             subSearchDepth: search.subSearchDepth + 1,
             relation: (rel: Relation) => {
@@ -45,7 +46,7 @@ export default class DerivedValueMount implements StorageProvider {
             },
         }
         
-        runSearch(this.graph, subSearch);
+        runSearch(subSearch);
     }
 
     async runSave(rel: Relation, output: RelationReceiver) {

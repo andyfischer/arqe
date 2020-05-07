@@ -71,7 +71,7 @@ export function runJoinStep(step: CommandStep) {
         check();
     });
 
-    runSearch(step.graph, { pattern: searchPattern, subSearchDepth: 0, ...search } );
+    runSearch({ graph: step.graph, pattern: searchPattern, subSearchDepth: 0, ...search } );
 
     step.input.waitForAll((rels) => {
 

@@ -4,7 +4,7 @@ import Graph from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'
 import StorageProvider from './StorageProvider'
-import RelationSearch from './RelationSearch'
+import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
 import { hookObjectSpaceSearch } from './hookObjectSpace'
@@ -14,15 +14,15 @@ interface Step {
     pattern: Pattern
 }
 
-export default function runSearch(graph: Graph, search: RelationSearch) {
-    if (!graph)
-        throw new Error('missing: graph');
+export default function runSearch(search: SearchOperation) {
+    if (!search.graph)
+        throw new Error('missing: search.graph');
 
     if (search.subSearchDepth > 100) {
         throw new Error('subSearchDepth is over 100, possible infinite loop');
     }
 
-    get_inherit(graph, search);
+    get_inherit(search);
 }
 
 function inheritTagCompare(graph: Graph, a: PatternTag, b: PatternTag) {
@@ -33,7 +33,8 @@ function inheritTagCompare(graph: Graph, a: PatternTag, b: PatternTag) {
     return (a.tagValue || '').localeCompare(b.tagValue);
 }
 
-function get_inherit(graph: Graph, search: RelationSearch) {
+function get_inherit(search: SearchOperation) {
+    const graph = search.graph;
     const inheritTags = graph.inheritTags && graph.inheritTags.get();
 
     // Look for any inherit tags used in this search.
@@ -57,14 +58,16 @@ function get_inherit(graph: Graph, search: RelationSearch) {
         // Found an inherit tag.
         
         // Search for exact matches that include the inherit tag.
-        return get_after_inherit(graph, {
+        return get_after_inherit({
+            graph,
             pattern: search.pattern,
             subSearchDepth: search.subSearchDepth + 1,
             relation(rel) { search.relation(rel) },
             finish() {
 
                 // Try dropping this tag and then restarting.
-                get_inherit(graph, {
+                get_inherit({
+                    graph,
                     pattern: search.pattern.dropTagIndex(foundInheritTagIndex),
                     subSearchDepth: search.subSearchDepth + 1,
                     relation(rel) { search.relation(rel) },
@@ -74,10 +77,12 @@ function get_inherit(graph: Graph, search: RelationSearch) {
         });
     }
 
-    get_after_inherit(graph, search);
+    get_after_inherit(search);
 }
 
-function get_after_inherit(graph: Graph, search: RelationSearch) {
+function get_after_inherit(search: SearchOperation) {
+
+    const graph = search.graph;
     
     // Check mounts
     for (const mount of graph.iterateMounts()) {
@@ -87,7 +92,7 @@ function get_after_inherit(graph: Graph, search: RelationSearch) {
         }
     }
 
-    if (hookObjectSpaceSearch(graph, search))
+    if (hookObjectSpaceSearch(search))
         return;
 
     // Fall back to in-memory

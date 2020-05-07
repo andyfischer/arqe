@@ -16,7 +16,6 @@ export async function createNewDatabase() {
     const db = new SQLite.Database(Filename);
 
     await new Promise(resolve => {
-        db.run(`create table slots(
-                 
+        db.run(`create table slots(...`);
     });
 }

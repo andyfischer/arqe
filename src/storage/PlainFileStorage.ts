@@ -4,7 +4,7 @@ import StorageProvider from '../StorageProvider'
 import Pattern, { commandTagsToRelation } from '../Pattern'
 import Relation from '../Relation'
 import { newTag, FixedTag } from '../PatternTag'
-import RelationSearch from '../RelationSearch'
+import SearchOperation from '../SearchOperation'
 import { normalizeExactTag } from '../stringifyQuery'
 import { readFile, readDir, writeFile } from '../context/fs'
 import RelationReceiver from '../RelationReceiver'
@@ -13,10 +13,10 @@ export default class PlainFileStorage implements StorageProvider {
     filenameType: 'filename'
     directory: string
 
-    async runSearch(search: RelationSearch) {
+    async runSearch(search: SearchOperation) {
         const { pattern } = search;
         const tag = pattern.getOneTagForType(this.filenameType);
-
+ 
         if (tag.starValue) {
             // Directory listing
             const files = await readDir(this.directory);

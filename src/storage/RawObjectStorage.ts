@@ -1,7 +1,7 @@
 
 import Relation from '../Relation'
 import Pattern, { commandTagsToRelation } from '../Pattern'
-import RelationSearch from '../RelationSearch'
+import SearchOperation from '../SearchOperation'
 import Command from '../Command'
 import { commandTagsToString } from '../stringifyQuery'
 import StorageProvider from '../StorageProvider'
@@ -45,7 +45,7 @@ export default class RawObjectStorage implements StorageProvider {
         }
     }
 
-    runSearch(search: RelationSearch) {
+    runSearch(search: SearchOperation) {
         for (const rel of this.findAllMatches(search.pattern)) {
             search.relation(rel);
         }

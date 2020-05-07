@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import RelationSearch from './RelationSearch'
+import SearchOperation from './SearchOperation'
 import CommandStep from './CommandStep'
 import Relation from './Relation'
 import Pattern, { patternFromMap } from './Pattern'
@@ -20,7 +20,7 @@ function findObjectType(graph: Graph, pattern: Pattern) {
     return null;
 }
 
-function runObjectStarSearch(graph: Graph, search: RelationSearch, columnTag: PatternTag, objectSpace: ObjectSpace) {
+function runObjectStarSearch(graph: Graph, search: SearchOperation, columnTag: PatternTag, objectSpace: ObjectSpace) {
 
     const filters = [];
     const attrsToInclude = [];
@@ -71,7 +71,9 @@ function runObjectStarSearch(graph: Graph, search: RelationSearch, columnTag: Pa
     search.finish();
 }
 
-export function hookObjectSpaceSearch(graph: Graph, search: RelationSearch): boolean {
+export function hookObjectSpaceSearch(search: SearchOperation): boolean {
+
+    const graph = search.graph;
 
     const columnName = findObjectType(graph, search.pattern);
     if (!columnName)

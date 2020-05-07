@@ -1,9 +1,11 @@
 
+import Graph from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'
 import RelationReceiver from './RelationReceiver'
 
-export default interface RelationSearch extends RelationReceiver {
+export default interface SearchOperation extends RelationReceiver {
+    graph: Graph
     pattern: Pattern;
     subSearchDepth: number
 
@@ -11,8 +13,9 @@ export default interface RelationSearch extends RelationReceiver {
     finish: () => void
 }
 
-export function newRelationSearch(pattern: Pattern, output: RelationReceiver): RelationSearch {
+export function newRelationSearch(graph: Graph, pattern: Pattern, output: RelationReceiver): SearchOperation {
     return {
+        graph,
         pattern,
         subSearchDepth: 0,
         relation(rel) { output.relation(rel) },

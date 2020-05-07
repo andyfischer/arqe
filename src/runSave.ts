@@ -4,7 +4,7 @@ import Relation from './Relation'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
-import { hookObjectSpaceSearch, hookObjectSpaceSave } from './hookObjectSpace'
+import { hookObjectSpaceSave } from './hookObjectSpace'
 
 const exprFuncEffects = {
     increment: {

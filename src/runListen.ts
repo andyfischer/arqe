@@ -10,7 +10,7 @@ export default function runListen(graph: Graph, step: CommandStep) {
     if (step.flags.get) {
         const search = step.toRelationSearch();
         search.finish = () => null;
-        runSearch(graph, search);
+        runSearch(search);
     }
 
     graph.addListener(step.pattern, {
