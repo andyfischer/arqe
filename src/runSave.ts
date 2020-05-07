@@ -4,6 +4,7 @@ import Relation from './Relation'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
+import SaveOperation from './SaveOperation'
 
 const exprFuncEffects = {
     increment: {
@@ -108,9 +109,11 @@ function getEffects(relation: Relation) {
     }
 }
 
-export default function runSave(graph: Graph, relation: Relation, output: RelationReceiver) {
+export default function runSave(save: SaveOperation) {
+    const { graph, relation, output } = save;
+
     for (const hook of graph.saveSearchHooks) {
-        if (hook.hookSave(graph, relation, output))
+        if (hook.hookSave(save))
             return;
     }
 

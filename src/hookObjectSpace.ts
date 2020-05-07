@@ -10,6 +10,7 @@ import { emitCommandError } from './CommandMeta'
 import PatternTag from './PatternTag'
 import ObjectSpace from './ObjectSpace'
 import SaveSearchHook from './SaveSearchHook'
+import SaveOperation from './SaveOperation'
 
 function findObjectType(graph: Graph, pattern: Pattern) {
     for (const tag of pattern.tags) {
@@ -128,21 +129,23 @@ export function hookObjectSpaceSearch(search: SearchOperation): boolean {
     return true;
 }
 
-export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: RelationReceiver) {
+export function hookObjectSpaceSave(save: SaveOperation) {
+    const { graph, output } = save;
+    let relation = save.relation;
 
-    const columnName = findObjectType(graph, rel);
+    const columnName = findObjectType(graph, relation);
     if (!columnName)
         return false;
 
     const objectSpace = graph.objectTypes.column(columnName)
 
     // Object definition
-    if (rel.tags.length === 1) {
-        let tag = rel.tags[0];
+    if (relation.tags.length === 1) {
+        let tag = relation.tags[0];
 
         if (tag.valueExpr && tag.valueExpr.length === 1 && tag.valueExpr[0] === 'unique') {
-            rel = rel.updateTagAtIndex(0, tag => tag.setValue(objectSpace.nextId()));
-            tag = rel.tags[0];
+            relation = relation.updateTagAtIndex(0, tag => tag.setValue(objectSpace.nextId()));
+            tag = relation.tags[0];
         }
 
         if (tag.valueExpr) {
@@ -152,16 +155,16 @@ export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: Relatio
         }
 
         objectSpace.createObject(tag.tagValue);
-        output.relation(rel);
+        output.relation(relation);
         output.finish();
         return true;
     }
 
-    const columnTag = rel.findTagWithType(columnName);
+    const columnTag = relation.findTagWithType(columnName);
     const object = objectSpace.createObject(columnTag.tagValue);
 
     // Attribute assignment
-    for (const tag of rel.tags) {
+    for (const tag of relation.tags) {
         if (tag.tagType === columnName)
             continue;
 
@@ -175,7 +178,7 @@ export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: Relatio
         object.attrs[tag.tagType] = tag.tagValue;
     }
 
-    output.relation(rel);
+    output.relation(relation);
     output.finish();
     return true;
 }
