@@ -27,6 +27,8 @@ import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
+import SaveSearchHook from './SaveSearchHook'
+import { getObjectSpaceHooks } from './hookObjectSpace'
 
 export default class Graph {
 
@@ -47,6 +49,8 @@ export default class Graph {
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
 
+    saveSearchHooks: SaveSearchHook[] = []
+
     constructor() {
         if (runningInBrowser())
             this.filesystemMounts = this.eagerValue(() => []);
@@ -58,6 +62,7 @@ export default class Graph {
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
         this.addListener(parsePattern('object-type/* **'), this.objectTypes);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
+        this.saveSearchHooks.push(getObjectSpaceHooks());
     }
 
     savedQuery(queryStr: string): SavedQuery {

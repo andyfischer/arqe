@@ -7,7 +7,6 @@ import StorageProvider from './StorageProvider'
 import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
-import { hookObjectSpaceSearch } from './hookObjectSpace'
 
 interface Step {
     storage: StorageProvider
@@ -92,8 +91,10 @@ function get_after_inherit(search: SearchOperation) {
         }
     }
 
-    if (hookObjectSpaceSearch(search))
-        return;
+    for (const hook of graph.saveSearchHooks) {
+        if (hook.hookSearch(search))
+            return;
+    }
 
     // Fall back to in-memory
     for (const slot of graph.inMemory.iterateSlots(search.pattern)) {

@@ -9,6 +9,7 @@ import { stringifyExpr } from './parseExpr'
 import { emitCommandError } from './CommandMeta'
 import PatternTag from './PatternTag'
 import ObjectSpace from './ObjectSpace'
+import SaveSearchHook from './SaveSearchHook'
 
 function findObjectType(graph: Graph, pattern: Pattern) {
     for (const tag of pattern.tags) {
@@ -178,3 +179,11 @@ export function hookObjectSpaceSave(graph: Graph, rel: Relation, output: Relatio
     output.finish();
     return true;
 }
+
+export function getObjectSpaceHooks(): SaveSearchHook {
+    return {
+        hookSearch: hookObjectSpaceSearch,
+        hookSave: hookObjectSpaceSave
+    };
+}
+
