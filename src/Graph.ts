@@ -32,6 +32,7 @@ import { getObjectSpaceHooks } from './hookObjectSpace'
 import setupGitHooks from './hooks/Git'
 import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
+import FileChangedLog from './hooks/FileChangedLog'
 
 export default class Graph {
 
@@ -67,6 +68,7 @@ export default class Graph {
         this.addListener(parsePattern('object-type/* **'), this.objectTypes);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
         this.saveSearchHooks.push(getObjectSpaceHooks());
+        this.saveSearchHooks.push(new FileChangedLog(this));
         this.storageSlotHooks.push(setupGitHooks(this));
     }
 

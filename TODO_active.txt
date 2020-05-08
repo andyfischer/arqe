@@ -37,3 +37,7 @@ SQL storage
  - SQLite storage interface
  - Be able to load the source.graph file into the database
  - Add tests to make sure we can extract/dump the entire graph
+
+Fix 'notify-file-changed' to be faster
+ X Support HTTP commands
+ - Support 'append' / log / message bus

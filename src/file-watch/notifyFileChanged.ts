@@ -4,9 +4,9 @@ import WatchFileApi from './WatchFileApi'
 import runStandardProcess from '../toollib/runStandardProcess'
 import getProcessClient from '../toollib/getProcessClient'
 import Graph from '../Graph'
+import GraphLike from '../GraphLike'
 
-export async function notifyFileChanged(filename: string) {
-    const graph = await getProcessClient();
+export async function notifyFileChanged(graph: GraphLike, filename: string) {
 
     filename = Path.resolve(filename);
     const api = new WatchFileApi(graph);
@@ -32,7 +32,7 @@ export function main() {
             return;
         }
 
-        await notifyFileChanged(filename);
+        await notifyFileChanged(graph, filename);
     });
 }
 
