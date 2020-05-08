@@ -1,16 +1,16 @@
 
-import Graph from './Graph'
-import CommandStep from './CommandStep'
-import Relation from './Relation'
-import Pattern, { patternFromMap } from './Pattern'
-import RelationReceiver from './RelationReceiver'
-import { stringifyExpr } from './parseExpr'
-import { emitCommandError } from './CommandMeta'
-import PatternTag from './PatternTag'
+import Graph from '../Graph'
+import CommandStep from '../CommandStep'
+import Relation from '../Relation'
+import Pattern, { patternFromMap } from '../Pattern'
+import RelationReceiver from '../RelationReceiver'
+import { stringifyExpr } from '../parseExpr'
+import { emitCommandError } from '../CommandMeta'
+import PatternTag from '../PatternTag'
 import ObjectSpace from './ObjectSpace'
-import SaveSearchHook from './SaveSearchHook'
-import SaveOperation from './SaveOperation'
-import SearchOperation from './SearchOperation'
+import SaveSearchHook from '../SaveSearchHook'
+import SaveOperation from '../SaveOperation'
+import SearchOperation from '../SearchOperation'
 
 function findObjectType(graph: Graph, pattern: Pattern) {
     for (const tag of pattern.tags) {
