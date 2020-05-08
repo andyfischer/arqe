@@ -30,7 +30,8 @@ import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
 import { getObjectSpaceHooks } from './hookObjectSpace'
 import setupGitHooks from './hooks/Git'
-import StorageSlotHook, { Slot } from './StorageSlotHook'
+import StorageSlotHook from './StorageSlotHook'
+import Slot from './Slot'
 
 export default class Graph {
 
@@ -253,25 +254,21 @@ export default class Graph {
     }
 
     saveNewRelation(relation: Relation, output: RelationReceiver) {
-        /*
         for (const hook of this.storageSlotHooks) {
             if (hook.hookPattern(relation)) {
                 hook.saveNewRelation(relation, output);
                 return
             }
         }
-        */
 
         this.inMemory.saveNewRelation(relation, output);
     }
 
     getSlotIterator(pattern: Pattern): Iterable<Slot> {
-        /*
         for (const hook of this.storageSlotHooks) {
             if (hook.hookPattern(pattern))
                 return hook.iterateSlots(pattern);
         }
-        */
 
         return this.inMemory.iterateSlots(pattern);
     }

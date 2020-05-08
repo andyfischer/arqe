@@ -1,13 +1,9 @@
 
 import Graph from './Graph'
-import Relation from './Relation'
 import Pattern from './Pattern'
+import Relation from './Relation'
 import RelationReceiver from './RelationReceiver'
-
-export interface Slot {
-    relation: Pattern
-    modify: (f: (rel: Pattern) => Pattern) => Pattern
-}
+import Slot from './Slot'
 
 export default interface StorageSlotHook {
     hookPattern: (pattern: Pattern) => boolean

@@ -10,7 +10,8 @@ import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
-import StorageSlotHook, { Slot } from './StorageSlotHook'
+import StorageSlotHook from './StorageSlotHook'
+import Slot from './Slot'
 
 type RelationModifier = (rel: Relation) => Relation
 

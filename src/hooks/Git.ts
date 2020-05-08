@@ -4,7 +4,8 @@ import { emitCommandError } from '../CommandMeta'
 import Relation from '../Relation'
 import RelationReceiver from '../RelationReceiver'
 import Pattern from '../Pattern'
-import StorageSlotHook, { Slot }  from '../StorageSlotHook'
+import StorageSlotHook  from '../StorageSlotHook'
+import Slot from '../Slot'
 
 import ChildProcess from 'child_process'
 
@@ -61,6 +62,7 @@ class GitHooks implements StorageSlotHook {
     }
 
     *iterateSlots(pattern: Pattern): Iterable<Slot> {
+        // todo: refactor into SlotReceiver
     }
 
     /*
