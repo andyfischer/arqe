@@ -170,6 +170,7 @@ it('stringifies tag identifiers', () => {
 it('handles paren sections', () => {
     testRestringify('get tag(string value)');
     testRestringify(`get message(can't use dir(*))`);
+    testRestringify(`git branch(* branch_name)`);
 });
 
 it('stringifies expressions', () => {

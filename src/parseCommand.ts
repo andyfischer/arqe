@@ -38,11 +38,11 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
 
     // Tag value
 
-    if (it.tryConsume(t_star)) {
+    if (!parenSyntax && it.tryConsume(t_star)) {
         starValue = true;
-    } else if (it.tryConsume(t_question)) {
+    } else if (!parenSyntax && it.tryConsume(t_question)) {
         questionValue = true;
-    } else if (it.nextIs(t_dollar) && it.nextIs(t_ident, 1)) {
+    } else if (!parenSyntax && it.nextIs(t_dollar) && it.nextIs(t_ident, 1)) {
         it.consume();
         identifier = it.consumeNextUnquotedText();
         starValue = true;
@@ -252,7 +252,12 @@ export function parseRelation(str: string): Relation {
         flags: {}
     }
 
-    parseArgs(it, query);
+    try {
+        parseArgs(it, query);
+    } catch(e) {
+        console.error(e);
+        throw new Error('Error trying to parse relation: ' + str);
+    }
 
     if (Object.keys(query.flags).length !== 0) {
         throw new Error("didn't expect any flags in parseRelation(): " + str)

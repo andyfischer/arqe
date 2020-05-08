@@ -133,14 +133,14 @@ export default function runSave(save: SaveOperation) {
     const effects = getEffects(relation);
 
     if (!effects.modifiesExisting) {
-        graph.inMemory.saveNewRelation(relation, output);
+        graph.saveNewRelation(relation, output);
         return;
     }
 
     const filter = modificationToFilter(relation);
     let anyFound = false;
 
-    for (const slot of graph.inMemory.iterateSlots(filter)) {
+    for (const slot of graph.getSlotIterator(filter)) {
 
         anyFound = true;
 
@@ -157,7 +157,7 @@ export default function runSave(save: SaveOperation) {
     }
 
     if (!anyFound && effects.initializeIfMissing) {
-        graph.inMemory.saveNewRelation(toInitialization(relation), output);
+        graph.saveNewRelation(toInitialization(relation), output);
         return;
     }
 

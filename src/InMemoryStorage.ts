@@ -10,13 +10,10 @@ import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
+import StorageSlotHook, { Slot } from './StorageSlotHook'
 
 type RelationModifier = (rel: Relation) => Relation
 
-interface Slot {
-    relation: Pattern
-    modify: (f: (rel: Pattern) => Pattern) => Pattern
-}
 
 function getImpliedTableName(rel: Relation) {
     for (const tag of rel.tags)
@@ -31,7 +28,7 @@ function getImpliedTableName(rel: Relation) {
     return els.join(' ');
 }
 
-export default class InMemoryStorage {
+export default class InMemoryStorage implements StorageSlotHook {
     graph: Graph
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
     slots: { [ slotId: string]: Relation } = {};
@@ -81,6 +78,10 @@ export default class InMemoryStorage {
             if (search.matches(relation))
                 yield { slotId, relation }
         }
+    }
+
+    hookPattern(pattern: Pattern) {
+        return true;
     }
 
     saveNewRelation(relation: Relation, output: RelationReceiver) {

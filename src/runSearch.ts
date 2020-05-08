@@ -96,8 +96,7 @@ function get_after_inherit(search: SearchOperation) {
             return;
     }
 
-    // Fall back to in-memory
-    for (const slot of graph.inMemory.iterateSlots(search.pattern)) {
+    for (const slot of graph.getSlotIterator(search.pattern)) {
         search.relation(slot.relation);
     }
 

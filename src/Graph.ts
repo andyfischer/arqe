@@ -30,6 +30,7 @@ import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
 import { getObjectSpaceHooks } from './hookObjectSpace'
 import setupGitHooks from './hooks/Git'
+import StorageSlotHook, { Slot } from './StorageSlotHook'
 
 export default class Graph {
 
@@ -51,6 +52,7 @@ export default class Graph {
     graphListenerIds = new IDSource()
 
     saveSearchHooks: SaveSearchHook[] = []
+    storageSlotHooks: StorageSlotHook[] = []
 
     constructor() {
         if (runningInBrowser())
@@ -64,7 +66,7 @@ export default class Graph {
         this.addListener(parsePattern('object-type/* **'), this.objectTypes);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
         this.saveSearchHooks.push(getObjectSpaceHooks());
-        this.saveSearchHooks.push(setupGitHooks(this));
+        this.storageSlotHooks.push(setupGitHooks(this));
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -248,6 +250,30 @@ export default class Graph {
         const graph = new Graph();
         graph.loadDumpFile(filename);
         return graph;
+    }
+
+    saveNewRelation(relation: Relation, output: RelationReceiver) {
+        /*
+        for (const hook of this.storageSlotHooks) {
+            if (hook.hookPattern(relation)) {
+                hook.saveNewRelation(relation, output);
+                return
+            }
+        }
+        */
+
+        this.inMemory.saveNewRelation(relation, output);
+    }
+
+    getSlotIterator(pattern: Pattern): Iterable<Slot> {
+        /*
+        for (const hook of this.storageSlotHooks) {
+            if (hook.hookPattern(pattern))
+                return hook.iterateSlots(pattern);
+        }
+        */
+
+        return this.inMemory.iterateSlots(pattern);
     }
 
     close() {
