@@ -144,6 +144,7 @@ export default function runSave(save: SaveOperation) {
     const storageHook = graph.getStorageHook(filter);
 
     storageHook.iterateSlots(filter, {
+        relationOutput: output,
         slot(slot: Slot) {
             anyFound = true;
 

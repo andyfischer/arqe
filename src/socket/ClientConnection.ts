@@ -170,6 +170,7 @@ export default class ClientConnection implements GraphLike {
             output = fallbackReceiver(commandStr);
 
         if (this.ws.readyState === WebSocket.CONNECTING) {
+            console.log('command is pending: ', commandStr);
             this.pendingForConnection.push({ query: commandStr, output });
             return;
         }

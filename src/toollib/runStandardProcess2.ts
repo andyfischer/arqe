@@ -59,5 +59,11 @@ export default async function runStandardProcess2(toolName: string, handler: (gr
         process.exitCode = -1;
     }
 
+    if (await shellApi.getExitStyle(toolName) === 'runs-until-killed')
+        return;
+
+    console.log('exit style = ', await shellApi.getExitStyle(toolName))
+
+    console.log('runStandardProcess2: closing connection');
     graph.close();
 }

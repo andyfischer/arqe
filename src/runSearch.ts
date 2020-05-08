@@ -100,6 +100,7 @@ function get_after_inherit(search: SearchOperation) {
     const storageHook = graph.getStorageHook(search.pattern);
 
     storageHook.iterateSlots(search.pattern, {
+        relationOutput: search,
         slot(slot: Slot) {
             search.relation(slot.relation);
         },

@@ -6,41 +6,13 @@ import RelationReceiver from '../RelationReceiver'
 import Pattern from '../Pattern'
 import StorageSlotHook  from '../StorageSlotHook'
 import Slot from '../Slot'
+import SlotReceiver from '../SlotReceiver'
 
 import ChildProcess from 'child_process'
 
 /*
 function runSearch(search: SearchOperation) {
-    const { pattern } = search;
-
-    const dir = pattern.getTagObject('dir');
-    const branch = pattern.getTagObject('branch');
-
-    if (dir.starValue) {
-        emitCommandError(search, `can't use dir(*)`);
-        return true;
-    }
-
-    ChildProcess.exec('git branch --list', {
-        cwd: dir.tagValue
-    }, (error, stdout, stderr) => {
-        
-        if (error) {
-            emitCommandError(search, error.toString());
-            search.finish();
-            return;
-        }
-
-        const lines = stdout.split('\n');
-
-        for (let line of lines) {
-
-            line = line.slice(2);
-            search.relation(pattern.updateTagOfType('branch', tag => tag.setValue(line)));
-        }
-
-        search.finish();
-    });
+    
 }
 
 function runSave(save: SaveOperation) {
@@ -61,8 +33,54 @@ class GitHooks implements StorageSlotHook {
     saveNewRelation(relation: Relation, output: RelationReceiver) {
     }
 
-    *iterateSlots(pattern: Pattern): Iterable<Slot> {
-        // todo: refactor into SlotReceiver
+    iterateSlots(pattern: Pattern, output: SlotReceiver) {
+        const dir = pattern.getTagObject('dir');
+        const branch = pattern.getTagObject('branch');
+
+        if (dir.starValue) {
+            emitCommandError(output.relationOutput, `can't use dir(*)`);
+            return true;
+        }
+
+        ChildProcess.exec('git branch --list', {
+            cwd: dir.tagValue
+        }, (error, stdout, stderr) => {
+            
+            if (error) {
+                emitCommandError(output.relationOutput, error.toString());
+                output.finish();
+                return;
+            }
+
+            const lines = stdout.split('\n');
+
+            for (let line of lines) {
+                line = line.slice(2);
+
+                if (!line || line === '')
+                    continue;
+
+                const relation = pattern.updateTagOfType('branch', tag => tag.setValue(line));
+
+                output.slot({
+                    relation,
+                    modify: (func: (rel: Pattern) => Pattern) => {
+                        const modified = func(relation);
+                        if (modified.hasType('deleted')) {
+                            console.log('deleting branch: ' + modified.getTagValue('branch'));
+                            ChildProcess.exec('git branch -D ' + modified.getTagValue('branch'), {
+                                cwd: dir.tagValue
+                            }, (error, stdout, stderr) => {
+                                console.log(error);
+                            });
+                        }
+                        return modified;
+                    }
+                });
+            }
+
+            output.finish();
+        });
     }
 
     /*

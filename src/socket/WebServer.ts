@@ -31,7 +31,6 @@ export default class WebServer extends EventEmitter {
 
     handlePostCommand(query: string, res) {
         const id = this.api.createUniqueConnection();
-        console.log(`[${id}] ${query}`);
 
         res.statusCode = 200;
         this.graph.run(query, {

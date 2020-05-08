@@ -1036,6 +1036,15 @@ set touchpoint/listCliInputs input var/toolname type/string
 set touchpoint/listCliInputs output from(name/*) var
 set touchpoint/listCliInputs async
 
+set code-generation/cliShell touchpoint/getExitStyle
+set touchpoint/getExitStyle query(get command-line-tool(${toolname}) exit-style/*)
+set touchpoint/getExitStyle function-name(getExitStyle)
+set touchpoint/getExitStyle input var/toolname type/string
+set touchpoint/getExitStyle output from(exit-style/*) var
+set touchpoint/getExitStyle output optional
+set touchpoint/getExitStyle expectOne
+set touchpoint/getExitStyle async
+
 set code-generation/cliShell touchpoint/cliInputIsRequired
 set touchpoint/cliInputIsRequired function-name(cliInputIsRequired)
 set touchpoint/cliInputIsRequired query(get command-line-tool(${toolname}) cli-input name/* required)
@@ -1079,3 +1088,24 @@ set command-line-tool/jsfixer
 set command-line-tool/jsfixer cli-input name/file
 set command-line-tool/jsfixer cli-input name/file required
 
+set command-line-tool/git-branch-browser
+set command-line-tool/git-branch-browser exit-style/runs-until-killed
+
+set code-generation/gitBranches
+set code-generation/gitBranches destination-filename(git-branch-browser/src/GitBranchesApi.ts)
+set code-generation/gitBranches ik-import(./fs)
+set code-generation/gitBranches strategy/dao-api
+
+set code-generation/gitBranches touchpoint/getBranches
+set touchpoint/getBranches function-name(getBranches)
+set touchpoint/getBranches query(get git dir(${dir}) branch/*)
+set touchpoint/getBranches input var/dir type/string
+set touchpoint/getBranches output var from(branch/*)
+set touchpoint/getBranches async
+
+set code-generation/gitBranches touchpoint/deleteBranch
+set touchpoint/deleteBranch function-name(deleteBranch)
+set touchpoint/deleteBranch query(set git dir(${dir}) branch(${branch}) deleted/(set))
+set touchpoint/deleteBranch input var/dir type/string
+set touchpoint/deleteBranch input var/branch type/string
+set touchpoint/deleteBranch async

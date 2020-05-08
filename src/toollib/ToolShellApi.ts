@@ -18,6 +18,26 @@ export default class API {
         return rels.map(rel => rel.getTagValue("name"));
     }
 
+    async getExitStyle(toolname: string): Promise<string> {
+        const command = `get command-line-tool(${toolname}) exit-style/*`;
+
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.graph.run(command, receiver)
+        const rels: Relation[] = (await promise)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        if (rels.length === 0) {
+            return null;
+        }
+
+        if (rels.length > 1) {
+            throw new Error("(getExitStyle) Multiple results found for: " + command)
+        }
+
+        const oneRel = rels[0];
+        return oneRel.getTagValue("exit-style");
+    }
+
     async cliInputIsRequired(toolname: string, name: string): Promise<boolean> {
         const command = `get command-line-tool(${toolname}) cli-input name/* required`;
 
