@@ -1,6 +1,4 @@
 
 filename="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 
-echo $filename
-
-curl -X POST --data "set log file-changed filename($filename)" http://localhost:42940/run
+curl -X POST --data "set log file-changed filename($filename)" http://localhost:42941/run

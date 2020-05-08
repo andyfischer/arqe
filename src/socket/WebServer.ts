@@ -21,27 +21,37 @@ export default class WebServer extends EventEmitter {
     httpServer: HTTP.Server
     wsServer: WebSocket.Server
     port: number
+    api: SocketApi
 
     constructor(graph: Graph) {
         super();
         this.graph = graph;
+        this.api = new SocketApi(this.graph);
+    }
+
+    handlePostCommand(query: string, res) {
+        const id = this.api.createUniqueConnection();
+        console.log(`[${id}] ${query}`);
+
+        res.statusCode = 200;
+        this.graph.run(query, {
+            relation: (rel) => {
+                res.write(rel.stringify() + '\n');
+                this.emit('send', { query, rel });
+            },
+            finish: () => {
+                res.end();
+                this.emit('send', { query, finish: true });
+            }
+        });
     }
 
     async createHttpServer(port: number) {
         const httpServer = HTTP.createServer((req, res) => {
             if (req.url === '/run') {
                 if (req.method === 'POST') {
-                    getData(req, (data: string) => {
-                        console.log('http server running: ' + data);
-                        res.statusCode = 200;
-                        this.graph.run(data, {
-                            relation(rel) {
-                                res.write(rel.stringify() + '\n');
-                            },
-                            finish() {
-                                res.end();
-                            }
-                        });
+                    getData(req, (query: string) => {
+                        this.handlePostCommand(query, res);
                     });
                     return;
                 }
