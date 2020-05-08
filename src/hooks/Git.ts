@@ -35,7 +35,7 @@ class GitHooks implements StorageSlotHook {
 
     iterateSlots(pattern: Pattern, output: SlotReceiver) {
         const dir = pattern.getTagObject('dir');
-        const branch = pattern.getTagObject('branch');
+        const branchTag = pattern.getTagObject('branch');
 
         if (dir.starValue) {
             emitCommandError(output.relationOutput, `can't use dir(*)`);
@@ -60,7 +60,12 @@ class GitHooks implements StorageSlotHook {
                 if (!line || line === '')
                     continue;
 
-                const relation = pattern.updateTagOfType('branch', tag => tag.setValue(line));
+                const branchName = line;
+
+                if (!branchTag.starValue && branchTag.tagValue !== branchName)
+                    continue;
+
+                const relation = pattern.updateTagOfType('branch', tag => tag.setValue(branchName));
 
                 output.slot({
                     relation,
