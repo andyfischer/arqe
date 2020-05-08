@@ -5,6 +5,7 @@ import RelationReceiver from './RelationReceiver'
 import PatternTag, { newTag } from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import SaveOperation from './SaveOperation'
+import Slot from './Slot'
 
 const exprFuncEffects = {
     increment: {
@@ -140,28 +141,31 @@ export default function runSave(save: SaveOperation) {
     const filter = modificationToFilter(relation);
     let anyFound = false;
 
-    for (const slot of graph.getSlotIterator(filter)) {
+    const storageHook = graph.getStorageHook(filter);
 
-        anyFound = true;
+    storageHook.iterateSlots(filter, {
+        slot(slot: Slot) {
+            anyFound = true;
 
-        const modified = slot.modify(existing =>
-            applyModificationRelation(relation, existing)
-        );
+            const modified = slot.modify(existing =>
+                applyModificationRelation(relation, existing)
+            );
 
-        output.relation(modified);
+            output.relation(modified);
 
-        if (modified.hasType('deleted'))
-            graph.onRelationDeleted(modified.removeType('deleted'));
-        else
-            graph.onRelationUpdated(modified);
-    }
+            if (modified.hasType('deleted'))
+                graph.onRelationDeleted(modified.removeType('deleted'));
+            else
+                graph.onRelationUpdated(modified);
+        },
+        finish() {
+            if (!anyFound && effects.initializeIfMissing) {
+                graph.saveNewRelation(toInitialization(relation), output);
+                return;
+            }
 
-    if (!anyFound && effects.initializeIfMissing) {
-        graph.saveNewRelation(toInitialization(relation), output);
-        return;
-    }
-
-    output.finish();
-    return;
+            output.finish();
+        }
+    });
 }
 

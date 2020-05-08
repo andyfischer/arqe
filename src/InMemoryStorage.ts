@@ -12,9 +12,9 @@ import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
 import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
+import SlotReceiver from './SlotReceiver'
 
 type RelationModifier = (rel: Relation) => Relation
-
 
 function getImpliedTableName(rel: Relation) {
     for (const tag of rel.tags)
@@ -118,9 +118,9 @@ export default class InMemoryStorage implements StorageSlotHook {
         output.finish();
     }
 
-    *iterateSlots(pattern: Pattern): Iterable<Slot> {
+    iterateSlots(pattern: Pattern, output: SlotReceiver) {
         for (const { slotId, relation } of this.findStored(pattern)) {
-            yield {
+            output.slot({
                 relation,
                 modify: (func: (rel: Pattern) => Pattern) => {
                     const modified = func(this.slots[slotId]);
@@ -135,8 +135,10 @@ export default class InMemoryStorage implements StorageSlotHook {
 
                     return modified;
                 }
-            }
+            });
         }
+
+        output.finish();
     }
 }
 

@@ -264,13 +264,14 @@ export default class Graph {
         this.inMemory.saveNewRelation(relation, output);
     }
 
-    getSlotIterator(pattern: Pattern): Iterable<Slot> {
+    getStorageHook(pattern: Pattern) {
         for (const hook of this.storageSlotHooks) {
-            if (hook.hookPattern(pattern))
-                return hook.iterateSlots(pattern);
+            if (hook.hookPattern(pattern)) {
+                return hook;
+            }
         }
 
-        return this.inMemory.iterateSlots(pattern);
+        return this.inMemory;
     }
 
     close() {

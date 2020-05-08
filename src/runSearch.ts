@@ -7,6 +7,7 @@ import StorageProvider from './StorageProvider'
 import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
+import Slot from './Slot'
 
 interface Step {
     storage: StorageProvider
@@ -96,10 +97,15 @@ function get_after_inherit(search: SearchOperation) {
             return;
     }
 
-    for (const slot of graph.getSlotIterator(search.pattern)) {
-        search.relation(slot.relation);
-    }
+    const storageHook = graph.getStorageHook(search.pattern);
 
-    search.finish();
+    storageHook.iterateSlots(search.pattern, {
+        slot(slot: Slot) {
+            search.relation(slot.relation);
+        },
+        finish() {
+            search.finish();
+        }
+    });
 }
 
