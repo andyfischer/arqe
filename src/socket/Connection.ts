@@ -1,14 +1,12 @@
 
 import WebSocket from 'ws'
 import Graph from '../Graph'
-import Command from '../Command'
-import logError from '../logError'
-import EventEmitter from 'events'
-import parseCommand from '../parseCommand'
 import SocketApi from '../code-generation/SocketApi'
+import EventEmitter from 'events'
+import logError from '../logError'
 import Relation from '../Relation'
 
-class Connection extends EventEmitter {
+export default class Connection extends EventEmitter {
     ws: WebSocket
     graph: Graph
     api: SocketApi
@@ -66,26 +64,6 @@ class Connection extends EventEmitter {
         ws.on('close', async () => {
             this.api.deleteConnection(id);
             console.log(`[${id} closed]`);
-        });
-    }
-}
-
-export default class SockerServer extends EventEmitter {
-    graph: Graph
-    wss: WebSocket.Server
-
-    constructor(wss: WebSocket.Server, graph: Graph) {
-        super();
-
-        this.graph = graph || new Graph()
-        this.wss = wss;
-
-        this.wss.on('connection', (ws) => {
-            const socketConnection = new Connection(this.graph, ws);
-
-            socketConnection.on('send', data => {
-                this.emit('send', { socket: this, ...data });
-            });
         });
     }
 }

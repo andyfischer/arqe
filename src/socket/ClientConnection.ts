@@ -188,7 +188,7 @@ export default class ClientConnection implements GraphLike {
 export async function connectToServer(): Promise<ClientConnection> {
 
     const port = process.env.PORT || '42940'
-    const conn = new ClientConnection(`http://localhost:${port}`);
+    const conn = new ClientConnection(`http://localhost:${port}/ws`);
     await conn.start();
     return conn;
 }
