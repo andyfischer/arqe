@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useContext } from 'react'
 import { Text, Box, Color, StdinContext, useInput } from 'ink'
-import SelectInput from 'ink-select-input'
 
 export default function AppView({dir, api}) {
     const [ items, setItems ] = useState([]);
