@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useContext } from 'react'
-import { Text, Box, StdinContext, useInput } from 'ink'
+import { Text, Box, Color, StdinContext, useInput } from 'ink'
 import SelectInput from 'ink-select-input'
 
 export default function AppView({dir, api}) {
@@ -33,6 +33,7 @@ export default function AppView({dir, api}) {
             const current = items[selectedIndex];
             await api.deleteBranch(dir, current);
             setSelectedIndex(selectedIndex - 1);
+            await refreshItems();
         }
     }
 
@@ -60,8 +61,8 @@ export default function AppView({dir, api}) {
         {items.map((item, i) => {
             const selected = selectedIndex === i;
             return <Box key={item} marginRight={1}>
-                { selected ? '> ' : '  '}
-                {item}
+                { selected && <Color hex="#ff00ff">{'> '}{item}</Color> }
+                { !selected && '  ' + item }
             </Box>
         })}
     </Box>

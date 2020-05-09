@@ -8,13 +8,17 @@ import { render } from 'ink'
 let graph: Graph;
 let api: GitBranchesApi;
 
-function start() {
+async function start() {
     const api = new GitBranchesApi(graph);
     const dir = process.cwd();
-    render(React.createElement(AppView, { dir, api }));
+    const { waitUntilExit } = render(React.createElement(AppView, { dir, api }), {
+        exitOnCtrlC: true
+    });
+
+    await waitUntilExit();
 }
 
 runStandardProcess2('git-branch-browser', async (_graph: Graph, api) => {
     graph = _graph;
-    start();
+    await start();
 });

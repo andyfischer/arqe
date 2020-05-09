@@ -29,9 +29,12 @@ export default async function runStandardProcess2(toolName: string, handler: (gr
         console.error(`unhandledRejection during ${execId}: `, (error.stack || error));
     });
 
-    for (const input of await shellApi.listCliInputs(toolName)) {
-        console.log('tool uses input: ' + input);
+    process.on('SIGINT', () => {
+        graph.close();
+        process.exit();
+    });
 
+    for (const input of await shellApi.listCliInputs(toolName)) {
         if (args[input]) {
             await shellApi.setCliInput(execId, input, args[input]);
         }
@@ -59,11 +62,5 @@ export default async function runStandardProcess2(toolName: string, handler: (gr
         process.exitCode = -1;
     }
 
-    if (await shellApi.getExitStyle(toolName) === 'runs-until-killed')
-        return;
-
-    console.log('exit style = ', await shellApi.getExitStyle(toolName))
-
-    console.log('runStandardProcess2: closing connection');
     graph.close();
 }
