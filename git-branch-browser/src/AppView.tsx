@@ -3,12 +3,15 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Text, Box, Color, StdinContext, useInput } from 'ink'
 
 export default function AppView({dir, api}) {
-    const [ items, setItems ] = useState([]);
-    const [ selectedIndex, setSelectedIndex ] = useState(0);
+    let [ items, setItems ] = useState([]);
+    let [ selectedIndex, setSelectedIndex ] = useState(0);
 
     async function refreshItems() {
         const items = await api.getBranches(dir);
         setItems(items);
+
+        if (selectedIndex >= items.length)
+            selectedIndex = items.length - 1;
     }
 
     function selectUp() {
@@ -31,7 +34,6 @@ export default function AppView({dir, api}) {
         if (data === 'd') {
             const current = items[selectedIndex];
             await api.deleteBranch(dir, current);
-            setSelectedIndex(selectedIndex - 1);
             await refreshItems();
         }
     }
@@ -57,6 +59,7 @@ export default function AppView({dir, api}) {
     useEffect((() => { refreshItems()}), []);
 
     return <Box flexDirection="column">
+        <Text>[press 'd' to delete]</Text>
         {items.map((item, i) => {
             const selected = selectedIndex === i;
             return <Box key={item} marginRight={1}>
