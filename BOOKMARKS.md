@@ -9,3 +9,13 @@
 Collaboration - https://martin.kleppmann.com/papers/pushpin-papoc20.pdf
 
  - Augmenting Code with In Situ Visualizations to Aid Program Understanding - http://vis.csail.mit.edu/pubs/insitu-vis-debugging
+
+# Differential dataflow
+
+ - https://github.com/TimelyDataflow/differential-dataflow/
+ - Incremental - https://opensource.janestreet.com/incremental/
+ - Relational UI - https://scattered-thoughts.net/writing/relational-ui/
+ - Datalog + React - https://datalogui.dev/
+ - Imp lang - https://scattered-thoughts.net/writing/imp-intro/
+ - Materialize - https://materialize.io/
+ - Building a relational query compiler - https://scattered-thoughts.net/writing/a-practical-relational-query-compiler-in-500-lines/
