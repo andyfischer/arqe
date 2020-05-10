@@ -1,0 +1,1 @@
+{"version":3,"file":"RelationSearch.js","sourceRoot":"","sources":["../../src/fs/RelationSearch.ts"],"names":[],"mappings":";;AAaA,SAAgB,yBAAyB,CAAC,OAAgB,EAAE,MAAwB;IAChF,OAAO;QACH,OAAO;QACP,cAAc,EAAE,CAAC;QACjB,QAAQ,CAAC,GAAG,IAAI,MAAM,CAAC,QAAQ,CAAC,GAAG,CAAC,CAAA,CAAC,CAAC;QACtC,MAAM,KAAK,MAAM,CAAC,MAAM,EAAE,CAAA,CAAC,CAAC;KAC/B,CAAA;AAEL,CAAC;AARD,8DAQC"}

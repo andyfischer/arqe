@@ -1,0 +1,1 @@
+{"version":3,"file":"RelationReceiver.js","sourceRoot":"","sources":["../src/RelationReceiver.ts"],"names":[],"mappings":";;AAUA,SAAgB,uBAAuB,CAAC,KAA8B,EAAE,MAAkB;IACtF,OAAO;QACH,QAAQ,EAAE,KAAK;QACf,MAAM,EAAE,MAAM;KACjB,CAAA;AACL,CAAC;AALD,0DAKC;AAED,SAAgB,aAAa;IACzB,OAAO;QACH,QAAQ,CAAC,GAAG,IAAK,CAAC;QAClB,MAAM,KAAM,CAAC;KAChB,CAAA;AACL,CAAC;AALD,sCAKC"}

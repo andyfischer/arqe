@@ -1,0 +1,1 @@
+{"version":3,"file":"ProcessClient.js","sourceRoot":"","sources":["../../src/toollib/ProcessClient.ts"],"names":[],"mappings":";;AAEA,IAAI,cAAc,GAAsB,IAAI,CAAC;AAEtC,KAAK,UAAU,gBAAgB;IAClC,IAAI,cAAc,KAAK,IAAI,EAAE;QACzB,cAAc,GAAG,MAAM,OAAO,EAAE,CAAC;KACpC;IAED,OAAO,cAAc,CAAC;AAC1B,CAAC;AAND,4CAMC"}

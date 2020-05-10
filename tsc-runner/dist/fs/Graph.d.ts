@@ -1,0 +1,55 @@
+import Command from './Command';
+import CommandChain from './CommandChain';
+import CommandExecution from './CommandExecution';
+import Relation from './Relation';
+import GraphListener from './GraphListener';
+import RelationPattern from './RelationPattern';
+import Schema from './Schema';
+import InMemoryStorage from './InMemoryStorage';
+import SavedQuery from './SavedQuery';
+import StorageMount from './StorageMount';
+import EagerValue from './EagerValue';
+import { UpdateFn } from './UpdateContext';
+import InheritTags from './InheritTags';
+import TypeInfo from './TypeInfo';
+import GraphContext from './GraphContext';
+import WebSocketProvider from './WebSocketProvider';
+import UpdateContext from './UpdateContext';
+export declare type RespondFunc = (msg: string) => void;
+export declare type RunFunc = (query: string, respond: RespondFunc) => void;
+export default class Graph {
+    inMemory: InMemoryStorage;
+    listeners: GraphListener[];
+    savedQueries: SavedQuery[];
+    savedQueryMap: {
+        [queryStr: string]: SavedQuery;
+    };
+    schema: Schema;
+    typeInfo: {
+        [typeName: string]: TypeInfo;
+    };
+    inheritTags: EagerValue<InheritTags>;
+    filesystemMounts: EagerValue<StorageMount[]>;
+    wsProviders: EagerValue<WebSocketProvider[]>;
+    derivedValueMounts: StorageMount[];
+    nextEagerValueId: number;
+    constructor();
+    context(query: string): GraphContext;
+    savedQuery(queryStr: string): SavedQuery;
+    eagerValue<T>(updateFn: UpdateFn<T>, initialValue?: T): EagerValue<T>;
+    iterateMounts(): Generator<StorageMount, void, unknown>;
+    getTypeInfo(name: string): TypeInfo;
+    deleteCmd(commandExec: CommandExecution): void;
+    listen(commandExec: CommandExecution): void;
+    runCommandExecution(commandExec: CommandExecution): void;
+    runCommandParsed(command: Command, respond: RespondFunc): void;
+    runCommandChainParsed(chain: CommandChain, respond: RespondFunc): void;
+    onRelationUpdated(command: Command, rel: Relation): void;
+    onRelationDeleted(rel: Relation): void;
+    run(str: string, respond?: RespondFunc): void;
+    runSync(commandStr: string): any;
+    runAsync(commandStr: string): Promise<string | string[]>;
+    relationPattern(commandStr: string): RelationPattern;
+    getRelationsSync(tags: string): Relation[];
+    runDerived(callback: (cxt: UpdateContext) => void): void;
+}

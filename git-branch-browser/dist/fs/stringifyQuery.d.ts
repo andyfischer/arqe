@@ -1,0 +1,10 @@
+import Command from './Command';
+import CommandChain from './CommandChain';
+import PatternTag from './PatternTag';
+export declare function patternTagToString(tag: PatternTag): string;
+export declare function commandTagsToString(tags: PatternTag[]): string;
+export declare function parsedCommandToString(command: Command): string;
+export declare function stringifyCommandChain(chain: CommandChain): string;
+export declare function appendTagInCommand(str: string, tag: string): string;
+export declare function parseAsSet(str: string): PatternTag[];
+export declare function normalizeExactTag(tags: PatternTag[]): string;

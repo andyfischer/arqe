@@ -1,0 +1,1 @@
+{"version":3,"file":"timedate.js","sourceRoot":"","sources":["../../src/commands/timedate.ts"],"names":[],"mappings":";;AAEA,0CAA0C;AAE1C,mBAAwB,QAAkB;IACtC,QAAQ,CAAC,SAAS,CAAC,gBAAgB,EAAE,CAAC,KAAK,EAAE,EAAE;QAC3C,KAAK,CAAC,OAAO,CAAC,uBAAY,EAAE,CAAC,CAAC;IAClC,CAAC,CAAC,CAAC;AACP,CAAC;AAJD,4BAIC"}

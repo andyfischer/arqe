@@ -1,0 +1,1 @@
+{"version":3,"file":"GetRespondRelations.js","sourceRoot":"","sources":["../src/GetRespondRelations.ts"],"names":[],"mappings":";;AAIA,MAAqB,mBAAmB;IAAxC;QACI,cAAS,GAAe,EAAE,CAAA;IAa9B,CAAC;IAVG,KAAK;IACL,CAAC;IAED,QAAQ,CAAC,GAAa;QAClB,IAAI,CAAC,SAAS,CAAC,IAAI,CAAC,GAAG,CAAC,CAAC;IAC7B,CAAC;IAED,MAAM;QACF,IAAI,CAAC,QAAQ,GAAG,IAAI,CAAC;IACzB,CAAC;CACJ;AAdD,sCAcC"}

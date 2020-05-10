@@ -1,0 +1,1 @@
+{"version":3,"file":"defCommand.js","sourceRoot":"","sources":["../../src/bootstrap-runtime/defCommand.ts"],"names":[],"mappings":";;AAIA,SAAwB,UAAU,CAAC,KAAY,EAAE,WAAmB;IAChE,MAAM,GAAG,GAAuB;QAC5B,MAAM,EAAE,EAAE;QACV,OAAO,EAAE,EAAE;KACd,CAAA;IAED,KAAK,CAAC,gBAAgB,CAAC,YAAY,GAAG,WAAW,EAAE,GAAG,CAAC,CAAC;AAC5D,CAAC;AAPD,6BAOC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"CommandChain.js","sourceRoot":"","sources":["../../src/fs/CommandChain.ts"],"names":[],"mappings":";;AAGA,MAAqB,YAAY;IAAjC;QACI,aAAQ,GAAc,EAAE,CAAA;IAK5B,CAAC;IAHG,SAAS;QACL,OAAO,IAAI,CAAC,QAAQ,CAAC,GAAG,CAAC,CAAC,CAAC,EAAE,CAAC,CAAC,CAAC,SAAS,EAAE,CAAC,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC;IAC7D,CAAC;CACJ;AAND,+BAMC"}
