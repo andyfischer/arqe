@@ -86,7 +86,6 @@ export default class InMemoryStorage implements StorageSlotHook {
     }
 
     saveNewRelation(relation: Relation, output: RelationReceiver) {
-
         // Save as new relation
         relation = this.resolveExpressionValues(relation);
 

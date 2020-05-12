@@ -7,6 +7,7 @@ import watchFile from '../file-watch/watchFile'
 import { notifyFileChanged } from '../file-watch/notifyFileChanged'
 import Minimist from 'minimist'
 import runStandardProcess from '../toollib/runStandardProcess'
+import { runStorageHandlerGenerator } from './StorageHandlerGenerator'
 
 function runGenerationForTarget(dataSource: Graph, api: CodeGenerationApi, target) {
     const strategy = api.codeGenerationTargetStrategy(target);
@@ -17,6 +18,8 @@ function runGenerationForTarget(dataSource: Graph, api: CodeGenerationApi, targe
         runDAOGenerator2(dataSource, target);
     } else if (strategy == 'text-as-code') {
         generateTextAsCode(dataSource, target);
+    } else if (strategy == 'storage-handler') {
+        runStorageHandlerGenerator(dataSource, target);
     } else {
         throw new Error("didn't understand code generation strategy: " + strategy);
     }

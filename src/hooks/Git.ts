@@ -32,6 +32,7 @@ class GitHooks implements StorageSlotHook {
 
     // called for: get git dir/$dir branch/*
     async listBranches(dir: string): Promise<string[]> {
+        return [];
     }
 
     // called for: get git dir/$dir branch/$branch 

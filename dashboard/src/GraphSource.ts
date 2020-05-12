@@ -121,7 +121,6 @@ set touchpoint/7.3 output from(from/*) var
 set code-generation/dao touchpoint/touchpointOutputs2
 set touchpoint/touchpointOutputs2 query(\${touchpoint} output from var)
 set touchpoint/touchpointOutputs2 function-name(touchpointOutputs2)
-set touchpoint/touchpointOutputs2 input/5
 set touchpoint/touchpointOutputs2 input var/touchpoint type/string
 set touchpoint/touchpointOutputs2 output from(from/*) var/fromStr
 set touchpoint/touchpointOutputs2 output from(var/*) var/varStr
@@ -1109,4 +1108,65 @@ set touchpoint/deleteBranch query(set git dir(\${dir}) branch(\${branch}) delete
 set touchpoint/deleteBranch input var/dir type/string
 set touchpoint/deleteBranch input var/branch type/string
 set touchpoint/deleteBranch async
+
+set code-generation/storageGenerator
+set code-generation/storageGenerator destination-filename(src/code-generation/StorageHandlerGeneratorAPI.ts)
+set code-generation/storageGenerator ik-import(..)
+set code-generation/storageGenerator strategy/dao-api
+set code-generation/storageGenerator field/target type/string
+
+set code-generation/storageGenerator touchpoint/14.1
+set code-generation/storageGenerator touchpoint/0.8
+set code-generation/storageGenerator touchpoint/touchpointFunctionName
+set code-generation/storageGenerator touchpoint/touchpointInputs2
+
+set code-generation/storageGenerator touchpoint/touchpointOutputWithType
+set touchpoint/touchpointOutputWithType query(get \${touchpoint} output var type)
+set touchpoint/touchpointOutputWithType expectOne
+set touchpoint/touchpointOutputWithType input var/touchpoint type/string
+set touchpoint/touchpointOutputWithType output from(type/*) var
+set touchpoint/touchpointOutputWithType function-name(touchpointOutputWithType)
+set touchpoint/touchpointOutputWithType output optional
+
+set code-generation/storageGenerator touchpoint/listHandlers
+set touchpoint/listHandlers query(get \${target} handler/*)
+set touchpoint/listHandlers function-name(listHandlers)
+set touchpoint/listHandlers input var/target type/string
+set touchpoint/listHandlers input var/target dataFrom/apiObject
+set touchpoint/listHandlers output var from(handler)
+
+set code-generation/git-storage
+set code-generation/git-storage destination-filename(src/hooks/GitStorageAPI.ts)
+set code-generation/git-storage ik-import(..)
+set code-generation/git-storage strategy/storage-handler
+
+
+set code-generation/git-storage handler/createBranch
+set handler/createBranch function-name(createBranch)
+set handler/createBranch input var/dir type/string
+set handler/createBranch input var/branchName type/string
+set handler/createBranch async
+set handler/createBranch handles-pattern(set git dir/\$dir branch/\$branchName)
+
+set code-generation/git-storage handler/listBranches
+set handler/listBranches function-name(listBranches)
+set handler/listBranches input var/dir type/string
+set handler/listBranches async
+set handler/listBranches output var type(string[])
+set handler/listBranches handles-pattern(get git dir/\$dir branch/*)
+
+set code-generation/git-storage handler/checkBranchExists
+set handler/checkBranchExists function-name(checkBranchExists)
+set handler/checkBranchExists input var/dir type/string
+set handler/checkBranchExists input var/branchName type/string
+set handler/checkBranchExists output var type(boolean)
+set handler/checkBranchExists async
+set handler/checkBranchExists handles-pattern(get git dir/\$dir branch/\$branch)
+
+set code-generation/git-storage handler/deleteBranch
+set handler/deleteBranch function-name(deleteBranch)
+set handler/deleteBranch input var/dir type/string
+set handler/deleteBranch input var/branchName type/string
+set handler/deleteBranch async
+set handler/deleteBranch handles-pattern(delete git dir/\$dir branch/\$branch)
 `

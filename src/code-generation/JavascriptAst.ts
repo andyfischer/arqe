@@ -24,6 +24,12 @@ export class Block {
         return def;
     }
 
+    addInterface(name: string) {
+        const def = new InterfaceDef(name);
+        this.statements.push(def);
+        return def;
+    }
+
     addRaw(text: string) {
         this.statements.push(new RawStatement(text));
     }
@@ -48,6 +54,10 @@ export class Block {
         const field = new ObjectField(name, value);
         this.statements.push(field);
         return field;
+    }
+
+    addComment(str) {
+        this.addRaw('// ' + str);
     }
 }
 
@@ -123,6 +133,33 @@ class ClassDef implements Statement {
 
     line() {
         let s = `class ${this.name}`
+        if (this.isExportDefault)
+            s = 'export default ' + s;
+        else if (this.isExport)
+            s = 'export ' + s;
+
+        return s;
+    }
+}
+
+class InterfaceDef implements Statement {
+    statementType = 'interfaceDef'
+    name: string
+    contents: Block
+    isExport = false
+    isExportDefault = false
+
+    constructor(name: string) {
+        this.name = name;
+        this.contents = new Block('interface', this)
+    }
+
+    addField(name: string, tsType: string) {
+        this.contents.statements.push(new FieldDecl(name, tsType));
+    }
+
+    line() {
+        let s = `interface ${this.name}`
         if (this.isExportDefault)
             s = 'export default ' + s;
         else if (this.isExport)
@@ -232,6 +269,26 @@ class IfBlock implements Statement {
     }
 }
 
+class FunctionTypeDef {
+    inputs: { name: string, tsType: string}[] = []
+    outputType: string = 'void'
+
+    constructor() {
+    }
+
+    addInput(name: string, tsType: string) {
+        this.inputs.push({name, tsType});
+    }
+
+    setOutputType(t: string) {
+        this.outputType = t;
+    }
+
+    line() {
+        const inputStr = this.inputs.map(input => `${input.name}: ${input.tsType}`).join(', ');
+        return `(${inputStr}) => ${this.outputType}`;
+    }
+}
 
 class LineWriter {
     currentIndent: number = 0
@@ -311,6 +368,10 @@ function* iterateBlock(block: Block) {
     yield ({ finishBlock: block });
 }
 
+export function startFunctionTypeDef() {
+    return new FunctionTypeDef();
+}
+
 export function formatBlock(block: Block) {
 
     if (block.blockType === 'object-literal' && block.statements.length === 1)
@@ -344,6 +405,7 @@ export function stringifyBlock(block: Block) {
             case 'class':
             case 'function':
             case 'if':
+            case 'interface':
                 writer.writeln(' {')
                 writer.indent();
                 continue;
@@ -373,6 +435,7 @@ export function stringifyBlock(block: Block) {
 
             switch(it.statement.statementType) {
                 case 'classDef':
+                case 'interfaceDef':
                 case 'functionDecl':
                 case 'ifBlock':
                     continue;

@@ -321,7 +321,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     block.addRaw('// no output?');
 }
 
-function createAst(api: DAOGeneratorGeneratedDAO, target: string) {
+function createFileAst(api: DAOGeneratorGeneratedDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
     file.addImport('{ GraphLike, Relation, receiveToRelationListPromise }', importPath);
@@ -349,7 +349,7 @@ function createAst(api: DAOGeneratorGeneratedDAO, target: string) {
 export function runDAOGenerator2(graph: Graph, target: string) {
 
     const api = new DAOGeneratorGeneratedDAO(graph);
-    const ast = createAst(api, target);
+    const ast = createFileAst(api, target);
     formatBlock(ast);
     const destinationFilename = api.getDestinationFilename(target)
     writeFileSyncIfUnchanged(destinationFilename, ast.stringify());
