@@ -13,6 +13,7 @@ import { newTagFromObject } from './PatternTag'
 import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
 import SlotReceiver from './SlotReceiver'
+import CompiledQuery from './CompiledQuery'
 
 type RelationModifier = (rel: Relation) => Relation
 
@@ -85,6 +86,10 @@ export default class InMemoryStorage implements StorageSlotHook {
         return true;
     }
 
+    useForPattern(pattern: Pattern) {
+        return true;
+    }
+
     saveNewRelation(relation: Relation, output: RelationReceiver) {
         // Save as new relation
         relation = this.resolveExpressionValues(relation);
@@ -97,9 +102,9 @@ export default class InMemoryStorage implements StorageSlotHook {
             }
         }
 
-        // Check if already slots
+        // Check if already saved.
         for (const existing of this.findStored(relation)) {
-            // Already slots
+            // Already saved.
             output.relation(relation);
             output.finish();
             return;
@@ -115,6 +120,36 @@ export default class InMemoryStorage implements StorageSlotHook {
         this.byImpliedTableName[itn][slotId] = true;
         this.graph.onRelationUpdated(relation);
         output.finish();
+    }
+
+    resolveUniqueTag(tag: PatternTag) {
+        if (!this.nextUniqueIdPerType[tag.tagType])
+            this.nextUniqueIdPerType[tag.tagType] = new IDSource();
+
+        return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
+    }
+
+    saveNewRelation2(relation: Relation, output: RelationReceiver) {
+
+        // Check if already saved.
+        for (const existing of this.findStored(relation)) {
+            // Already saved.
+            return;
+        }
+
+        // Store a new relation
+        const slotId = this.nextSlotId.take();
+        this.slots[slotId] = relation;
+
+        const itn = getImpliedTableName(relation);
+        this.byImpliedTableName[itn] = this.byImpliedTableName[itn] || {};
+        this.byImpliedTableName[itn][slotId] = true;
+    }
+
+    getRelations(pattern: Pattern, output: RelationReceiver) {
+        for (const { relation } of this.findStored(pattern)) {
+            output.relation(relation);
+        }
     }
 
     iterateSlots(pattern: Pattern, output: SlotReceiver) {
@@ -139,5 +174,6 @@ export default class InMemoryStorage implements StorageSlotHook {
 
         output.finish();
     }
+
 }
 

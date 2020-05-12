@@ -10,16 +10,7 @@ import SlotReceiver from '../SlotReceiver'
 
 import ChildProcess from 'child_process'
 
-/*
-function runSearch(search: SearchOperation) {
-    
-}
-
-function runSave(save: SaveOperation) {
-}
-*/
-
-class GitHooks implements StorageSlotHook {
+export default class GitHooks {
     graph: Graph
 
     constructor(graph: Graph) {
@@ -44,19 +35,19 @@ class GitHooks implements StorageSlotHook {
     async deleteBranch(dir: string, branchName: string) {
     }
 
-    hookPattern(pattern: Pattern) {
+    useForPattern(pattern: Pattern) {
         return pattern.hasType('git') && pattern.hasType('branch') && pattern.hasType('dir');
     }
 
-    saveNewRelation(relation: Relation, output: RelationReceiver) {
+    saveNewRelation2(relation: Relation) {
     }
 
-    iterateSlots(pattern: Pattern, output: SlotReceiver) {
+    getRelations(pattern: Pattern, output: RelationReceiver) {
         const dir = pattern.getTagObject('dir');
         const branchTag = pattern.getTagObject('branch');
 
         if (dir.starValue) {
-            emitCommandError(output.relationOutput, `can't use dir(*)`);
+            emitCommandError(output, `can't use dir(*)`);
             return true;
         }
 
@@ -65,7 +56,7 @@ class GitHooks implements StorageSlotHook {
         }, (error, stdout, stderr) => {
             
             if (error) {
-                emitCommandError(output.relationOutput, error.toString());
+                emitCommandError(output, error.toString());
                 output.finish();
                 return;
             }
@@ -85,7 +76,9 @@ class GitHooks implements StorageSlotHook {
 
                 const relation = pattern.updateTagOfType('branch', tag => tag.setValue(branchName));
 
-                output.slot({
+                output.relation(relation);
+
+                    /*
                     relation,
                     modify: (func: (rel: Pattern) => Pattern) => {
                         const modified = func(relation);
@@ -99,38 +92,10 @@ class GitHooks implements StorageSlotHook {
                         }
                         return modified;
                     }
-                });
+                    */
             }
 
             output.finish();
         });
     }
-
-    /*
-    hookSave(save: SaveOperation) {
-        const { relation } = save;
-
-        if () {
-            runSave(save);
-            return;
-        }
-
-        return false;
-    }
-
-    hookSearch(search: SearchOperation) {
-        const { pattern } = search;
-
-        if (pattern.hasType('git') && pattern.hasType('branch') && pattern.hasType('dir')) {
-            runSearch(search)
-            return true;
-        }
-
-        return false;
-    }
-    */
-}
-
-export default function setupGitHooks(graph: Graph) {
-    return new GitHooks(graph);
 }

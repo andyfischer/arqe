@@ -29,10 +29,16 @@ import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
 import { getObjectSpaceHooks } from './hooks/ObjectSpace'
-import setupGitHooks from './hooks/Git'
+import GitHook from './hooks/Git'
 import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
 import FileChangedLog from './hooks/FileChangedLog'
+import { StorageProvider2 } from './CompiledQuery'
+
+interface StorageProviderMount {
+    match: Pattern
+    provider: StorageProvider2
+}
 
 export default class Graph {
 
@@ -56,6 +62,8 @@ export default class Graph {
     saveSearchHooks: SaveSearchHook[] = []
     storageSlotHooks: StorageSlotHook[] = []
 
+    storageProviders: StorageProviderMount[] = []
+
     constructor() {
         if (runningInBrowser())
             this.filesystemMounts = this.eagerValue(() => []);
@@ -68,8 +76,8 @@ export default class Graph {
         this.addListener(parsePattern('object-type/* **'), this.objectTypes);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
         this.saveSearchHooks.push(getObjectSpaceHooks());
-        this.saveSearchHooks.push(new FileChangedLog(this));
-        this.storageSlotHooks.push(setupGitHooks(this));
+        this.storageProviders.push({ match: parsePattern('git **'), provider: new GitHook(this)});
+        this.storageProviders.push({ match: parsePattern('log file-changed'), provider: new FileChangedLog(this)});
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -266,17 +274,15 @@ export default class Graph {
         this.inMemory.saveNewRelation(relation, output);
     }
 
-    getStorageHook(pattern: Pattern) {
-        for (const hook of this.storageSlotHooks) {
-            if (hook.hookPattern(pattern)) {
-                return hook;
-            }
+    getStorageProvider(pattern: Pattern) {
+        for (const mount of this.storageProviders) {
+            if (mount.match.isSupersetOf(pattern))
+                return mount.provider;
         }
 
         return this.inMemory;
     }
 
-    close() {
-    }
+    close() { }
 }
 
