@@ -26,6 +26,23 @@ class GitHooks implements StorageSlotHook {
         this.graph = graph;
     }
 
+    // called for: set git dir/$dir branch/$name 
+    async createBranch(dir: string, branchName: string) {
+    }
+
+    // called for: get git dir/$dir branch/*
+    async listBranches(dir: string): Promise<string[]> {
+    }
+
+    // called for: get git dir/$dir branch/$branch 
+    async checkBranchExists(dir: string): Promise<boolean> {
+        return false;
+    }
+
+    // called for: delete git dir/$dir branch/$branch
+    async deleteBranch(dir: string, branchName: string) {
+    }
+
     hookPattern(pattern: Pattern) {
         return pattern.hasType('git') && pattern.hasType('branch') && pattern.hasType('dir');
     }

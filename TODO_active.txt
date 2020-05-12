@@ -1,5 +1,5 @@
 
-Themes
+ThXmes
   - Autobuildbot is awesome
   - Let's add some features to make it fully functional
 
@@ -41,3 +41,8 @@ SQL storage
 Fix 'notify-file-changed' to be faster
  X Support HTTP commands
  - Support 'append' / log / message bus
+
+Improved .graph viewer
+ - View file as filtered lines
+   - Mount a derived view
+ - Edit derived file
