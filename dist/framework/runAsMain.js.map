@@ -1,1 +1,0 @@
-{"version":3,"file":"runAsMain.js","sourceRoot":"","sources":["../../src/framework/runAsMain.ts"],"names":[],"mappings":";;;;;;;;;;AAIA,SAA8B,SAAS,CAAC,GAAsB;;QAE1D,MAAM,IAAI,KAAK,CAAC,iCAAiC,CAAC,CAAC;QAEnD,IAAI;SACH;QAAC,OAAO,GAAG,EAAE;YACV,OAAO,CAAC,KAAK,CAAC,GAAG,CAAC,KAAK,IAAI,GAAG,CAAC,CAAC;SACnC;IACL,CAAC;CAAA;AARD,4BAQC"}

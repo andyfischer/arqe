@@ -1,1 +1,0 @@
-{"version":3,"file":"writeFactsToLog.js","sourceRoot":"","sources":["../../src/query-watchers/writeFactsToLog.ts"],"names":[],"mappings":";;AAEA,wCAAwC;AAExC,mBAAwB,KAAY;IAChC,IAAI,KAAK,CAAC,IAAI,KAAK,UAAU,IAAI,KAAK,CAAC,aAAa,EAAE;QAClD,qBAAW,CAAC,OAAO,EAAE,KAAK,CAAC,MAAM,CAAC,WAAW,CAAC,CAAC;KAClD;AACL,CAAC;AAJD,4BAIC"}

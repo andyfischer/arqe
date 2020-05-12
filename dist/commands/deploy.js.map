@@ -1,1 +1,0 @@
-{"version":3,"file":"deploy.js","sourceRoot":"","sources":["../../src/commands/deploy.ts"],"names":[],"mappings":";;;;;;;;;;AAMA,mBAAwB,QAAkB;IACtC,QAAQ,CAAC,SAAS,CAAC,QAAQ,EAAE,CAAO,KAAY,EAAE,EAAE;QAOhD,MAAM,IAAI,GAAG,KAAK,CAAC,GAAG,CAAC,iBAAiB,CAAC,CAAC;IAS9C,CAAC,CAAA,CAAC,CAAC;AACP,CAAC;AAlBD,4BAkBC"}

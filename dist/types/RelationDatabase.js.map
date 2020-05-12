@@ -1,1 +1,0 @@
-{"version":3,"file":"RelationDatabase.js","sourceRoot":"","sources":["../../src/types/RelationDatabase.ts"],"names":[],"mappings":";;AAaA,SAAgB,uBAAuB;IACnC,OAAO;QACH,aAAa,EAAE,EAAE;KACpB,CAAA;AACL,CAAC;AAJD,0DAIC;AAED,SAAgB,mBAAmB,CAAC,GAAqB;IACrD,MAAM,QAAQ,GAAI,GAAW,CAAC,QAAQ,IAAI,GAAG,CAAC;IAE9C,OAAO,QAAQ,CAAC,QAAQ,CAAC,kBAAkB,CAAC,CAAC;AACjD,CAAC;AAJD,kDAIC"}
