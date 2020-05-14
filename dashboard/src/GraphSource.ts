@@ -189,8 +189,6 @@ set touchpoint/13 query(\${touchpoint} query/*)
 set touchpoint/13 function-name(touchpointQueryString)
 set touchpoint/13 input/13
 set touchpoint/13 expectOne
-set input/13 name/touchpoint
-set input/13 type/string
 
 set code-generation/dao touchpoint/14.1
 set touchpoint/14.1 query(\${target} destination-filename/*)
@@ -1135,25 +1133,31 @@ set touchpoint/listHandlers input var/target type/string
 set touchpoint/listHandlers input var/target dataFrom/apiObject
 set touchpoint/listHandlers output var from(handler)
 
+set code-generation/storageGenerator touchpoint/handlerQuery
+set touchpoint/handlerQuery query(\${handler} handles-query/*)
+set touchpoint/handlerQuery function-name(handlerQuery)
+set touchpoint/handlerQuery input var/handler type/string
+set touchpoint/handlerQuery output var from(handles-query/*)
+set touchpoint/handlerQuery expectOne
+
 set code-generation/git-storage
 set code-generation/git-storage destination-filename(src/hooks/GitStorageAPI.ts)
 set code-generation/git-storage ik-import(..)
 set code-generation/git-storage strategy/storage-handler
-
 
 set code-generation/git-storage handler/createBranch
 set handler/createBranch function-name(createBranch)
 set handler/createBranch input var/dir type/string
 set handler/createBranch input var/branchName type/string
 set handler/createBranch async
-set handler/createBranch handles-pattern(set git dir/\$dir branch/\$branchName)
+set handler/createBranch handles-query(set git dir/\$dir branch/\$branchName)
 
 set code-generation/git-storage handler/listBranches
 set handler/listBranches function-name(listBranches)
 set handler/listBranches input var/dir type/string
 set handler/listBranches async
 set handler/listBranches output var type(string[])
-set handler/listBranches handles-pattern(get git dir/\$dir branch/*)
+set handler/listBranches handles-query(get git dir/\$dir branch/*)
 
 set code-generation/git-storage handler/checkBranchExists
 set handler/checkBranchExists function-name(checkBranchExists)
@@ -1161,12 +1165,13 @@ set handler/checkBranchExists input var/dir type/string
 set handler/checkBranchExists input var/branchName type/string
 set handler/checkBranchExists output var type(boolean)
 set handler/checkBranchExists async
-set handler/checkBranchExists handles-pattern(get git dir/\$dir branch/\$branch)
+set handler/checkBranchExists handles-query(get git dir/\$dir branch/\$branch)
 
 set code-generation/git-storage handler/deleteBranch
 set handler/deleteBranch function-name(deleteBranch)
 set handler/deleteBranch input var/dir type/string
 set handler/deleteBranch input var/branchName type/string
 set handler/deleteBranch async
-set handler/deleteBranch handles-pattern(delete git dir/\$dir branch/\$branch)
+set handler/deleteBranch handles-query(delete git dir/\$dir branch/\$branch)
+
 `

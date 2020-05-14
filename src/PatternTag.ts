@@ -81,6 +81,10 @@ export default class PatternTag {
         return out;
     }
 
+    removeIdentifier(): PatternTag {
+        return this.setIdentifier(null);
+    }
+
     setValueExpr(expr: string[]): PatternTag {
         const out = this.copy();
         out.valueExpr = expr;

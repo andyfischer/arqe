@@ -3,6 +3,8 @@ import Graph from '../Graph'
 import { startFile, startObjectLiteral, Block, formatBlock, startFunctionTypeDef } from './JavascriptAst'
 import StorageHandlerGeneratorAPI from './StorageHandlerGeneratorAPI'
 import { writeFileSyncIfUnchanged } from '../context/fs'
+import Pattern from '../Pattern'
+import parseCommand from '../parseCommand'
 
 function createHandlerInterface(api: StorageHandlerGeneratorAPI, file: Block) {
     const handlerInterface = file.addInterface('NativeHandler');
@@ -28,7 +30,7 @@ function createHandlerInterface(api: StorageHandlerGeneratorAPI, file: Block) {
 function createFileAst(api: StorageHandlerGeneratorAPI, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
-    file.addImport('{ GraphLike, Relation, receiveToRelationListPromise }', importPath);
+    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver }', importPath);
 
     createHandlerInterface(api, file);
 
@@ -40,9 +42,42 @@ function createFileAst(api: StorageHandlerGeneratorAPI, target: string) {
     contructorFunc.addInput('handler', 'NativeHandler');
     contructorFunc.contents.addRaw('this.handler = handler;');
 
-    //apiClass.contents.addMethod('
+    const runSearch = apiClass.contents.addMethod('runSearch');
+    runSearch.addInput('pattern', 'Pattern');
+    runSearch.addInput('output', 'RelationReceiver');
+
+    const runSave = apiClass.contents.addMethod('runSave');
+    runSave.addInput('relation', 'Relation');
+    runSave.addInput('output', 'RelationReceiver');
+
+    const runDelete = apiClass.contents.addMethod('runDelete');
+    runDelete.addInput('pattern', 'Pattern');
+    runDelete.addInput('output', 'RelationReceiver');
+
+    for (const handler of api.listHandlers()) {
+        const query = api.handlerQuery(handler);
+        if (query.startsWith('get ')) {
+            addPatternCheck(api, runSearch.contents, handler);
+        } else if (query.startsWith('set ')) {
+            addPatternCheck(api, runSave.contents, handler);
+        } else if (query.startsWith('delete ')) {
+            addPatternCheck(api, runDelete.contents, handler);
+        } else {
+            throw new Error(`don't know how to handle query: ${query}`);
+        }
+    }
 
     return file;
+}
+
+function addPatternCheck(api: StorageHandlerGeneratorAPI, block: Block, handler: string) {
+    const query = api.handlerQuery(handler);
+    const command = parseCommand(query);
+
+    block.addComment('check for: ' + handler);
+    block.addComment(query)
+    // block.addComment(patternWithoutIdentifiers.stringify())
+    block.addBlank();
 }
 
 export function runStorageHandlerGenerator(graph: Graph, target: string) {
