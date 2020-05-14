@@ -38,6 +38,9 @@ function createFileAst(api: StorageHandlerGeneratorAPI, target: string) {
 
     const contructorFunc = apiClass.contents.addMethod('constructor');
     contructorFunc.addInput('handler', 'NativeHandler');
+    contructorFunc.contents.addRaw('this.handler = handler;');
+
+    //apiClass.contents.addMethod('
 
     return file;
 }

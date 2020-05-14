@@ -11,5 +11,6 @@ export default class API {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {
+        this.handler = handler;
     }
 }
