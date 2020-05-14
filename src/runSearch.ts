@@ -97,9 +97,9 @@ function get_after_inherit(search: SearchOperation) {
             return;
     }
 
-    const storageHook = graph.getStorageHook(search.pattern);
+    //const storageHook = graph.getStorageHook(search.pattern);
 
-    storageHook.iterateSlots(search.pattern, {
+    graph.inMemory.iterateSlots(search.pattern, {
         relationOutput: search,
         slot(slot: Slot) {
             search.relation(slot.relation);
