@@ -8,4 +8,8 @@ interface NativeHandler {
 }
 
 export default class API {
+    handler: NativeHandler
+
+    constructor(handler: NativeHandler) {
+    }
 }

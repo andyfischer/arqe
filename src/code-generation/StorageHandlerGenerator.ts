@@ -33,7 +33,11 @@ function createFileAst(api: StorageHandlerGeneratorAPI, target: string) {
     createHandlerInterface(api, file);
 
     const apiClass = file.addClass('API');
+    apiClass.addField('handler', 'NativeHandler');
     apiClass.isExportDefault = true;
+
+    const contructorFunc = apiClass.contents.addMethod('constructor');
+    contructorFunc.addInput('handler', 'NativeHandler');
 
     return file;
 }
