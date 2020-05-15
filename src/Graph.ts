@@ -67,7 +67,6 @@ export default class Graph {
 
         this.storageProvidersV3.push(setupTestMathStorage());
         this.storageProvidersV3.push(setupFileChangeLog(this));
-
     }
 
     savedQuery(queryStr: string): SavedQuery {

@@ -10,39 +10,4 @@ export default function init(graph: Graph) {
             notifyFileChanged(graph, filename);
         }
     });
-    /*
-    FileChangedLog {
-    graph: Graph
-
-    constructor(graph: Graph) {
-        this.graph = graph;
-    }
-
-    useForPattern(pattern: Pattern) {
-        return false;
-    }
-
-    saveNewRelation2(relation: Relation) {
-    }
-
-    getRelations(pattern: Pattern, output: RelationReceiver) {
-        output.finish();
-    }
-
-    hookSave(save: SaveOperation) {
-        const { relation } = save;
-
-        if (relation.hasType('log') && relation.hasType('file-changed')) {
-
-            notifyFileChanged(this.graph, relation.getTagValue('filename'));
-
-            save.output.relation(relation);
-            save.output.finish();
-
-            return true;
-        }
-
-        return false;
-    }
-    */
 }
