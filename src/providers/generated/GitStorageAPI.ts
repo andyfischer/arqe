@@ -47,6 +47,8 @@ export default class API implements StorageProviderV3 {
             const dir = pattern.getTagValue("dir");
             const branchName = pattern.getTagValue("branch");
             this.handler.createBranch(dir, branchName);
+            output.relation(pattern);
+            output.finish();
         }
 
     }

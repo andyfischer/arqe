@@ -1,15 +1,17 @@
 
-import SaveSearchHook from '../SaveSearchHook'
-import SearchOperation from '../SearchOperation'
 import Graph from '../Graph'
-import SaveOperation from '../SaveOperation'
-import Pattern from '../Pattern'
-import Relation from '../Relation'
-import RelationReceiver from '../RelationReceiver'
+import FileChangeLogAPI from './generated/FileChangeLogAPI'
 
 import { notifyFileChanged } from '../file-watch/notifyFileChanged'
 
-export default class FileChangedLog {
+export default function init(graph: Graph) {
+    return new FileChangeLogAPI({
+        onChange(filename: string) {
+            notifyFileChanged(graph, filename);
+        }
+    });
+    /*
+    FileChangedLog {
     graph: Graph
 
     constructor(graph: Graph) {
@@ -42,4 +44,5 @@ export default class FileChangedLog {
 
         return false;
     }
+    */
 }

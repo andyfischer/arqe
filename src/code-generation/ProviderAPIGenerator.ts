@@ -139,6 +139,14 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
 
     if (outputs.length === 0) {
         onHit.contents.addRaw(`this.handler.${functionName}(${vars.join(', ')});`);
+
+        if (query.startsWith('set ')) {
+            // If save: Echo back the relation that was saved.
+            onHit.contents.addRaw(`output.relation(pattern);`);
+            onHit.contents.addRaw(`output.finish();`);
+        }
+
+
     } else {
         const tagType = outputs[0].fromStr.replace('/*', '');
         const varStr = outputs[0].varStr;

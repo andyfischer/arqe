@@ -1189,7 +1189,6 @@ set code-generation/test-math-provider ik-import(../..)
 set code-generation/test-math-provider strategy/provider-api
 set code-generation/test-math-provider handles-pattern(test-math **)
 
-
 set code-generation/test-math-provider handler/sum
 set handler/sum function-name(sum)
 set handler/sum input var/a type/string
@@ -1197,3 +1196,13 @@ set handler/sum input var/b type/string
 set handler/sum output var/sum from(sum/*)
 set handler/sum handles-query(get test-math sum a/$a b/$b)
 
+set code-generation/file-change-log
+set code-generation/file-change-log strategy/provider-api
+set code-generation/file-change-log destination-filename(src/providers/generated/FileChangeLogAPI.ts)
+set code-generation/file-change-log ik-import(../..)
+set code-generation/file-change-log handles-pattern(log file-changed filename/*)
+
+set code-generation/file-change-log handler/onChange
+set handler/onChange function-name(onChange)
+set handler/onChange input var/filename type/string
+set handler/onChange handles-query(set log file-changed filename/$filename)
