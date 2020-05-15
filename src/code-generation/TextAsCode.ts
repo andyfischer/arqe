@@ -1,6 +1,6 @@
 
 import Graph from '../Graph'
-import TextAsCodeApi from './TextAsCodeApi'
+import TextAsCodeDAO from './generated/TextAsCodeDAO'
 import { readFileSync, writeFileSyncIfUnchanged } from '../context/fs'
 
 function javascriptTemplate(vars) {
@@ -13,7 +13,7 @@ function javascriptTemplate(vars) {
 }
 
 export function generateTextAsCode(graph: Graph, target: string) {
-    const api = new TextAsCodeApi(graph);
+    const api = new TextAsCodeDAO(graph);
     const fromFile = api.fromFile(target);
     const destinationFilename = api.destinationFilename(target);
     const text = readFileSync(fromFile, 'utf8');

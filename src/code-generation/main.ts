@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
-import CodeGenerationApi from './CodeGenerationApi'
-import { runDAOGenerator2 } from './DAOGenerator2'
+import CodeGenerationDAO from './generated/CodeGenerationDAO'
+import { runDAOGenerator } from './DAOGenerator'
 import { generateTextAsCode } from './TextAsCode'
 import watchFile from '../file-watch/watchFile'
 import { notifyFileChanged } from '../file-watch/notifyFileChanged'
@@ -9,13 +9,11 @@ import Minimist from 'minimist'
 import runStandardProcess from '../toollib/runStandardProcess'
 import { runProviderGenerator } from './ProviderAPIGenerator'
 
-function runGenerationForTarget(dataSource: Graph, api: CodeGenerationApi, target) {
+function runGenerationForTarget(dataSource: Graph, api: CodeGenerationDAO, target) {
     const strategy = api.codeGenerationTargetStrategy(target);
 
     if (strategy === 'dao-api') {
-        runDAOGenerator2(dataSource, target);
-    } else if (strategy === 'dao-api2') {
-        runDAOGenerator2(dataSource, target);
+        runDAOGenerator(dataSource, target);
     } else if (strategy == 'text-as-code') {
         generateTextAsCode(dataSource, target);
     } else if (strategy == 'provider-api') {
@@ -35,7 +33,7 @@ async function runGeneration(graph: Graph) {
         console.log(`running code generation (using ${filename})`);
 
         const dataSource = Graph.loadFromDumpFile(filename);
-        const api = new CodeGenerationApi(dataSource);
+        const api = new CodeGenerationDAO(dataSource);
 
         for (const target of api.listCodeGenerationTargets()) {
             try {

@@ -346,7 +346,7 @@ function createFileAst(api: DAOGeneratorDAO, target: string) {
     return file;
 }
 
-export function runDAOGenerator2(graph: Graph, target: string) {
+export function runDAOGenerator(graph: Graph, target: string) {
 
     const api = new DAOGeneratorDAO(graph);
     const ast = createFileAst(api, target);

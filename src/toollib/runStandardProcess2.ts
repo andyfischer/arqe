@@ -1,8 +1,8 @@
 
 import Graph from '../Graph'
 import getProcessClient from '../toollib/getProcessClient'
-import ToolShellApi from './ToolShellApi'
-import CommandLineToolApi from './CommandLineToolApi'
+import ToolShellApi from './generated/ToolShellApi'
+import CommandLineToolApi from './generated/CommandLineToolApi'
 import Minimist from 'minimist'
 
 export default async function runStandardProcess2(toolName: string, handler: (graph: Graph, api: CommandLineToolApi) => Promise<void>) {

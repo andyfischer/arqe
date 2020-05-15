@@ -15,8 +15,8 @@ export default async function main() {
     let graph;
     let useRemoteServer = true;
 
-    if (cliArgs.f) {
-        graph = Graph.loadFromDumpFile(cliArgs.f);
+    if (cliArgs.file) {
+        graph = Graph.loadFromDumpFile(cliArgs.file);
         useRemoteServer = false;
     }
 

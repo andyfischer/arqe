@@ -217,8 +217,8 @@ set input/16 name/objectdef
 set input/16 type/string
 
 set code-generation/2
-set code-generation/2 destination-filename(src/code-generation/CodeGenerationApi.ts)
-set code-generation/2 ik-import(..)
+set code-generation/2 destination-filename(src/code-generation/generated/CodeGenerationDAO.ts)
+set code-generation/2 ik-import(../..)
 set code-generation/2 strategy/dao-api
 
 set code-generation/2 touchpoint/17.1
@@ -232,9 +232,9 @@ set touchpoint/17 expectOne
 set touchpoint/17 input/0.5
 
 set code-generation/3
-set code-generation/3 destination-filename(src/code-generation/TextAsCodeApi.ts)
+set code-generation/3 destination-filename(src/code-generation/generated/TextAsCodeDAO.ts)
 set code-generation/3 strategy/dao-api
-set code-generation/3 ik-import(..)
+set code-generation/3 ik-import(../..)
 
 set code-generation/3 touchpoint/18
 set touchpoint/18 function-name(fromFile)
@@ -253,9 +253,9 @@ set input/touchpoint name/touchpoint
 set input/touchpoint type/string
 
 set code-generation/socket
-set code-generation/socket destination-filename(src/code-generation/SocketApi.ts)
+set code-generation/socket destination-filename(src/socket/generated/SocketDAO.ts)
 set code-generation/socket strategy/dao-api
-set code-generation/socket ik-import(..)
+set code-generation/socket ik-import(../..)
 
 set code-generation/socket touchpoint/socket1
 set touchpoint/socket1 function-name(createUniqueConnection)
@@ -578,8 +578,8 @@ set touchpoint/db20 expectOne
 set touchpoint/db20 output optional
 
 set code-generation/watch-file
-set code-generation/watch-file destination-filename(src/file-watch/WatchFileApi.ts)
-set code-generation/watch-file ik-import(..)
+set code-generation/watch-file destination-filename(src/file-watch/generated/WatchFileApi.ts)
+set code-generation/watch-file ik-import(../..)
 set code-generation/watch-file strategy/dao-api
 
 set code-generation/watch-file touchpoint/findWatch
@@ -1022,8 +1022,8 @@ set touchpoint/eventTypeId input var/eventType type/string
 set touchpoint/eventTypeProvides input var/eventType type/string
 
 set code-generation/cliShell
-set code-generation/cliShell destination-filename(src/toollib/ToolShellApi.ts)
-set code-generation/cliShell ik-import(..)
+set code-generation/cliShell destination-filename(src/toollib/generated/ToolShellApi.ts)
+set code-generation/cliShell ik-import(../..)
 set code-generation/cliShell strategy/dao-api
 
 set code-generation/cliShell touchpoint/listCliInputs
@@ -1066,8 +1066,8 @@ set touchpoint/setCliInput input var/value type/string
 set touchpoint/setCliInput async
 
 set code-generation/cliApi
-set code-generation/cliApi destination-filename(src/toollib/CommandLineToolApi.ts)
-set code-generation/cliApi ik-import(..)
+set code-generation/cliApi destination-filename(src/toollib/generated/CommandLineToolApi.ts)
+set code-generation/cliApi ik-import(../..)
 set code-generation/cliApi strategy/dao-api
 set code-generation/cliApi field/execId type/string
 
@@ -1149,8 +1149,8 @@ set touchpoint/handlerQuery output var from(handles-query/*)
 set touchpoint/handlerQuery expectOne
 
 set code-generation/git-provider
-set code-generation/git-provider destination-filename(src/hooks/GitStorageAPI.ts)
-set code-generation/git-provider ik-import(..)
+set code-generation/git-provider destination-filename(src/providers/generated/GitStorageAPI.ts)
+set code-generation/git-provider ik-import(../..)
 set code-generation/git-provider strategy/provider-api
 set code-generation/git-provider handles-pattern(git **)
 

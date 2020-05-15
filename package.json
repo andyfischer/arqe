@@ -9,6 +9,7 @@
     "tsc-watch": "tsc -w",
     "start": "tsc-watch --onSuccess ./bin/fs-server",
     "cli": "node dist/startCli.js",
+    "local-cli": "node dist/startCli.js --file src/source.graph",
     "generate-api": "tsc-watch --onSuccess 'bin/fs-code-generator --file src/source.graph'"
   },
   "dependencies": {

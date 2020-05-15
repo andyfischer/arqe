@@ -1,7 +1,7 @@
 
 import HTTP from 'http'
 import WebSocket from 'ws'
-import SocketApi from '../code-generation/SocketApi'
+import SocketDAO from './generated/SocketDAO'
 import Graph from '../Graph'
 import Connection from './Connection'
 import EventEmitter from 'events'
@@ -21,12 +21,12 @@ export default class WebServer extends EventEmitter {
     httpServer: HTTP.Server
     wsServer: WebSocket.Server
     port: number
-    api: SocketApi
+    api: SocketDAO
 
     constructor(graph: Graph) {
         super();
         this.graph = graph;
-        this.api = new SocketApi(this.graph);
+        this.api = new SocketDAO(this.graph);
     }
 
     handlePostCommand(query: string, res) {
@@ -109,7 +109,7 @@ export default class WebServer extends EventEmitter {
     }
 
     async createAndListen() {
-        const api = new SocketApi(this.graph);
+        const api = new SocketDAO(this.graph);
         let port = parseInt(api.getServerPort());
         let attempt = 0;
         

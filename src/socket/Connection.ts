@@ -1,7 +1,7 @@
 
 import WebSocket from 'ws'
 import Graph from '../Graph'
-import SocketApi from '../code-generation/SocketApi'
+import SocketDAO from './generated/SocketDAO'
 import EventEmitter from 'events'
 import logError from '../logError'
 import Relation from '../Relation'
@@ -9,7 +9,7 @@ import Relation from '../Relation'
 export default class Connection extends EventEmitter {
     ws: WebSocket
     graph: Graph
-    api: SocketApi
+    api: SocketDAO
 
     send(query, data) {
         this.emit('send', { query, rel: data.rel, finish: data.finish, error: data.err });
@@ -21,7 +21,7 @@ export default class Connection extends EventEmitter {
 
         this.graph = graph
         this.ws = ws;
-        this.api = new SocketApi(graph);
+        this.api = new SocketDAO(graph);
         const id = this.api.createUniqueConnection();
         console.log(`[${id} connected]`);
 

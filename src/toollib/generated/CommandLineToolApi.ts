@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from ".."
+import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
