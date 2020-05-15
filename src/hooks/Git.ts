@@ -4,7 +4,6 @@ import { emitCommandError } from '../CommandMeta'
 import Relation from '../Relation'
 import RelationReceiver from '../RelationReceiver'
 import Pattern from '../Pattern'
-import StorageSlotHook  from '../StorageSlotHook'
 import Slot from '../Slot'
 import SlotReceiver from '../SlotReceiver'
 

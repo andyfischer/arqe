@@ -10,7 +10,6 @@ import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
-import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
 import SlotReceiver from './SlotReceiver'
 import CompiledQuery from './CompiledQuery'
@@ -30,7 +29,7 @@ function getImpliedTableName(rel: Relation) {
     return els.join(' ');
 }
 
-export default class InMemoryStorage implements StorageSlotHook {
+export default class InMemoryStorage {
     graph: Graph
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
     slots: { [ slotId: string]: Relation } = {};

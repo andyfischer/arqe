@@ -27,7 +27,6 @@ import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
 import GitHook from './hooks/Git'
-import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
 import FileChangedLog from './hooks/FileChangedLog'
 import { StorageProvider2 } from './CompiledQuery'
@@ -55,8 +54,6 @@ export default class Graph {
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
-
-    storageSlotHooks: StorageSlotHook[] = []
 
     storageProviders: StorageProviderMount[] = []
     storageProvidersV3: StorageProviderV3[] = []
@@ -251,13 +248,6 @@ export default class Graph {
     }
 
     saveNewRelation(relation: Relation, output: RelationReceiver) {
-        for (const hook of this.storageSlotHooks) {
-            if (hook.hookPattern(relation)) {
-                hook.saveNewRelation(relation, output);
-                return
-            }
-        }
-
         this.inMemory.saveNewRelation(relation, output);
     }
 
