@@ -6,8 +6,8 @@ set typeinfo/typeinfo order(before)
 set typeinfo/branch order(after)
     
 set code-generation/dao
-set code-generation/dao destination-filename(src/code-generation/DAOGeneratorGeneratedDAO.ts)
-set code-generation/dao ik-import(..)
+set code-generation/dao destination-filename(src/code-generation/generated/DAOGeneratorDAO.ts)
+set code-generation/dao ik-import(../..)
 set code-generation/dao strategy/dao-api
 # set code-generation/dao verbose-logging
 
@@ -1108,8 +1108,8 @@ set touchpoint/deleteBranch input var/branch type/string
 set touchpoint/deleteBranch async
 
 set code-generation/storageGenerator
-set code-generation/storageGenerator destination-filename(src/code-generation/StorageHandlerGeneratorAPI.ts)
-set code-generation/storageGenerator ik-import(..)
+set code-generation/storageGenerator destination-filename(src/code-generation/generated/ProviderGeneratorDAO.ts)
+set code-generation/storageGenerator ik-import(../..)
 set code-generation/storageGenerator strategy/dao-api
 set code-generation/storageGenerator field/target type/string
 
@@ -1148,27 +1148,27 @@ set touchpoint/handlerQuery input var/handler type/string
 set touchpoint/handlerQuery output var from(handles-query/*)
 set touchpoint/handlerQuery expectOne
 
-set code-generation/git-storage
-set code-generation/git-storage destination-filename(src/hooks/GitStorageAPI.ts)
-set code-generation/git-storage ik-import(..)
-set code-generation/git-storage strategy/storage-handler
-set code-generation/git-storage handles-pattern(git **)
+set code-generation/git-provider
+set code-generation/git-provider destination-filename(src/hooks/GitStorageAPI.ts)
+set code-generation/git-provider ik-import(..)
+set code-generation/git-provider strategy/provider-api
+set code-generation/git-provider handles-pattern(git **)
 
-set code-generation/git-storage handler/createBranch
+set code-generation/git-provider handler/createBranch
 set handler/createBranch function-name(createBranch)
 set handler/createBranch input var/dir type/string
 set handler/createBranch input var/branchName type/string
 set handler/createBranch async
 set handler/createBranch handles-query(set git dir/\$dir branch/\$branchName)
 
-set code-generation/git-storage handler/listBranches
+set code-generation/git-provider handler/listBranches
 set handler/listBranches function-name(listBranches)
 set handler/listBranches input var/dir type/string
 set handler/listBranches async
 set handler/listBranches output var type(string[])
 set handler/listBranches handles-query(get git dir/\$dir branch/*)
 
-set code-generation/git-storage handler/checkBranchExists
+set code-generation/git-provider handler/checkBranchExists
 set handler/checkBranchExists function-name(checkBranchExists)
 set handler/checkBranchExists input var/dir type/string
 set handler/checkBranchExists input var/branchName type/string
@@ -1176,21 +1176,21 @@ set handler/checkBranchExists output var type(boolean)
 set handler/checkBranchExists async
 set handler/checkBranchExists handles-query(get git dir/\$dir branch/\$branch)
 
-set code-generation/git-storage handler/deleteBranch
+set code-generation/git-provider handler/deleteBranch
 set handler/deleteBranch function-name(deleteBranch)
 set handler/deleteBranch input var/dir type/string
 set handler/deleteBranch input var/branchName type/string
 set handler/deleteBranch async
 set handler/deleteBranch handles-query(delete git dir/\$dir branch/\$branch)
 
-set code-generation/test-math-storage
-set code-generation/test-math-storage destination-filename(src/hooks/TestMathStorageAPI.ts)
-set code-generation/test-math-storage ik-import(..)
-set code-generation/test-math-storage strategy/storage-handler
-set code-generation/test-math-storage handles-pattern(test-math **)
+set code-generation/test-math-provider
+set code-generation/test-math-provider destination-filename(src/providers/generated/TestMathProviderAPI.ts)
+set code-generation/test-math-provider ik-import(../..)
+set code-generation/test-math-provider strategy/provider-api
+set code-generation/test-math-provider handles-pattern(test-math **)
 
 
-set code-generation/test-math-storage handler/sum
+set code-generation/test-math-provider handler/sum
 set handler/sum function-name(sum)
 set handler/sum input var/a type/string
 set handler/sum input var/b type/string

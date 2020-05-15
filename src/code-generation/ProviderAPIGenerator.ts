@@ -1,12 +1,12 @@
 
 import Graph from '../Graph'
 import { startFile, startObjectLiteral, Block, formatBlock, startFunctionTypeDef } from './JavascriptAst'
-import StorageHandlerGeneratorAPI from './StorageHandlerGeneratorAPI'
+import ProviderGeneratorDAO from './generated/ProviderGeneratorDAO'
 import { writeFileSyncIfUnchanged } from '../context/fs'
 import Pattern from '../Pattern'
 import parseCommand, { parsePattern } from '../parseCommand'
 
-function createHandlerInterface(api: StorageHandlerGeneratorAPI, file: Block) {
+function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
     const handlerInterface = file.addInterface('NativeHandler');
 
     for (const handler of api.listHandlers()) {
@@ -27,7 +27,7 @@ function createHandlerInterface(api: StorageHandlerGeneratorAPI, file: Block) {
     }
 }
 
-function createFileAst(api: StorageHandlerGeneratorAPI, target: string) {
+function createFileAst(api: ProviderGeneratorDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
     file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 }', importPath);
@@ -118,7 +118,7 @@ function pullOutVarsFromPattern(pattern: Pattern, block: Block) {
     return vars;
 }
 
-function addPatternCheck(api: StorageHandlerGeneratorAPI, block: Block, handler: string) {
+function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: string) {
     const query = api.handlerQuery(handler);
     const command = parseCommand(query);
     const pattern = command.pattern;
@@ -151,8 +151,8 @@ function addPatternCheck(api: StorageHandlerGeneratorAPI, block: Block, handler:
     block.addBlank();
 }
 
-export function runStorageHandlerGenerator(graph: Graph, target: string) {
-    const api = new StorageHandlerGeneratorAPI(graph);
+export function runProviderGenerator(graph: Graph, target: string) {
+    const api = new ProviderGeneratorDAO(graph);
     api.target = target;
 
     const ast = createFileAst(api, target);

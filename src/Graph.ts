@@ -31,7 +31,7 @@ import Slot from './Slot'
 import FileChangedLog from './hooks/FileChangedLog'
 import { StorageProvider2 } from './CompiledQuery'
 import StorageProviderV3 from './StorageProviderV3'
-import { setupTestMathStorage } from './hooks/TestMathStorage'
+import { setupTestMathStorage } from './providers/TestMathStorage'
 
 interface StorageProviderMount {
     match: Pattern
@@ -62,7 +62,6 @@ export default class Graph {
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
-        // this.addListener(parsePattern('object-type/* **'), this.objectTypes);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
         this.storageProviders.push({ match: parsePattern('git **'), provider: new GitHook(this)});
         this.storageProviders.push({ match: parsePattern('log file-changed'), provider: new FileChangedLog(this)});

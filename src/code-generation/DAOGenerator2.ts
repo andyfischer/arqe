@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
 import { writeFileSyncIfUnchanged } from '../context/fs'
-import DAOGeneratorGeneratedDAO from './DAOGeneratorGeneratedDAO'
+import DAOGeneratorDAO from './generated/DAOGeneratorDAO'
 import { startFile, startObjectLiteral, Block, formatBlock } from './JavascriptAst'
 
 interface InputDef {
@@ -9,7 +9,7 @@ interface InputDef {
     inputType?: string
 }
 
-function sortInputs(api: DAOGeneratorGeneratedDAO, inputs: string[]) {
+function sortInputs(api: DAOGeneratorDAO, inputs: string[]) {
     if (inputs.length < 2)
         return inputs;
 
@@ -36,7 +36,7 @@ function sortInputs(api: DAOGeneratorGeneratedDAO, inputs: string[]) {
     return entries.map(entry => entry.input);
 }
 
-function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
+function getTouchpointOutputType(api: DAOGeneratorDAO, touchpoint: string) {
     const outputExists = api.touchpointOutputIsExists(touchpoint);
     const outputFrom = api.touchpointOutputs(touchpoint);
     const expectOne = api.touchpointExpectOne(touchpoint);
@@ -65,7 +65,7 @@ function getTouchpointOutputType(api: DAOGeneratorGeneratedDAO, touchpoint: stri
     return outputTypeStr;
 }
 
-function getTypeForListenerCallback(api: DAOGeneratorGeneratedDAO, touchpoint: string) {
+function getTypeForListenerCallback(api: DAOGeneratorDAO, touchpoint: string) {
     const outputFrom = api.touchpointOutput(touchpoint);
 
     if (outputFrom) {
@@ -76,7 +76,7 @@ function getTypeForListenerCallback(api: DAOGeneratorGeneratedDAO, touchpoint: s
     return `(rel: Relation) => void`
 }
 
-function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: string) {
+function defineMethod(api: DAOGeneratorDAO, block: Block, touchpoint: string) {
 
     const touchpointStyle = api.touchpointStyle(touchpoint);
     if (touchpointStyle === 'eventListener') {
@@ -160,7 +160,7 @@ function defineMethod(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: s
     methodReturnResult(api, touchpoint, func.contents);
 }
 
-function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchpoint: string) {
+function defineEventListener(api: DAOGeneratorDAO, block: Block, touchpoint: string) {
 
     const name = api.touchpointFunctionName(touchpoint);
     const func = block.addMethod(name);
@@ -204,7 +204,7 @@ function defineEventListener(api: DAOGeneratorGeneratedDAO, block: Block, touchp
     }
 }
 
-function oneRelationOutputExpression(api: DAOGeneratorGeneratedDAO, fromStr: string, relVarName = 'rel') {
+function oneRelationOutputExpression(api: DAOGeneratorDAO, fromStr: string, relVarName = 'rel') {
     if (fromStr.endsWith('/*')) {
         return `${relVarName}.getTagValue("${fromStr.replace('/*', '')}")`
     } else {
@@ -212,7 +212,7 @@ function oneRelationOutputExpression(api: DAOGeneratorGeneratedDAO, fromStr: str
     }
 }
 
-function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: string, relVarName = 'rel') {
+function relationOutputExpression(api: DAOGeneratorDAO, touchpoint: string, relVarName = 'rel') {
     const outputs = api.touchpointOutputs2(touchpoint);
 
     if (outputs.length === 1) {
@@ -233,7 +233,7 @@ function relationOutputExpression(api: DAOGeneratorGeneratedDAO, touchpoint: str
     return `rel`;
 }
 
-function methodBodyForListener(api: DAOGeneratorGeneratedDAO, touchpoint: string, block: Block) {
+function methodBodyForListener(api: DAOGeneratorDAO, touchpoint: string, block: Block) {
     block.addRaw('this.graph.run(command, {')
     block.addRaw('    relation(rel: Relation) {')
     block.addRaw(`        if (rel.hasType('command-meta'))`)
@@ -244,7 +244,7 @@ function methodBodyForListener(api: DAOGeneratorGeneratedDAO, touchpoint: string
     block.addRaw(`});`);
 }
 
-function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, block: Block) {
+function methodReturnResult(api: DAOGeneratorDAO, touchpoint: string, block: Block) {
     const name = api.touchpointFunctionName(touchpoint);
     const expectOne = api.touchpointExpectOne(touchpoint);
     const isAsync = api.touchpointIsAsync(touchpoint);
@@ -321,7 +321,7 @@ function methodReturnResult(api: DAOGeneratorGeneratedDAO, touchpoint: string, b
     block.addRaw('// no output?');
 }
 
-function createFileAst(api: DAOGeneratorGeneratedDAO, target: string) {
+function createFileAst(api: DAOGeneratorDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
     file.addImport('{ GraphLike, Relation, receiveToRelationListPromise }', importPath);
@@ -348,7 +348,7 @@ function createFileAst(api: DAOGeneratorGeneratedDAO, target: string) {
 
 export function runDAOGenerator2(graph: Graph, target: string) {
 
-    const api = new DAOGeneratorGeneratedDAO(graph);
+    const api = new DAOGeneratorDAO(graph);
     const ast = createFileAst(api, target);
     formatBlock(ast);
     const destinationFilename = api.getDestinationFilename(target)

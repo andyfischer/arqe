@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 } from ".."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 } from "../.."
 
 interface NativeHandler {
     sum: (a: string, b: string) => void
