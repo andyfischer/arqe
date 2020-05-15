@@ -126,10 +126,12 @@ export default function runSave(save: SaveOperation) {
 
     const { graph, relation, output } = save;
 
+    /*
     for (const hook of graph.saveSearchHooks) {
         if (hook.hookSave(save))
             return;
     }
+    */
 
     const effects = getEffects(relation);
 

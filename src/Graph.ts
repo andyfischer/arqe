@@ -9,7 +9,6 @@ import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
-import updateFilesystemMounts from './updateFilesystemMounts'
 import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
 import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
@@ -21,14 +20,12 @@ import TagTypeOrdering from './TagTypeOrdering'
 import runningInBrowser from './context/runningInBrowser'
 import IDSource from './utils/IDSource'
 import receiveToStringList from './receiveToStringList'
-import { ObjectTypeSpace } from './hooks/ObjectSpace'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
-import { getObjectSpaceHooks } from './hooks/ObjectSpace'
 import GitHook from './hooks/Git'
 import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
@@ -45,7 +42,6 @@ interface StorageProviderMount {
 export default class Graph {
 
     inMemory = new InMemoryStorage(this)
-    objectTypes = new ObjectTypeSpace(this)
     listeners: GraphListenerMount[] = []
 
     savedQueries: SavedQuery[] = []
@@ -54,31 +50,23 @@ export default class Graph {
     ordering = new TagTypeOrdering()
     typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<InheritTags>
-    filesystemMounts: EagerValue<StorageMount[]>
     wsProviders: EagerValue<WebSocketProvider[]>
     derivedValueMounts: StorageMount[] = []
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
 
-    saveSearchHooks: SaveSearchHook[] = []
     storageSlotHooks: StorageSlotHook[] = []
 
     storageProviders: StorageProviderMount[] = []
     storageProvidersV3: StorageProviderV3[] = []
 
     constructor() {
-        if (runningInBrowser())
-            this.filesystemMounts = this.eagerValue(() => []);
-        else
-            this.filesystemMounts = this.eagerValue(updateFilesystemMounts);
-
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
-        this.addListener(parsePattern('object-type/* **'), this.objectTypes);
+        // this.addListener(parsePattern('object-type/* **'), this.objectTypes);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
-        this.saveSearchHooks.push(getObjectSpaceHooks());
         this.storageProviders.push({ match: parsePattern('git **'), provider: new GitHook(this)});
         this.storageProviders.push({ match: parsePattern('log file-changed'), provider: new FileChangedLog(this)});
 
@@ -106,12 +94,6 @@ export default class Graph {
     }
 
     *iterateMounts() {
-        if (this.filesystemMounts) {
-            const mounts = this.filesystemMounts.get();
-            for (const mount of mounts)
-                yield mount;
-        }
-
         for (const mount of this.derivedValueMounts)
             yield mount;
     }

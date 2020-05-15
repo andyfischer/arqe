@@ -92,10 +92,12 @@ function get_after_inherit(search: SearchOperation) {
         }
     }
 
+    /*
     for (const hook of graph.saveSearchHooks) {
         if (hook.hookSearch(search))
             return;
     }
+    */
 
     //const storageHook = graph.getStorageHook(search.pattern);
 
