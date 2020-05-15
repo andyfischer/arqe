@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 } from "../.."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError } from "../.."
 
 interface NativeHandler {
     createBranch: (dir: string, branchName: string) => void
@@ -38,6 +38,8 @@ export default class API implements StorageProviderV3 {
             this.handler.checkBranchExists(dir, branch);
         }
 
+        emitCommandError(output, "provider code-generation/git-provider doesn't support: get " + pattern.stringify());
+        output.finish()
     }
 
     runSave(pattern: Pattern, output: RelationReceiver) {
@@ -51,6 +53,8 @@ export default class API implements StorageProviderV3 {
             output.finish();
         }
 
+        emitCommandError(output, "provider code-generation/git-provider doesn't support: set " + pattern.stringify());
+        output.finish()
     }
 
     runDelete(pattern: Pattern, output: RelationReceiver) {
@@ -62,5 +66,7 @@ export default class API implements StorageProviderV3 {
             this.handler.deleteBranch(dir, branch);
         }
 
+        emitCommandError(output, "provider code-generation/git-provider doesn't support: delete " + pattern.stringify());
+        output.finish()
     }
 }

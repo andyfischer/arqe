@@ -30,7 +30,7 @@ function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
 function createFileAst(api: ProviderGeneratorDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
-    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 }', importPath);
+    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError }', importPath);
 
     createHandlerInterface(api, file);
 
@@ -75,6 +75,15 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
         } else {
             throw new Error(`don't know how to handle query: ${query}`);
         }
+    }
+
+    for (const { relevantCommand, method } of [
+        { relevantCommand: 'get', method: runSearch },
+        { relevantCommand: 'set', method: runSave },
+        { relevantCommand: 'delete', method: runDelete }]) {
+
+        method.contents.addRaw(`emitCommandError(output, "provider ${target} doesn't support: ${relevantCommand} " + pattern.stringify());`);
+        method.contents.addRaw(`output.finish()`);
     }
 
     return file;
@@ -151,7 +160,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
         const tagType = outputs[0].fromStr.replace('/*', '');
         const varStr = outputs[0].varStr;
         onHit.contents.addRaw(`const ${varStr} = this.handler.${functionName}(${vars.join(', ')});`);
-        onHit.contents.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${varStr}))`)
+        onHit.contents.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${varStr}))`);
         onHit.contents.addRaw(`output.finish();`);
         onHit.contents.addRaw(`return;`);
     }

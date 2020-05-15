@@ -8,6 +8,7 @@ export { default as receiveToRelationList } from './Relation'
 export { default as runStandardProcess } from './toollib/runStandardProcess'
 export { default as runStandardProcess2 } from './toollib/runStandardProcess2'
 export { default as StorageProviderV3 } from './StorageProviderV3'
+export * from './CommandMeta'
 export * from './receivers'
 
 if (require.main === module) {
