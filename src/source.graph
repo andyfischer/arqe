@@ -1117,6 +1117,7 @@ set code-generation/storageGenerator touchpoint/14.1
 set code-generation/storageGenerator touchpoint/0.8
 set code-generation/storageGenerator touchpoint/touchpointFunctionName
 set code-generation/storageGenerator touchpoint/touchpointInputs2
+set code-generation/storageGenerator touchpoint/touchpointOutputs2
 
 set code-generation/storageGenerator touchpoint/getHandlesPattern
 set touchpoint/getHandlesPattern function-name(getHandlesPattern)
@@ -1193,5 +1194,6 @@ set code-generation/test-math-storage handler/sum
 set handler/sum function-name(sum)
 set handler/sum input var/a type/string
 set handler/sum input var/b type/string
+set handler/sum output var/sum from(sum/*)
 set handler/sum handles-query(get test-math sum a/$a b/$b)
 

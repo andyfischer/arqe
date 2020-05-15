@@ -80,6 +80,18 @@ export default class API {
 }));
     }
 
+    touchpointOutputs2(touchpoint: string) {
+        const command = `get ${touchpoint} output from var`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => ({
+    fromStr: rel.getTagValue("from"),
+    varStr: rel.getTagValue("var"),
+}));
+    }
+
     getHandlesPattern(target: string): string {
         const command = `get ${target} handles-pattern/*`;
 

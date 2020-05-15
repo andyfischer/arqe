@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver } from ".."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 } from ".."
 
 interface NativeHandler {
     createBranch: (dir: string, branchName: string) => void
@@ -7,7 +7,7 @@ interface NativeHandler {
     deleteBranch: (dir: string, branchName: string) => void
 }
 
-export default class API {
+export default class API implements StorageProviderV3 {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {
@@ -27,7 +27,7 @@ export default class API {
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch"))) {
             const dir = pattern.getTagValue("dir");
-            this.handler.listBranches(dir)
+            this.handler.listBranches(dir);
         }
 
         // check for handler/checkBranchExists (get git dir/$dir branch/$branch)
@@ -35,7 +35,7 @@ export default class API {
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
             const dir = pattern.getTagValue("dir");
             const branch = pattern.getTagValue("branch");
-            this.handler.checkBranchExists(dir, branch)
+            this.handler.checkBranchExists(dir, branch);
         }
 
     }
@@ -46,7 +46,7 @@ export default class API {
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
             const dir = pattern.getTagValue("dir");
             const branchName = pattern.getTagValue("branch");
-            this.handler.createBranch(dir, branchName)
+            this.handler.createBranch(dir, branchName);
         }
 
     }
@@ -57,7 +57,7 @@ export default class API {
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
             const dir = pattern.getTagValue("dir");
             const branch = pattern.getTagValue("branch");
-            this.handler.deleteBranch(dir, branch)
+            this.handler.deleteBranch(dir, branch);
         }
 
     }

@@ -261,6 +261,14 @@ export default class Pattern {
         return this.copyWithNewTags(tags);
     }
 
+    setTagValueForType(tagType: string, value: any) {
+        return this.remapTags(tag => {
+            if (tag.tagType === tagType)
+                return tag.setValue(value);
+            return tag;
+        });
+    }
+
     findTagWithType(tagType: string) {
         for (let i = 0; i < this.tags.length; i++)
             if (this.tags[i].tagType === tagType)

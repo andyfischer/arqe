@@ -1,10 +1,10 @@
-import { GraphLike, Relation, Pattern, RelationReceiver } from ".."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 } from ".."
 
 interface NativeHandler {
     sum: (a: string, b: string) => void
 }
 
-export default class API {
+export default class API implements StorageProviderV3 {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {
@@ -25,7 +25,10 @@ export default class API {
         if ((pattern.tagCount() == 4) && (pattern.hasType("test-math")) && (pattern.hasType("sum")) && (pattern.hasType("a")) && (pattern.hasValueForType("a")) && (pattern.hasType("b")) && (pattern.hasValueForType("b"))) {
             const a = pattern.getTagValue("a");
             const b = pattern.getTagValue("b");
-            this.handler.sum(a, b)
+            const sum = this.handler.sum(a, b);
+            output.relation(pattern.setTagValueForType("sum", sum))
+            output.finish();
+            return;
         }
 
     }

@@ -143,6 +143,12 @@ export default function runSave(save: SaveOperation) {
 
     //const storageHook = graph.getStorageHook(filter);
 
+    const provider = graph.getStorageProviderV3(save.relation);
+    if (provider) {
+        provider.runSave(save.relation, save.output);
+        return;
+    }
+
     graph.inMemory.iterateSlots(filter, {
         relationOutput: output,
         slot(slot: Slot) {

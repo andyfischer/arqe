@@ -119,6 +119,7 @@ class ClassDef implements Statement {
     statementType = 'classDef'
     name: string
     contents: Block
+    implementsList: string[] = []
     isExport = false
     isExportDefault = false
 
@@ -131,12 +132,20 @@ class ClassDef implements Statement {
         this.contents.statements.push(new FieldDecl(name, tsType));
     }
 
+    addImplements(name: string) {
+        this.implementsList.push(name);
+    }
+
     line() {
         let s = `class ${this.name}`
         if (this.isExportDefault)
             s = 'export default ' + s;
         else if (this.isExport)
             s = 'export ' + s;
+
+        if (this.implementsList.length > 0) {
+            s += ` implements ${this.implementsList.join(', ')}`
+        }
 
         return s;
     }

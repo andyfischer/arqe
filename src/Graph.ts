@@ -34,6 +34,8 @@ import StorageSlotHook from './StorageSlotHook'
 import Slot from './Slot'
 import FileChangedLog from './hooks/FileChangedLog'
 import { StorageProvider2 } from './CompiledQuery'
+import StorageProviderV3 from './StorageProviderV3'
+import { setupTestMathStorage } from './hooks/TestMathStorage'
 
 interface StorageProviderMount {
     match: Pattern
@@ -63,6 +65,7 @@ export default class Graph {
     storageSlotHooks: StorageSlotHook[] = []
 
     storageProviders: StorageProviderMount[] = []
+    storageProvidersV3: StorageProviderV3[] = []
 
     constructor() {
         if (runningInBrowser())
@@ -78,6 +81,8 @@ export default class Graph {
         this.saveSearchHooks.push(getObjectSpaceHooks());
         this.storageProviders.push({ match: parsePattern('git **'), provider: new GitHook(this)});
         this.storageProviders.push({ match: parsePattern('log file-changed'), provider: new FileChangedLog(this)});
+
+        this.storageProvidersV3.push(setupTestMathStorage());
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -281,6 +286,13 @@ export default class Graph {
         }
 
         return this.inMemory;
+    }
+
+    getStorageProviderV3(pattern: Pattern): StorageProviderV3 {
+        for (const provider of this.storageProvidersV3) {
+            if (provider.handlesPattern(pattern))
+                return provider;
+        }
     }
 
     close() { }

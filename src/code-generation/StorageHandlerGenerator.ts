@@ -30,13 +30,14 @@ function createHandlerInterface(api: StorageHandlerGeneratorAPI, file: Block) {
 function createFileAst(api: StorageHandlerGeneratorAPI, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
-    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver }', importPath);
+    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3 }', importPath);
 
     createHandlerInterface(api, file);
 
     const apiClass = file.addClass('API');
     apiClass.addField('handler', 'NativeHandler');
     apiClass.isExportDefault = true;
+    apiClass.addImplements('StorageProviderV3');
 
     const contructorFunc = apiClass.contents.addMethod('constructor');
     contructorFunc.addInput('handler', 'NativeHandler');
@@ -130,7 +131,22 @@ function addPatternCheck(api: StorageHandlerGeneratorAPI, block: Block, handler:
     const functionName = api.touchpointFunctionName(handler);
 
     const vars = pullOutVarsFromPattern(pattern, onHit.contents);
-    onHit.contents.addRaw(`this.handler.${functionName}(${vars.join(', ')})`);
+    const outputs = api.touchpointOutputs2(handler);
+
+    if (outputs.length > 1) {
+        throw new Error(`no support for multiple outputs`);
+    }
+
+    if (outputs.length === 0) {
+        onHit.contents.addRaw(`this.handler.${functionName}(${vars.join(', ')});`);
+    } else {
+        const tagType = outputs[0].fromStr.replace('/*', '');
+        const varStr = outputs[0].varStr;
+        onHit.contents.addRaw(`const ${varStr} = this.handler.${functionName}(${vars.join(', ')});`);
+        onHit.contents.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${varStr}))`)
+        onHit.contents.addRaw(`output.finish();`);
+        onHit.contents.addRaw(`return;`);
+    }
 
     block.addBlank();
 }
