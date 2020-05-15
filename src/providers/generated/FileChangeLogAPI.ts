@@ -19,12 +19,12 @@ export default class API implements StorageProviderV3 {
         return false;
     }
 
-    runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: RelationReceiver) {
         emitCommandError(output, "provider code-generation/file-change-log doesn't support: get " + pattern.stringify());
         output.finish()
     }
 
-    runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: RelationReceiver) {
         // check for handler/onChange (set log file-changed filename/$filename)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("log")) && (pattern.hasType("file-changed")) && (pattern.hasType("filename")) && (pattern.hasValueForType("filename"))) {
@@ -38,7 +38,7 @@ export default class API implements StorageProviderV3 {
         output.finish()
     }
 
-    runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: RelationReceiver) {
         emitCommandError(output, "provider code-generation/file-change-log doesn't support: delete " + pattern.stringify());
         output.finish()
     }

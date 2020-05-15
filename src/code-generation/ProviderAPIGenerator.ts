@@ -53,14 +53,17 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
     handlesPatternMethod.contents.addRaw('return false;');
 
     const runSearch = apiClass.contents.addMethod('runSearch');
+    runSearch.isAsync = true;
     runSearch.addInput('pattern', 'Pattern');
     runSearch.addInput('output', 'RelationReceiver');
 
     const runSave = apiClass.contents.addMethod('runSave');
+    runSave.isAsync = true;
     runSave.addInput('pattern', 'Pattern');
     runSave.addInput('output', 'RelationReceiver');
 
     const runDelete = apiClass.contents.addMethod('runDelete');
+    runDelete.isAsync = true;
     runDelete.addInput('pattern', 'Pattern');
     runDelete.addInput('output', 'RelationReceiver');
 
@@ -138,17 +141,32 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     onHit.setCondition(patternCheckExpression(pattern));
 
     const functionName = api.touchpointFunctionName(handler);
-
     const vars = pullOutVarsFromPattern(pattern, onHit.contents);
     const outputs = api.touchpointOutputs2(handler);
+    const isAsync =  api.touchpointIsAsync(handler);
+
+    let outputVar = null;
+
+    if (outputs.length > 0) {
+        outputVar = outputs[0].varStr;
+    }
 
     if (outputs.length > 1) {
         throw new Error(`no support for multiple outputs`);
     }
 
-    if (outputs.length === 0) {
-        onHit.contents.addRaw(`this.handler.${functionName}(${vars.join(', ')});`);
+    // Add the handler call
+    let handlerCall = `this.handler.${functionName}(${vars.join(', ')});`;
 
+    if (isAsync)
+        handlerCall = `await ` + handlerCall;
+
+    if (!isAsync && outputVar)
+        handlerCall = `const ${outputVar} = ` + handlerCall;
+
+    onHit.contents.addRaw(handlerCall);
+
+    if (outputs.length === 0) {
         if (query.startsWith('set ')) {
             // If save: Echo back the relation that was saved.
             onHit.contents.addRaw(`output.relation(pattern);`);
@@ -158,9 +176,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
 
     } else {
         const tagType = outputs[0].fromStr.replace('/*', '');
-        const varStr = outputs[0].varStr;
-        onHit.contents.addRaw(`const ${varStr} = this.handler.${functionName}(${vars.join(', ')});`);
-        onHit.contents.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${varStr}))`);
+        onHit.contents.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${outputVar}))`);
         onHit.contents.addRaw(`output.finish();`);
         onHit.contents.addRaw(`return;`);
     }

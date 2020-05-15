@@ -19,7 +19,7 @@ export default class API implements StorageProviderV3 {
         return false;
     }
 
-    runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: RelationReceiver) {
         // check for handler/sum (get test-math sum a/$a b/$b)
 
         if ((pattern.tagCount() == 4) && (pattern.hasType("test-math")) && (pattern.hasType("sum")) && (pattern.hasType("a")) && (pattern.hasValueForType("a")) && (pattern.hasType("b")) && (pattern.hasValueForType("b"))) {
@@ -35,12 +35,12 @@ export default class API implements StorageProviderV3 {
         output.finish()
     }
 
-    runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: RelationReceiver) {
         emitCommandError(output, "provider code-generation/test-math-provider doesn't support: set " + pattern.stringify());
         output.finish()
     }
 
-    runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: RelationReceiver) {
         emitCommandError(output, "provider code-generation/test-math-provider doesn't support: delete " + pattern.stringify());
         output.finish()
     }

@@ -1118,6 +1118,7 @@ set code-generation/storageGenerator touchpoint/0.8
 set code-generation/storageGenerator touchpoint/touchpointFunctionName
 set code-generation/storageGenerator touchpoint/touchpointInputs2
 set code-generation/storageGenerator touchpoint/touchpointOutputs2
+set code-generation/storageGenerator touchpoint/isAsync
 
 set code-generation/storageGenerator touchpoint/getHandlesPattern
 set touchpoint/getHandlesPattern function-name(getHandlesPattern)

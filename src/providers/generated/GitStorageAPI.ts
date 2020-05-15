@@ -22,12 +22,12 @@ export default class API implements StorageProviderV3 {
         return false;
     }
 
-    runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: RelationReceiver) {
         // check for handler/listBranches (get git dir/$dir branch/*)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch"))) {
             const dir = pattern.getTagValue("dir");
-            this.handler.listBranches(dir);
+            await this.handler.listBranches(dir);
         }
 
         // check for handler/checkBranchExists (get git dir/$dir branch/$branch)
@@ -35,20 +35,20 @@ export default class API implements StorageProviderV3 {
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
             const dir = pattern.getTagValue("dir");
             const branch = pattern.getTagValue("branch");
-            this.handler.checkBranchExists(dir, branch);
+            await this.handler.checkBranchExists(dir, branch);
         }
 
         emitCommandError(output, "provider code-generation/git-provider doesn't support: get " + pattern.stringify());
         output.finish()
     }
 
-    runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: RelationReceiver) {
         // check for handler/createBranch (set git dir/$dir branch/$branchName)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
             const dir = pattern.getTagValue("dir");
             const branchName = pattern.getTagValue("branch");
-            this.handler.createBranch(dir, branchName);
+            await this.handler.createBranch(dir, branchName);
             output.relation(pattern);
             output.finish();
         }
@@ -57,13 +57,13 @@ export default class API implements StorageProviderV3 {
         output.finish()
     }
 
-    runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: RelationReceiver) {
         // check for handler/deleteBranch (delete git dir/$dir branch/$branch)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
             const dir = pattern.getTagValue("dir");
             const branch = pattern.getTagValue("branch");
-            this.handler.deleteBranch(dir, branch);
+            await this.handler.deleteBranch(dir, branch);
         }
 
         emitCommandError(output, "provider code-generation/git-provider doesn't support: delete " + pattern.stringify());

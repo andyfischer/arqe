@@ -26,12 +26,12 @@ import watchAndValidateCommand from './watchAndValidateCommand'
 import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
-import GitHook from './providers/Git'
 import Slot from './Slot'
 import setupFileChangeLog from './providers/FileChangedLog'
 import { StorageProvider2 } from './CompiledQuery'
 import StorageProviderV3 from './StorageProviderV3'
 import { setupTestMathStorage } from './providers/TestMathStorage'
+import { setupGitProvider } from './providers/Git'
 
 interface StorageProviderMount {
     match: Pattern
@@ -63,10 +63,10 @@ export default class Graph {
         this.eagerValue(this.ordering.update);
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
-        this.storageProviders.push({ match: parsePattern('git **'), provider: new GitHook(this)});
 
         this.storageProvidersV3.push(setupTestMathStorage());
         this.storageProvidersV3.push(setupFileChangeLog(this));
+        this.storageProvidersV3.push(setupGitProvider());
     }
 
     savedQuery(queryStr: string): SavedQuery {

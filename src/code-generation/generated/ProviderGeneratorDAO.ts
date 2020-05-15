@@ -92,6 +92,15 @@ export default class API {
 }));
     }
 
+    touchpointIsAsync(touchpoint: string): boolean {
+        const command = `get ${touchpoint} async`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.length > 0;
+    }
+
     getHandlesPattern(target: string): string {
         const command = `get ${target} handles-pattern/*`;
 

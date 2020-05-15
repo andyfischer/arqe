@@ -1,4 +1,22 @@
 
+import GitStorageAPI from './generated/GitStorageAPI'
+
+export function setupGitProvider() {
+    return new GitStorageAPI({
+        createBranch(dir: string, branchName: string) {
+        },
+        listBranches(dir: string) {
+            return [];
+        },
+        checkBranchExists(dir: string) {
+            return false;
+        },
+        deleteBranch(dir: string, branchName: string) {
+        }
+    });
+}
+
+/*
 import Graph from '../Graph'
 import { emitCommandError } from '../CommandMeta'
 import Relation from '../Relation'
@@ -77,7 +95,7 @@ export default class GitHooks {
 
                 output.relation(relation);
 
-                    /*
+                    / *
                     relation,
                     modify: (func: (rel: Pattern) => Pattern) => {
                         const modified = func(relation);
@@ -91,10 +109,11 @@ export default class GitHooks {
                         }
                         return modified;
                     }
-                    */
+                    * /
             }
 
             output.finish();
         });
     }
 }
+*/
