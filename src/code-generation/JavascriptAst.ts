@@ -391,6 +391,9 @@ export function formatBlock(block: Block) {
     }
 }
 
+export function startExpressionAst() {
+}
+
 export function stringifyBlock(block: Block) {
     const out = [];
     const writer = new LineWriter();

@@ -1118,6 +1118,13 @@ set code-generation/storageGenerator touchpoint/0.8
 set code-generation/storageGenerator touchpoint/touchpointFunctionName
 set code-generation/storageGenerator touchpoint/touchpointInputs2
 
+set code-generation/storageGenerator touchpoint/getHandlesPattern
+set touchpoint/getHandlesPattern function-name(getHandlesPattern)
+set touchpoint/getHandlesPattern query(\${target} handles-pattern/*)
+set touchpoint/getHandlesPattern input var/target type/string
+set touchpoint/getHandlesPattern output from(handles-pattern/*) var
+set touchpoint/getHandlesPattern expectOne
+
 set code-generation/storageGenerator touchpoint/touchpointOutputWithType
 set touchpoint/touchpointOutputWithType query(get \${touchpoint} output var type)
 set touchpoint/touchpointOutputWithType expectOne
@@ -1144,6 +1151,7 @@ set code-generation/git-storage
 set code-generation/git-storage destination-filename(src/hooks/GitStorageAPI.ts)
 set code-generation/git-storage ik-import(..)
 set code-generation/git-storage strategy/storage-handler
+set code-generation/git-storage handles-pattern(git **)
 
 set code-generation/git-storage handler/createBranch
 set handler/createBranch function-name(createBranch)
@@ -1173,5 +1181,18 @@ set handler/deleteBranch input var/dir type/string
 set handler/deleteBranch input var/branchName type/string
 set handler/deleteBranch async
 set handler/deleteBranch handles-query(delete git dir/\$dir branch/\$branch)
+
+set code-generation/test-math-storage
+set code-generation/test-math-storage destination-filename(src/hooks/TestMathStorageAPI.ts)
+set code-generation/test-math-storage ik-import(..)
+set code-generation/test-math-storage strategy/storage-handler
+set code-generation/test-math-storage handles-pattern(test-math **)
+
+
+set code-generation/test-math-storage handler/sum
+set handler/sum function-name(sum)
+set handler/sum input var/a type/string
+set handler/sum input var/b type/string
+set handler/sum handles-query(get test-math sum a/\$a b/\$b)
 
 `
