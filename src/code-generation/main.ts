@@ -49,5 +49,5 @@ async function runGeneration(graph: Graph) {
 }
 
 export function main() {
-    runStandardProcess(async (graph: Graph) => runGeneration(graph));
+    runStandardProcess('generate-api', async (graph: Graph) => runGeneration(graph));
 }

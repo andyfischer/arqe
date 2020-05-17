@@ -21,7 +21,7 @@ export default async function watchFile(filename: string, callback: (version: st
 }
 
 export async function main() {
-    runStandardProcess(async (graph: Graph) => {
+    runStandardProcess('watch-file', async (graph: Graph) => {
         const filename = process.argv[2];
 
         watchFile(filename, (version) => {

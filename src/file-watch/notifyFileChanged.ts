@@ -23,7 +23,7 @@ export function main() {
         process.exit(-1);
     }, 250);
 
-    runStandardProcess(async (graph: Graph) => {
+    runStandardProcess('notify-file-changed', async (graph: Graph) => {
         let filename = process.argv[2];
 
         if (!filename) {
@@ -35,4 +35,3 @@ export function main() {
         await notifyFileChanged(graph, filename);
     });
 }
-
