@@ -353,7 +353,7 @@ set input/val type/string
 ### DASHBOARD ###
 
 set code-generation/spreadsheet-view
-set code-generation/spreadsheet-view destination-filename(dashboard/src/SpreadsheetViewAPI.ts)
+set code-generation/spreadsheet-view destination-filename(dashboard/src/generated/SpreadsheetViewAPI.ts)
 set code-generation/spreadsheet-view ik-import(ik)
 set code-generation/spreadsheet-view strategy/dao-api
 # set code-generation/spreadsheet-view verbose-logging
@@ -369,7 +369,8 @@ set touchpoint/db1 input/spreadsheet
 set code-generation/spreadsheet-view touchpoint/db2
 set touchpoint/db2 function-name(listRows)
 set touchpoint/db2 query(${spreadsheet} row/*)
-set touchpoint/db2 input/spreadsheet
+set touchpoint/db2 input var/spreadsheet type/string
+set touchpoint/db2 output from/row var
 
 set code-generation/spreadsheet-view touchpoint/db3
 set touchpoint/db3 function-name(colName)
@@ -403,10 +404,10 @@ set input/value name/value
 set input/value type/string
 set input/value sortOrder/5
 
-set code-generation/db2
-set code-generation/db2 destination-filename(dashboard/src/GraphSource.ts)
-set code-generation/db2 strategy/text-as-code
-set code-generation/db2 from-file(src/source.graph)
+# set code-generation/db2
+# set code-generation/db2 destination-filename(dashboard/src/GraphSource.ts)
+# set code-generation/db2 strategy/text-as-code
+# set code-generation/db2 from-file(src/source.graph)
 
 set spreadsheet/1
 
@@ -469,7 +470,7 @@ set spreadsheet-view/1 selection col/1 row/2
 set current-view spreadsheet-view/1
 
 set code-generation/edit-model
-set code-generation/edit-model destination-filename(dashboard/src/EditModelAPI.ts)
+set code-generation/edit-model destination-filename(dashboard/src/generated/EditModelAPI.ts)
 set code-generation/edit-model ik-import(ik)
 set code-generation/edit-model strategy/dao-api
 
@@ -862,7 +863,6 @@ set touchpoint/socket1 output from/connection var
 set touchpoint/20 output from/output-object var
 set touchpoint/25 output from/b var
 set touchpoint/db1 output from/col var
-set touchpoint/db2 output from/row var
 set touchpoint/db5 output from/spreadsheet var
 set touchpoint/db7 output from/key var
 set touchpoint/db8 output from/action var
@@ -981,7 +981,6 @@ set touchpoint/28 input var/target type/string
 set touchpoint/30 input var/target type/string
 set touchpoint/30 input var/val type/string
 set touchpoint/db1 input var/spreadsheet type/string
-set touchpoint/db2 input var/spreadsheet type/string
 set touchpoint/db3 input var/col type/string
 set touchpoint/db4 input var/col type/string
 set touchpoint/db4 input var/row type/string

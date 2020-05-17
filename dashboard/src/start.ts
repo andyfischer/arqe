@@ -1,7 +1,7 @@
 
 import { Graph } from 'ik'
-import GraphSource from './GraphSource'
-import EditModelAPI from './EditModelAPI'
+import GraphSource from './generated/GraphSource'
+import EditModelAPI from './generated/EditModelAPI'
 
 export const graph = new Graph();
 graph.loadDump(GraphSource);

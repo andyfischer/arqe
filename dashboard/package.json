@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "typescript": "~3.7.2",
+    "ik": "link:./../"
+  },
+  "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -10,19 +16,13 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.0",
-    "typescript": "~3.7.2",
-    "ik": "link:./../"
+    "react-scripts": "3.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "SKIP_PREFLIGHT_CHECK=true react-scripts build",
     "test": "SKIP_PREFLIGHT_CHECK=true react-scripts test",
-    "eject": "SKIP_PREFLIGHT_CHECK=true react-scripts eject",
-    "generate-api": "tsc-watch --onSuccess 'node ../dist/startCli.js -f src/source.graph --generate'",
-    "generate-api-once": "node ../dist/startCli.js -f src/source.graph --generate"
+    "eject": "SKIP_PREFLIGHT_CHECK=true react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
