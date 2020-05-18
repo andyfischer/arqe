@@ -1,6 +1,6 @@
 
 import Graph from '../Graph'
-import { writeFileSyncIfUnchanged } from '../context/fs'
+import { writeFileSyncIfUnchanged } from '../platform/fs'
 import DAOGeneratorDAO from './generated/DAOGeneratorDAO'
 import { startFile, startObjectLiteral, Block, formatBlock } from './JavascriptAst'
 

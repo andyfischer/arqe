@@ -1,9 +1,9 @@
 
-import Fs from 'fs'
+import { readFileSync, writeFileSync } from './platform/fs'
 import Graph from './Graph'
 
 export function loadDumpFile(graph: Graph, filename: string) {
-    const contents = Fs.readFileSync(filename, 'utf8');
+    const contents = readFileSync(filename, 'utf8');
     for (const line of contents.split(/\r\n|\r|\n/)) {
         if (line.trim() === '')
             continue;
@@ -37,7 +37,7 @@ export function loadDump(graph: Graph, contents: string) {
 
 export function saveDumpFile(graph: Graph, filename: string) {
     const contents = (graph.runSyncOld('dump') as string[]).join('\n');
-    Fs.writeFileSync(filename, contents);
+    writeFileSync(filename, contents);
 }
 
 export function loadFromDumpFile(filename: string): Graph {

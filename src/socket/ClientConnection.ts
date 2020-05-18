@@ -1,5 +1,5 @@
 
-import WebSocket from 'ws'
+import WebSocket from '../platform/ws'
 import EventEmitter from 'events'
 import RelationReceiver from '../RelationReceiver'
 import { parseRelation } from '../parseCommand'
@@ -35,8 +35,8 @@ function tryToConnect(url: string): Promise<ConnectResult> {
     // Wait for 'open' event.
     return new Promise((resolve, reject) => {
         const open = () => {
-            ws.removeListener('open', open);
-            ws.removeListener('error', error);
+            delete ws.onopen;
+            delete ws.onerror;
             resolve({ws});
         }
 
@@ -44,8 +44,8 @@ function tryToConnect(url: string): Promise<ConnectResult> {
             resolve({ error: e });
         }
 
-        ws.on('open', open);
-        ws.on('error', error);
+        ws.onopen = open;
+        ws.onerror = error;
     });
 }
 
@@ -116,8 +116,9 @@ export default class ClientConnection implements GraphLike {
     }
 
     setupWebsocket() {
-        this.ws.on('message', messageStr => {
+        this.ws.onmessage = event => {
 
+            const messageStr = event.data;
             const { reqid, rel, finish } = JSON.parse(messageStr);
 
             const listener = this.reqListeners[reqid]
@@ -138,9 +139,9 @@ export default class ClientConnection implements GraphLike {
             }
             
             listener.relation(parseRelation(rel));
-        });
+        }
 
-        this.ws.on('close', () => {
+        this.ws.onclose = () => {
             if (this.autoReconnect) {
                 console.log('websocket closed, trying to reconnect');
 
@@ -149,16 +150,16 @@ export default class ClientConnection implements GraphLike {
                 this.openSocket()
                 .catch(console.error);
             }
-        });
+        }
 
-        this.ws.on('error', (e) => {
+        this.ws.onerror = (e) => {
             console.error(e);
-        });
+        }
     }
 
     async close() {
         this.autoReconnect = false;
-        this.ws.terminate();
+        this.ws.close();
     }
 
     run(commandStr: string, output?: RelationReceiver) {
@@ -189,7 +190,7 @@ export default class ClientConnection implements GraphLike {
 export async function connectToServer(): Promise<ClientConnection> {
 
     const port = process.env.PORT || '42940'
-    const conn = new ClientConnection(`http://localhost:${port}/ws`);
+    const conn = new ClientConnection(`ws://localhost:${port}/ws`);
     await conn.start();
     return conn;
 }

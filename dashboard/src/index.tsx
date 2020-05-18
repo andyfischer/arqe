@@ -16,7 +16,12 @@ export function getGraph() {
 }
 
 async function main() {
+    console.log('startWebApp..');
     graph = await startWebApp('dashboard');
+    console.log('finished startWebApp');
     ReactDOM.render(<App />, document.getElementById('root'));
 }
 
+
+main()
+.catch(console.error);

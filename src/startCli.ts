@@ -1,6 +1,4 @@
 
-import 'source-map-support/register'
-
 import Graph from './Graph'
 import GraphRepl from './GraphRepl'
 import Repl from 'repl'
@@ -9,6 +7,8 @@ import Minimist from 'minimist'
 import { loadFromDumpFile } from './DumpFile'
 
 export default async function main() {
+    require('source-map-support').install();
+
     const cliArgs = Minimist(process.argv.slice(2), {
         boolean: ['generate']
     });

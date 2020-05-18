@@ -2,7 +2,7 @@
 import Graph from '../Graph'
 import { startFile, startObjectLiteral, Block, formatBlock, startFunctionTypeDef } from './JavascriptAst'
 import ProviderGeneratorDAO from './generated/ProviderGeneratorDAO'
-import { writeFileSyncIfUnchanged } from '../context/fs'
+import { writeFileSyncIfUnchanged } from '../platform/fs'
 import Pattern from '../Pattern'
 import parseCommand, { parsePattern } from '../parseCommand'
 

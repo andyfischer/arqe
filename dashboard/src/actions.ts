@@ -2,7 +2,7 @@
 import { GraphLike } from 'ik'
 import EditModelAPI from './generated/EditModelAPI'
 
-let Api: EditModelAPI;
+let api: EditModelAPI;
 
 function incRowOrCol(spreadsheet, orig: string, delta: number) {
     const match = /([a-z]+)\/([0-9]+)$/.exec(orig);

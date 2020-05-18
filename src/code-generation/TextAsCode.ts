@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
 import TextAsCodeDAO from './generated/TextAsCodeDAO'
-import { readFileSync, writeFileSyncIfUnchanged } from '../context/fs'
+import { readFileSync, writeFileSyncIfUnchanged } from '../platform/fs'
 
 function javascriptTemplate(vars) {
     const text = vars.text
