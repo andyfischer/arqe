@@ -1,12 +1,8 @@
 
-import { Graph } from 'ik'
-import GraphSource from './generated/GraphSource'
+import { GraphLike } from 'ik'
 import EditModelAPI from './generated/EditModelAPI'
 
-export const graph = new Graph();
-graph.loadDump(GraphSource);
-
-const api = new EditModelAPI(graph);
+let Api: EditModelAPI;
 
 function incRowOrCol(spreadsheet, orig: string, delta: number) {
     const match = /([a-z]+)\/([0-9]+)$/.exec(orig);
@@ -98,8 +94,7 @@ function onKeyDown(evt) {
 
 }
 
-document.addEventListener('keydown', onKeyDown);
-
-window['query'] = (s) => {
-    graph.runCommandChainSync(s).map(r => console.log(r.stringifyRelation()));
+export function setupKeyListener(graph: GraphLike) {
+    api = new EditModelAPI(graph);
+    document.addEventListener('keydown', onKeyDown);
 }

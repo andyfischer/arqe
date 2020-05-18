@@ -1,5 +1,4 @@
 
-import Fs from 'fs'
 import { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
 import Relation from './Relation'
@@ -200,50 +199,6 @@ export default class Graph {
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
-    }
-
-    loadDumpFile(filename: string) {
-        const contents = Fs.readFileSync(filename, 'utf8');
-        for (const line of contents.split(/\r\n|\r|\n/)) {
-            if (line.trim() === '')
-                continue;
-
-            try {
-                this.run(line);
-            } catch (e) {
-                console.log('Failed on command: ' + line);
-            }
-        }
-
-        /*
-        const fileStream = Fs.createReadStream(filename);
-
-        const rl = Readline.createInterface({
-          input: fileStream,
-          crlfDelay: Infinity
-        });
-      
-        for await (const line of rl) {
-            this.run(line);
-        }
-        */
-    }
-
-    loadDump(contents: string) {
-        for (const line of contents.split(/\r\n|\r|\n/)) {
-            this.run(line);
-        }
-    }
-    
-    saveDumpFile(filename: string) {
-        const contents = (this.runSyncOld('dump') as string[]).join('\n');
-        Fs.writeFileSync(filename, contents);
-    }
-
-    static loadFromDumpFile(filename: string) {
-        const graph = new Graph();
-        graph.loadDumpFile(filename);
-        return graph;
     }
 
     saveNewRelation(relation: Relation, output: RelationReceiver) {

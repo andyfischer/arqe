@@ -5,7 +5,7 @@ import ToolShellApi from './generated/ToolShellApi'
 import CommandLineToolApi from './generated/CommandLineToolApi'
 import Minimist from 'minimist'
 
-export default async function runStandardProcess2(toolName: string, handler: (graph: Graph, api: CommandLineToolApi) => Promise<void>) {
+export default async function runStandardProcess(toolName: string, handler: (graph: Graph, api: CommandLineToolApi) => Promise<void>) {
 
     require('source-map-support').install();
 

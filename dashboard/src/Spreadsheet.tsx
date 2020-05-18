@@ -29,9 +29,8 @@
 //   spreadsheet edit-state/editing
 
 import React from 'react'
-import SpreadsheetViewAPI from './SpreadsheetViewAPI'
-import { Graph } from 'ik'
-import { graph } from './start'
+import SpreadsheetViewAPI from './generated/SpreadsheetViewAPI'
+import { getGraph } from './index'
 
 interface Props {
     spreadsheetView: string
@@ -41,7 +40,7 @@ export default function Spreadsheet(props: Props) {
 
     const { spreadsheetView } = props;
 
-    const api = new SpreadsheetViewAPI(graph);
+    const api = new SpreadsheetViewAPI(getGraph());
     const spreadsheet = api.spreadsheetForView(spreadsheetView);
 
     const cols = api.listColumns(spreadsheet);

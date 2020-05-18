@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "ik": "link:./../",
+    "next": "9.3.5",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "typescript": "~3.7.2",
-    "ik": "link:./../"
+    "styled": "^1.0.0",
+    "typescript": "~3.7.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -15,14 +17,12 @@
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "react-scripts": "3.3.0"
+    "@types/react-dom": "^16.9.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "test": "SKIP_PREFLIGHT_CHECK=true react-scripts test",
-    "eject": "SKIP_PREFLIGHT_CHECK=true react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -6,6 +6,7 @@ import GraphRepl from './GraphRepl'
 import Repl from 'repl'
 import { connectToServer } from './socket/ClientConnection'
 import Minimist from 'minimist'
+import { loadFromDumpFile } from './DumpFile'
 
 export default async function main() {
     const cliArgs = Minimist(process.argv.slice(2), {
@@ -16,7 +17,7 @@ export default async function main() {
     let useRemoteServer = true;
 
     if (cliArgs.file) {
-        graph = Graph.loadFromDumpFile(cliArgs.file);
+        graph = loadFromDumpFile(cliArgs.file);
         useRemoteServer = false;
     }
 
