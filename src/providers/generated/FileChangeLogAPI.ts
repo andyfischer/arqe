@@ -32,6 +32,7 @@ export default class API implements StorageProviderV3 {
             this.handler.onChange(filename);
             output.relation(pattern);
             output.finish();
+            return;
         }
 
         emitCommandError(output, "provider code-generation/file-change-log doesn't support: set " + pattern.stringify());

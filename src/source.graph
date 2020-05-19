@@ -1206,3 +1206,23 @@ set code-generation/file-change-log handler/onChange
 set handler/onChange function-name(onChange)
 set handler/onChange input var/filename type/string
 set handler/onChange handles-query(set log file-changed filename/$filename)
+
+set code-generation/filesystem-provider
+set code-generation/filesystem-provider destination-filename(src/providers/generated/FilesystemAPI.ts)
+set code-generation/filesystem-provider ik-import(../..)
+set code-generation/filesystem-provider strategy/provider-api
+set code-generation/filesystem-provider handles-pattern(fs **)
+
+set code-generation/filesystem-provider handler/readFile
+set handler/readFile function-name(readFile)
+set handler/readFile input var/filename type/string
+set handler/readFile output var/contents from(file-contents/*)
+set handler/readFile handles-query(get fs filename/$filename file-contents)
+set handler/readFile async
+
+set code-generation/filesystem-provider handler/writeFile
+set handler/writeFile function-name(writeFile)
+set handler/writeFile input var/filename type/string
+set handler/writeFile input var/contents type/string
+set handler/writeFile handles-query(set fs filename/$filename file-contents/$contents)
+set handler/writeFile async

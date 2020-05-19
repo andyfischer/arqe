@@ -30,6 +30,7 @@ import { StorageProvider2 } from './CompiledQuery'
 import StorageProviderV3 from './StorageProviderV3'
 import { setupTestMathStorage } from './providers/TestMathStorage'
 import { setupGitProvider } from './providers/Git'
+import setupFilesystemProvider from './providers/Filesystem'
 
 interface StorageProviderMount {
     match: Pattern
@@ -65,6 +66,7 @@ export default class Graph {
         this.storageProvidersV3.push(setupTestMathStorage());
         this.storageProvidersV3.push(setupFileChangeLog(this));
         this.storageProvidersV3.push(setupGitProvider());
+        this.storageProvidersV3.push(setupFilesystemProvider());
     }
 
     savedQuery(queryStr: string): SavedQuery {

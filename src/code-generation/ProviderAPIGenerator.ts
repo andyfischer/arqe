@@ -161,7 +161,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     if (isAsync)
         handlerCall = `await ` + handlerCall;
 
-    if (!isAsync && outputVar)
+    if (outputVar)
         handlerCall = `const ${outputVar} = ` + handlerCall;
 
     onHit.contents.addRaw(handlerCall);
@@ -171,6 +171,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
             // If save: Echo back the relation that was saved.
             onHit.contents.addRaw(`output.relation(pattern);`);
             onHit.contents.addRaw(`output.finish();`);
+            onHit.contents.addRaw(`return;`);
         }
 
 

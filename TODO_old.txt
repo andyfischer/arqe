@@ -1,3 +1,53 @@
+
+# May part 1 #
+
+Themes
+  - Autobuildbot is awesome
+  - Let's add some features to make it fully functional
+
+Autobuildbot
+  X Color coding
+  X Data associated with directory
+
+Table schema
+  - Implement
+  - Fix data-backed patterns
+    - Mount a raw object with a get/set/modify API
+    X Refactor runSearch so that it iterates "slots"
+
+Logging
+  - Opt-in log streams
+    - In-memory data structure about whether to broadcast logging or not
+
+X Slot {
+    relation: Relation
+    set(rel => rel)
+}
+
+Dashboard
+ - Show all relations
+   - Replica graph
+ - Show usage
+
+Replica graph
+ - Get everything on startup
+ - Listen to all changes
+ - Update replica on changes (and trigger local listeners)
+
+SQL storage
+ - Every row needs a 'owner' parameter?
+ - SQLite storage interface
+ - Be able to load the source.graph file into the database
+ - Add tests to make sure we can extract/dump the entire graph
+
+Fix 'notify-file-changed' to be faster
+ X Support HTTP commands
+ - Support 'append' / log / message bus
+
+Improved .graph viewer
+ - View file as filtered lines
+   - Mount a derived view
+ - Edit derived file
 # April 2020 part 2 #
 
 

@@ -51,6 +51,7 @@ export default class API implements StorageProviderV3 {
             await this.handler.createBranch(dir, branchName);
             output.relation(pattern);
             output.finish();
+            return;
         }
 
         emitCommandError(output, "provider code-generation/git-provider doesn't support: set " + pattern.stringify());
