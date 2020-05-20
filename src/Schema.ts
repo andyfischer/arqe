@@ -1,0 +1,56 @@
+
+import Relation from './Relation'
+import Pattern from './Pattern'
+import SchemaProviderAPI from './generated/SchemaProviderAPI'
+import Graph from './Graph'
+
+type ColumnType = 'value' | 'object' | 'table'
+
+class Column {
+    name: string
+    type: ColumnType = 'value'
+
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
+export default class Schema {
+
+    graph: Graph
+
+    constructor(graph: Graph) {
+        this.graph = graph;
+    }
+
+    columns: { [name: string]: Column } = {}
+
+    initColumnIfMissing(name: string) {
+        if (!this.columns[name]) {
+            this.columns[name] = new Column(name);
+        }
+
+        return this.columns[name];
+    }
+
+    beforeSave(relation: Relation) {
+        // Autocreate columns if necessary
+        for (const tag of relation.tags) {
+            if (tag.tagType)
+                this.initColumnIfMissing(tag.tagType);
+        }
+    }
+
+    getProvider() {
+        return new SchemaProviderAPI({
+            setObjectColumn(columnName: string) {
+                const column = this.initColumnIfMissing(columnName);
+                column.type = 'object'
+            },
+            setTableColumn(columnName: string) {
+                const column = this.initColumnIfMissing(columnName);
+                column.type = 'table'
+            }
+        })
+    }
+}

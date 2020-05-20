@@ -126,12 +126,7 @@ export default function runSave(save: SaveOperation) {
 
     const { graph, relation, output } = save;
 
-    /*
-    for (const hook of graph.saveSearchHooks) {
-        if (hook.hookSave(save))
-            return;
-    }
-    */
+    graph.schema.beforeSave(relation);
 
     const provider = graph.getStorageProviderV3(save.relation);
     if (provider) {
@@ -148,8 +143,6 @@ export default function runSave(save: SaveOperation) {
 
     const filter = modificationToFilter(relation);
     let anyFound = false;
-
-    //const storageHook = graph.getStorageHook(filter);
 
     graph.inMemory.iterateSlots(filter, {
         relationOutput: output,

@@ -31,6 +31,7 @@ import StorageProviderV3 from './StorageProviderV3'
 import { setupTestMathStorage } from './providers/TestMathStorage'
 import { setupGitProvider } from './providers/Git'
 import setupFilesystemProvider from './providers/Filesystem'
+import Schema from './Schema'
 
 interface StorageProviderMount {
     match: Pattern
@@ -39,6 +40,7 @@ interface StorageProviderMount {
 
 export default class Graph {
 
+    schema = new Schema(this);
     inMemory = new InMemoryStorage(this)
     listeners: GraphListenerMount[] = []
 

@@ -1226,3 +1226,19 @@ set handler/writeFile input var/filename type/string
 set handler/writeFile input var/contents type/string
 set handler/writeFile handles-query(set fs filename/$filename file-contents/$contents)
 set handler/writeFile async
+
+set code-generation/schema-provider
+set code-generation/schema-provider destination-filename(src/generated/SchemaProviderAPI.ts)
+set code-generation/schema-provider ik-import(..)
+set code-generation/schema-provider strategy/provider-api
+set code-generation/schema-provider handles-pattern(schema **)
+
+set code-generation/schema-provider handler/setObjectColumn
+set handler/setObjectColumn handles-query(set schema column/$column object)
+set handler/setObjectColumn function-name(setObjectColumn)
+set handler/setObjectColumn input var/column type/string
+
+set code-generation/schema-provider handler/setTableColumn
+set handler/setTableColumn handles-query(set schema column/$column table)
+set handler/setTableColumn function-name(setTableColumn)
+set handler/setTableColumn input var/column type/string
