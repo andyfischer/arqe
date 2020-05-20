@@ -10,7 +10,7 @@ export function rewriteDumpFile(filename: string, callback: (rel: Command) => Co
     const out = [];
 
     for (const line of contents.split(/\r\n|\r|\n/)) {
-        if (line.trim() === '' || line.startsWith('# ')) {
+        if (line.trim() === '' || /^ *#/.exec(line)) {
             out.push(line);
             continue;
         }
