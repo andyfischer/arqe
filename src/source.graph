@@ -1,4 +1,15 @@
 
+
+set schema column/code-generation object
+set schema column/touchpoint object
+set schema column/handler object
+set schema column/command-line-tool object
+set schema column/eventType object
+set schema column/key object
+set schema column/spreadsheet object
+set schema column/spreadsheet-view object
+set schema column/typeinfo object
+
 set typeinfo/branch inherits
 set typeinfo/testcase inherits
 set typeinfo/testcase order(before)
@@ -61,9 +72,7 @@ set touchpoint/touchpointStyle expectOne
 set touchpoint/touchpointStyle output optional
 set touchpoint/touchpointStyle output from(style/*) var
 set touchpoint/touchpointStyle input/1
-set input/1 name/touchpoint
-set input/1 type/string
-
+set touchpoint/touchpointStyle input var/touchpoint type/string
 
 set code-generation/dao touchpoint/4
 set touchpoint/4 query(${touchpoint} expectOne)
@@ -950,7 +959,6 @@ set touchpoint/deleteObject input var/obj type/string
 set touchpoint/0.8 input var/target type/string
 set touchpoint/1 input var/target type/string
 set touchpoint/3 input var/touchpoint type/string
-set touchpoint/touchpointStyle input var/touchpoint type/string
 set touchpoint/4 input var/touchpoint type/string
 set touchpoint/isAsync input var/touchpoint type/string
 set touchpoint/isListener input var/touchpoint type/string

@@ -21,6 +21,9 @@ export default class Schema {
 
     constructor(graph: Graph) {
         this.graph = graph;
+
+        const schemaColumn = this.initColumnIfMissing('schema');
+        schemaColumn.type = 'table'
     }
 
     columns: { [name: string]: Column } = {}
@@ -39,15 +42,32 @@ export default class Schema {
             if (tag.tagType)
                 this.initColumnIfMissing(tag.tagType);
         }
+
+        // Classify tags
+        const classified = [];
+        for (const tag of relation.tags) {
+            if (tag.doubleStar) {
+                classified.push('**')
+            } else {
+                classified.push(this.columns[tag.tagType].type);
+            }
+        }
+
+        classified.sort();
+
+        if (classified[0] === 'value')
+            console.log('no object type: ' + relation.stringify())
+
+        // console.log('saving: ' + classified.join(' '))
     }
 
     getProvider() {
         return new SchemaProviderAPI({
-            setObjectColumn(columnName: string) {
+            setObjectColumn: (columnName: string) => {
                 const column = this.initColumnIfMissing(columnName);
                 column.type = 'object'
             },
-            setTableColumn(columnName: string) {
+            setTableColumn: (columnName: string) => {
                 const column = this.initColumnIfMissing(columnName);
                 column.type = 'table'
             }

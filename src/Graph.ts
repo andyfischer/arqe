@@ -65,6 +65,7 @@ export default class Graph {
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
 
+        this.storageProvidersV3.push(this.schema.getProvider());
         this.storageProvidersV3.push(setupTestMathStorage());
         this.storageProvidersV3.push(setupFileChangeLog(this));
         this.storageProvidersV3.push(setupGitProvider());
