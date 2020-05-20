@@ -1,9 +1,14 @@
 #! /usr/bin/env node
 
-const { runStandardProcess, runAsync } = require('..')
+const { runStandardProcess, runAsync, rewriteDumpFile } = require('..')
 
-runStandardProcess(async (graph) => {
+runStandardProcess('fs-fix-graph', async (graph) => {
 
+    rewriteDumpFile(relation => {
+        return relation;
+    });
+
+    /*
     const rels = await runAsync(graph, 'get touchpoint input');
 
     for (const rel of rels) {
@@ -14,4 +19,5 @@ runStandardProcess(async (graph) => {
 
         console.log('set ' + rel.removeType('input').addTagStr('input').addTagStr(`var/${name}`).addTagStr(`type/${type}`).stringify());
     }
+    */
 });
