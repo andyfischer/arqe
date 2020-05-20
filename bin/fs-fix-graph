@@ -5,7 +5,7 @@ const { runStandardProcess, runAsync, rewriteDumpFile } = require('..')
 runStandardProcess('fs-fix-graph', async (graph) => {
 
     rewriteDumpFile('src/source.graph', (command) => {
-        const input = command.pattern.findTagWithType('input');
+        const input = command.pattern.findTagWithType('output-object');
         if (input && input.tagValue)
             return null;
 

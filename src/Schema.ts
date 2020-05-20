@@ -55,8 +55,8 @@ export default class Schema {
 
         classified.sort();
 
-        //if (classified[0] === 'value')
-        //    console.log('no object type: ' + relation.stringify())
+        if (classified[0] === 'value')
+            console.log('no object type: ' + relation.stringify())
 
         // console.log('saving: ' + classified.join(' '))
     }
