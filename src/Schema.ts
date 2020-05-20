@@ -4,7 +4,7 @@ import Pattern from './Pattern'
 import SchemaProviderAPI from './generated/SchemaProviderAPI'
 import Graph from './Graph'
 
-type ColumnType = 'value' | 'object' | 'table'
+type ColumnType = 'value' | 'object' | 'view'
 
 class Column {
     name: string
@@ -23,7 +23,7 @@ export default class Schema {
         this.graph = graph;
 
         const schemaColumn = this.initColumnIfMissing('schema');
-        schemaColumn.type = 'table'
+        schemaColumn.type = 'view'
     }
 
     columns: { [name: string]: Column } = {}
@@ -55,8 +55,8 @@ export default class Schema {
 
         classified.sort();
 
-        if (classified[0] === 'value')
-            console.log('no object type: ' + relation.stringify())
+        //if (classified[0] === 'value')
+        //    console.log('no object type: ' + relation.stringify())
 
         // console.log('saving: ' + classified.join(' '))
     }
@@ -67,9 +67,9 @@ export default class Schema {
                 const column = this.initColumnIfMissing(columnName);
                 column.type = 'object'
             },
-            setTableColumn: (columnName: string) => {
+            setViewColumn: (columnName: string) => {
                 const column = this.initColumnIfMissing(columnName);
-                column.type = 'table'
+                column.type = 'view'
             }
         })
     }

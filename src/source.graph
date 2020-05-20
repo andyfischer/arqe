@@ -1,5 +1,4 @@
 
-
 set schema column/code-generation object
 set schema column/touchpoint object
 set schema column/handler object
@@ -10,6 +9,8 @@ set schema column/spreadsheet object
 set schema column/spreadsheet-view object
 set schema column/typeinfo object
 set schema column/action object
+
+set schema column/fs view
 
 set typeinfo/branch inherits
 set typeinfo/testcase inherits
@@ -348,8 +349,8 @@ set spreadsheet/1 col/3
 set spreadsheet/1 row/1
 set spreadsheet/1 row/2
 
-set col/1 name/(Customer Name)
-set col/2 name/(Customer Email)
+set col/1 name(Customer Name)
+set col/2 name(Customer Email)
 set col/3 name/Status
 
 set row/1 col/1 value/Bob
@@ -1106,7 +1107,7 @@ set handler/setObjectColumn handles-query(set schema column/$column object)
 set handler/setObjectColumn function-name/setObjectColumn
 set handler/setObjectColumn input var/column type/string
 
-set code-generation/schema-provider handler/setTableColumn
-set handler/setTableColumn handles-query(set schema column/$column table)
-set handler/setTableColumn function-name/setTableColumn
-set handler/setTableColumn input var/column type/string
+set code-generation/schema-provider handler/setViewColumn
+set handler/setViewColumn handles-query(set schema column/$column view)
+set handler/setViewColumn function-name/setViewColumn
+set handler/setViewColumn input var/column type/string

@@ -2,7 +2,7 @@ import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emit
 
 interface NativeHandler {
     setObjectColumn: (column: string) => void
-    setTableColumn: (column: string) => void
+    setViewColumn: (column: string) => void
 }
 
 export default class API implements StorageProviderV3 {
@@ -36,11 +36,11 @@ export default class API implements StorageProviderV3 {
             return;
         }
 
-        // check for handler/setTableColumn (set schema column/$column table)
+        // check for handler/setViewColumn (set schema column/$column view)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("schema")) && (pattern.hasType("column")) && (pattern.hasValueForType("column")) && (pattern.hasType("table"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasType("schema")) && (pattern.hasType("column")) && (pattern.hasValueForType("column")) && (pattern.hasType("view"))) {
             const column = pattern.getTagValue("column");
-            this.handler.setTableColumn(column);
+            this.handler.setViewColumn(column);
             output.relation(pattern);
             output.finish();
             return;
