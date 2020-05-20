@@ -4,8 +4,12 @@ const { runStandardProcess, runAsync, rewriteDumpFile } = require('..')
 
 runStandardProcess('fs-fix-graph', async (graph) => {
 
-    rewriteDumpFile('src/source.graph', relation => {
-        return relation;
+    rewriteDumpFile('src/source.graph', (command) => {
+        const input = command.pattern.findTagWithType('input');
+        if (input && input.tagValue)
+            return null;
+
+        return command;
     });
 
     /*
