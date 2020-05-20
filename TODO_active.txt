@@ -3,5 +3,6 @@ Themes:
  - Dashboard app!
  - Let's get some useful debugging views
 
- - Filesystem storage
+ X Filesystem storage
 
+ - AST provider
