@@ -4,11 +4,21 @@ import Pattern from './Pattern'
 import SchemaProviderAPI from './generated/SchemaProviderAPI'
 import Graph from './Graph'
 
-type ColumnType = 'value' | 'object' | 'view'
+class ColumnType {
+    name: string
+
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
+const ObjectColumn = new ColumnType('object');
+const ValueColumn = new ColumnType('value');
+const ViewColumn = new ColumnType('view');
 
 class Column {
     name: string
-    type: ColumnType = 'value'
+    type: ColumnType = ValueColumn
 
     constructor(name: string) {
         this.name = name;
@@ -17,13 +27,9 @@ class Column {
 
 export default class Schema {
 
-    graph: Graph
-
-    constructor(graph: Graph) {
-        this.graph = graph;
-
+    constructor() {
         const schemaColumn = this.initColumnIfMissing('schema');
-        schemaColumn.type = 'view'
+        schemaColumn.type = ViewColumn;
     }
 
     columns: { [name: string]: Column } = {}
@@ -42,8 +48,10 @@ export default class Schema {
             if (tag.tagType)
                 this.initColumnIfMissing(tag.tagType);
         }
+    }
 
-        // Classify tags
+    checkTagsClassification(relation: Relation) {
+
         const classified = [];
         for (const tag of relation.tags) {
             if (tag.doubleStar) {
@@ -55,21 +63,19 @@ export default class Schema {
 
         classified.sort();
 
-        //if (classified[0] === 'value')
-        //    console.log('no object type: ' + relation.stringify())
-
-        // console.log('saving: ' + classified.join(' '))
+        if (classified[0] === ValueColumn)
+            console.log('no object type: ' + relation.stringify())
     }
 
     getProvider() {
         return new SchemaProviderAPI({
             setObjectColumn: (columnName: string) => {
                 const column = this.initColumnIfMissing(columnName);
-                column.type = 'object'
+                column.type = ObjectColumn;
             },
             setViewColumn: (columnName: string) => {
                 const column = this.initColumnIfMissing(columnName);
-                column.type = 'view'
+                column.type = ViewColumn;
             }
         })
     }

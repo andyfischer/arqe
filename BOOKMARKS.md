@@ -10,6 +10,8 @@ Collaboration - https://martin.kleppmann.com/papers/pushpin-papoc20.pdf
 
  - Augmenting Code with In Situ Visualizations to Aid Program Understanding - http://vis.csail.mit.edu/pubs/insitu-vis-debugging
 
+ - SQL Problems: http://carfield.com.hk/document/misc/SQL_Problems.pdf
+
 # Differential dataflow
 
  - https://github.com/TimelyDataflow/differential-dataflow/

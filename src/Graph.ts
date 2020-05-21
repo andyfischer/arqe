@@ -31,7 +31,7 @@ import StorageProviderV3 from './StorageProviderV3'
 import { setupTestMathStorage } from './providers/TestMathStorage'
 import { setupGitProvider } from './providers/Git'
 import setupFilesystemProvider from './providers/Filesystem'
-import Schema from './Schema'
+import Database from './Database'
 
 interface StorageProviderMount {
     match: Pattern
@@ -40,8 +40,8 @@ interface StorageProviderMount {
 
 export default class Graph {
 
-    schema = new Schema(this);
     inMemory = new InMemoryStorage(this)
+    database = new Database(this);
     listeners: GraphListenerMount[] = []
 
     savedQueries: SavedQuery[] = []
@@ -65,7 +65,7 @@ export default class Graph {
         this.wsProviders = this.eagerValue(updateWebSocketProviders);
         this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
 
-        this.storageProvidersV3.push(this.schema.getProvider());
+        this.storageProvidersV3.push(this.database.schema.getProvider());
         this.storageProvidersV3.push(setupTestMathStorage());
         this.storageProvidersV3.push(setupFileChangeLog(this));
         this.storageProvidersV3.push(setupGitProvider());

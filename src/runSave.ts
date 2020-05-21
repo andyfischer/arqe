@@ -126,7 +126,7 @@ export default function runSave(save: SaveOperation) {
 
     const { graph, relation, output } = save;
 
-    graph.schema.beforeSave(relation);
+    graph.database.schema.beforeSave(relation);
 
     const provider = graph.getStorageProviderV3(save.relation);
     if (provider) {
