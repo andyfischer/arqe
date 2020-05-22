@@ -16,8 +16,6 @@ import CompiledQuery from './CompiledQuery'
 import Database from './Database'
 import QueryPlan from './QueryPlan'
 
-type RelationModifier = (rel: Relation) => Relation
-
 function getImpliedTableName(rel: Relation) {
     for (const tag of rel.tags)
         if (tag.star || tag.doubleStar)
@@ -107,46 +105,19 @@ function toInitialization(rel: Relation) {
     });
 }
 
-function getEffects(relation: Relation) {
-
-    let modifiesExisting = false;
-    let canInitializeMissing = true;
-
-    for (const tag of relation.tags) {
-        const expr = tag.valueExpr;
-        const tagEffects = expr && expr[0] && exprFuncEffects[expr[0]];
-
-        if (!tagEffects)
-            continue;
-
-        if (tagEffects.modifiesExisting)
-            modifiesExisting = true;
-
-        if (tagEffects.modifiesExisting && !tagEffects.canInitialize)
-            canInitializeMissing = false;
-    }
-
-    let initializeIfMissing = modifiesExisting && canInitializeMissing;
-
-    return {
-        modifiesExisting,
-        initializeIfMissing
-    }
-}
-
 export default class ValueDatabase {
     graph: Graph
     database: Database
-
-    constructor(database: Database) {
-        this.database = database;
-        this.graph = database.graph;
-    }
 
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
     slots: { [ slotId: string]: Relation } = {};
     nextSlotId: IDSource = new IDSource();
     byImpliedTableName: { [tn: string]: { [slotId: string]: true } } = {}
+
+    constructor(database: Database) {
+        this.database = database;
+        this.graph = database.graph;
+    }
 
     resolveExpressionValues(rel: Relation) {
         return rel.remapTags((tag: PatternTag) => {
@@ -228,7 +199,6 @@ export default class ValueDatabase {
         const { pattern, output } = plan;
         const graph = this.graph;
 
-        const effects = getEffects(pattern);
         const changeOperation = pattern;
         const filter = modificationToFilter(pattern);
         let hasFoundAny = false;
@@ -251,7 +221,7 @@ export default class ValueDatabase {
             hasFoundAny = true;
         }
 
-        if (!hasFoundAny && effects.initializeIfMissing) {
+        if (!hasFoundAny && plan.initializeIfMissing) {
             this.database.insert({ relation: toInitialization(pattern), output });
             return;
         }
@@ -266,29 +236,6 @@ export default class ValueDatabase {
         return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
     }
 
-    saveNewRelation2(relation: Relation, output: RelationReceiver) {
-
-        // Check if already saved.
-        for (const existing of this.findStored(relation)) {
-            // Already saved.
-            return;
-        }
-
-        // Store a new relation
-        const slotId = this.nextSlotId.take();
-        this.slots[slotId] = relation;
-
-        const itn = getImpliedTableName(relation);
-        this.byImpliedTableName[itn] = this.byImpliedTableName[itn] || {};
-        this.byImpliedTableName[itn][slotId] = true;
-    }
-
-    getRelations(pattern: Pattern, output: RelationReceiver) {
-        for (const { relation } of this.findStored(pattern)) {
-            output.relation(relation);
-        }
-    }
-
     select(plan: QueryPlan) {
         const { pattern, output } = plan;
 
@@ -298,30 +245,4 @@ export default class ValueDatabase {
 
         output.finish();
     }
-
-    /*
-    iterateSlots(pattern: Pattern, output: SlotReceiver) {
-        for (const { slotId, relation } of this.findStored(pattern)) {
-            output.slot({
-                relation,
-                modify: (func: (rel: Pattern) => Pattern) => {
-                    const modified = func(this.slots[slotId]);
-
-                    if (modified.hasType('deleted')) {
-                        delete this.slots[slotId];
-                        const itn = getImpliedTableName(relation);
-                        delete (this.byImpliedTableName[itn] || {})[slotId];
-                    } else {
-                        this.slots[slotId] = modified;
-                    }
-
-                    return modified;
-                }
-            });
-        }
-
-        output.finish();
-    }
-    */
-
 }

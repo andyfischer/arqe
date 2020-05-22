@@ -23,5 +23,8 @@ export default interface QueryPlan {
     pattern: Pattern
     output: RelationReceiver
 
+    modifiesExisting: boolean
+    initializeIfMissing: boolean
+
     attributeSet?: AttributeSet
 }

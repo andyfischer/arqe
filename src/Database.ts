@@ -8,6 +8,7 @@ import RelationReceiver from './RelationReceiver'
 import Pattern from './Pattern'
 import ValueDatabase from './ValueDatabase'
 import QueryPlan, { QueryTag } from './QueryPlan'
+import patternToQueryPlan from './patternToQueryPlan'
 
 export class AttributeSet {
     data: { [key: string]: string } = {}
@@ -73,98 +74,12 @@ export default class Database {
         return true;
     }
 
-    patternToQueryPlan(pattern: Pattern, output: RelationReceiver) {
-        const { schema } = this;
-
-        const planTags: QueryTag[] = [];
-
-        let singleStar = false;
-        let doubleStar = false;
-        
-        for (const tag of pattern.tags) {
-            if (!tag.tagType) {
-                if (tag.doubleStar) {
-                    doubleStar = true;
-                } else if (tag.star) {
-                    singleStar = true;
-                } else {
-                    throw new Error('what is this: ' + tag.stringify())
-                }
-
-                continue;
-            }
-
-            const column = schema.initColumn(tag.tagType);
-            
-            planTags.push({
-                tag,
-                column,
-                type: column.type
-            });
-        }
-
-        const plan: QueryPlan = {
-            tags: planTags,
-            views: [],
-            objects: [],
-            values: [],
-            pattern,
-            singleStar,
-            doubleStar,
-            output
-        };
-
-        for (const tag of planTags) {
-            if (tag.type === ViewColumn)
-                plan.views.push(tag);
-            else if (tag.type === ObjectColumn)
-                plan.objects.push(tag);
-            else if (tag.type === ValueColumn)
-                plan.values.push(tag);
-        }
-
-        if (plan.views.length > 0)
-            return plan;
-
-        if (plan.objects.length > 0) {
-            if (plan.objects.length == 1) {
-
-                const tag = plan.objects[0].tag;
-                const columnName = tag.tagType;
-
-                this.objectStore[columnName] = this.objectStore[columnName] || {};
-
-                if (tag.tagValue) {
-                    this.objectStore[columnName][tag.tagValue] = this.objectStore[columnName][tag.tagValue] || new AttributeSet();
-                    plan.attributeSet = this.objectStore[columnName][tag.tagValue];
-                }
-
-            } else {
-                plan.objects.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
-
-                const multiObjectKey = plan.objects.map(t => t.tag.stringify()).join(' ');
-
-                if (!this.multiObjectStore[multiObjectKey])
-                    this.multiObjectStore[multiObjectKey] = new AttributeSet();
-
-                plan.attributeSet = this.multiObjectStore[multiObjectKey];
-            }
-
-            return plan;
-        }
-
-        if (plan.values.length > 0) {
-            plan.values.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
-        }
-
-        return plan;
-    }
 
     insert(op: InsertOperation) {
 
         const { relation, output } = op;
 
-        const plan = this.patternToQueryPlan(relation, output);
+        const plan = patternToQueryPlan(this, relation, output);
 
         if (!this.checkValidation(plan))
             return;
@@ -193,7 +108,7 @@ export default class Database {
     update(op: UpdateOperation) {
         const { pattern, output } = op;
 
-        const plan = this.patternToQueryPlan(pattern, output);
+        const plan = patternToQueryPlan(this, pattern, output);
 
         if (plan.views.length > 0) {
             const view: QueryTag = plan.views[0];
@@ -219,7 +134,7 @@ export default class Database {
     select(op: SelectOperation) {
         const { pattern, output } = op;
 
-        const plan = this.patternToQueryPlan(pattern, output);
+        const plan = patternToQueryPlan(this, pattern, output);
         if (!this.checkValidation(plan))
             return;
 
