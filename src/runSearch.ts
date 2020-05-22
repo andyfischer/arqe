@@ -92,18 +92,14 @@ function get_after_inherit(search: SearchOperation) {
         }
     }
 
-    /*
-    for (const hook of graph.saveSearchHooks) {
-        if (hook.hookSearch(search))
-            return;
-    }
-    */
-
-    //const storageHook = graph.getStorageHook(search.pattern);
-
     const provider = graph.getStorageProviderV3(search.pattern);
     if (provider) {
         provider.runSearch(search.pattern, search);
+        return;
+    }
+
+    if (process.env.NEWDB) {
+        graph.database.select({ pattern: search.pattern, output: search });
         return;
     }
 

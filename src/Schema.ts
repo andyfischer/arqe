@@ -3,22 +3,28 @@ import Relation from './Relation'
 import Pattern from './Pattern'
 import SchemaProviderAPI from './generated/SchemaProviderAPI'
 import Graph from './Graph'
+import StorageProviderV3 from './StorageProviderV3'
 
-class ColumnType {
+
+export class ColumnType {
     name: string
+    sortPriority: number
 
-    constructor(name: string) {
+    constructor(name: string, sortPriority: number) {
         this.name = name;
+        this.sortPriority = sortPriority;
     }
 }
 
-const ObjectColumn = new ColumnType('object');
-const ValueColumn = new ColumnType('value');
-const ViewColumn = new ColumnType('view');
+export const ViewColumn = new ColumnType('view', 0);
+export const ObjectColumn = new ColumnType('object', 1);
+export const ValueColumn = new ColumnType('value', 2);
 
-class Column {
+export class Column {
     name: string
     type: ColumnType = ValueColumn
+
+    storageProvider?: StorageProviderV3
 
     constructor(name: string) {
         this.name = name;
@@ -28,13 +34,17 @@ class Column {
 export default class Schema {
 
     constructor() {
-        const schemaColumn = this.initColumnIfMissing('schema');
+        const schemaColumn = this.initColumn('schema');
         schemaColumn.type = ViewColumn;
+        schemaColumn.storageProvider = this.getProvider();
     }
 
     columns: { [name: string]: Column } = {}
 
-    initColumnIfMissing(name: string) {
+    initColumn(name: string) {
+        if (!name)
+            throw new Error('missing name');
+
         if (!this.columns[name]) {
             this.columns[name] = new Column(name);
         }
@@ -46,7 +56,7 @@ export default class Schema {
         // Autocreate columns if necessary
         for (const tag of relation.tags) {
             if (tag.tagType)
-                this.initColumnIfMissing(tag.tagType);
+                this.initColumn(tag.tagType);
         }
     }
 
@@ -70,11 +80,11 @@ export default class Schema {
     getProvider() {
         return new SchemaProviderAPI({
             setObjectColumn: (columnName: string) => {
-                const column = this.initColumnIfMissing(columnName);
+                const column = this.initColumn(columnName);
                 column.type = ObjectColumn;
             },
             setViewColumn: (columnName: string) => {
-                const column = this.initColumnIfMissing(columnName);
+                const column = this.initColumn(columnName);
                 column.type = ViewColumn;
             }
         })

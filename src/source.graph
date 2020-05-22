@@ -1,14 +1,14 @@
 
-set schema column/code-generation object
-set schema column/touchpoint object
-set schema column/handler object
-set schema column/command-line-tool object
-set schema column/eventType object
-set schema column/key object
-set schema column/spreadsheet object
-set schema column/spreadsheet-view object
-set schema column/typeinfo object
-set schema column/action object
+# set schema column/code-generation object
+# set schema column/touchpoint object
+# set schema column/handler object
+# set schema column/command-line-tool object
+# set schema column/eventType object
+# set schema column/key object
+# set schema column/spreadsheet object
+# set schema column/spreadsheet-view object
+# set schema column/typeinfo object
+# set schema column/action object
 
 set schema column/fs view
 

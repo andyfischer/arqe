@@ -60,10 +60,12 @@ export default class Graph {
     storageProvidersV3: StorageProviderV3[] = []
 
     constructor() {
-        this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
-        this.eagerValue(this.ordering.update);
-        this.wsProviders = this.eagerValue(updateWebSocketProviders);
-        this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
+        if (!process.env.NEWDB) {
+            this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
+            this.eagerValue(this.ordering.update);
+            this.wsProviders = this.eagerValue(updateWebSocketProviders);
+            this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
+        }
 
         this.storageProvidersV3.push(this.database.schema.getProvider());
         this.storageProvidersV3.push(setupTestMathStorage());

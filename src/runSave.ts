@@ -137,7 +137,15 @@ export default function runSave(save: SaveOperation) {
     const effects = getEffects(relation);
 
     if (!effects.modifiesExisting) {
-        graph.saveNewRelation(relation, output);
+        if (process.env.NEWDB)
+            graph.database.insert({relation, output});
+        else
+            graph.saveNewRelation(relation, output);
+        return;
+    }
+
+    if (process.env.NEWDB) {
+        graph.database.update({pattern: relation, output});
         return;
     }
 

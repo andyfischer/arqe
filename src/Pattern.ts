@@ -261,7 +261,7 @@ export default class Pattern {
         return this.copyWithNewTags(tags);
     }
 
-    setTagValueForType(tagType: string, value: any) {
+    setValueForType(tagType: string, value: any) {
         return this.remapTags(tag => {
             if (tag.tagType === tagType)
                 return tag.setValue(value);
@@ -269,11 +269,19 @@ export default class Pattern {
         });
     }
 
-    findTagWithType(tagType: string) {
+    setTagValueForType(tagType: string, value: any) {
+        return this.setValueForType(tagType, value);
+    }
+
+    findTagForType(tagType: string) {
         for (let i = 0; i < this.tags.length; i++)
             if (this.tags[i].tagType === tagType)
                 return this.tags[i];
         return null;
+    }
+
+    findTagWithType(tagType: string) {
+        return this.findTagForType(tagType);
     }
 
     findTagIndexOfType(tagType: string) {
