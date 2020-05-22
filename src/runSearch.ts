@@ -7,7 +7,6 @@ import StorageProvider from './StorageProvider'
 import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
-import Slot from './Slot'
 
 interface Step {
     storage: StorageProvider
@@ -98,19 +97,6 @@ function get_after_inherit(search: SearchOperation) {
         return;
     }
 
-    if (process.env.NEWDB) {
-        graph.database.select({ pattern: search.pattern, output: search });
-        return;
-    }
-
-    graph.inMemory.iterateSlots(search.pattern, {
-        relationOutput: search,
-        slot(slot: Slot) {
-            search.relation(slot.relation);
-        },
-        finish() {
-            search.finish();
-        }
-    });
+    graph.database.select({ pattern: search.pattern, output: search });
 }
 

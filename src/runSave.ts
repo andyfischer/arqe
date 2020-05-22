@@ -5,7 +5,6 @@ import RelationReceiver from './RelationReceiver'
 import PatternTag, { newTag } from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import SaveOperation from './SaveOperation'
-import Slot from './Slot'
 
 const exprFuncEffects = {
     increment: {
@@ -137,45 +136,10 @@ export default function runSave(save: SaveOperation) {
     const effects = getEffects(relation);
 
     if (!effects.modifiesExisting) {
-        if (process.env.NEWDB)
-            graph.database.insert({relation, output});
-        else
-            graph.saveNewRelation(relation, output);
+        graph.database.insert({relation, output});
         return;
     }
 
-    if (process.env.NEWDB) {
-        graph.database.update({pattern: relation, output});
-        return;
-    }
-
-    const filter = modificationToFilter(relation);
-    let anyFound = false;
-
-    graph.inMemory.iterateSlots(filter, {
-        relationOutput: output,
-        slot(slot: Slot) {
-            anyFound = true;
-
-            const modified = slot.modify(existing =>
-                applyModificationRelation(relation, existing)
-            );
-
-            output.relation(modified);
-
-            if (modified.hasType('deleted'))
-                graph.onRelationDeleted(modified.removeType('deleted'));
-            else
-                graph.onRelationUpdated(modified);
-        },
-        finish() {
-            if (!anyFound && effects.initializeIfMissing) {
-                graph.saveNewRelation(toInitialization(relation), output);
-                return;
-            }
-
-            output.finish();
-        }
-    });
+    graph.database.update({pattern: relation, output});
 }
 

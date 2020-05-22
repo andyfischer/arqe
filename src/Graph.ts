@@ -3,14 +3,12 @@ import { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
 import Relation from './Relation'
 import runSearch from './runSearch'
-import InMemoryStorage from './InMemoryStorage'
 import SavedQuery from './SavedQuery'
 import StorageMount from './StorageMount'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
 import InheritTags, { updateInheritTags } from './InheritTags'
 import TypeInfo from './TypeInfo'
-import WebSocketProvider, { updateWebSocketProviders } from './WebSocketProvider'
 import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList, fallbackReceiver } from './receivers'
 import { runCommandChain, singleCommandExecution } from './runCommand'
@@ -24,23 +22,15 @@ import watchAndValidateCommand from './watchAndValidateCommand'
 import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
-import Slot from './Slot'
 import setupFileChangeLog from './providers/FileChangedLog'
-import { StorageProvider2 } from './CompiledQuery'
 import StorageProviderV3 from './StorageProviderV3'
 import { setupTestMathStorage } from './providers/TestMathStorage'
 import { setupGitProvider } from './providers/Git'
 import setupFilesystemProvider from './providers/Filesystem'
 import Database from './Database'
 
-interface StorageProviderMount {
-    match: Pattern
-    provider: StorageProvider2
-}
-
 export default class Graph {
 
-    inMemory = new InMemoryStorage(this)
     database = new Database(this);
     listeners: GraphListenerMount[] = []
 
@@ -50,22 +40,17 @@ export default class Graph {
     ordering = new TagTypeOrdering()
     typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<InheritTags>
-    wsProviders: EagerValue<WebSocketProvider[]>
     derivedValueMounts: StorageMount[] = []
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
 
-    storageProviders: StorageProviderMount[] = []
     storageProvidersV3: StorageProviderV3[] = []
 
     constructor() {
-        if (!process.env.NEWDB) {
-            this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
-            this.eagerValue(this.ordering.update);
-            this.wsProviders = this.eagerValue(updateWebSocketProviders);
-            this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
-        }
+        this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
+        this.eagerValue(this.ordering.update);
+        this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
 
         this.storageProvidersV3.push(this.database.schema.getProvider());
         this.storageProvidersV3.push(setupTestMathStorage());
@@ -205,19 +190,6 @@ export default class Graph {
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
-    }
-
-    saveNewRelation(relation: Relation, output: RelationReceiver) {
-        this.inMemory.saveNewRelation(relation, output);
-    }
-
-    getStorageProvider(pattern: Pattern) {
-        for (const mount of this.storageProviders) {
-            if (mount.match.isSupersetOf(pattern))
-                return mount.provider;
-        }
-
-        return this.inMemory;
     }
 
     getStorageProviderV3(pattern: Pattern): StorageProviderV3 {

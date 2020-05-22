@@ -10,11 +10,12 @@ import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
-import Slot from './Slot'
-import SlotReceiver from './SlotReceiver'
-import CompiledQuery from './CompiledQuery'
 import Database from './Database'
 import QueryPlan from './QueryPlan'
+
+interface Slot {
+    relation: Relation
+}
 
 function getImpliedTableName(rel: Relation) {
     for (const tag of rel.tags)
