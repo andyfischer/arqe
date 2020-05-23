@@ -4,6 +4,10 @@ export default class API {
     graph: GraphLike
 
     constructor(graph: GraphLike) {
+        if (typeof graph.run !== 'function') {
+            throw new Error('(code-generation/watch-file constructor) expected Graph or GraphLike: ' + graph);
+        }
+
         this.graph = graph;
     }
 
@@ -83,7 +87,7 @@ export default class API {
     }
 
     async createWatch(filename: string): Promise<string> {
-        const command = `set file-watch/(unique) filename(${filename}) version/0`;
+        const command = `set file-watch/(unique) filename(${filename}) version/1`;
 
         const { receiver, promise } = receiveToRelationListPromise();
         this.graph.run(command, receiver)

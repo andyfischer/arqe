@@ -4,6 +4,10 @@ export default class API {
     graph: GraphLike
 
     constructor(graph: GraphLike) {
+        if (typeof graph.run !== 'function') {
+            throw new Error('(code-generation/test-api constructor) expected Graph or GraphLike: ' + graph);
+        }
+
         this.graph = graph;
     }
 

@@ -11,7 +11,7 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
     return {
         'fs': setupFilesystemProvider(),
         'git': setupGitProvider(),
-        'file-changed': setupFileChangeLog(this),
+        'file-changed': setupFileChangeLog(graph),
         // 'expires-at': new ExpireAtListener(graph),
         'test-math': setupTestMathStorage()
     }

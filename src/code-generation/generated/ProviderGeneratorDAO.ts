@@ -5,6 +5,10 @@ export default class API {
     target: string
 
     constructor(graph: GraphLike) {
+        if (typeof graph.run !== 'function') {
+            throw new Error('(code-generation/providerGenerator constructor) expected Graph or GraphLike: ' + graph);
+        }
+
         this.graph = graph;
     }
 

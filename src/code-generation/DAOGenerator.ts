@@ -338,7 +338,7 @@ function createFileAst(api: DAOGeneratorDAO, target: string) {
     contructorFunc.addInput('graph', 'GraphLike');
     contructorFunc.contents._if(`typeof graph.run !== 'function'`)
         .contents
-        .addLine(`throw new Error('expected Graph or GraphLike: ' + graph);`);
+        .addLine(`throw new Error('(${target} constructor) expected Graph or GraphLike: ' + graph);`);
 
     contructorFunc.contents.addRaw('this.graph = graph;');
 
