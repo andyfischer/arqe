@@ -99,12 +99,14 @@ set touchpoint/6 query(${touchpoint} output exists)
 set touchpoint/6 function-name/touchpointOutputIsExists
 set touchpoint/6 output exists
 
-set code-generation/dao touchpoint/7.2
-set touchpoint/7.2 query(${touchpoint} output from var)
-set touchpoint/7.2 function-name/touchpointOutput
-set touchpoint/7.2 output from(from/*) var
-set touchpoint/7.2 output optional
-set touchpoint/7.2 expectOne
+set code-generation/dao touchpoint/touchpointOutput
+set touchpoint/touchpointOutput query(${touchpoint} output from var)
+set touchpoint/touchpointOutput function-name/touchpointOutput
+set touchpoint/touchpointOutput input var/touchpoint type/string
+set touchpoint/touchpointOutput output from(from/*) var
+set touchpoint/touchpointOutput output optional
+set touchpoint/touchpointOutput expectOne
+
 
 set code-generation/dao touchpoint/7.3
 set touchpoint/7.3 query(${touchpoint} output from var)
@@ -826,7 +828,6 @@ set touchpoint/isListener input var/touchpoint type/string
 set touchpoint/4.1 input var/touchpoint type/string
 set touchpoint/5 input var/touchpoint type/string
 set touchpoint/6 input var/touchpoint type/string
-set touchpoint/7.2 input var/touchpoint type/string
 set touchpoint/7.3 input var/touchpoint type/string
 set touchpoint/10 input var/touchpoint type/string
 set touchpoint/10.5 input var/input type/string
@@ -975,27 +976,33 @@ set touchpoint/deleteBranch input var/dir type/string
 set touchpoint/deleteBranch input var/branch type/string
 set touchpoint/deleteBranch async
 
-set code-generation/storageGenerator
-set code-generation/storageGenerator destination-filename(src/code-generation/generated/ProviderGeneratorDAO.ts)
-set code-generation/storageGenerator ik-import(../..)
-set code-generation/storageGenerator strategy/dao-api
-set code-generation/storageGenerator field/target type/string
+set code-generation/providerGenerator
+set code-generation/providerGenerator destination-filename(src/code-generation/generated/ProviderGeneratorDAO.ts)
+set code-generation/providerGenerator ik-import(../..)
+set code-generation/providerGenerator strategy/dao-api
+set code-generation/providerGenerator field/target type/string
 
-set code-generation/storageGenerator touchpoint/14.1
-set code-generation/storageGenerator touchpoint/0.8
-set code-generation/storageGenerator touchpoint/touchpointFunctionName
-set code-generation/storageGenerator touchpoint/touchpointInputs2
-set code-generation/storageGenerator touchpoint/touchpointOutputs2
-set code-generation/storageGenerator touchpoint/isAsync
+set code-generation/providerGenerator touchpoint/14.1
+set code-generation/providerGenerator touchpoint/0.8
+set code-generation/providerGenerator touchpoint/touchpointFunctionName
+set code-generation/providerGenerator touchpoint/touchpointInputs2
+set code-generation/providerGenerator touchpoint/touchpointOutputs2
+set code-generation/providerGenerator touchpoint/isAsync
 
-set code-generation/storageGenerator touchpoint/getHandlesPattern
+set code-generation/providerGenerator touchpoint/touchpointOutputExpectOne
+set touchpoint/touchpointOutputExpectOne query(${touchpoint} output expectOne)
+set touchpoint/touchpointOutputExpectOne function-name/touchpointOutputExpectOne
+set touchpoint/touchpointOutputExpectOne input var/touchpoint type/string
+set touchpoint/touchpointOutputExpectOne output exists
+
+set code-generation/providerGenerator touchpoint/getHandlesPattern
 set touchpoint/getHandlesPattern function-name/getHandlesPattern
 set touchpoint/getHandlesPattern query(${target} handles-pattern/*)
 set touchpoint/getHandlesPattern input var/target type/string
 set touchpoint/getHandlesPattern output from(handles-pattern/*) var
 set touchpoint/getHandlesPattern expectOne
 
-set code-generation/storageGenerator touchpoint/touchpointOutputWithType
+set code-generation/providerGenerator touchpoint/touchpointOutputWithType
 set touchpoint/touchpointOutputWithType query(get ${touchpoint} output var type)
 set touchpoint/touchpointOutputWithType expectOne
 set touchpoint/touchpointOutputWithType input var/touchpoint type/string
@@ -1003,14 +1010,14 @@ set touchpoint/touchpointOutputWithType output from(type/*) var
 set touchpoint/touchpointOutputWithType function-name/touchpointOutputWithType
 set touchpoint/touchpointOutputWithType output optional
 
-set code-generation/storageGenerator touchpoint/listHandlers
+set code-generation/providerGenerator touchpoint/listHandlers
 set touchpoint/listHandlers query(get ${target} handler/*)
 set touchpoint/listHandlers function-name/listHandlers
 set touchpoint/listHandlers input var/target type/string
 set touchpoint/listHandlers input var/target dataFrom/apiObject
 set touchpoint/listHandlers output var from/handler
 
-set code-generation/storageGenerator touchpoint/handlerQuery
+set code-generation/providerGenerator touchpoint/handlerQuery
 set touchpoint/handlerQuery query(${handler} handles-query/*)
 set touchpoint/handlerQuery function-name/handlerQuery
 set touchpoint/handlerQuery input var/handler type/string
@@ -1086,6 +1093,7 @@ set code-generation/filesystem-provider handler/readFile
 set handler/readFile function-name/readFile
 set handler/readFile input var/filename type/string
 set handler/readFile output var/contents from(file-contents/*)
+set handler/readFile output expectOne
 set handler/readFile handles-query(get fs filename/$filename file-contents)
 set handler/readFile async
 
@@ -1099,7 +1107,7 @@ set handler/writeFile async
 set code-generation/filesystem-provider handler/readDir
 set handler/readDir function-name/readDir
 set handler/readDir input var/dir type/string
-set handler/readDir output var/filename from(file-contents/*)
+set handler/readDir output var/filename from(filename/*)
 set handler/readDir handles-query(get fs dir/$dir filename)
 set handler/readDir async
 

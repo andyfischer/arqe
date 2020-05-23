@@ -15,11 +15,11 @@ test("can read file from fs provider", async ({run}) => {
 test("can read directory from fs provider", async ({run}) => {
 
     /*
-    const path = Path.join(__dirname, '../../tests/sample-files/file1');
 
-    const result = (await run(`get fs filename(${path}) file-contents/*`))
-        .replace(/\n/, '');
+    const dir = Path.join(__dirname, '../../tests/sample-files');
 
-    expect(result).toEqual('file-contents(file 1 contents)');
+    const result = (await run(`get fs dir(${dir}) filename/*`))
+
+    expect(result).toEqual(['file1']);
     */
 });

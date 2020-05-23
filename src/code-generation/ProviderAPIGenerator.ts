@@ -144,6 +144,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     const vars = pullOutVarsFromPattern(pattern, onHit.contents);
     const outputs = api.touchpointOutputs2(handler);
     const isAsync =  api.touchpointIsAsync(handler);
+    const outputExpectOne = api.touchpointOutputExpectOne(handler);
 
     let outputVar = null;
 
@@ -165,6 +166,8 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
         handlerCall = `const ${outputVar} = ` + handlerCall;
 
     onHit.contents.addRaw(handlerCall);
+
+    // Validate output
 
     if (outputs.length === 0) {
         if (query.startsWith('set ')) {

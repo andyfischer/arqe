@@ -3,6 +3,7 @@ import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emit
 interface NativeHandler {
     readFile: (filename: string) => void
     writeFile: (filename: string, contents: string) => void
+    readDir: (dir: string) => void
 }
 
 export default class API implements StorageProviderV3 {
@@ -27,6 +28,16 @@ export default class API implements StorageProviderV3 {
             const filename = pattern.getTagValue("filename");
             const contents = await this.handler.readFile(filename);
             output.relation(pattern.setTagValueForType("file-contents", contents))
+            output.finish();
+            return;
+        }
+
+        // check for handler/readDir (get fs dir/$dir filename)
+
+        if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("filename"))) {
+            const dir = pattern.getTagValue("dir");
+            const filename = await this.handler.readDir(dir);
+            output.relation(pattern.setTagValueForType("filename", filename))
             output.finish();
             return;
         }

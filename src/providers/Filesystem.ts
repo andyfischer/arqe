@@ -10,6 +10,9 @@ export default function init() {
         },
         async writeFile(filename: string, contents: string) {
             await Fs.writeFile(filename, contents);
+        },
+        async readDir(dir: string) {
+            return await Fs.readdir(dir);
         }
     });
 }

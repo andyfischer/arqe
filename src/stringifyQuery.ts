@@ -29,6 +29,9 @@ export function patternTagToString(tag: PatternTag) {
 
     if (tag.tagValue) {
 
+        if (typeof tag.tagValue !== 'string')
+            throw new Error(`internal error: tagValue isn't a string: ` + JSON.stringify(tag.tagValue));
+
         let s = '';
 
         if (tag.identifier) {
