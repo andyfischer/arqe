@@ -4,7 +4,7 @@ import Pattern from './Pattern'
 import SchemaProviderAPI from './generated/SchemaProviderAPI'
 import Graph from './Graph'
 import StorageProviderV3 from './StorageProviderV3'
-
+import getBuiltinViews from './getBuiltinViews'
 
 export class ColumnType {
     name: string
@@ -34,9 +34,18 @@ export class Column {
 export default class Schema {
 
     constructor() {
-        const schemaColumn = this.initColumn('schema');
-        schemaColumn.type = ViewColumn;
-        schemaColumn.storageProvider = this.getProvider();
+    }
+
+    setupBuiltinViews(graph: Graph) {
+
+        const views = getBuiltinViews(graph);
+        views['schema'] = this.getProvider();
+
+        for (const name in views) {
+            const column = this.initColumn(name);
+            column.type = ViewColumn;
+            column.storageProvider = views[name];
+        }
     }
 
     columns: { [name: string]: Column } = {}

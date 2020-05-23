@@ -74,7 +74,6 @@ export default class Database {
         return true;
     }
 
-
     insert(op: InsertOperation) {
 
         const { relation, output } = op;
@@ -88,7 +87,7 @@ export default class Database {
             const view: QueryTag = plan.views[0];
 
             if (view.column.storageProvider) {
-                view.column.storageProvider.runSearch(relation, output);
+                view.column.storageProvider.runSave(relation, output);
                 return;
             }
 
@@ -114,7 +113,7 @@ export default class Database {
             const view: QueryTag = plan.views[0];
 
             if (view.column.storageProvider) {
-                view.column.storageProvider.runSearch(pattern, output);
+                view.column.storageProvider.runSave(pattern, output);
                 return;
             }
 
@@ -143,7 +142,7 @@ export default class Database {
             const view: QueryTag = plan.views[0];
 
             if (view.column.storageProvider) {
-                view.column.storageProvider.runSave(pattern, output);
+                view.column.storageProvider.runSearch(pattern, output);
                 return;
             }
 

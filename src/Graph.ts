@@ -19,14 +19,9 @@ import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
-import ExpireAtListener from './ExpireAtListener'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
-import setupFileChangeLog from './providers/FileChangedLog'
 import StorageProviderV3 from './StorageProviderV3'
-import { setupTestMathStorage } from './providers/TestMathStorage'
-import { setupGitProvider } from './providers/Git'
-import setupFilesystemProvider from './providers/Filesystem'
 import Database from './Database'
 
 export default class Graph {
@@ -48,15 +43,9 @@ export default class Graph {
     storageProvidersV3: StorageProviderV3[] = []
 
     constructor() {
+        this.database.schema.setupBuiltinViews(this);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
-        this.addListener(parsePattern('expires-at/* **'), new ExpireAtListener(this));
-
-        this.storageProvidersV3.push(this.database.schema.getProvider());
-        this.storageProvidersV3.push(setupTestMathStorage());
-        this.storageProvidersV3.push(setupFileChangeLog(this));
-        this.storageProvidersV3.push(setupGitProvider());
-        this.storageProvidersV3.push(setupFilesystemProvider());
     }
 
     savedQuery(queryStr: string): SavedQuery {
