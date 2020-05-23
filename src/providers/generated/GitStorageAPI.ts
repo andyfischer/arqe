@@ -2,8 +2,8 @@ import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emit
 
 interface NativeHandler {
     createBranch: (dir: string, branchName: string) => void
-    listBranches: (dir: string) => string[]
-    checkBranchExists: (dir: string, branchName: string) => boolean
+    listBranches: (dir: string) => Promise<string[]>
+    checkBranchExists: (dir: string, branchName: string) => Promise<boolean>
     deleteBranch: (dir: string, branchName: string) => void
 }
 

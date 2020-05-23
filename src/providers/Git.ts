@@ -3,15 +3,15 @@ import GitStorageAPI from './generated/GitStorageAPI'
 
 export function setupGitProvider() {
     return new GitStorageAPI({
-        createBranch(dir: string, branchName: string) {
+        async createBranch(dir: string, branchName: string) {
         },
-        listBranches(dir: string) {
+        async listBranches(dir: string) {
             return [];
         },
-        checkBranchExists(dir: string) {
+        async checkBranchExists(dir: string) {
             return false;
         },
-        deleteBranch(dir: string, branchName: string) {
+        async deleteBranch(dir: string, branchName: string) {
         }
     });
 }

@@ -1,9 +1,9 @@
 import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError } from "../.."
 
 interface NativeHandler {
-    readFile: (filename: string) => void
+    readFile: (filename: string) => Promise<any>
     writeFile: (filename: string, contents: string) => void
-    readDir: (dir: string) => void
+    readDir: (dir: string) => Promise<any[]>
 }
 
 export default class API implements StorageProviderV3 {
@@ -27,6 +27,11 @@ export default class API implements StorageProviderV3 {
         if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasType("file-contents"))) {
             const filename = pattern.getTagValue("filename");
             const contents = await this.handler.readFile(filename);
+
+            if (typeof contents !== 'string') {
+                throw new Error("expected readFile to return a string, got: " + JSON.stringify(contents))
+            }
+
             output.relation(pattern.setTagValueForType("file-contents", contents))
             output.finish();
             return;
@@ -37,8 +42,16 @@ export default class API implements StorageProviderV3 {
         if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("filename"))) {
             const dir = pattern.getTagValue("dir");
             const filename = await this.handler.readDir(dir);
-            output.relation(pattern.setTagValueForType("filename", filename))
-            output.finish();
+
+            if (!Array.isArray(filename)) {
+                throw new Error("expected readDir to return an Array, got: " + JSON.stringify(filename))
+            }
+
+            for (const item of filename) {
+                output.relation(pattern.setTagValueForType("filename", item))
+                output.finish();
+            }
+
             return;
         }
 

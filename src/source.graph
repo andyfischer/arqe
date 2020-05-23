@@ -1049,6 +1049,7 @@ set handler/checkBranchExists function-name/checkBranchExists
 set handler/checkBranchExists input var/dir type/string
 set handler/checkBranchExists input var/branchName type/string
 set handler/checkBranchExists output var type/boolean
+set handler/checkBranchExists output expectOne
 set handler/checkBranchExists async
 set handler/checkBranchExists handles-query(get git dir/$dir branch/$branch)
 
@@ -1070,6 +1071,7 @@ set handler/sum function-name/sum
 set handler/sum input var/a type/string
 set handler/sum input var/b type/string
 set handler/sum output var/sum from(sum/*)
+set handler/sum output expectOne
 set handler/sum handles-query(get test-math sum a/$a b/$b)
 
 set code-generation/file-change-log

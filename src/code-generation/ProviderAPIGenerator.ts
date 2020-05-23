@@ -11,6 +11,9 @@ function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
 
     for (const handler of api.listHandlers()) {
         const functionName = api.touchpointFunctionName(handler);
+        const outputExpectOne = api.touchpointOutputExpectOne(handler);
+        const outputs = api.touchpointOutputs2(handler);
+        const isAsync =  api.touchpointIsAsync(handler);
 
         const functionType = startFunctionTypeDef();
 
@@ -18,10 +21,22 @@ function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
             functionType.addInput(varStr, typeStr);
         }
 
-        const output = api.touchpointOutputWithType(handler);
-        if (output) {
-            functionType.setOutputType(output);
+        let outputType = api.touchpointOutputWithType(handler);
+
+        if (!outputType && outputs.length > 0)
+            outputType = 'any';
+
+        if (outputType) {
+
+            if (!outputExpectOne && !outputType.endsWith('[]'))
+                outputType = outputType + '[]';
+
+            if (isAsync)
+                outputType = `Promise<${outputType}>`;
+
+            functionType.setOutputType(outputType);
         }
+
 
         handlerInterface.addField(functionName, functionType.line());
     }
@@ -137,11 +152,12 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
 
     block.addComment(`check for ${handler} (${query})`);
 
-    const onHit = block.addIf();
-    onHit.setCondition(patternCheckExpression(pattern));
+    const patternMatches = block.addIf();
+    patternMatches.setCondition(patternCheckExpression(pattern));
+    const handlePatternMatch = patternMatches.contents;
 
     const functionName = api.touchpointFunctionName(handler);
-    const vars = pullOutVarsFromPattern(pattern, onHit.contents);
+    const vars = pullOutVarsFromPattern(pattern, handlePatternMatch);
     const outputs = api.touchpointOutputs2(handler);
     const isAsync =  api.touchpointIsAsync(handler);
     const outputExpectOne = api.touchpointOutputExpectOne(handler);
@@ -165,24 +181,44 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     if (outputVar)
         handlerCall = `const ${outputVar} = ` + handlerCall;
 
-    onHit.contents.addRaw(handlerCall);
+    handlePatternMatch.addRaw(handlerCall);
 
     // Validate output
 
     if (outputs.length === 0) {
         if (query.startsWith('set ')) {
             // If save: Echo back the relation that was saved.
-            onHit.contents.addRaw(`output.relation(pattern);`);
-            onHit.contents.addRaw(`output.finish();`);
-            onHit.contents.addRaw(`return;`);
+            handlePatternMatch.addRaw(`output.relation(pattern);`);
+            handlePatternMatch.addRaw(`output.finish();`);
+            handlePatternMatch.addRaw(`return;`);
         }
 
 
     } else {
-        const tagType = outputs[0].fromStr.replace('/*', '');
-        onHit.contents.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${outputVar}))`);
-        onHit.contents.addRaw(`output.finish();`);
-        onHit.contents.addRaw(`return;`);
+        if (outputExpectOne) {
+
+            handlePatternMatch.addIf(`typeof ${outputVar} !== 'string'`)
+                .contents
+                .addRaw(`throw new Error("expected ${functionName} to return a string, got: " + JSON.stringify(${outputVar}))`);
+
+            const tagType = outputs[0].fromStr.replace('/*', '');
+            handlePatternMatch.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${outputVar}))`);
+            handlePatternMatch.addRaw(`output.finish();`);
+            handlePatternMatch.addRaw(`return;`);
+        } else {
+            handlePatternMatch.addIf(`!Array.isArray(${outputVar})`)
+                .contents
+                .addRaw(`throw new Error("expected ${functionName} to return an Array, got: " + JSON.stringify(${outputVar}))`);
+
+            const tagType = outputs[0].fromStr.replace('/*', '');
+            handlePatternMatch._for(`const item of ${outputVar}`)
+                .contents
+                .addRaw(`output.relation(pattern.setTagValueForType("${tagType}", item))`)
+                .addRaw(`output.finish();`)
+
+            handlePatternMatch
+                .addRaw(`return;`);
+        }
     }
 
     block.addBlank();

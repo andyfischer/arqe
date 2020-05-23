@@ -32,6 +32,7 @@ export class Block {
 
     addRaw(text: string) {
         this.statements.push(new RawStatement(text));
+        return this;
     }
 
     addBlank() {
@@ -44,10 +45,19 @@ export class Block {
         return decl;
     }
 
-    addIf() {
+    addIf(condition?: string) {
         const ifBlock = new IfBlock();
+        if (condition)
+            ifBlock.setCondition(condition);
         this.statements.push(ifBlock);
         return ifBlock;
+    }
+
+    _for(line: string) {
+        const forBlock = new ForBlock();
+        forBlock.forLine = line;
+        this.statements.push(forBlock);
+        return forBlock;
     }
 
     addObjectField(name: string, value: string) {
@@ -278,6 +288,20 @@ class IfBlock implements Statement {
     }
 }
 
+class ForBlock implements Statement {
+    statementType = 'forBlock'
+    forLine: string
+    contents: Block
+
+    constructor() {
+        this.contents = new Block('for', this)
+    }
+
+    line() {
+        return `for (${this.forLine})`;
+    }
+}
+
 class FunctionTypeDef {
     inputs: { name: string, tsType: string}[] = []
     outputType: string = 'void'
@@ -417,6 +441,7 @@ export function stringifyBlock(block: Block) {
             case 'class':
             case 'function':
             case 'if':
+            case 'for':
             case 'interface':
                 writer.writeln(' {')
                 writer.indent();
@@ -450,6 +475,7 @@ export function stringifyBlock(block: Block) {
                 case 'interfaceDef':
                 case 'functionDecl':
                 case 'ifBlock':
+                case 'forBlock':
                     continue;
             }
 

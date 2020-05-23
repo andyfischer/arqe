@@ -1,7 +1,7 @@
 import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError } from "../.."
 
 interface NativeHandler {
-    sum: (a: string, b: string) => void
+    sum: (a: string, b: string) => any
 }
 
 export default class API implements StorageProviderV3 {
@@ -26,6 +26,11 @@ export default class API implements StorageProviderV3 {
             const a = pattern.getTagValue("a");
             const b = pattern.getTagValue("b");
             const sum = this.handler.sum(a, b);
+
+            if (typeof sum !== 'string') {
+                throw new Error("expected sum to return a string, got: " + JSON.stringify(sum))
+            }
+
             output.relation(pattern.setTagValueForType("sum", sum))
             output.finish();
             return;
