@@ -125,15 +125,6 @@ export default function runSave(save: SaveOperation) {
 
     const { graph, relation, output } = save;
 
-    graph.database.schema.beforeSave(relation);
-
-    const effects = getEffects(relation);
-
-    if (!effects.modifiesExisting) {
-        graph.database.insert({relation, output});
-        return;
-    }
-
-    graph.database.update({pattern: relation, output});
+    graph.database.save(relation, output);
 }
 

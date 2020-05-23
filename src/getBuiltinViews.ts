@@ -4,7 +4,7 @@ import StorageProvider from './StorageProvider'
 import setupFilesystemProvider from './providers/Filesystem'
 import { setupGitProvider } from './providers/Git'
 import setupFileChangeLog from './providers/FileChangedLog'
-import ExpireAtListener from './ExpireAtListener'
+import ExpireAtListener from './providers/ExpireAtListener'
 import { setupTestMathStorage } from './providers/TestMathStorage'
 
 export default function getBuiltinViews(graph: Graph): {[name: string]: StorageProvider } {
@@ -12,7 +12,7 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
         'fs': setupFilesystemProvider(),
         'git': setupGitProvider(),
         'file-changed': setupFileChangeLog(graph),
-        // 'expires-at': new ExpireAtListener(graph),
+        'expires-at': new ExpireAtListener(graph),
         'test-math': setupTestMathStorage()
     }
 }

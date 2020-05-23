@@ -77,6 +77,6 @@ function get_after_inherit(search: SearchOperation) {
 
     const graph = search.graph;
     
-    graph.database.select({ pattern: search.pattern, output: search });
+    graph.database.search(search.pattern, search);
 }
 

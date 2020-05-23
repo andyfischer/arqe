@@ -8,7 +8,7 @@ import RelationReceiver from './RelationReceiver'
 import Pattern from './Pattern'
 import ValueDatabase from './ValueDatabase'
 import QueryPlan, { QueryTag } from './QueryPlan'
-import patternToQueryPlan from './patternToQueryPlan'
+import makeQueryPlan from './makeQueryPlan'
 
 export class AttributeSet {
     data: { [key: string]: string } = {}
@@ -74,20 +74,27 @@ export default class Database {
         return true;
     }
 
-    insert(op: InsertOperation) {
-
-        const { relation, output } = op;
-
-        const plan = patternToQueryPlan(this, relation, output);
-
+    save(pattern: Pattern, output: RelationReceiver) {
+        const plan = makeQueryPlan(this, pattern, output);
         if (!this.checkValidation(plan))
             return;
+
+        if (plan.modifiesExisting) {
+            this.update(plan);
+        } else {
+            this.insert(plan);
+        }
+    }
+
+    insert(plan: QueryPlan) {
+
+        const { pattern, output } = plan;
 
         if (plan.views.length > 0) {
             const view: QueryTag = plan.views[0];
 
             if (view.column.storageProvider) {
-                view.column.storageProvider.runSave(relation, output);
+                view.column.storageProvider.runSave(pattern, output);
                 return;
             }
 
@@ -104,11 +111,8 @@ export default class Database {
         this.valueDatabase.insert(plan);
     }
 
-    update(op: UpdateOperation) {
-        const { pattern, output } = op;
-
-        const plan = patternToQueryPlan(this, pattern, output);
-
+    update(plan: QueryPlan) {
+        const { pattern, output } = plan;
         if (plan.views.length > 0) {
             const view: QueryTag = plan.views[0];
 
@@ -130,12 +134,16 @@ export default class Database {
         this.valueDatabase.update(plan);
     }
 
-    select(op: SelectOperation) {
-        const { pattern, output } = op;
-
-        const plan = patternToQueryPlan(this, pattern, output);
+    search(pattern: Pattern, output: RelationReceiver) {
+        const plan = makeQueryPlan(this, pattern, output);
         if (!this.checkValidation(plan))
             return;
+
+        this.select(plan);
+    }
+
+    select(plan: QueryPlan) {
+        const { pattern, output } = plan;
 
         if (plan.views.length > 0) {
 

@@ -221,7 +221,8 @@ export default class ValueDatabase {
         }
 
         if (!hasFoundAny && plan.initializeIfMissing) {
-            this.database.insert({ relation: toInitialization(pattern), output });
+            plan.pattern = toInitialization(pattern);
+            this.insert(plan);
             return;
         }
 

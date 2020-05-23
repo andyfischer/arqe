@@ -107,35 +107,6 @@ export default function patternToQueryPlan(database: Database, pattern: Pattern,
     if (plan.views.length > 0)
         return plan;
 
-    /*
-    if (plan.objects.length > 0) {
-        if (plan.objects.length == 1) {
-
-            const tag = plan.objects[0].tag;
-            const columnName = tag.tagType;
-
-            this.objectStore[columnName] = this.objectStore[columnName] || {};
-
-            if (tag.tagValue) {
-                this.objectStore[columnName][tag.tagValue] = this.objectStore[columnName][tag.tagValue] || new AttributeSet();
-                plan.attributeSet = this.objectStore[columnName][tag.tagValue];
-            }
-
-        } else {
-            plan.objects.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
-
-            const multiObjectKey = plan.objects.map(t => t.tag.stringify()).join(' ');
-
-            if (!this.multiObjectStore[multiObjectKey])
-                this.multiObjectStore[multiObjectKey] = new AttributeSet();
-
-            plan.attributeSet = this.multiObjectStore[multiObjectKey];
-        }
-
-        return plan;
-    }
-    */
-
     if (plan.values.length > 0) {
         plan.values.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
     }
