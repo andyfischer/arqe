@@ -62,7 +62,7 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
     handlesPatternMethod.addInput('pattern', 'Pattern');
     const handlesPattern = parsePattern(api.getHandlesPattern(target));
     handlesPatternMethod.setOutputType('boolean');
-    const handlesPatternIf = handlesPatternMethod.contents.addIf();
+    const handlesPatternIf = handlesPatternMethod.contents._if();
     handlesPatternIf.setCondition(patternCheckExpression(handlesPattern));
     handlesPatternIf.contents.addRaw('return true;');
     handlesPatternMethod.contents.addRaw('return false;');
@@ -152,7 +152,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
 
     block.addComment(`check for ${handler} (${query})`);
 
-    const patternMatches = block.addIf();
+    const patternMatches = block._if();
     patternMatches.setCondition(patternCheckExpression(pattern));
     const handlePatternMatch = patternMatches.contents;
 
@@ -197,7 +197,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     } else {
         if (outputExpectOne) {
 
-            handlePatternMatch.addIf(`typeof ${outputVar} !== 'string'`)
+            handlePatternMatch._if(`typeof ${outputVar} !== 'string'`)
                 .contents
                 .addRaw(`throw new Error("expected ${functionName} to return a string, got: " + JSON.stringify(${outputVar}))`);
 
@@ -206,7 +206,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
             handlePatternMatch.addRaw(`output.finish();`);
             handlePatternMatch.addRaw(`return;`);
         } else {
-            handlePatternMatch.addIf(`!Array.isArray(${outputVar})`)
+            handlePatternMatch._if(`!Array.isArray(${outputVar})`)
                 .contents
                 .addRaw(`throw new Error("expected ${functionName} to return an Array, got: " + JSON.stringify(${outputVar}))`);
 

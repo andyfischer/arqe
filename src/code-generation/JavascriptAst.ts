@@ -30,9 +30,13 @@ export class Block {
         return def;
     }
 
-    addRaw(text: string) {
+    addLine(text: string) {
         this.statements.push(new RawStatement(text));
         return this;
+    }
+
+    addRaw(text: string) {
+        return this.addLine(text);
     }
 
     addBlank() {
@@ -45,7 +49,7 @@ export class Block {
         return decl;
     }
 
-    addIf(condition?: string) {
+    _if(condition?: string) {
         const ifBlock = new IfBlock();
         if (condition)
             ifBlock.setCondition(condition);

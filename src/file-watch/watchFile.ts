@@ -1,12 +1,10 @@
 
 import Path from 'path'
 import Graph from '../Graph'
-import WatchFileApi from './WatchFileApi'
-import getProcessClient from '../toollib/getProcessClient'
+import WatchFileApi from './generated/WatchFileApi'
 import runStandardProcess from '../toollib/runStandardProcess'
 
-export default async function watchFile(filename: string, callback: (version: string) => void) {
-    const graph = await getProcessClient();
+export default async function watchFile(graph: Graph, filename: string, callback: (version: string) => void) {
 
     filename = Path.resolve(filename);
 
@@ -24,7 +22,7 @@ export async function main() {
     runStandardProcess('watch-file', async (graph: Graph) => {
         const filename = process.argv[2];
 
-        watchFile(filename, (version) => {
+        watchFile(graph, filename, (version) => {
             console.log(`file ${filename} changed: ` + version);
         })
         .catch(console.error);

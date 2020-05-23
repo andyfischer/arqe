@@ -516,7 +516,7 @@ set touchpoint/findWatchesForFilename async
 set code-generation/watch-file touchpoint/findWatchesForFilename
 
 set code-generation/watch-file touchpoint/createWatch
-set touchpoint/createWatch query(set file-watch/(unique) filename(${filename}) version/0)
+set touchpoint/createWatch query(set file-watch/(unique) filename(${filename}) version/1)
 set touchpoint/createWatch function-name/createWatch
 set touchpoint/createWatch async
 set touchpoint/createWatch expectOne

@@ -29,7 +29,7 @@ async function runGeneration(graph: Graph) {
     const cliArgs = Minimist(process.argv.slice(2));
     const filename = cliArgs['file'];
 
-    watchFile(filename, () => {
+    watchFile(graph, filename, () => {
 
         console.log(`running code generation (using ${filename})`);
 

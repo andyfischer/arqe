@@ -1,6 +1,6 @@
 
 import Path from 'path'
-import WatchFileApi from './WatchFileApi'
+import WatchFileApi from './generated/WatchFileApi'
 import runStandardProcess from '../toollib/runStandardProcess'
 import getProcessClient from '../toollib/getProcessClient'
 import Graph from '../Graph'

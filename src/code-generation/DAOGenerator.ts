@@ -262,7 +262,7 @@ function methodReturnResult(api: DAOGeneratorDAO, touchpoint: string, block: Blo
         if (!outputIsOptional)
             block.addRaw('// Expect one result')
 
-        const zeroCheck = block.addIf();
+        const zeroCheck = block._if();
         zeroCheck.setCondition('rels.length === 0');
 
         if (outputIsOptional)
@@ -270,7 +270,7 @@ function methodReturnResult(api: DAOGeneratorDAO, touchpoint: string, block: Blo
         else
             zeroCheck.contents.addRaw(`throw new Error("(${name}) No relation found for: " + command)`)
 
-        const multiCheck = block.addIf();
+        const multiCheck = block._if();
         multiCheck.setCondition('rels.length > 1');
         multiCheck.contents.addRaw(`throw new Error("(${name}) Multiple results found for: " + command)`)
         
@@ -336,6 +336,10 @@ function createFileAst(api: DAOGeneratorDAO, target: string) {
 
     const contructorFunc = apiClass.contents.addMethod('constructor');
     contructorFunc.addInput('graph', 'GraphLike');
+    contructorFunc.contents._if(`typeof graph.run !== 'function'`)
+        .contents
+        .addLine(`throw new Error('expected Graph or GraphLike: ' + graph);`);
+
     contructorFunc.contents.addRaw('this.graph = graph;');
 
     // methods
