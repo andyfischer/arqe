@@ -2,7 +2,6 @@
 import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
 import PatternTag from './PatternTag'
-import StorageProvider from './StorageProvider'
 import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'
 import Graph from './Graph'

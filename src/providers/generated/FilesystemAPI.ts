@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError } from "../.."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     readFile: (filename: string) => Promise<any>
@@ -6,7 +6,7 @@ interface NativeHandler {
     readDir: (dir: string) => Promise<any[]>
 }
 
-export default class API implements StorageProviderV3 {
+export default class API implements StorageProvider {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {

@@ -1,10 +1,10 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError } from "../.."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     onChange: (filename: string) => void
 }
 
-export default class API implements StorageProviderV3 {
+export default class API implements StorageProvider {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {

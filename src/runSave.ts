@@ -127,12 +127,6 @@ export default function runSave(save: SaveOperation) {
 
     graph.database.schema.beforeSave(relation);
 
-    const provider = graph.getStorageProviderV3(save.relation);
-    if (provider) {
-        provider.runSave(save.relation, save.output);
-        return;
-    }
-
     const effects = getEffects(relation);
 
     if (!effects.modifiesExisting) {

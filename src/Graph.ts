@@ -4,7 +4,6 @@ import Pattern from './Pattern'
 import Relation from './Relation'
 import runSearch from './runSearch'
 import SavedQuery from './SavedQuery'
-import StorageMount from './StorageMount'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
 import InheritTags, { updateInheritTags } from './InheritTags'
@@ -21,7 +20,7 @@ import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
-import StorageProviderV3 from './StorageProviderV3'
+import StorageProvider from './StorageProvider'
 import Database from './Database'
 
 export default class Graph {
@@ -35,12 +34,11 @@ export default class Graph {
     ordering = new TagTypeOrdering()
     typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<InheritTags>
-    derivedValueMounts: StorageMount[] = []
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
 
-    storageProvidersV3: StorageProviderV3[] = []
+    storageProvidersV3: StorageProvider[] = []
 
     constructor() {
         this.database.schema.setupBuiltinViews(this);
@@ -66,11 +64,6 @@ export default class Graph {
         const ev = new EagerValue<T>(this, updateFn, initialValue);
         ev.runUpdate();
         return ev;
-    }
-
-    *iterateMounts() {
-        for (const mount of this.derivedValueMounts)
-            yield mount;
     }
 
     getTypeInfo(name: string) {
@@ -179,13 +172,6 @@ export default class Graph {
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
-    }
-
-    getStorageProviderV3(pattern: Pattern): StorageProviderV3 {
-        for (const provider of this.storageProvidersV3) {
-            if (provider.handlesPattern(pattern))
-                return provider;
-        }
     }
 
     close() { }

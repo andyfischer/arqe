@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError } from "../.."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     createBranch: (dir: string, branchName: string) => void
@@ -7,7 +7,7 @@ interface NativeHandler {
     deleteBranch: (dir: string, branchName: string) => void
 }
 
-export default class API implements StorageProviderV3 {
+export default class API implements StorageProvider {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {

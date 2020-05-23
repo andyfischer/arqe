@@ -3,15 +3,9 @@ import Command, { CommandFlags } from './Command'
 import Graph from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'
-import StorageProvider from './StorageProvider'
 import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'
 import PatternTag from './PatternTag'
-
-interface Step {
-    storage: StorageProvider
-    pattern: Pattern
-}
 
 export default function runSearch(search: SearchOperation) {
     if (!search.graph)
@@ -83,20 +77,6 @@ function get_after_inherit(search: SearchOperation) {
 
     const graph = search.graph;
     
-    // Check mounts
-    for (const mount of graph.iterateMounts()) {
-        if (mount.pattern.isSupersetOf(search.pattern)) {
-            mount.storage.runSearch(search);
-            return;
-        }
-    }
-
-    const provider = graph.getStorageProviderV3(search.pattern);
-    if (provider) {
-        provider.runSearch(search.pattern, search);
-        return;
-    }
-
     graph.database.select({ pattern: search.pattern, output: search });
 }
 

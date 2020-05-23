@@ -45,14 +45,14 @@ function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
 function createFileAst(api: ProviderGeneratorDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
-    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver, StorageProviderV3, emitCommandError }', importPath);
+    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError }', importPath);
 
     createHandlerInterface(api, file);
 
     const apiClass = file.addClass('API');
     apiClass.addField('handler', 'NativeHandler');
     apiClass.isExportDefault = true;
-    apiClass.addImplements('StorageProviderV3');
+    apiClass.addImplements('StorageProvider');
 
     const contructorFunc = apiClass.contents.addMethod('constructor');
     contructorFunc.addInput('handler', 'NativeHandler');
