@@ -10,4 +10,4 @@
   - input var/text type/string
   - output var/filename from(javascript-ast/*)
   - handles-query(get javascript-ast/* text/$text)
-  - expectOne
+  - output expectOne

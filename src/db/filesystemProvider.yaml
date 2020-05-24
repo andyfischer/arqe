@@ -24,6 +24,7 @@
   - async
 
 - handler/readDir:
+  - function-name/readDir
   - input var/dir type/string
   - output var/filename from(filename/*)
   - handles-query(get fs dir/$dir filename)

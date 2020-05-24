@@ -12,14 +12,6 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    handlesPattern(pattern: Pattern): boolean {
-        if ((pattern.tagCount() >= 2) && (pattern.hasType("schema"))) {
-            return true;
-        }
-
-        return false;
-    }
-
     async runSearch(pattern: Pattern, output: RelationReceiver) {
         emitCommandError(output, "provider code-generation/schema-provider doesn't support: get " + pattern.stringify());
         output.finish()

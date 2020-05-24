@@ -11,14 +11,6 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    handlesPattern(pattern: Pattern): boolean {
-        if ((pattern.tagCount() >= 2) && (pattern.hasType("test-math"))) {
-            return true;
-        }
-
-        return false;
-    }
-
     async runSearch(pattern: Pattern, output: RelationReceiver) {
         // check for handler/sum (get test-math sum a/$a b/$b)
 

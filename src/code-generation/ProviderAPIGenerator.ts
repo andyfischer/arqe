@@ -58,6 +58,7 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
     contructorFunc.addInput('handler', 'NativeHandler');
     contructorFunc.contents.addRaw('this.handler = handler;');
 
+    /*
     const handlesPatternMethod = apiClass.contents.addMethod('handlesPattern');
     handlesPatternMethod.addInput('pattern', 'Pattern');
     const handlesPattern = parsePattern(api.getHandlesPattern(target));
@@ -66,6 +67,7 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
     handlesPatternIf.setCondition(patternCheckExpression(handlesPattern));
     handlesPatternIf.contents.addRaw('return true;');
     handlesPatternMethod.contents.addRaw('return false;');
+    */
 
     const runSearch = apiClass.contents.addMethod('runSearch');
     runSearch.isAsync = true;

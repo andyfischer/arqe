@@ -11,14 +11,6 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    handlesPattern(pattern: Pattern): boolean {
-        if ((pattern.tagCount() == 3) && (pattern.hasType("log")) && (pattern.hasType("file-changed")) && (pattern.hasType("filename"))) {
-            return true;
-        }
-
-        return false;
-    }
-
     async runSearch(pattern: Pattern, output: RelationReceiver) {
         emitCommandError(output, "provider code-generation/file-change-log doesn't support: get " + pattern.stringify());
         output.finish()

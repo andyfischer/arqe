@@ -13,14 +13,6 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    handlesPattern(pattern: Pattern): boolean {
-        if ((pattern.tagCount() >= 2) && (pattern.hasType("fs"))) {
-            return true;
-        }
-
-        return false;
-    }
-
     async runSearch(pattern: Pattern, output: RelationReceiver) {
         // check for handler/readFile (get fs filename/$filename file-contents)
 

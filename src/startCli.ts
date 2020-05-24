@@ -10,11 +10,11 @@ export default async function main() {
     require('source-map-support').install();
 
     const cliArgs = Minimist(process.argv.slice(2), {
-        boolean: ['generate']
     });
 
     let graph;
     let useRemoteServer = true;
+    let runRepl = true;
 
     if (cliArgs.db) {
         graph = loadGraphFromFiles(cliArgs.db);
@@ -26,18 +26,25 @@ export default async function main() {
         graph = await connectToServer();
     }
 
-    const graphRepl = new GraphRepl(graph);
+    if (cliArgs._.length > 0) {
+        const filename = cliArgs._[0];
+        console.log('running file: ', filename);
+    }
 
-    const repl = Repl.start({
-        prompt: '~ ',
-        eval: line => graphRepl.eval(line, () => {
-            repl.displayPrompt()
-        })
-    });
+    if (runRepl) {
+        const graphRepl = new GraphRepl(graph);
 
-    repl.on('exit', () => {
-        process.exit(0);
-    });
+        const repl = Repl.start({
+            prompt: '~ ',
+            eval: line => graphRepl.eval(line, () => {
+                repl.displayPrompt()
+            })
+        });
+
+        repl.on('exit', () => {
+            process.exit(0);
+        });
+    }
 }
 
 main()

@@ -235,7 +235,7 @@ function parseOneCommandChain(it: TokenIterator): CommandChain {
             break;
 
         if (!it.tryConsume(t_bar))
-            throw new Error("expected: |, saw: " + it.nextText());
+            break;
     }
 
     return chain;
@@ -314,4 +314,21 @@ export function parseCommandChain(str: string): CommandChain {
     const chain = parseOneCommandChain(it);
 
     return chain;
+}
+
+export function parseFile(fileContents: string): CommandChain[] {
+    const it = lexStringToIterator(fileContents);
+
+    const commands: CommandChain[] = [];
+
+    while (!it.finished()) {
+        while (it.nextIs(t_space) || it.nextIs(t_newline))
+            it.consume();
+
+        const command = parseOneCommandChain(it);
+
+        commands.push(command);
+    }
+
+    return commands;
 }

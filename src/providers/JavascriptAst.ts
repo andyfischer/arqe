@@ -6,6 +6,7 @@
 
 import Esprima from 'esprima'
 import IDSource from '../utils/IDSource'
+import API from './generated/JavascriptAstAPI'
 
 // get javascript-ast text(...)
 
@@ -27,4 +28,5 @@ class JavascriptAstProvider {
 }
 
 export default function setup() {
+    return new API(new JavascriptAstProvider())
 }
