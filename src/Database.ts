@@ -87,7 +87,6 @@ export default class Database {
     }
 
     insert(plan: QueryPlan) {
-
         const { pattern, output } = plan;
 
         if (plan.views.length > 0) {

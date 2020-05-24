@@ -16,6 +16,7 @@
     "bent": "^1.5.13",
     "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
+    "esprima": "^4.0.1",
     "express": "^4.17.1",
     "fast-glob": "^3.0.4",
     "fs-extra": "^8.0.1",

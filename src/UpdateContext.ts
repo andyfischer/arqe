@@ -5,7 +5,6 @@ import parseCommand from './parseCommand'
 import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
 import CommandStep from './CommandStep'
-import runSearch from './runSearch'
 import { singleCommandExecution } from './runCommand'
 
 export type UpdateFn<T> = (cxt: UpdateContext) => T
@@ -34,7 +33,7 @@ export default class UpdateContext {
         let rels: Relation[] = null;
 
         const search = commandExec.toRelationSearch();
-        runSearch(search);
+        this.graph.database.search(search.pattern, search);
 
         if (rels === null)
             throw new Error("get didn't finish synchronously: " + commandStr);

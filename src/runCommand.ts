@@ -5,7 +5,6 @@ import CommandChain from './CommandChain'
 import RelationReceiver from './RelationReceiver'
 import RelationPipe from './RelationPipe'
 import Command from './Command'
-import runSearch from './runSearch'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
 import runSave from './runSave'
@@ -33,7 +32,7 @@ function runStep(step: CommandStep) {
 
         case 'get': {
             emitSearchPatternMeta(step.command.pattern, step.output);
-            runSearch(newRelationSearch(step.graph, step.command.pattern, step.output));
+            step.graph.database.search(step.command.pattern, step.output);
             return;
         }
         

@@ -2,7 +2,6 @@
 import { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
 import Relation from './Relation'
-import runSearch from './runSearch'
 import SavedQuery from './SavedQuery'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'

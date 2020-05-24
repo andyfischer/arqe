@@ -1,7 +1,6 @@
 
 import Graph from './Graph'
 import CommandStep from './CommandStep'
-import runSearch from './runSearch'
 import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList } from './receivers'
 import Pattern from './Pattern'
@@ -71,7 +70,7 @@ export function runJoinStep(step: CommandStep) {
         check();
     });
 
-    runSearch({ graph: step.graph, pattern: searchPattern, subSearchDepth: 0, ...search } );
+    step.graph.database.search(searchPattern, search);
 
     step.input.waitForAll((rels) => {
 

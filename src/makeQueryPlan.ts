@@ -49,8 +49,21 @@ function getEffects(pattern: Pattern) {
     }
 }
 
+function resolveExpressions(pattern: Pattern) {
+    return pattern.remapTags((tag: PatternTag) => {
+        if (tag.valueExpr && tag.valueExpr[0] === 'seconds-from-now') {
+            const seconds = parseInt(tag.valueExpr[1]);
+            return tag.setValue(Date.now() + (seconds * 1000) + '');
+        }
+
+        return tag;
+    });
+}
+
 export default function patternToQueryPlan(database: Database, pattern: Pattern, output: RelationReceiver) {
     const schema = database.schema;
+
+    pattern = resolveExpressions(pattern);
 
     const planTags: QueryTag[] = [];
 

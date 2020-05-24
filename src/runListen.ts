@@ -2,7 +2,6 @@
 import CommandStep from './CommandStep'
 import Graph from './Graph'
 import Relation from './Relation'
-import runSearch from './runSearch'
 import { emitRelationDeleted } from './CommandMeta'
 
 export default function runListen(graph: Graph, step: CommandStep) {
@@ -10,7 +9,7 @@ export default function runListen(graph: Graph, step: CommandStep) {
     if (step.flags.get) {
         const search = step.toRelationSearch();
         search.finish = () => null;
-        runSearch(search);
+        graph.database.search(search.pattern, search);
     }
 
     graph.addListener(step.pattern, {

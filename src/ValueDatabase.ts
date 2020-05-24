@@ -127,11 +127,6 @@ export default class ValueDatabase {
                 return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
             }
 
-            if (tag.valueExpr && tag.valueExpr[0] === 'seconds-from-now') {
-                const seconds = parseInt(tag.valueExpr[1]);
-                return tag.setValue(Date.now() + (seconds * 1000) + '');
-            }
-
             return tag;
         });
     }
