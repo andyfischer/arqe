@@ -1,6 +1,7 @@
 
 import Database from './Database'
 import Pattern from './Pattern'
+import PatternTag from './PatternTag'
 import RelationReceiver from './RelationReceiver'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
 import QueryPlan, { QueryTag } from './QueryPlan'

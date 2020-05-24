@@ -4,11 +4,12 @@ import Graph from './Graph'
 import bootstrapGraph from './bootstrapGraph'
 import WebServer from './socket/WebServer'
 import { loadFromDumpFile } from './DumpFile'
+import loadGraphFromFiles from './loadGraphFromFiles'
 
 export async function main() {
     require('source-map-support').install();
 
-    const graph = loadFromDumpFile(Path.join(__dirname, '../src/source.graph'));
+    const graph = loadGraphFromFiles(Path.join(__dirname, '../dbsource'));
 
     const server = new WebServer(graph);
     await server.start();

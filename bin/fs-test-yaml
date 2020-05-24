@@ -1,0 +1,11 @@
+#! /usr/bin/env node
+
+const Fs = require('fs');
+const { yamlToCommands } = require('../dist/loadGraphFromFiles');
+
+const filename = process.argv[2];
+const contents = Fs.readFileSync(filename, 'utf8');
+
+for (const command of yamlToCommands(contents)) {
+    console.log(command);
+}

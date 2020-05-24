@@ -1,0 +1,18 @@
+
+- code-generation/schema-provider:
+   - destination-filename(src/generated/SchemaProviderAPI.ts)
+   - ik-import/..
+   - strategy/provider-api
+   - handles-pattern(schema **)
+   - handler/setObjectColumn
+   - handler/setViewColumn
+
+- handler/setObjectColumn:
+   - handles-query(set schema column/$column object)
+   - function-name/setObjectColumn
+   - input var/column type/string
+ 
+- handler/setViewColumn:
+   - handles-query(set schema column/$column view)
+   - function-name/setViewColumn
+   - input var/column type/string
