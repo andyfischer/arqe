@@ -8,7 +8,7 @@ import { notifyFileChanged } from '../file-watch/notifyFileChanged'
 import Minimist from 'minimist'
 import runStandardProcess from '../toollib/runStandardProcess'
 import { runProviderGenerator } from './ProviderAPIGenerator'
-import { loadFromDumpFile } from '../DumpFile'
+import loadGraphFromFiles from '../loadGraphFromFiles'
 
 function runGenerationForTarget(dataSource: Graph, api: CodeGenerationDAO, target) {
     const strategy = api.codeGenerationTargetStrategy(target);
@@ -27,13 +27,13 @@ function runGenerationForTarget(dataSource: Graph, api: CodeGenerationDAO, targe
 async function runGeneration(graph: Graph) {
 
     const cliArgs = Minimist(process.argv.slice(2));
-    const filename = cliArgs['file'];
+    const dbDir = cliArgs['db'];
 
-    watchFile(graph, filename, () => {
+    watchFile(graph, dbDir, () => {
 
-        console.log(`running code generation (using ${filename})`);
+        console.log(`running code generation (using ${dbDir})`);
 
-        const dataSource = loadFromDumpFile(filename);
+        const dataSource = loadGraphFromFiles(dbDir);
         const api = new CodeGenerationDAO(dataSource);
 
         for (const target of api.listCodeGenerationTargets()) {

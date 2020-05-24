@@ -26,7 +26,6 @@ export default function loadGraphFromFiles(dir: string) {
         if (file.endsWith('.yaml')) {
             const contents = Fs.readFileSync(Path.join(dir, file), 'utf8');
             for (const command of yamlToCommands(contents)) {
-                console.log(command);
                 graph.run(command);
             }
         }
