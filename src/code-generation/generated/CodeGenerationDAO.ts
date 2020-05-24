@@ -12,7 +12,7 @@ export default class API {
     }
 
     listCodeGenerationTargets(): string[] {
-        const command = `get code-generation/*`;
+        const command = `get code-generation/* destination-filename`;
 
         const rels: Relation[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));

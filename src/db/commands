@@ -26,7 +26,7 @@ set code-generation/dao strategy/dao-api
 
 set code-generation/dao touchpoint/0.5
 set touchpoint/0.5 function-name/listTargets
-set touchpoint/0.5 query(code-generation/*)
+set touchpoint/0.5 query(code-generation/* destination-filename)
 set touchpoint/0.5 output from/code-generation var
 
 set code-generation/dao touchpoint/getInterfaceFields
@@ -194,8 +194,9 @@ set code-generation/2 ik-import(../..)
 set code-generation/2 strategy/dao-api
 
 set code-generation/2 touchpoint/17.1
-set touchpoint/17.1 query(code-generation/*)
+set touchpoint/17.1 query(code-generation/* destination-filename)
 set touchpoint/17.1 function-name/listCodeGenerationTargets
+set touchpoint/17.1 output from/code-generation var
 
 set code-generation/2 touchpoint/17
 set touchpoint/17 query(${target} strategy/*)
@@ -730,7 +731,6 @@ set touchpoint/0.6 output from/touchpoint var
 set touchpoint/touchpointInputs output from/input var
 set touchpoint/15 output from/objectdef var
 set touchpoint/16 output from/objectdef var
-set touchpoint/17.1 output from/code-generation var
 set touchpoint/socket1 output from/connection var
 set touchpoint/20 output from/output-object var
 set touchpoint/25 output from/b var

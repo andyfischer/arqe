@@ -4,7 +4,7 @@ import GraphRepl from './GraphRepl'
 import Repl from 'repl'
 import { connectToServer } from './socket/ClientConnection'
 import Minimist from 'minimist'
-import { loadFromDumpFile } from './DumpFile'
+import loadGraphFromFiles from './loadGraphFromFiles'
 
 export default async function main() {
     require('source-map-support').install();
@@ -16,8 +16,8 @@ export default async function main() {
     let graph;
     let useRemoteServer = true;
 
-    if (cliArgs.file) {
-        graph = loadFromDumpFile(cliArgs.file);
+    if (cliArgs.db) {
+        graph = loadGraphFromFiles(cliArgs.db);
         useRemoteServer = false;
     }
 

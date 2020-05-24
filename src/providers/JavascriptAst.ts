@@ -18,10 +18,13 @@ class JavascriptAstProvider {
     instances: { [id: string]: JavascriptAst } = {}
 
     createAstFromText(text: string) {
-        const id = nextInstanceId.take();
+        const id = this.nextInstanceId.take();
         const ast = Esprima.parse(text);
-        instances[id] = ast;
+        this.instances[id] = ast;
         return id;
     }
 
+}
+
+export default function setup() {
 }
