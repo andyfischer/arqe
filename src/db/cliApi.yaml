@@ -1,0 +1,17 @@
+
+- code-generation/cliApi:
+  - destination-filename(src/toollib/generated/CommandLineToolApi.ts)
+  - ik-import(../..)
+  - strategy/dao-api
+  - field/execId type/string
+  - touchpoint/getCliInput
+
+- touchpoint/getCliInput:
+  - function-name/getCliInput
+  - query(get ${execId} cli-input(${name}) value/*)
+  - input var/execId type/string
+  - input var/execId dataFrom/apiObject
+  - input var/name type/string
+  - output from(value/*) var
+  - expectOne
+  - async

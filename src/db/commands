@@ -934,22 +934,6 @@ set touchpoint/setCliInput input var/name type/string
 set touchpoint/setCliInput input var/value type/string
 set touchpoint/setCliInput async
 
-set code-generation/cliApi
-set code-generation/cliApi destination-filename(src/toollib/generated/CommandLineToolApi.ts)
-set code-generation/cliApi ik-import(../..)
-set code-generation/cliApi strategy/dao-api
-set code-generation/cliApi field/execId type/string
-
-set code-generation/cliApi touchpoint/getCliInput
-set touchpoint/getCliInput function-name/getCliInput
-set touchpoint/getCliInput query(get ${execId} cli-input(${name}) value/*)
-set touchpoint/getCliInput input var/execId type/string
-set touchpoint/getCliInput input var/execId dataFrom/apiObject
-set touchpoint/getCliInput input var/name type/string
-set touchpoint/getCliInput output from(value/*) var
-set touchpoint/getCliInput expectOne
-set touchpoint/getCliInput async
-
 set command-line-tool/jsfixer
 set command-line-tool/jsfixer cli-input name/file
 set command-line-tool/jsfixer cli-input name/file required
