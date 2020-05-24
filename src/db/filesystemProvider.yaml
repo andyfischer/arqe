@@ -1,0 +1,32 @@
+
+
+- code-generation/filesystem-provider:
+  - destination-filename(src/providers/generated/FilesystemAPI.ts)
+  - ik-import(../..)
+  - strategy/provider-api
+  - handles-pattern(fs **)
+  - handler/readFile
+  - handler/writeFile
+  - handler/readDir
+
+- handler/readFile:
+  - function-name/readFile
+  - input var/filename type/string
+  - output var/contents from(file-contents/*)
+  - output expectOne
+  - handles-query(get fs filename/$filename file-contents)
+  - async
+
+- handler/writeFile:
+  - function-name/writeFile
+  - input var/filename type/string
+  - input var/contents type/string
+  - handles-query(set fs filename/$filename file-contents/$contents)
+  - async
+
+- handler/readDir:
+  - input var/dir type/string
+  - output var/filename from(filename/*)
+  - handles-query(get fs dir/$dir filename)
+  - async
+
