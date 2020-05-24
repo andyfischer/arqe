@@ -1,6 +1,7 @@
 
-import { Token, TokenDef, LexedText, t_space, t_newline, t_ident } from '.'
+import { Token, LexedText, t_space, t_newline, t_ident } from '.'
 import SourcePos from './SourcePos'
+import TokenDef from './TokenDef'
 
 export default class TokenIterator {
 

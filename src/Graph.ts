@@ -119,6 +119,7 @@ export default class Graph {
     }
 
     run(commandStr: string, output?: RelationReceiver) {
+
         if (/^ *\#/.exec(commandStr)) {
             // ignore comments
             return;

@@ -2,10 +2,11 @@
 import Context from './Context'
 import TokenIterator from './TokenIterator'
 import Token from './Token'
+import TokenDef from './TokenDef'
 import LexedText from './LexedText'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
     t_double_dot, t_line_comment, t_quoted_string, t_double_equals,
-    tokenFromSingleCharCode, TokenDef } from './tokens'
+    tokenFromSingleCharCode } from './tokens'
 
 const c_0 = '0'.charCodeAt(0);
 const c_9 = '9'.charCodeAt(0);

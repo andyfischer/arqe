@@ -1,6 +1,7 @@
 
-import { t_space, TokenDef } from './tokens'
+import { t_space } from './tokens'
 import { Token } from '.'
+import TokenDef from './TokenDef'
 
 const c_newline = '\n'.charCodeAt(0);
 

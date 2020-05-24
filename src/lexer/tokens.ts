@@ -1,11 +1,5 @@
 
-export interface TokenDef {
-    name: string
-    str?: string
-    bracketPairsWith?: string
-    bracketSide?: 'left' | 'right'
-
-}
+import TokenDef from './TokenDef'
 
 export const t_lparen: TokenDef = {
     name: "lparen",

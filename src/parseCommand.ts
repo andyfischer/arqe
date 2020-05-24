@@ -5,7 +5,7 @@ import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
 import PatternTag, { newTagFromObject, PatternTagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
-import { lexStringToIterator, TokenIterator, Token, t_ident, t_quoted_string, t_star,
+import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen } from './lexer'
@@ -76,6 +76,7 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
                 throw new Error('too many iterations when parsing tag value');
 
             const text = it.consumeNextUnquotedText();
+
             tagValue += text;
         }
     }
@@ -199,12 +200,16 @@ function parseArgs(it: TokenIterator, query: InProgressQuery) {
     }
 }
 
+function formatExpectedError(expected: string, it: TokenIterator) {
+    return `expected ${expected}, saw: "${it.nextText()}" (${it.next().match.name})`
+}
+
 function parseOneCommand(it: TokenIterator): Command {
 
     // Parse main command
     it.skipSpaces();
     if (!it.nextIs(t_ident) && !it.nextIs(t_quoted_string))
-        throw new Error("expected identifier, saw: " + it.nextText());
+        throw new Error(formatExpectedError('identifier', it));
 
     const command = it.consumeNextUnquotedText();
 
@@ -220,6 +225,24 @@ function parseOneCommand(it: TokenIterator): Command {
     return new Command(command, pattern, query.flags);
 }
 
+function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
+    let lookahead = 0;
+
+    while (!it.finished(lookahead)) {
+        if (it.nextIs(match, lookahead))
+            return true;
+
+        if (it.nextIs(t_newline, lookahead) || it.nextIs(t_space, lookahead)) {
+            lookahead += 1;
+            continue;
+        }
+        
+        break;
+    }
+
+    return false;
+}
+
 function parseOneCommandChain(it: TokenIterator): CommandChain {
 
     const chain = new CommandChain();
@@ -230,6 +253,10 @@ function parseOneCommandChain(it: TokenIterator): CommandChain {
         chain.commands.push(command);
 
         it.skipSpaces();
+
+        if (lookaheadPastNewlinesFor(it, t_bar)) {
+            it.consumeWhitespace();
+        }
 
         if (it.finished())
             break;
@@ -289,7 +316,7 @@ export default function parseCommand(str: string): Command {
 
     const it = lexStringToIterator(str);
 
-    it.skipSpaces();
+    it.consumeWhitespace();
     if (it.nextIs(t_bar)) {
         throw new Error('parseCommand was called on a command chain: ' + str);
     }

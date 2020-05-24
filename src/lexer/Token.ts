@@ -1,5 +1,5 @@
 
-import { TokenDef } from './tokens'
+import TokenDef from './TokenDef'
 
 export default interface Token {
     match: TokenDef

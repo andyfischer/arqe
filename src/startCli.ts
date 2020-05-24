@@ -1,10 +1,21 @@
 
+import Fs from 'fs'
 import Graph from './Graph'
 import GraphRepl from './GraphRepl'
 import Repl from 'repl'
 import { connectToServer } from './socket/ClientConnection'
 import Minimist from 'minimist'
 import loadGraphFromFiles from './loadGraphFromFiles'
+import { parseFile } from './parseCommand'
+
+function runFile(graph: Graph, filename: string) {
+    console.log('running file: ', filename);
+    const contents = Fs.readFileSync(filename, 'utf8');
+    const commands = parseFile(contents);
+    for (const command of commands) {
+        graph.run(command.stringify());
+    }
+}
 
 export default async function main() {
     require('source-map-support').install();
@@ -28,7 +39,8 @@ export default async function main() {
 
     if (cliArgs._.length > 0) {
         const filename = cliArgs._[0];
-        console.log('running file: ', filename);
+        runRepl = false;
+        runFile(graph, filename);
     }
 
     if (runRepl) {
