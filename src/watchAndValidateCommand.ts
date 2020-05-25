@@ -59,6 +59,9 @@ export default function watchAndValidateCommand(commandStr: string, output: Rela
 
     const parsed = parseCommandChain(commandStr);
 
+    if (parsed.commands.length == 0)
+        throw new Error('no command found, commandStr = ' + commandStr);
+
     const validations = [];
 
     for (const clss of validationClasses) {

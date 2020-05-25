@@ -174,6 +174,8 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
         throw new Error(`no support for multiple outputs`);
     }
 
+
+
     // Add the handler call
     let handlerCall = `this.handler.${functionName}(${vars.join(', ')});`;
 
@@ -204,9 +206,10 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
                 .addRaw(`throw new Error("expected ${functionName} to return a string, got: " + JSON.stringify(${outputVar}))`);
 
             const tagType = outputs[0].fromStr.replace('/*', '');
-            handlePatternMatch.addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${outputVar}))`);
-            handlePatternMatch.addRaw(`output.finish();`);
-            handlePatternMatch.addRaw(`return;`);
+            handlePatternMatch
+                .addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${outputVar}))`)
+                .addRaw(`output.finish();`)
+                .addRaw(`return;`);
         } else {
             handlePatternMatch._if(`!Array.isArray(${outputVar})`)
                 .contents

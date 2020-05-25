@@ -354,7 +354,8 @@ export function parseFile(fileContents: string): CommandChain[] {
 
         const command = parseOneCommandChain(it);
 
-        commands.push(command);
+        if (command.commands.length > 0)
+            commands.push(command);
     }
 
     return commands;

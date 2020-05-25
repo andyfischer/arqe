@@ -6,6 +6,7 @@ import { setupGitProvider } from './providers/Git'
 import setupFileChangeLog from './providers/FileChangedLog'
 import ExpireAtListener from './providers/ExpireAtListener'
 import { setupTestMathStorage } from './providers/TestMathStorage'
+import setupJavascriptAst from './providers/JavascriptAst'
 
 export default function getBuiltinViews(graph: Graph): {[name: string]: StorageProvider } {
     return {
@@ -13,6 +14,7 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
         'git': setupGitProvider(),
         'file-changed': setupFileChangeLog(graph),
         'expires-at': new ExpireAtListener(graph),
-        'test-math': setupTestMathStorage()
+        'test-math': setupTestMathStorage(),
+        'javascript-ast': setupJavascriptAst()
     }
 }

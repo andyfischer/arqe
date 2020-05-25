@@ -9,11 +9,19 @@ import loadGraphFromFiles from './loadGraphFromFiles'
 import { parseFile } from './parseCommand'
 
 function runFile(graph: Graph, filename: string) {
-    console.log('running file: ', filename);
     const contents = Fs.readFileSync(filename, 'utf8');
     const commands = parseFile(contents);
     for (const command of commands) {
-        graph.run(command.stringify());
+        graph.run(command.stringify(), {
+            relation(relation) {
+
+                if (relation.hasType('command-meta') && relation.hasType('search-pattern'))
+                    return;
+
+                console.log(relation.stringify());
+            },
+            finish() {}
+        });
     }
 }
 
