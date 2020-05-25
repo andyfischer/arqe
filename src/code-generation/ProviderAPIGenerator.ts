@@ -174,8 +174,6 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
         throw new Error(`no support for multiple outputs`);
     }
 
-
-
     // Add the handler call
     let handlerCall = `this.handler.${functionName}(${vars.join(', ')});`;
 
@@ -196,7 +194,6 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
             handlePatternMatch.addRaw(`output.finish();`);
             handlePatternMatch.addRaw(`return;`);
         }
-
 
     } else {
         if (outputExpectOne) {

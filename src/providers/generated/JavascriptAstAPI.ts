@@ -12,9 +12,9 @@ export default class API implements StorageProvider {
     }
 
     async runSearch(pattern: Pattern, output: RelationReceiver) {
-        // check for handler/createAstFromText (get javascript-ast/* text/$text)
+        // check for handler/createAstFromText (get typescript-tree/* text/$text)
 
-        if ((pattern.tagCount() == 2) && (pattern.hasType("javascript-ast")) && (pattern.hasType("text")) && (pattern.hasValueForType("text"))) {
+        if ((pattern.tagCount() == 2) && (pattern.hasType("typescript-tree")) && (pattern.hasType("text")) && (pattern.hasValueForType("text"))) {
             const text = pattern.getTagValue("text");
             const filename = this.handler.createAstFromText(text);
 
@@ -22,7 +22,7 @@ export default class API implements StorageProvider {
                 throw new Error("expected createAstFromText to return a string, got: " + JSON.stringify(filename))
             }
 
-            output.relation(pattern.setTagValueForType("javascript-ast", filename))
+            output.relation(pattern.setTagValueForType("typescript-tree", filename))
             output.finish();
             return;
         }

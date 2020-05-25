@@ -49,6 +49,11 @@ export class Block {
         return decl;
     }
 
+    _try() {
+        const tryBlock = new TryBlock();
+        return tryBlock;
+    }
+
     _if(condition?: string) {
         const ifBlock = new IfBlock();
         if (condition)
@@ -303,6 +308,20 @@ class ForBlock implements Statement {
 
     line() {
         return `for (${this.forLine})`;
+    }
+}
+
+class TryBlock implements Statement {
+    statementType = 'tryBlock'
+    tryContents: Block
+    catchContents: Block
+    constructor() {
+        this.tryContents = new Block('try', this)
+        this.catchContents = new Block('catch', this)
+    }
+
+    line() {
+        return `try`
     }
 }
 

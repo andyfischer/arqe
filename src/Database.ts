@@ -9,6 +9,7 @@ import Pattern from './Pattern'
 import ValueDatabase from './ValueDatabase'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import makeQueryPlan from './makeQueryPlan'
+import logError from './logError'
 
 export class AttributeSet {
     data: { [key: string]: string } = {}

@@ -8,6 +8,6 @@
 - handler/createAstFromText:
   - function-name(createAstFromText)
   - input var/text type/string
-  - output var/filename from(javascript-ast/*)
-  - handles-query(get javascript-ast/* text/$text)
+  - output var/filename from(typescript-tree/*)
+  - handles-query(get typescript-tree/* text/$text)
   - output expectOne
