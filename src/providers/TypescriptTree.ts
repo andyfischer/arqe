@@ -1,8 +1,5 @@
 
-// js-ast
-// js-ast function/*
-// js-ast function/* block
-// js-ast block/* line/*
+// next: get nodes by type
 
 import * as Esprima from 'esprima'
 import IDSource from '../utils/IDSource'
@@ -17,9 +14,9 @@ interface TypescriptTree {
 }
 
 function addCrossReferences(tree: TypescriptTree, node: any) {
-    node.id = tree.idsource.take();
+    node.fsid = tree.idsource.take();
 
-    tree.byId[node.id] = node;
+    tree.byId[node.fsid] = node;
 
     if (node.body) {
 
@@ -46,9 +43,10 @@ class JavascriptAstProvider {
             byId: {}
         }
 
-        console.log(JSON.stringify(tree.estree, null, 2));
-
         addCrossReferences(tree, tree.estree);
+
+        // console.log(JSON.stringify(tree, ((key, value) => key === 'parent' ? undefined : value), 2));
+
         this.instances[id] = tree;
 
         return id;
