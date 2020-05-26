@@ -10,6 +10,7 @@ import { runJoinStep } from './runJoin'
 import runListen from './runListen'
 import { newRelationSearch } from './SearchOperation'
 import { newTag } from './PatternTag'
+import makeQueryPlan from './makeQueryPlan'
 
 const knownCommands = {
     'join': true,
@@ -21,6 +22,11 @@ const knownCommands = {
 };
 
 function runStep(step: CommandStep) {
+
+    const graph = step.graph;
+    const pattern = step.command.pattern;
+    const output = step.output;
+
     try {
         emitCommandOutputFlags(step.command, step.output);
 
@@ -31,8 +37,12 @@ function runStep(step: CommandStep) {
             return;
 
         case 'get': {
-            emitSearchPatternMeta(step.command.pattern, step.output);
-            step.graph.database.search(step.command.pattern, step.output);
+            const plan = makeQueryPlan(graph, pattern, output);
+            if (!plan.passedValidation)
+                return;
+
+            emitSearchPatternMeta(pattern, step.output);
+            graph.tupleStore.select(plan);
             return;
         }
         

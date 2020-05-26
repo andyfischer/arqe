@@ -6,7 +6,6 @@ import PatternTag from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import RelationReceiver from './RelationReceiver'
 import Pattern from './Pattern'
-import TupleStore from './TupleStore'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import makeQueryPlan from './makeQueryPlan'
 import logError from './logError'
@@ -28,21 +27,18 @@ export default class Database {
     graph: Graph
     schema: Schema
 
-    tupleStore: TupleStore
-
     constructor(graph: Graph) {
         this.graph = graph;
         this.schema = new Schema();
-        this.tupleStore = new TupleStore(this);
     }
 
     save(pattern: Pattern, output: RelationReceiver) {
-        const plan = makeQueryPlan(this, pattern, output);
+        const plan = makeQueryPlan(this.graph, pattern, output);
         if (!plan.passedValidation)
             return;
 
         if (plan.isDelete) {
-            this.tupleStore.doDelete(plan);
+            this.graph.tupleStore.doDelete(plan);
         } else if (plan.modifiesExisting) {
             this.update(plan);
         } else {
@@ -51,7 +47,7 @@ export default class Database {
     }
 
     search(pattern: Pattern, output: RelationReceiver) {
-        const plan = makeQueryPlan(this, pattern, output);
+        const plan = makeQueryPlan(this.graph, pattern, output);
         if (!plan.passedValidation)
             return;
 
@@ -74,7 +70,7 @@ export default class Database {
             return;
         }
 
-        this.tupleStore.insert(plan);
+        this.graph.tupleStore.insert(plan);
     }
 
     update(plan: QueryPlan) {
@@ -97,27 +93,12 @@ export default class Database {
             return;
         }
 
-        this.tupleStore.update(plan);
+        this.graph.tupleStore.update(plan);
     }
-
 
     select(plan: QueryPlan) {
         const { pattern, output } = plan;
 
-        if (plan.views.length > 0) {
-
-            const view: QueryTag = plan.views[0];
-
-            if (view.column.storageProvider) {
-                view.column.storageProvider.runSearch(pattern, output);
-                return;
-            }
-
-            emitCommandError(output, "view doesn't have a storageProvider");
-            output.finish();
-            return;
-        }
-
-        this.tupleStore.select(plan);
+        this.graph.tupleStore.select(plan);
     }
 }

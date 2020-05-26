@@ -22,6 +22,7 @@ import SaveSearchHook from './SaveSearchHook'
 import StorageProvider from './StorageProvider'
 import Database from './Database'
 import LoggingHooks from './LoggingHooks'
+import TupleStore from './TupleStore'
 
 export default class Graph {
 
@@ -43,7 +44,10 @@ export default class Graph {
 
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Relation) => void}[] = []
 
+    tupleStore: TupleStore
+
     constructor() {
+        this.tupleStore = new TupleStore(this);
         this.database.schema.setupBuiltinViews(this);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);

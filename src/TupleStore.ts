@@ -9,7 +9,7 @@ import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
 import Database from './Database'
-import QueryPlan from './QueryPlan'
+import QueryPlan, { QueryTag } from './QueryPlan'
 
 interface Slot {
     relation: Relation
@@ -38,16 +38,14 @@ function toInitialization(rel: Relation) {
 
 export default class TupleStore {
     graph: Graph
-    database: Database
 
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
     slots: { [ slotId: string]: Relation } = {};
     nextSlotId: IDSource = new IDSource();
     byImpliedTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
-    constructor(database: Database) {
-        this.database = database;
-        this.graph = database.graph;
+    constructor(graph: Graph) {
+        this.graph = graph;
     }
 
     resolveExpressionValues(rel: Relation) {
@@ -170,6 +168,20 @@ export default class TupleStore {
 
     select(plan: QueryPlan) {
         const { pattern, output } = plan;
+
+        if (plan.views.length > 0) {
+
+            const view: QueryTag = plan.views[0];
+
+            if (view.column.storageProvider) {
+                view.column.storageProvider.runSearch(pattern, output);
+                return;
+            }
+
+            emitCommandError(output, "view doesn't have a storageProvider");
+            output.finish();
+            return;
+        }
 
         for (const { slotId, relation } of this.findStored(pattern)) {
             output.relation(relation);

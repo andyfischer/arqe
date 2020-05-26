@@ -1,4 +1,5 @@
 
+import Graph from './Graph'
 import Database from './Database'
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
@@ -118,8 +119,8 @@ function applyModification(changeOperation: Pattern, storedRel: Pattern): Patter
     return storedRel;
 }
 
-export default function patternToQueryPlan(database: Database, pattern: Pattern, output: RelationReceiver) {
-    const schema = database.schema;
+export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
+    const schema = graph.database.schema;
 
     pattern = resolveExpressions(pattern);
 
