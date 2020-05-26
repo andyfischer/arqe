@@ -1,0 +1,14 @@
+
+- code-generation/tsc-compile:
+  - destination-filename(src/providers/generated/TypescriptCompilationAPI.ts)
+  - ik-import(../..)
+  - strategy/provider-api
+  - handler/runTsc
+
+- handler/runTsc:
+  - handles-query(get tsc-compile filename message line col)
+  - function-name(runTsc)
+  - input var/filename type/string
+  - output var/message from(message/*)
+  - output var/line from(line/*)
+  - output var/col from(col/*)

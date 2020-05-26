@@ -11,6 +11,20 @@ import CommandExecutionParams from './CommandExecutionParams'
 import { runJoinStep } from './runJoin'
 import runListen from './runListen'
 
+export function runGet(graph: Graph, pattern: Pattern, output: RelationReceiver) {
+    const plan = makeQueryPlan(graph, pattern, output);
+    if (!plan.passedValidation)
+        return;
+
+    emitSearchPatternMeta(pattern, output);
+
+    if (plan.storageProvider) {
+        plan.storageProvider.runSearch(plan.pattern, plan.output);
+    } else {
+        graph.tupleStore.select(plan);
+    }
+}
+
 export default function runOneCommand(params: CommandExecutionParams) {
     const { graph, command, output } = params;
     const commandName = command.commandName;
@@ -26,17 +40,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
             return;
 
         case 'get': {
-            const plan = makeQueryPlan(graph, pattern, output);
-            if (!plan.passedValidation)
-                return;
-
-            emitSearchPatternMeta(pattern, output);
-
-            if (plan.storageProvider) {
-                plan.storageProvider.runSearch(plan.pattern, plan.output);
-            } else {
-                graph.tupleStore.select(plan);
-            }
+            runGet(graph, pattern, output);
             return;
         }
         
