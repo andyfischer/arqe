@@ -147,6 +147,12 @@ function pullOutVarsFromPattern(pattern: Pattern, block: Block) {
     return vars;
 }
 
+function* iterateWithFirstLast(list: any[]) {
+    for (let i = 0; i < list.length; i++) {
+        yield { isFirst: (i === 0), item: list[i], isLast: (i === list.length - 1) };
+    }
+}
+
 function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: string) {
     const query = api.handlerQuery(handler);
     const command = parseCommand(query);
@@ -166,12 +172,12 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
 
     let outputVar = null;
 
-    if (outputs.length > 0) {
+    if (outputs.length === 1) {
         outputVar = outputs[0].varStr;
     }
 
     if (outputs.length > 1) {
-        throw new Error(`no support for multiple outputs`);
+        outputVar = 'result';
     }
 
     // Add the handler call
@@ -185,43 +191,59 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
 
     handlePatternMatch.addRaw(handlerCall);
 
-    // Validate output
-
+    // Handle output
     if (outputs.length === 0) {
         if (query.startsWith('set ')) {
-            // If save: Echo back the relation that was saved.
+            // If save: Just echo back the relation that was saved.
             handlePatternMatch.addRaw(`output.relation(pattern);`);
             handlePatternMatch.addRaw(`output.finish();`);
             handlePatternMatch.addRaw(`return;`);
         }
+        block.addBlank();
+        return;
+    }
 
-    } else {
-        if (outputExpectOne) {
-
+    // Type check the received value
+    if (outputExpectOne) {
+        if (outputs.length === 1) {
             handlePatternMatch._if(`typeof ${outputVar} !== 'string'`)
                 .contents
                 .addRaw(`throw new Error("expected ${functionName} to return a string, got: " + JSON.stringify(${outputVar}))`);
+        }
+    } else {
+        handlePatternMatch._if(`!Array.isArray(${outputVar})`)
+            .contents
+            .addRaw(`throw new Error("expected ${functionName} to return an Array, got: " + JSON.stringify(${outputVar}))`);
+    }
 
-            const tagType = outputs[0].fromStr.replace('/*', '');
-            handlePatternMatch
-                .addRaw(`output.relation(pattern.setTagValueForType("${tagType}", ${outputVar}))`)
-                .addRaw(`output.finish();`)
-                .addRaw(`return;`);
+    let sendOneRelation = handlePatternMatch;
+
+    // Maybe start a for loop, depending on whether we expect multi results from the handler.
+    if (!outputExpectOne) {
+        sendOneRelation = handlePatternMatch._for(`const item of ${outputVar}`).contents;
+    }
+
+    // For each result row, extract the fields into 'outRelation'.
+    // Create 'outRelation' and fill it with data returned by the callback.
+    for (const { isFirst, isLast, item } of iterateWithFirstLast(outputs)) {
+        const varStr = item.varStr;
+        const tagType = item.fromStr.replace('/*', '');
+        if (outputs.length === 1) {
+            sendOneRelation.addRaw(`const outRelation = pattern.setTagValueForType("${tagType}", ${outputVar});`);
         } else {
-            handlePatternMatch._if(`!Array.isArray(${outputVar})`)
-                .contents
-                .addRaw(`throw new Error("expected ${functionName} to return an Array, got: " + JSON.stringify(${outputVar}))`);
+            if (isFirst)
+                sendOneRelation.addRaw('const outRelation = pattern');
 
-            const tagType = outputs[0].fromStr.replace('/*', '');
-            handlePatternMatch._for(`const item of ${outputVar}`)
-                .contents
-                .addRaw(`output.relation(pattern.setTagValueForType("${tagType}", item))`)
-                .addRaw(`output.finish();`)
-
-            handlePatternMatch
-                .addRaw(`return;`);
+            sendOneRelation.addRaw(`    .setTagValueForType("${tagType}", result.${outputVar})` + (isLast ? ';' : ''));
         }
     }
+
+    sendOneRelation
+        .addRaw(`output.relation(outRelation);`);
+
+    handlePatternMatch
+        .addRaw(`output.finish();`)
+        .addRaw(`return;`);
 
     block.addBlank();
 }
