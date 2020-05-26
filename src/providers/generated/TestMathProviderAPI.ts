@@ -23,7 +23,8 @@ export default class API implements StorageProvider {
                 throw new Error("expected sum to return a string, got: " + JSON.stringify(sum))
             }
 
-            output.relation(pattern.setTagValueForType("sum", sum))
+            const outRelation = pattern.setTagValueForType("sum", sum);
+            output.relation(outRelation);
             output.finish();
             return;
         }

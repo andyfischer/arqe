@@ -217,10 +217,12 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     }
 
     let sendOneRelation = handlePatternMatch;
+    let oneResultVar = outputVar;
 
     // Maybe start a for loop, depending on whether we expect multi results from the handler.
     if (!outputExpectOne) {
         sendOneRelation = handlePatternMatch._for(`const item of ${outputVar}`).contents;
+        oneResultVar = 'item';
     }
 
     // For each result row, extract the fields into 'outRelation'.
@@ -234,7 +236,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
             if (isFirst)
                 sendOneRelation.addRaw('const outRelation = pattern');
 
-            sendOneRelation.addRaw(`    .setTagValueForType("${tagType}", result.${outputVar})` + (isLast ? ';' : ''));
+            sendOneRelation.addRaw(`    .setTagValueForType("${tagType}", ${oneResultVar}.${varStr})` + (isLast ? ';' : ''));
         }
     }
 

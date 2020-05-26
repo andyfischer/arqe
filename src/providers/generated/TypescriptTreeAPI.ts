@@ -22,7 +22,8 @@ export default class API implements StorageProvider {
                 throw new Error("expected createAstFromText to return a string, got: " + JSON.stringify(filename))
             }
 
-            output.relation(pattern.setTagValueForType("typescript-tree", filename))
+            const outRelation = pattern.setTagValueForType("typescript-tree", filename);
+            output.relation(outRelation);
             output.finish();
             return;
         }
