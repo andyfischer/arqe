@@ -1,23 +1,27 @@
 
-import CommandStep from './CommandStep'
 import Graph from './Graph'
 import Relation from './Relation'
 import { emitRelationDeleted } from './CommandMeta'
+import CommandExecutionParams from './CommandExecutionParams'
 
-export default function runListen(graph: Graph, step: CommandStep) {
+export default function runListen(params: CommandExecutionParams) {
 
-    if (step.flags.get) {
-        const search = step.toRelationSearch();
-        search.finish = () => null;
-        graph.tupleStore.searchUnplanned(search.pattern, search);
+    const { graph, command, output } = params;
+    const pattern = command.pattern;
+
+    if (command.flags.get) {
+        graph.tupleStore.searchUnplanned(pattern, {
+            relation(rel) { output.relation(rel) },
+            finish() {}
+        });
     }
 
-    graph.addListener(step.pattern, {
+    graph.addListener(pattern, {
         onRelationUpdated(rel: Relation) {
-            step.output.relation(rel);
+            output.relation(rel);
         },
         onRelationDeleted(rel: Relation) {
-            emitRelationDeleted(rel, step.output);
+            emitRelationDeleted(rel, output);
         }
     });
 }

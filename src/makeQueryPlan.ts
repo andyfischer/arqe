@@ -158,7 +158,6 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationR
         }
     }
 
-
     const plan: QueryPlan = {
         tags: planTags,
         views: [],
@@ -193,10 +192,7 @@ function sortThroughTags(plan: QueryPlan) {
         plan.values.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
     }
 
-    if (plan.views.length > 0) {
-    }
-
-    // Check for the first storageProvider
+    // Check if any columns have a storageProvider. First one wins.
     for (const tag of plan.tags) {
         if (tag.column.storageProvider) {
             plan.storageProvider = tag.column.storageProvider;

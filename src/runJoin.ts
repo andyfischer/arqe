@@ -1,6 +1,5 @@
 
 import Graph from './Graph'
-import CommandStep from './CommandStep'
 import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList } from './receivers'
 import Pattern from './Pattern'
@@ -8,6 +7,7 @@ import Relation from './Relation'
 import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { patternTagToString } from './stringifyQuery'
+import CommandExecutionParams from './CommandExecutionParams'
 
 function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
     const identifierTags: PatternTag[] = []
@@ -35,7 +35,10 @@ function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pa
     return rels;
 }
 
-export function runJoinStep(step: CommandStep) {
+export function runJoinStep(params: CommandExecutionParams) {
+    const { graph, command, input, output } = params;
+    const searchPattern = command.pattern;
+
     let triggeredOutput = false;
 
     let inputRelations: Pattern[] = [];
@@ -44,12 +47,10 @@ export function runJoinStep(step: CommandStep) {
     let searchDone = false;
     let inputSearchPattern: Pattern = null;
 
-    const searchPattern = step.command.toPattern();
-
     const sendOutput = () => {
         inputRelations = annotateRelationsWithMissingIdentifier(inputSearchPattern, inputRelations);
         searchRelations = annotateRelationsWithMissingIdentifier(searchPattern, searchRelations);
-        runJoin(inputSearchPattern, inputRelations, searchPattern, searchRelations, step.output);
+        performJoin(inputSearchPattern, inputRelations, searchPattern, searchRelations, output);
     }
 
     const check = () => {
@@ -70,9 +71,9 @@ export function runJoinStep(step: CommandStep) {
         check();
     });
 
-    step.graph.tupleStore.searchUnplanned(searchPattern, search);
+    graph.tupleStore.searchUnplanned(searchPattern, search);
 
-    step.input.waitForAll((rels) => {
+    input.waitForAll((rels) => {
 
         for (const rel of rels) {
             if (rel.hasType('command-meta')) {
@@ -109,7 +110,7 @@ function combineRelations(a: Pattern, b: Pattern) {
     return new Pattern(tags);
 }
 
-function runJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: RelationReceiver) {
+function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: RelationReceiver) {
 
     if (!inputSearchPattern)
         throw new Error('missing inputSearchPattern');

@@ -87,7 +87,7 @@ function runStep(step: CommandStep) {
         }
 
         case 'listen': {
-            runListen(step.graph, step);
+            runListen(step);
             return;
         }
         }
