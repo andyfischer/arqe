@@ -169,24 +169,20 @@ export default class TupleStore {
     select(plan: QueryPlan) {
         const { pattern, output } = plan;
 
-        if (plan.views.length > 0) {
-
-            const view: QueryTag = plan.views[0];
-
-            if (view.column.storageProvider) {
-                view.column.storageProvider.runSearch(pattern, output);
-                return;
-            }
-
-            emitCommandError(output, "view doesn't have a storageProvider");
-            output.finish();
-            return;
-        }
-
         for (const { slotId, relation } of this.findStored(pattern)) {
             output.relation(relation);
         }
 
         output.finish();
+    }
+
+    save(plan: QueryPlan) {
+        if (plan.isDelete) {
+            this.doDelete(plan);
+        } else if (plan.modifiesExisting) {
+            this.update(plan);
+        } else {
+            this.insert(plan);
+        }
     }
 }

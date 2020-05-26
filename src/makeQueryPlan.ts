@@ -119,7 +119,7 @@ function applyModification(changeOperation: Pattern, storedRel: Pattern): Patter
     return storedRel;
 }
 
-export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
+function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
     const schema = graph.database.schema;
 
     pattern = resolveExpressions(pattern);
@@ -153,6 +153,14 @@ export default function patternToQueryPlan(graph: Graph, pattern: Pattern, outpu
 
     const { initializeIfMissing, modifiesExisting } = getEffects(pattern);
 
+    let modificationCallback = null;
+    if (modifiesExisting) {
+        modificationCallback = (storedRel: Pattern) => {
+            return applyModification(pattern, storedRel);
+        }
+    }
+
+
     const plan: QueryPlan = {
         tags: planTags,
         views: [],
@@ -163,19 +171,18 @@ export default function patternToQueryPlan(graph: Graph, pattern: Pattern, outpu
         singleStar,
         doubleStar,
         modifiesExisting,
+        modificationCallback,
         initializeIfMissing,
         isDelete: patternIsDelete(pattern),
         output
     };
 
-    if (modifiesExisting) {
-        plan.modificationCallback = (storedRel: Pattern) => {
-            return applyModification(pattern, storedRel);
-        }
-    }
+    return plan;
+}
 
+function sortThroughTags(plan: QueryPlan) {
     // Sort tags by column type
-    for (const tag of planTags) {
+    for (const tag of plan.tags) {
         if (tag.type === ViewColumn)
             plan.views.push(tag);
         else if (tag.type === ObjectColumn)
@@ -191,9 +198,13 @@ export default function patternToQueryPlan(graph: Graph, pattern: Pattern, outpu
     if (plan.views.length > 0) {
     }
 
-    validatePlan(plan);
-
-    return plan;
+    // Check for the first storageProvider
+    for (const tag of plan.tags) {
+        if (tag.column.storageProvider) {
+            plan.storageProvider = tag.column.storageProvider;
+            break;
+        }
+    }
 }
 
 function validatePlan(plan: QueryPlan) {
@@ -205,3 +216,12 @@ function validatePlan(plan: QueryPlan) {
 
     plan.passedValidation = true;
 }
+
+export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
+
+    const plan: QueryPlan = initialBuildQueryPlan(graph, pattern, output);
+    sortThroughTags(plan);
+    validatePlan(plan);
+    return plan;
+}
+

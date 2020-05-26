@@ -57,42 +57,11 @@ export default class Database {
     insert(plan: QueryPlan) {
         const { pattern, output } = plan;
 
-        if (plan.views.length > 0) {
-            const view: QueryTag = plan.views[0];
-
-            if (view.column.storageProvider) {
-                view.column.storageProvider.runSave(pattern, output);
-                return;
-            }
-
-            emitCommandError(output, "view doesn't have a storageProvider");
-            output.finish();
-            return;
-        }
-
         this.graph.tupleStore.insert(plan);
     }
 
     update(plan: QueryPlan) {
         const { pattern, output } = plan;
-        if (plan.views.length > 0) {
-            const view: QueryTag = plan.views[0];
-
-            if (view.column.storageProvider) {
-                view.column.storageProvider.runSave(pattern, output);
-                return;
-            }
-
-            emitCommandError(output, "view doesn't have a storageProvider");
-            output.finish();
-            return;
-        }
-
-        if (plan.objects.length > 0) {
-            emitCommandError(output, "todo - updates on objects");
-            return;
-        }
-
         this.graph.tupleStore.update(plan);
     }
 

@@ -42,12 +42,25 @@ function runStep(step: CommandStep) {
                 return;
 
             emitSearchPatternMeta(pattern, step.output);
-            graph.tupleStore.select(plan);
+
+            if (plan.storageProvider) {
+                plan.storageProvider.runSearch(plan.pattern, plan.output);
+            } else {
+                graph.tupleStore.select(plan);
+            }
             return;
         }
         
         case 'set': {
-            step.graph.database.save(step.command.toRelation(), step.output);
+            const plan = makeQueryPlan(graph, pattern, output);
+            if (!plan.passedValidation)
+                return;
+
+            if (plan.storageProvider) {
+                plan.storageProvider.runSave(plan.pattern, plan.output);
+            } else {
+                step.graph.tupleStore.save(plan);
+            }
             return;
         }
 

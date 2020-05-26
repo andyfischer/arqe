@@ -23,6 +23,7 @@ import Database from './Database'
 import LoggingHooks from './LoggingHooks'
 import TupleStore from './TupleStore'
 import Column from './Column'
+import getBuiltinViews from './getBuiltinViews'
 
 export default class Graph {
 
@@ -51,6 +52,13 @@ export default class Graph {
         this.database.schema.setupBuiltinViews(this);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.loggingHooks = new LoggingHooks(this)
+
+        const builtinViews = getBuiltinViews(this);
+
+        for (const name in builtinViews) {
+            const column = this.initColumn(name);
+            column.storageProvider = builtinViews[name];
+        }
     }
 
     initColumn(name: string) {
