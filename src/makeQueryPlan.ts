@@ -174,6 +174,7 @@ export default function patternToQueryPlan(graph: Graph, pattern: Pattern, outpu
         }
     }
 
+    // Sort tags by column type
     for (const tag of planTags) {
         if (tag.type === ViewColumn)
             plan.views.push(tag);
@@ -185,6 +186,9 @@ export default function patternToQueryPlan(graph: Graph, pattern: Pattern, outpu
 
     if (plan.values.length > 0) {
         plan.values.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
+    }
+
+    if (plan.views.length > 0) {
     }
 
     validatePlan(plan);

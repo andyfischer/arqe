@@ -19,17 +19,17 @@ export default interface QueryPlan {
 
     singleStar: boolean
     doubleStar: boolean
+    modifiesExisting: boolean
+    initializeIfMissing: boolean
+    isDelete?: boolean
+    modificationCallback?: (pattern: Pattern) => Pattern
 
     pattern: Pattern
     filterPattern: Pattern
     output: RelationReceiver
-
-    modifiesExisting: boolean
-    initializeIfMissing: boolean
+    storageProvider: StorageProviderV3
 
     attributeSet?: AttributeSet
-    isDelete?: boolean
-    modificationCallback?: (pattern: Pattern) => Pattern
 
     passedValidation?: boolean
 }

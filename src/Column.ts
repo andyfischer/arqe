@@ -11,4 +11,6 @@ export default class Column {
     constructor(name: string) {
         this.name = name;
     }
+
+    // TODO- Check for storageProvider in the query plan
 }
