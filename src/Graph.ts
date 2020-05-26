@@ -23,6 +23,7 @@ import StorageProvider from './StorageProvider'
 import Database from './Database'
 import LoggingHooks from './LoggingHooks'
 import TupleStore from './TupleStore'
+import Column from './Column'
 
 export default class Graph {
 
@@ -45,6 +46,7 @@ export default class Graph {
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Relation) => void}[] = []
 
     tupleStore: TupleStore
+    columns: { [name: string]: Column } = {}
 
     constructor() {
         this.tupleStore = new TupleStore(this);
@@ -52,6 +54,14 @@ export default class Graph {
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
         this.loggingHooks = new LoggingHooks(this)
+    }
+
+    initColumn(name: string) {
+
+        if (!this.columns[name])
+            this.columns[name] = new Column(name);
+
+        return this.columns[name];
     }
 
     savedQuery(queryStr: string): SavedQuery {
