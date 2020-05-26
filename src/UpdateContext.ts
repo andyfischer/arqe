@@ -33,7 +33,7 @@ export default class UpdateContext {
         let rels: Relation[] = null;
 
         const search = commandExec.toRelationSearch();
-        this.graph.database.search(search.pattern, search);
+        this.graph.tupleStore.searchUnplanned(search.pattern, search);
 
         if (rels === null)
             throw new Error("get didn't finish synchronously: " + commandStr);

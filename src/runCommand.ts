@@ -69,9 +69,20 @@ function runStep(step: CommandStep) {
         }
 
         case 'delete': {
+
             let relation = step.pattern;
             relation = relation.addTagObj(newTag('deleted').setValueExpr(['set']));
-            step.graph.database.save(relation, step.output);
+
+            const plan = makeQueryPlan(graph, relation, output);
+            if (!plan.passedValidation)
+                return;
+
+            if (plan.storageProvider) {
+                plan.storageProvider.runSave(plan.pattern, plan.output);
+            } else {
+                step.graph.tupleStore.save(plan);
+            }
+
             return;
         }
 

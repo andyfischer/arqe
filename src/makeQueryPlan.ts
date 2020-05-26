@@ -1,6 +1,5 @@
 
 import Graph from './Graph'
-import Database from './Database'
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
 import RelationReceiver from './RelationReceiver'
@@ -120,7 +119,6 @@ function applyModification(changeOperation: Pattern, storedRel: Pattern): Patter
 }
 
 function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
-    const schema = graph.database.schema;
 
     pattern = resolveExpressions(pattern);
 
@@ -142,7 +140,7 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationR
             continue;
         }
 
-        const column = schema.initColumn(tag.tagType);
+        const column = graph.initColumn(tag.tagType);
         
         planTags.push({
             tag,

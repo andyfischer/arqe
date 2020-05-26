@@ -70,7 +70,7 @@ export function runJoinStep(step: CommandStep) {
         check();
     });
 
-    step.graph.database.search(searchPattern, search);
+    step.graph.tupleStore.searchUnplanned(searchPattern, search);
 
     step.input.waitForAll((rels) => {
 

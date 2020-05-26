@@ -2,7 +2,6 @@
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
 import RelationReceiver from './RelationReceiver'
-import { AttributeSet } from './Database'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
 
@@ -29,8 +28,6 @@ export default interface QueryPlan {
     filterPattern: Pattern
     output: RelationReceiver
     storageProvider?: StorageProvider
-
-    attributeSet?: AttributeSet
 
     passedValidation?: boolean
 }

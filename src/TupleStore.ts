@@ -8,7 +8,6 @@ import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
-import Database from './Database'
 import QueryPlan, { QueryTag } from './QueryPlan'
 
 interface Slot {
@@ -184,5 +183,12 @@ export default class TupleStore {
         } else {
             this.insert(plan);
         }
+    }
+
+    searchUnplanned(pattern: Pattern, output: RelationReceiver) {
+        for (const { slotId, relation } of this.findStored(pattern)) {
+            output.relation(relation);
+        }
+        output.finish();
     }
 }

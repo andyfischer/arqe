@@ -19,7 +19,6 @@ import watchAndValidateCommand from './watchAndValidateCommand'
 import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
 import StorageProvider from './StorageProvider'
-import Database from './Database'
 import LoggingHooks from './LoggingHooks'
 import TupleStore from './TupleStore'
 import Column from './Column'
@@ -27,7 +26,6 @@ import getBuiltinViews from './getBuiltinViews'
 
 export default class Graph {
 
-    database = new Database(this);
     listeners: GraphListenerMount[] = []
 
     savedQueries: SavedQuery[] = []
@@ -49,7 +47,6 @@ export default class Graph {
 
     constructor() {
         this.tupleStore = new TupleStore(this);
-        this.database.schema.setupBuiltinViews(this);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.loggingHooks = new LoggingHooks(this)
 

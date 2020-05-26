@@ -9,7 +9,7 @@ export default function runListen(graph: Graph, step: CommandStep) {
     if (step.flags.get) {
         const search = step.toRelationSearch();
         search.finish = () => null;
-        graph.database.search(search.pattern, search);
+        graph.tupleStore.searchUnplanned(search.pattern, search);
     }
 
     graph.addListener(step.pattern, {
