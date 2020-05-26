@@ -4,7 +4,7 @@ import PatternTag from './PatternTag'
 import RelationReceiver from './RelationReceiver'
 import { AttributeSet } from './Database'
 import Schema, { Column, ColumnType } from './Schema'
-import StorageProviderV3 from './StorageProviderV3'
+import StorageProvider from './StorageProvider'
 
 export interface QueryTag {
     type: ColumnType
@@ -28,7 +28,7 @@ export default interface QueryPlan {
     pattern: Pattern
     filterPattern: Pattern
     output: RelationReceiver
-    storageProvider?: StorageProviderV3
+    storageProvider?: StorageProvider
 
     attributeSet?: AttributeSet
 

@@ -1,12 +1,12 @@
 
 import ColumnType, { ValueColumn } from './ColumnType'
-import StorageProviderV3 from './StorageProviderV3'
+import StorageProvider from './StorageProvider'
 
 export default class Column {
     name: string
     type: ColumnType = ValueColumn
 
-    storageProvider?: StorageProviderV3
+    storageProvider?: StorageProvider
 
     constructor(name: string) {
         this.name = name;

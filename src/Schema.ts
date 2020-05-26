@@ -3,7 +3,7 @@ import Relation from './Relation'
 import Pattern from './Pattern'
 import SchemaProviderAPI from './generated/SchemaProviderAPI'
 import Graph from './Graph'
-import StorageProviderV3 from './StorageProviderV3'
+import StorageProvider from './StorageProvider'
 import getBuiltinViews from './getBuiltinViews'
 
 export class ColumnType {
@@ -24,7 +24,7 @@ export class Column {
     name: string
     type: ColumnType = ValueColumn
 
-    storageProvider?: StorageProviderV3
+    storageProvider?: StorageProvider
 
     constructor(name: string) {
         this.name = name;

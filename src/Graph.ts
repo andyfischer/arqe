@@ -11,7 +11,6 @@ import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList, fallbackReceiver } from './receivers'
 import { runCommandChain, singleCommandExecution } from './runCommand'
 import UpdateContext from './UpdateContext'
-import TagTypeOrdering from './TagTypeOrdering'
 import IDSource from './utils/IDSource'
 import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
@@ -33,7 +32,6 @@ export default class Graph {
     savedQueries: SavedQuery[] = []
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
-    ordering = new TagTypeOrdering()
     typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<InheritTags>
 
@@ -52,7 +50,6 @@ export default class Graph {
         this.tupleStore = new TupleStore(this);
         this.database.schema.setupBuiltinViews(this);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
-        this.eagerValue(this.ordering.update);
         this.loggingHooks = new LoggingHooks(this)
     }
 
