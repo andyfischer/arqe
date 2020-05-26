@@ -3,7 +3,7 @@
 
 import * as Esprima from 'esprima'
 import IDSource from '../utils/IDSource'
-import API from './generated/JavascriptAstAPI'
+import API from './generated/TypescriptTreeAPI'
 import { parse, TSESTree } from '@typescript-eslint/typescript-estree'
 
 interface TypescriptTree {

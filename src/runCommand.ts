@@ -7,7 +7,6 @@ import RelationPipe from './RelationPipe'
 import Command from './Command'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
-import runSave from './runSave'
 import runListen from './runListen'
 import { newRelationSearch } from './SearchOperation'
 import { newTag } from './PatternTag'
@@ -17,7 +16,8 @@ const knownCommands = {
     'get': true,
     'set': true,
     'delete': true,
-    'listen': true
+    'listen': true,
+    'declare-object': true
 };
 
 function runStep(step: CommandStep) {
@@ -37,14 +37,18 @@ function runStep(step: CommandStep) {
         }
         
         case 'set': {
-            runSave({graph: step.graph, relation: step.command.toRelation(), output: step.output});
+            step.graph.database.save(step.command.toRelation(), step.output);
+            return;
+        }
+
+        case 'declare-object': {
             return;
         }
 
         case 'delete': {
             let relation = step.pattern;
             relation = relation.addTagObj(newTag('deleted').setValueExpr(['set']));
-            runSave({graph: step.graph, relation, output: step.output});
+            step.graph.database.save(relation, step.output);
             return;
         }
 

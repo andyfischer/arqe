@@ -1,7 +1,7 @@
 
 import Relation from './Relation'
 import Pattern, { commandTagsToRelation } from './Pattern'
-import PatternTag from './PatternTag'
+import PatternTag, { newTag } from './PatternTag'
 import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'
 import Graph from './Graph'
@@ -28,74 +28,6 @@ function getImpliedTableName(rel: Relation) {
     return els.join(' ');
 }
 
-const exprFuncEffects = {
-    increment: {
-        modifiesExisting: true,
-        canInitialize: false
-    },
-    set: {
-        modifiesExisting: true,
-        canInitialize: true
-    }
-};
-
-function modificationToFilter(rel: Relation) {
-    return rel.remapTags((tag: PatternTag) => {
-        if (tag.tagType === 'deleted')
-            return null;
-
-        if (tagModifiesExistingRelations(tag))
-            return tag.setStarValue()
-        else
-            return tag;
-    });
-}
-
-function applyModificationExpr(expr: string[], value: string) {
-    switch (expr[0]) {
-    case 'increment':
-        return parseInt(value, 10) + 1 + '';
-
-    case 'set':
-        return expr[1];
-    }
-}
-
-function expressionUpdatesExistingValue(expr: string[]) {
-
-    const effects = expr && expr[0] && exprFuncEffects[expr[0]];
-    return effects && effects.modifiesExisting;
-}
-
-function tagModifiesExistingRelations(tag: PatternTag) {
-    if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
-        return true;
-
-    return false;
-}
-
-function applyModification(changeOperation: Relation, storedRel: Relation): Relation {
-
-    storedRel = storedRel.remapTags((tag: PatternTag) => {
-        const modificationTag = changeOperation.getOneTagForType(tag.tagType);
-
-        if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
-            tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));
-        }
-
-        return tag;
-    });
-
-    if (changeOperation.hasType('deleted')) {
-        const deletedExpr = changeOperation.getTagObject('deleted');
-        if (deletedExpr && deletedExpr.valueExpr && deletedExpr.valueExpr[0] === 'set') {
-            storedRel = storedRel.addNewTag('deleted');
-        }
-    }
-
-    return storedRel;
-}
-
 function toInitialization(rel: Relation) {
     return rel.remapTags((tag: PatternTag) => {
         if (tag.valueExpr && tag.valueExpr[0] === 'set')
@@ -104,7 +36,7 @@ function toInitialization(rel: Relation) {
     });
 }
 
-export default class ValueDatabase {
+export default class TupleStore {
     graph: Graph
     database: Database
 
@@ -163,7 +95,7 @@ export default class ValueDatabase {
 
         for (const tag of relation.tags) {
             if (tag.valueExpr) {
-                emitCommandError(output, "InMemoryStorage unhandled expression: " + tag.stringify());
+                emitCommandError(output, "TupleStore unhandled expression: " + tag.stringify());
                 output.finish();
                 return;
             }
@@ -194,23 +126,13 @@ export default class ValueDatabase {
         const graph = this.graph;
 
         const changeOperation = pattern;
-        const filter = modificationToFilter(pattern);
         let hasFoundAny = false;
 
-        for (const { slotId, relation } of this.findStored(filter)) {
+        for (const { slotId, relation } of this.findStored(plan.filterPattern)) {
 
-            const modified = applyModification(changeOperation, this.slots[slotId]);
-
-            if (modified.hasType('deleted')) {
-                delete this.slots[slotId];
-                const itn = getImpliedTableName(relation);
-                delete (this.byImpliedTableName[itn] || {})[slotId];
-                graph.onRelationDeleted(modified.removeType('deleted'));
-            } else {
-                this.slots[slotId] = modified;
-                graph.onRelationUpdated(modified);
-            }
-
+            const modified = plan.modificationCallback(relation);
+            this.slots[slotId] = modified;
+            graph.onRelationUpdated(modified);
             output.relation(modified);
             hasFoundAny = true;
         }
@@ -219,6 +141,21 @@ export default class ValueDatabase {
             plan.pattern = toInitialization(pattern);
             this.insert(plan);
             return;
+        }
+
+        output.finish();
+    }
+
+    doDelete(plan: QueryPlan) {
+        const { output } = plan;
+        const graph = this.graph;
+
+        for (const { slotId, relation } of this.findStored(plan.filterPattern)) {
+            delete this.slots[slotId];
+            const itn = getImpliedTableName(relation);
+            delete (this.byImpliedTableName[itn] || {})[slotId];
+            graph.onRelationDeleted(relation);
+            output.relation(relation.addTagObj(newTag('deleted')));
         }
 
         output.finish();

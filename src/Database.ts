@@ -6,7 +6,7 @@ import PatternTag from './PatternTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import RelationReceiver from './RelationReceiver'
 import Pattern from './Pattern'
-import ValueDatabase from './ValueDatabase'
+import TupleStore from './TupleStore'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import makeQueryPlan from './makeQueryPlan'
 import logError from './logError'
@@ -23,68 +23,39 @@ export class AttributeSet {
     }
 }
 
-function sortIncomingTags(a: QueryTag, b: QueryTag) {
-    if (a.type.sortPriority !== b.type.sortPriority)
-        return a.type.sortPriority - b.type.sortPriority;
-
-    return 0;
-}
-
-interface InsertOperation {
-    relation: Relation
-    output: RelationReceiver
-}
-
-interface UpdateOperation {
-    pattern: Pattern
-    output: RelationReceiver
-}
-
-interface SelectOperation {
-    pattern: Pattern
-    output: RelationReceiver
-}
-
-interface Slot {
-    relation: Relation
-}
-
 export default class Database {
 
     graph: Graph
     schema: Schema
 
-    objectStore: { [columnName: string]: { [ id: string ]: AttributeSet } } = {}
-    multiObjectStore: { [objectkey: string]: AttributeSet } = {}
-
-    valueDatabase: ValueDatabase
+    tupleStore: TupleStore
 
     constructor(graph: Graph) {
         this.graph = graph;
         this.schema = new Schema();
-        this.valueDatabase = new ValueDatabase(this);
-    }
-
-    checkValidation(plan: QueryPlan) {
-        if (plan.views.length > 2) {
-            emitCommandError(plan.output, "query has multiple views");
-            plan.output.finish();
-            return false;
-        }
-
-        return true;
+        this.tupleStore = new TupleStore(this);
     }
 
     save(pattern: Pattern, output: RelationReceiver) {
         const plan = makeQueryPlan(this, pattern, output);
-        if (!this.checkValidation(plan))
+        if (!plan.passedValidation)
             return;
 
-        if (plan.modifiesExisting) {
+        if (plan.isDelete) {
+            this.tupleStore.doDelete(plan);
+        } else if (plan.modifiesExisting) {
             this.update(plan);
         } else {
             this.insert(plan);
         }
+    }
+
+    search(pattern: Pattern, output: RelationReceiver) {
+        const plan = makeQueryPlan(this, pattern, output);
+        if (!plan.passedValidation)
+            return;
+
+        this.select(plan);
     }
 
     insert(plan: QueryPlan) {
@@ -103,12 +74,7 @@ export default class Database {
             return;
         }
 
-        if (plan.objects.length > 0) {
-            this.insertOnObject(plan);
-            return;
-        }
-
-        this.valueDatabase.insert(plan);
+        this.tupleStore.insert(plan);
     }
 
     update(plan: QueryPlan) {
@@ -131,16 +97,9 @@ export default class Database {
             return;
         }
 
-        this.valueDatabase.update(plan);
+        this.tupleStore.update(plan);
     }
 
-    search(pattern: Pattern, output: RelationReceiver) {
-        const plan = makeQueryPlan(this, pattern, output);
-        if (!this.checkValidation(plan))
-            return;
-
-        this.select(plan);
-    }
 
     select(plan: QueryPlan) {
         const { pattern, output } = plan;
@@ -159,45 +118,6 @@ export default class Database {
             return;
         }
 
-        if (plan.objects.length > 0) {
-            this.selectOnObject(plan);
-            return;
-        }
-
-        this.valueDatabase.select(plan);
-    }
-
-    insertOnObject(plan: QueryPlan) {
-
-        const { output } = plan;
-
-        for (const value of plan.values) {
-            plan.attributeSet.set(value.tag.tagType, value.tag.tagValue);
-        }
-
-        output.relation(plan.pattern);
-        output.finish();
-    }
-
-    selectOnObject(plan: QueryPlan) {
-
-        const { pattern, output } = plan;
-
-        const attributeSet = plan.attributeSet;
-
-        if (!attributeSet) {
-            output.finish();
-            return;
-        }
-
-        let outRel = pattern;
-        for (const value of plan.values) {
-            const tag = value.tag.tagType;
-            outRel = outRel.setValueForType(tag, attributeSet.get(tag));
-        }
-
-        output.relation(outRel);
-
-        output.finish();
+        this.tupleStore.select(plan);
     }
 }

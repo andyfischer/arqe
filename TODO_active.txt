@@ -6,3 +6,5 @@ Themes:
  X Filesystem storage
 
  - AST provider
+
+ - declare-object command?

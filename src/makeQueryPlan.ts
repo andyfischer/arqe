@@ -5,6 +5,7 @@ import PatternTag from './PatternTag'
 import RelationReceiver from './RelationReceiver'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
 import QueryPlan, { QueryTag } from './QueryPlan'
+import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 
 const exprFuncEffects = {
     increment: {
@@ -61,6 +62,62 @@ function resolveExpressions(pattern: Pattern) {
     });
 }
 
+function patternIsDelete(pattern: Pattern) {
+    if (!pattern.hasType('deleted'))
+        return false;
+
+    const deletedExpr = pattern.getTagObject('deleted');
+    if (deletedExpr && deletedExpr.valueExpr && deletedExpr.valueExpr[0] === 'set') {
+        return true;
+    }
+
+    return false;
+}
+
+function modificationPatternToFilter(pattern: Pattern) {
+    return pattern.remapTags((tag: PatternTag) => {
+        if (tag.tagType === 'deleted')
+            return null;
+
+        if (tagModifiesExistingRelations(tag))
+            return tag.setStarValue()
+        else
+            return tag;
+    });
+}
+
+function tagModifiesExistingRelations(tag: PatternTag) {
+    if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
+        return true;
+
+    return false;
+}
+
+function applyModificationExpr(expr: string[], value: string) {
+    switch (expr[0]) {
+    case 'increment':
+        return parseInt(value, 10) + 1 + '';
+
+    case 'set':
+        return expr[1];
+    }
+}
+
+function applyModification(changeOperation: Pattern, storedRel: Pattern): Pattern {
+
+    storedRel = storedRel.remapTags((tag: PatternTag) => {
+        const modificationTag = changeOperation.getOneTagForType(tag.tagType);
+
+        if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
+            tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));
+        }
+
+        return tag;
+    });
+
+    return storedRel;
+}
+
 export default function patternToQueryPlan(database: Database, pattern: Pattern, output: RelationReceiver) {
     const schema = database.schema;
 
@@ -101,12 +158,20 @@ export default function patternToQueryPlan(database: Database, pattern: Pattern,
         objects: [],
         values: [],
         pattern,
+        filterPattern: modificationPatternToFilter(pattern),
         singleStar,
         doubleStar,
         modifiesExisting,
         initializeIfMissing,
+        isDelete: patternIsDelete(pattern),
         output
     };
+
+    if (modifiesExisting) {
+        plan.modificationCallback = (storedRel: Pattern) => {
+            return applyModification(pattern, storedRel);
+        }
+    }
 
     for (const tag of planTags) {
         if (tag.type === ViewColumn)
@@ -117,13 +182,21 @@ export default function patternToQueryPlan(database: Database, pattern: Pattern,
             plan.values.push(tag);
     }
 
-
-    if (plan.views.length > 0)
-        return plan;
-
     if (plan.values.length > 0) {
         plan.values.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
     }
 
+    validatePlan(plan);
+
     return plan;
+}
+
+function validatePlan(plan: QueryPlan) {
+    if (plan.views.length > 2) {
+        emitCommandError(plan.output, "query has multiple views");
+        plan.output.finish();
+        plan.passedValidation = false;
+    }
+
+    plan.passedValidation = true;
 }

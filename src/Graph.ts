@@ -21,6 +21,7 @@ import { receiveToRelationListPromise } from './receivers'
 import SaveSearchHook from './SaveSearchHook'
 import StorageProvider from './StorageProvider'
 import Database from './Database'
+import LoggingHooks from './LoggingHooks'
 
 export default class Graph {
 
@@ -38,11 +39,15 @@ export default class Graph {
     graphListenerIds = new IDSource()
 
     storageProvidersV3: StorageProvider[] = []
+    loggingHooks: LoggingHooks
+
+    relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Relation) => void}[] = []
 
     constructor() {
         this.database.schema.setupBuiltinViews(this);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
         this.eagerValue(this.ordering.update);
+        this.loggingHooks = new LoggingHooks(this)
     }
 
     savedQuery(queryStr: string): SavedQuery {
@@ -75,6 +80,12 @@ export default class Graph {
 
     addListener(pattern: Pattern, listener: GraphListener) {
         this.listeners.push({ pattern, listener });
+    }
+
+    onRelationCreated(rel: Relation) {
+        for (const { pattern, onCreate } of this.relationCreatedListeners)
+            if (rel.matches(pattern))
+                onCreate(rel);
     }
 
     onRelationUpdated(rel: Relation) {
@@ -172,6 +183,9 @@ export default class Graph {
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
+    }
+
+    watchIsAnyoneListening(pattern: Pattern) {
     }
 
     close() { }

@@ -1,6 +1,6 @@
 
 - code-generation/javascript-ast:
-  - destination-filename(src/providers/generated/JavascriptAstAPI.ts)
+  - destination-filename(src/providers/generated/TypescriptTreeAPI.ts)
   - ik-import(../..)
   - strategy/provider-api
   - handler/createAstFromText

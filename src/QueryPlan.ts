@@ -21,10 +21,15 @@ export default interface QueryPlan {
     doubleStar: boolean
 
     pattern: Pattern
+    filterPattern: Pattern
     output: RelationReceiver
 
     modifiesExisting: boolean
     initializeIfMissing: boolean
 
     attributeSet?: AttributeSet
+    isDelete?: boolean
+    modificationCallback?: (pattern: Pattern) => Pattern
+
+    passedValidation?: boolean
 }
