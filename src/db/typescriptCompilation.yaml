@@ -6,10 +6,11 @@
   - handler/runTsc
 
 - handler/runTsc:
-  - handles-query(get tsc-compile dir/$dir message line col)
+  - handles-query(get tsc-compile dir/$dir filename message lineno colno)
   - function-name(runTsc)
   - input var/dir type/string
+  - output var/message from(filename/*)
   - output var/message from(message/*)
-  - output var/line from(line/*)
-  - output var/col from(col/*)
+  - output var/lineno from(lineno/*)
+  - output var/colno from(colno/*)
   - async

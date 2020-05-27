@@ -12,9 +12,9 @@ export default class API implements StorageProvider {
     }
 
     async runSearch(pattern: Pattern, output: RelationReceiver) {
-        // check for handler/runTsc (get tsc-compile dir/$dir message line col)
+        // check for handler/runTsc (get tsc-compile dir/$dir filename message lineno colno)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasType("tsc-compile")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("message")) && (pattern.hasType("line")) && (pattern.hasType("col"))) {
+        if ((pattern.tagCount() == 6) && (pattern.hasType("tsc-compile")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("filename")) && (pattern.hasType("message")) && (pattern.hasType("lineno")) && (pattern.hasType("colno"))) {
             try {
                 const dir = pattern.getTagValue("dir");
                 const result = await this.handler.runTsc(dir);
@@ -25,9 +25,10 @@ export default class API implements StorageProvider {
 
                 for (const item of result) {
                     const outRelation = pattern
+                        .setTagValueForType("filename", item.message)
                         .setTagValueForType("message", item.message)
-                        .setTagValueForType("line", item.line)
-                        .setTagValueForType("col", item.col);
+                        .setTagValueForType("lineno", item.lineno)
+                        .setTagValueForType("colno", item.colno);
                     output.relation(outRelation);
                 }
             }

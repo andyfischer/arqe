@@ -1,7 +1,7 @@
 
 TODO next:
 
- - Stop trying to infer a priority order (it's probably impossible), instead
+ X Stop trying to infer a priority order (it's probably impossible), instead
    just process left-to-right. Columns can have special handling and the
    leftmost term gets the first try.
 
@@ -26,6 +26,7 @@ Themes:
  - Let's get some useful debugging views
 
  X Filesystem storage
+ X TSC compilation wrapper
 
  - AST provider
 
