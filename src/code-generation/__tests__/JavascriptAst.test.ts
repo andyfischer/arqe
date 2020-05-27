@@ -93,3 +93,22 @@ it('can declare multi-line object literals', () => {
     c: 3,
 }`);
 });
+
+it('try-catch works', () => {
+    const file = startFile();
+    const foo = file.addFunction('foo');
+    const block = foo.contents._try();
+    block.contents.addLine('bar()');
+    const c = block._catch('e');
+    c.contents.addLine('// there was an error');
+
+    expect(file.stringify()).toEqual(
+`function foo() {
+    try {
+        bar()
+    }
+    catch(e) {
+        // there was an error
+    }
+}`);
+});

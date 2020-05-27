@@ -162,7 +162,8 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
 
     const patternMatches = block._if();
     patternMatches.setCondition(patternCheckExpression(pattern));
-    const handlePatternMatch = patternMatches.contents;
+    const handlePatternMatchTry = patternMatches.contents._try();
+    const handlePatternMatch = handlePatternMatchTry.contents;
 
     const functionName = api.touchpointFunctionName(handler);
     const vars = pullOutVarsFromPattern(pattern, handlePatternMatch);

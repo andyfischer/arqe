@@ -43,6 +43,12 @@ export class Block {
         this.statements.push(new BlankLine());
     }
 
+    addFunction(name: string) {
+        const decl = new FunctionDecl('function', name);
+        this.statements.push(decl);
+        return decl;
+    }
+
     addMethod(name: string) {
         const decl = new FunctionDecl('method', name);
         this.statements.push(decl);
@@ -51,6 +57,7 @@ export class Block {
 
     _try() {
         const tryBlock = new TryBlock();
+        this.statements.push(tryBlock);
         return tryBlock;
     }
 
@@ -125,6 +132,7 @@ interface Statement {
     statementType: string
     line: () => string
     contents?: Block
+    attachedBlock?: Statement
 }
 
 class Whitespace implements Statement {
@@ -313,16 +321,37 @@ class ForBlock implements Statement {
 
 class TryBlock implements Statement {
     statementType = 'tryBlock'
-    tryContents: Block
-    catchContents: Block
+    contents: Block
+    attachedBlock: Statement
+
     constructor() {
-        this.tryContents = new Block('try', this)
-        this.catchContents = new Block('catch', this)
+        this.contents = new Block('try', this)
+    }
+
+    _catch(expr: string) {
+        this.attachedBlock = new CatchBlock(expr);
+        return this.attachedBlock;
     }
 
     line() {
         return `try`
     }
+}
+
+class CatchBlock implements Statement {
+    statementType = 'catchBlock'
+    expr: string
+    contents: Block
+
+    constructor(expr: string) {
+        this.expr = expr;
+        this.contents = new Block('catch', this);
+    }
+
+    line() {
+        return `catch(${this.expr})`
+    }
+
 }
 
 class FunctionTypeDef {
@@ -419,6 +448,11 @@ function* iterateBlock(block: Block) {
         if (statement.contents) {
             yield* iterateBlock(statement.contents);
         }
+
+        if (statement.attachedBlock) {
+            yield ({ statement: statement.attachedBlock, currentBlock: block })
+            yield* iterateBlock(statement.attachedBlock.contents);
+        }
     }
 
     yield ({ finishBlock: block });
@@ -447,9 +481,6 @@ export function formatBlock(block: Block) {
     }
 }
 
-export function startExpressionAst() {
-}
-
 export function stringifyBlock(block: Block) {
     const out = [];
     const writer = new LineWriter();
@@ -466,6 +497,8 @@ export function stringifyBlock(block: Block) {
             case 'if':
             case 'for':
             case 'interface':
+            case 'try':
+            case 'catch':
                 writer.writeln(' {')
                 writer.indent();
                 continue;
@@ -499,6 +532,8 @@ export function stringifyBlock(block: Block) {
                 case 'functionDecl':
                 case 'ifBlock':
                 case 'forBlock':
+                case 'tryBlock':
+                case 'catchBlock':
                     continue;
             }
 
@@ -524,6 +559,8 @@ export function stringifyBlock(block: Block) {
                 }
                 continue;
             }
+
+            // if (it.finishBlock.
         }
     }
 
