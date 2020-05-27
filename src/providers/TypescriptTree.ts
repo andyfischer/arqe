@@ -1,7 +1,4 @@
 
-// next: get nodes by type
-
-import * as Esprima from 'esprima'
 import IDSource from '../utils/IDSource'
 import API from './generated/TypescriptTreeAPI'
 import { parse, TSESTree } from '@typescript-eslint/typescript-estree'

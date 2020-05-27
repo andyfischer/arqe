@@ -1,7 +1,7 @@
 import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
-    runTsc: (filename: string) => any[]
+    runTsc: (dir: string) => Promise<any[]>
 }
 
 export default class API implements StorageProvider {
@@ -12,11 +12,11 @@ export default class API implements StorageProvider {
     }
 
     async runSearch(pattern: Pattern, output: RelationReceiver) {
-        // check for handler/runTsc (get tsc-compile filename/$filename message line col)
+        // check for handler/runTsc (get tsc-compile dir/$dir message line col)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasType("tsc-compile")) && (pattern.hasType("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasType("message")) && (pattern.hasType("line")) && (pattern.hasType("col"))) {
-            const filename = pattern.getTagValue("filename");
-            const result = this.handler.runTsc(filename);
+        if ((pattern.tagCount() == 5) && (pattern.hasType("tsc-compile")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("message")) && (pattern.hasType("line")) && (pattern.hasType("col"))) {
+            const dir = pattern.getTagValue("dir");
+            const result = await this.handler.runTsc(dir);
 
             if (!Array.isArray(result)) {
                 throw new Error("expected runTsc to return an Array, got: " + JSON.stringify(result))
