@@ -21,9 +21,15 @@ export default class API implements StorageProvider {
         // check for handler/setObjectColumn (set schema column/$column object)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("schema")) && (pattern.hasType("column")) && (pattern.hasValueForType("column")) && (pattern.hasType("object"))) {
-            const column = pattern.getTagValue("column");
-            this.handler.setObjectColumn(column);
-            output.relation(pattern);
+            try {
+                const column = pattern.getTagValue("column");
+                this.handler.setObjectColumn(column);
+                output.relation(pattern);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
             output.finish();
             return;
         }
@@ -31,9 +37,15 @@ export default class API implements StorageProvider {
         // check for handler/setViewColumn (set schema column/$column view)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("schema")) && (pattern.hasType("column")) && (pattern.hasValueForType("column")) && (pattern.hasType("view"))) {
-            const column = pattern.getTagValue("column");
-            this.handler.setViewColumn(column);
-            output.relation(pattern);
+            try {
+                const column = pattern.getTagValue("column");
+                this.handler.setViewColumn(column);
+                output.relation(pattern);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
             output.finish();
             return;
         }

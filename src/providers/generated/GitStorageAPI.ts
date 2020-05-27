@@ -18,16 +18,32 @@ export default class API implements StorageProvider {
         // check for handler/listBranches (get git dir/$dir branch/*)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch"))) {
-            const dir = pattern.getTagValue("dir");
-            await this.handler.listBranches(dir);
+            try {
+                const dir = pattern.getTagValue("dir");
+                await this.handler.listBranches(dir);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
         }
 
         // check for handler/checkBranchExists (get git dir/$dir branch/$branch)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
-            const dir = pattern.getTagValue("dir");
-            const branch = pattern.getTagValue("branch");
-            await this.handler.checkBranchExists(dir, branch);
+            try {
+                const dir = pattern.getTagValue("dir");
+                const branch = pattern.getTagValue("branch");
+                await this.handler.checkBranchExists(dir, branch);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
         }
 
         emitCommandError(output, "provider code-generation/git-provider doesn't support: get " + pattern.stringify());
@@ -38,10 +54,16 @@ export default class API implements StorageProvider {
         // check for handler/createBranch (set git dir/$dir branch/$branchName)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
-            const dir = pattern.getTagValue("dir");
-            const branchName = pattern.getTagValue("branch");
-            await this.handler.createBranch(dir, branchName);
-            output.relation(pattern);
+            try {
+                const dir = pattern.getTagValue("dir");
+                const branchName = pattern.getTagValue("branch");
+                await this.handler.createBranch(dir, branchName);
+                output.relation(pattern);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
             output.finish();
             return;
         }
@@ -54,9 +76,17 @@ export default class API implements StorageProvider {
         // check for handler/deleteBranch (delete git dir/$dir branch/$branch)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
-            const dir = pattern.getTagValue("dir");
-            const branch = pattern.getTagValue("branch");
-            await this.handler.deleteBranch(dir, branch);
+            try {
+                const dir = pattern.getTagValue("dir");
+                const branch = pattern.getTagValue("branch");
+                await this.handler.deleteBranch(dir, branch);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
         }
 
         emitCommandError(output, "provider code-generation/git-provider doesn't support: delete " + pattern.stringify());

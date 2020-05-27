@@ -245,14 +245,12 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     tryHandleMatch
         ._catch('e')
         .contents
-        .addRaw('console.error(e)');
+        .addRaw('console.error(e.stack || e)');
 
     patternMatches.contents
         .addRaw(`output.finish();`)
         .addRaw(`return;`);
 
-    console.log(JSON.stringify(block, null, 2));
-        
     block.addBlank();
 }
 

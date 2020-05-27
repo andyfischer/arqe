@@ -15,19 +15,24 @@ export default class API implements StorageProvider {
         // check for handler/runTsc (get tsc-compile dir/$dir message line col)
 
         if ((pattern.tagCount() == 5) && (pattern.hasType("tsc-compile")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("message")) && (pattern.hasType("line")) && (pattern.hasType("col"))) {
-            const dir = pattern.getTagValue("dir");
-            const result = await this.handler.runTsc(dir);
+            try {
+                const dir = pattern.getTagValue("dir");
+                const result = await this.handler.runTsc(dir);
 
-            if (!Array.isArray(result)) {
-                throw new Error("expected runTsc to return an Array, got: " + JSON.stringify(result))
+                if (!Array.isArray(result)) {
+                    throw new Error("expected runTsc to return an Array, got: " + JSON.stringify(result))
+                }
+
+                for (const item of result) {
+                    const outRelation = pattern
+                        .setTagValueForType("message", item.message)
+                        .setTagValueForType("line", item.line)
+                        .setTagValueForType("col", item.col);
+                    output.relation(outRelation);
+                }
             }
-
-            for (const item of result) {
-                const outRelation = pattern
-                    .setTagValueForType("message", item.message)
-                    .setTagValueForType("line", item.line)
-                    .setTagValueForType("col", item.col);
-                output.relation(outRelation);
+            catch(e) {
+                console.error(e.stack || e)
             }
 
             output.finish();

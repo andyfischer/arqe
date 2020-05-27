@@ -15,16 +15,22 @@ export default class API implements StorageProvider {
         // check for handler/sum (get test-math sum a/$a b/$b)
 
         if ((pattern.tagCount() == 4) && (pattern.hasType("test-math")) && (pattern.hasType("sum")) && (pattern.hasType("a")) && (pattern.hasValueForType("a")) && (pattern.hasType("b")) && (pattern.hasValueForType("b"))) {
-            const a = pattern.getTagValue("a");
-            const b = pattern.getTagValue("b");
-            const sum = this.handler.sum(a, b);
+            try {
+                const a = pattern.getTagValue("a");
+                const b = pattern.getTagValue("b");
+                const sum = this.handler.sum(a, b);
 
-            if (typeof sum !== 'string') {
-                throw new Error("expected sum to return a string, got: " + JSON.stringify(sum))
+                if (typeof sum !== 'string') {
+                    throw new Error("expected sum to return a string, got: " + JSON.stringify(sum))
+                }
+
+                const outRelation = pattern.setTagValueForType("sum", sum);
+                output.relation(outRelation);
+            }
+            catch(e) {
+                console.error(e.stack || e)
             }
 
-            const outRelation = pattern.setTagValueForType("sum", sum);
-            output.relation(outRelation);
             output.finish();
             return;
         }

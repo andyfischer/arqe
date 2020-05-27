@@ -15,15 +15,21 @@ export default class API implements StorageProvider {
         // check for handler/createAstFromText (get typescript-tree/* text/$text)
 
         if ((pattern.tagCount() == 2) && (pattern.hasType("typescript-tree")) && (pattern.hasType("text")) && (pattern.hasValueForType("text"))) {
-            const text = pattern.getTagValue("text");
-            const filename = this.handler.createAstFromText(text);
+            try {
+                const text = pattern.getTagValue("text");
+                const filename = this.handler.createAstFromText(text);
 
-            if (typeof filename !== 'string') {
-                throw new Error("expected createAstFromText to return a string, got: " + JSON.stringify(filename))
+                if (typeof filename !== 'string') {
+                    throw new Error("expected createAstFromText to return a string, got: " + JSON.stringify(filename))
+                }
+
+                const outRelation = pattern.setTagValueForType("typescript-tree", filename);
+                output.relation(outRelation);
+            }
+            catch(e) {
+                console.error(e.stack || e)
             }
 
-            const outRelation = pattern.setTagValueForType("typescript-tree", filename);
-            output.relation(outRelation);
             output.finish();
             return;
         }
