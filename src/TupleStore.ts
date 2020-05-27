@@ -98,15 +98,15 @@ export default class TupleStore {
             }
         }
 
-        // Check if already saved.
+        // Check if this tuple is already saved.
         for (const existing of this.findStored(relation)) {
-            // Already saved.
+            // Already saved - No-op.
             output.relation(relation);
             output.finish();
             return;
         }
 
-        // Store a new relation
+        // Store a new tuple.
         const slotId = this.nextSlotId.take();
         this.slots[slotId] = relation;
         output.relation(relation);
@@ -125,8 +125,8 @@ export default class TupleStore {
         const changeOperation = pattern;
         let hasFoundAny = false;
 
+        // Apply the modificationCallback to every matching slot.
         for (const { slotId, relation } of this.findStored(plan.filterPattern)) {
-
             const modified = plan.modificationCallback(relation);
             this.slots[slotId] = modified;
             graph.onRelationUpdated(modified);
@@ -134,6 +134,8 @@ export default class TupleStore {
             hasFoundAny = true;
         }
 
+        // Check if the plan has 'initializeIfMissing' - this means we must insert the row
+        // if no matches were found.
         if (!hasFoundAny && plan.initializeIfMissing) {
             plan.pattern = toInitialization(pattern);
             this.insert(plan);

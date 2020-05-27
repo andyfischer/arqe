@@ -2,7 +2,6 @@
 - code-generation/schema-provider:
    - destination-filename(src/generated/SchemaProviderAPI.ts)
    - ik-import/..
-   - strategy/provider-api
    - handles-pattern(schema **)
    - handler/setObjectColumn
    - handler/setViewColumn

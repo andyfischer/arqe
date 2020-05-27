@@ -1,0 +1,18 @@
+
+- code-generation/working-files-provider:
+   - destination-filename(src/generated/WorkingFilesProviderAPI.ts)
+   - ik-import/..
+   - strategy/provider-api
+   - handler/setObjectColumn
+   - handler/setViewColumn
+
+- handler/loadFile:
+   - handles-query(get working-file((unique)) filename)
+   - function-name/loadFile
+   - input var/filename type/string
+   - output var/filename from(working-file
+ 
+- handler/saveFile:
+   - handles-query(set schema column/$column view)
+   - function-name/setViewColumn
+   - input var/column type/string
