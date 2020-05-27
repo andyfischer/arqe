@@ -161,9 +161,10 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
     block.addComment(`check for ${handler} (${query})`);
 
     const patternMatches = block._if();
+
     patternMatches.setCondition(patternCheckExpression(pattern));
-    const handlePatternMatchTry = patternMatches.contents._try();
-    const handlePatternMatch = handlePatternMatchTry.contents;
+    const tryHandleMatch = patternMatches.contents._try();
+    const handlePatternMatch = tryHandleMatch.contents;
 
     const functionName = api.touchpointFunctionName(handler);
     const vars = pullOutVarsFromPattern(pattern, handlePatternMatch);
@@ -197,57 +198,61 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
         if (query.startsWith('set ')) {
             // If save: Just echo back the relation that was saved.
             handlePatternMatch.addRaw(`output.relation(pattern);`);
-            handlePatternMatch.addRaw(`output.finish();`);
-            handlePatternMatch.addRaw(`return;`);
-        }
-        block.addBlank();
-        return;
-    }
-
-    // Type check the received value
-    if (outputExpectOne) {
-        if (outputs.length === 1) {
-            handlePatternMatch._if(`typeof ${outputVar} !== 'string'`)
-                .contents
-                .addRaw(`throw new Error("expected ${functionName} to return a string, got: " + JSON.stringify(${outputVar}))`);
         }
     } else {
-        handlePatternMatch._if(`!Array.isArray(${outputVar})`)
-            .contents
-            .addRaw(`throw new Error("expected ${functionName} to return an Array, got: " + JSON.stringify(${outputVar}))`);
-    }
 
-    let sendOneRelation = handlePatternMatch;
-    let oneResultVar = outputVar;
-
-    // Maybe start a for loop, depending on whether we expect multi results from the handler.
-    if (!outputExpectOne) {
-        sendOneRelation = handlePatternMatch._for(`const item of ${outputVar}`).contents;
-        oneResultVar = 'item';
-    }
-
-    // For each result row, extract the fields into 'outRelation'.
-    // Create 'outRelation' and fill it with data returned by the callback.
-    for (const { isFirst, isLast, item } of iterateWithFirstLast(outputs)) {
-        const varStr = item.varStr;
-        const tagType = item.fromStr.replace('/*', '');
-        if (outputs.length === 1) {
-            sendOneRelation.addRaw(`const outRelation = pattern.setTagValueForType("${tagType}", ${outputVar});`);
+        // Type check the received value
+        if (outputExpectOne) {
+            if (outputs.length === 1) {
+                handlePatternMatch._if(`typeof ${outputVar} !== 'string'`)
+                    .contents
+                    .addRaw(`throw new Error("expected ${functionName} to return a string, got: " + JSON.stringify(${outputVar}))`);
+            }
         } else {
-            if (isFirst)
-                sendOneRelation.addRaw('const outRelation = pattern');
-
-            sendOneRelation.addRaw(`    .setTagValueForType("${tagType}", ${oneResultVar}.${varStr})` + (isLast ? ';' : ''));
+            handlePatternMatch._if(`!Array.isArray(${outputVar})`)
+                .contents
+                .addRaw(`throw new Error("expected ${functionName} to return an Array, got: " + JSON.stringify(${outputVar}))`);
         }
+
+        let sendOneRelation = handlePatternMatch;
+        let oneResultVar = outputVar;
+
+        // Maybe start a for loop, depending on whether we expect multi results from the handler.
+        if (!outputExpectOne) {
+            sendOneRelation = handlePatternMatch._for(`const item of ${outputVar}`).contents;
+            oneResultVar = 'item';
+        }
+
+        // For each result row, extract the fields into 'outRelation'.
+        // Create 'outRelation' and fill it with data returned by the callback.
+        for (const { isFirst, isLast, item } of iterateWithFirstLast(outputs)) {
+            const varStr = item.varStr;
+            const tagType = item.fromStr.replace('/*', '');
+            if (outputs.length === 1) {
+                sendOneRelation.addRaw(`const outRelation = pattern.setTagValueForType("${tagType}", ${outputVar});`);
+            } else {
+                if (isFirst)
+                    sendOneRelation.addRaw('const outRelation = pattern');
+
+                sendOneRelation.addRaw(`    .setTagValueForType("${tagType}", ${oneResultVar}.${varStr})` + (isLast ? ';' : ''));
+            }
+        }
+
+        sendOneRelation
+            .addRaw(`output.relation(outRelation);`);
     }
 
-    sendOneRelation
-        .addRaw(`output.relation(outRelation);`);
+    tryHandleMatch
+        ._catch('e')
+        .contents
+        .addRaw('console.error(e)');
 
-    handlePatternMatch
+    patternMatches.contents
         .addRaw(`output.finish();`)
         .addRaw(`return;`);
 
+    console.log(JSON.stringify(block, null, 2));
+        
     block.addBlank();
 }
 
@@ -261,3 +266,4 @@ export function runProviderGenerator(graph: Graph, target: string) {
     writeFileSyncIfUnchanged(destinationFilename, ast.stringify());
     console.log('generated file is up-to-date: ' + destinationFilename);
 }
+

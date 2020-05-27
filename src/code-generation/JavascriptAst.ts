@@ -2,12 +2,10 @@
 export class Block {
     blockType: string
     statements: Statement[] = []
-    parent: Statement
     formatOneLine: boolean = false
 
     constructor(blockType: string, parent: Statement) {
         this.blockType = blockType;
-        this.parent = parent;
     }
 
     stringify() {

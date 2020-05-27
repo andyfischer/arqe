@@ -10,7 +10,8 @@
     "start": "tsc-watch --onSuccess ./bin/fs-server",
     "cli": "node dist/startCli.js",
     "local-cli": "node dist/startCli.js --db src/db",
-    "generate-api": "tsc-watch --onSuccess 'bin/fs-code-generator --db src/db'"
+    "generate-api": "tsc-watch --onSuccess 'bin/fs-code-generator --db src/db'",
+    "generate-api-once": "bin/fs-code-generator --db src/db"
   },
   "dependencies": {
     "@typescript-eslint/typescript-estree": "^3.0.0",
