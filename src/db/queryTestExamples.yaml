@@ -1,0 +1,18 @@
+
+- query-test-example:
+  - query(get a)
+  - query(get a | join b)
+  - query(get a b $c | join b $c d)
+  - query(get a | join b | join c)
+  - query(get a/(a b c))
+  - query(get a(a b c))
+  - query(set *)
+  - query(set **)
+  - query(join $a)
+  - query(join $a $b)
+  - query(join a/$a $b)
+  - query(get tag(string value))
+  - query(get message(can't use dir(*)))
+  - query(get branch(* branch_name))
+  - query(set a/(increment))
+  - query(set a((increment)))

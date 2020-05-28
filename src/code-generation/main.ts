@@ -13,11 +13,11 @@ import loadGraphFromFiles from '../loadGraphFromFiles'
 function runGenerationForTarget(dataSource: Graph, api: CodeGenerationDAO, target) {
     const strategy = api.codeGenerationTargetStrategy(target);
 
-    if (strategy === 'dao-api') {
+    if (strategy === 'dao-api' || strategy === 'consumer') {
         runDAOGenerator(dataSource, target);
     } else if (strategy == 'text-as-code') {
         generateTextAsCode(dataSource, target);
-    } else if (strategy == 'provider-api') {
+    } else if (strategy == 'provider-api' || strategy === 'provider') {
         runProviderGenerator(dataSource, target);
     } else {
         throw new Error("didn't understand code generation strategy: " + strategy);

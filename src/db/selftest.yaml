@@ -1,0 +1,23 @@
+
+- code-generation/selftest-consumer:
+   - destination-filename(src/selftest/generated/SelfTestConsumer.ts)
+   - ik-import(../..)
+   - strategy/consumer
+   - handler/listQueryTestExamples
+
+- handler/listQueryTestExamples:
+   - handles-query(get query-test-example query/*)
+   - function-name/listQueryTestExamples
+   - output var/query from(query/*)
+
+- code-generation/selftest-provider:
+   - destination-filename(src/selftest/generated/SelfTestProvider.ts)
+   - ik-import(../..)
+   - strategy/consumer
+   - handler/selfTestResults
+
+- handler/selfTestResults
+   - handles-query(get self-test-results message passed)
+   - function-name/selfTestResults
+   - output var/message from(message/*)
+   - output var/passed from(passed/*)
