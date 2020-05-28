@@ -1,5 +1,6 @@
 
 - code-generation/schema-provider:
+   - strategy/provider
    - destination-filename(src/generated/SchemaProviderAPI.ts)
    - ik-import/..
    - handles-pattern(schema **)
