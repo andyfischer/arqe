@@ -8,6 +8,7 @@ import ExpireAtListener from './providers/ExpireAtListener'
 import { setupTestMathStorage } from './providers/TestMathStorage'
 import setupTypescriptTree from './providers/TypescriptTree'
 import setupTypescriptCompilation from './providers/TypescriptCompiler'
+import setupSelfTest from './selftest/SelfTest'
 
 export default function getBuiltinViews(graph: Graph): {[name: string]: StorageProvider } {
     return {
@@ -17,6 +18,7 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
         'expires-at': new ExpireAtListener(graph),
         'test-math': setupTestMathStorage(),
         'typescript-tree': setupTypescriptTree(),
-        'tsc-compile': setupTypescriptCompilation()
+        'tsc-compile': setupTypescriptCompilation(),
+        'self-test-results': setupSelfTest(graph)
     }
 }

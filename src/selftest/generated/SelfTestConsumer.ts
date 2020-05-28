@@ -10,4 +10,13 @@ export default class API {
 
         this.graph = graph;
     }
+
+    listQueryTestExamples(): string[] {
+        const command = `get query-test-example query/*`;
+
+        const rels: Relation[] = this.graph.runSync(command)
+            .filter(rel => !rel.hasType("command-meta"));
+
+        return rels.map(rel => rel.getTagValue("query"));
+    }
 }

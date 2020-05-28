@@ -25,11 +25,9 @@ function oneRestringifyTest(exampleQuery: string) {
 export function restringifyTests(api: SelfTestConsumer): TestResult[] {
     const results: TestResult[] = [];
 
-    /*
     for (const exampleQuery of api.listQueryTestExamples()) {
         results.push(oneRestringifyTest(exampleQuery));
     }
-    */
 
     return results;
 }
@@ -46,3 +44,4 @@ export default function setup(graph: Graph) {
         }
     })
 }
+

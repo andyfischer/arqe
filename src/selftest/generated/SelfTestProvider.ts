@@ -12,9 +12,9 @@ export default class API implements StorageProvider {
     }
 
     async runSearch(pattern: Pattern, output: RelationReceiver) {
-        // check for handler/selfTestResults (get self-test-results message passed)
+        // check for handler/selfTestResults (get self-test-results description resultMessage passed)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("self-test-results")) && (pattern.hasType("message")) && (pattern.hasType("passed"))) {
+        if ((pattern.tagCount() == 4) && (pattern.hasType("self-test-results")) && (pattern.hasType("description")) && (pattern.hasType("resultMessage")) && (pattern.hasType("passed"))) {
             try {
                 const result = this.handler.selfTestResults();
 
@@ -24,7 +24,8 @@ export default class API implements StorageProvider {
 
                 for (const item of result) {
                     const outRelation = pattern
-                        .setTagValueForType("message", item.message)
+                        .setTagValueForType("description", item.description)
+                        .setTagValueForType("resultMessage", item.resultMessage)
                         .setTagValueForType("passed", item.passed);
                     output.relation(outRelation);
                 }

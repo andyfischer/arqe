@@ -3,10 +3,10 @@
    - destination-filename(src/selftest/generated/SelfTestConsumer.ts)
    - ik-import(../..)
    - strategy/consumer
-   - handler/listQueryTestExamples
+   - touchpoint/listQueryTestExamples
 
-- handler/listQueryTestExamples:
-   - handles-query(get query-test-example query/*)
+- touchpoint/listQueryTestExamples:
+   - query(get query-test-example query/*)
    - function-name/listQueryTestExamples
    - output var/query from(query/*)
 
@@ -17,7 +17,8 @@
    - handler/selfTestResults
 
 - handler/selfTestResults:
-   - handles-query(get self-test-results message passed)
+   - handles-query(get self-test-results description resultMessage passed)
    - function-name/selfTestResults
-   - output var/message from(message/*)
+   - output var/description from(description/*)
+   - output var/resultMessage from(resultMessage/*)
    - output var/passed from(passed/*)

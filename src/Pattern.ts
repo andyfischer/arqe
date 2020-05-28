@@ -263,8 +263,16 @@ export default class Pattern {
 
     setValueForType(tagType: string, value: any) {
         return this.remapTags(tag => {
-            if (tag.tagType === tagType)
+            if (tag.tagType === tagType) {
+
+                if (value === null)
+                    return null;
+
+                if (value === true)
+                    return tag.setValueless();
+
                 return tag.setValue(value);
+            }
             return tag;
         });
     }
