@@ -10,7 +10,7 @@
    - handles-query(get working-file((unique)) filename)
    - function-name/loadFile
    - input var/filename type/string
-   - output var/filename from(working-file
+   - output var/filename from(working-file)
  
 - handler/saveFile:
    - handles-query(set schema column/$column view)

@@ -337,10 +337,14 @@ export function parseCommandChain(str: string): CommandChain {
     if (str.startsWith('get get '))
         throw new Error("command starts with 'get get': " + str);
 
-    const it = lexStringToIterator(str);
-    const chain = parseOneCommandChain(it);
-
-    return chain;
+    try {
+        const it = lexStringToIterator(str);
+        const chain = parseOneCommandChain(it);
+        return chain;
+    } catch (e) {
+        console.log(`Uncaught exception in parseCommandChain for command (${str}): ` + (e.stack || e))
+        throw e;
+    }
 }
 
 export function parseFile(fileContents: string): CommandChain[] {

@@ -24,9 +24,14 @@ export default function loadGraphFromFiles(dir: string) {
     const dirContents = Fs.readdirSync(dir);
     for (const file of dirContents) {
         if (file.endsWith('.yaml')) {
-            const contents = Fs.readFileSync(Path.join(dir, file), 'utf8');
+            const fullFilename = Path.join(dir, file);
+            const contents = Fs.readFileSync(fullFilename, 'utf8');
             for (const command of yamlToCommands(contents)) {
-                graph.run(command);
+                try {
+                    graph.run(command);
+                } catch (e) {
+                    console.error(`Error loading file (${fullFilename}): ${e.stack || e}`);
+                }
             }
         }
     }
