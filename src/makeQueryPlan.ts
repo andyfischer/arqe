@@ -118,6 +118,19 @@ function applyModification(changeOperation: Pattern, storedRel: Pattern): Patter
     return storedRel;
 }
 
+function getImpliedTableName(pattern: Pattern) {
+    for (const tag of pattern.tags)
+        if (tag.star || tag.doubleStar)
+            return null;
+    
+    const els = pattern.tags
+        .filter(r => r.tagType !== 'deleted')
+        .map(r => r.tagType);
+
+    els.sort();
+    return els.join(' ');
+}
+
 function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
 
     pattern = resolveExpressions(pattern);
@@ -158,6 +171,8 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationR
         }
     }
 
+    const tableName = getImpliedTableName(pattern);
+
     const plan: QueryPlan = {
         tags: planTags,
         views: [],
@@ -171,6 +186,7 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationR
         modificationCallback,
         initializeIfMissing,
         isDelete: patternIsDelete(pattern),
+        tableName,
         output
     };
 

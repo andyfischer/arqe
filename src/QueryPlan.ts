@@ -28,6 +28,7 @@ export default interface QueryPlan {
     filterPattern: Pattern
     output: RelationReceiver
     storageProvider?: StorageProvider
+    tableName?: string
 
     passedValidation?: boolean
 }

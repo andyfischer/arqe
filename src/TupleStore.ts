@@ -14,19 +14,6 @@ interface Slot {
     relation: Relation
 }
 
-function getImpliedTableName(rel: Relation) {
-    for (const tag of rel.tags)
-        if (tag.star || tag.doubleStar)
-            return null;
-    
-    const els = rel.tags
-        .filter(r => r.tagType !== 'deleted')
-        .map(r => r.tagType);
-
-    els.sort();
-    return els.join(' ');
-}
-
 function toInitialization(rel: Relation) {
     return rel.remapTags((tag: PatternTag) => {
         if (tag.valueExpr && tag.valueExpr[0] === 'set')
@@ -41,7 +28,7 @@ export default class TupleStore {
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
     slots: { [ slotId: string]: Relation } = {};
     nextSlotId: IDSource = new IDSource();
-    byImpliedTableName: { [tn: string]: { [slotId: string]: true } } = {}
+    byTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -60,16 +47,15 @@ export default class TupleStore {
         });
     }
 
-    *findStored(search: Pattern): Iterable<{slotId:string, relation: Relation}> {
+    *findStored(tableName: string, search: Pattern): Iterable<{slotId:string, relation: Relation, tableName: string}> {
 
-        const itn = getImpliedTableName(search);
-        if (itn) {
-            const indexedStorageIds = this.byImpliedTableName[itn] || {};
+        if (tableName) {
+            const indexedStorageIds = this.byTableName[tableName] || {};
 
             for (const slotId in indexedStorageIds) {
                 const relation = this.slots[slotId];
                 if (search.matches(relation))
-                    yield { slotId, relation }
+                    yield { slotId, relation, tableName }
             }
             
             return;
@@ -79,7 +65,7 @@ export default class TupleStore {
         for (const slotId in this.slots) {
             const relation = this.slots[slotId];
             if (search.matches(relation))
-                yield { slotId, relation }
+                yield { slotId, relation, tableName }
         }
     }
 
@@ -99,7 +85,7 @@ export default class TupleStore {
         }
 
         // Check if this tuple is already saved.
-        for (const existing of this.findStored(relation)) {
+        for (const existing of this.findStored(plan.tableName, relation)) {
             // Already saved - No-op.
             output.relation(relation);
             output.finish();
@@ -111,9 +97,14 @@ export default class TupleStore {
         this.slots[slotId] = relation;
         output.relation(relation);
 
-        const itn = getImpliedTableName(relation);
-        this.byImpliedTableName[itn] = this.byImpliedTableName[itn] || {};
-        this.byImpliedTableName[itn][slotId] = true;
+        if (!plan.tableName) {
+            emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.pattern.stringify());
+            output.finish();
+            return;
+        }
+
+        this.byTableName[plan.tableName] = this.byTableName[plan.tableName] || {};
+        this.byTableName[plan.tableName][slotId] = true;
         this.graph.onRelationUpdated(relation);
         output.finish();
     }
@@ -126,7 +117,7 @@ export default class TupleStore {
         let hasFoundAny = false;
 
         // Apply the modificationCallback to every matching slot.
-        for (const { slotId, relation } of this.findStored(plan.filterPattern)) {
+        for (const { slotId, relation } of this.findStored(plan.tableName, plan.filterPattern)) {
             const modified = plan.modificationCallback(relation);
             this.slots[slotId] = modified;
             graph.onRelationUpdated(modified);
@@ -149,10 +140,11 @@ export default class TupleStore {
         const { output } = plan;
         const graph = this.graph;
 
-        for (const { slotId, relation } of this.findStored(plan.filterPattern)) {
+        for (const { slotId, relation, tableName } of this.findStored(plan.tableName, plan.filterPattern)) {
             delete this.slots[slotId];
-            const itn = getImpliedTableName(relation);
-            delete (this.byImpliedTableName[itn] || {})[slotId];
+            if (tableName) {
+                delete (this.byTableName[tableName] || {})[slotId];
+            }
             graph.onRelationDeleted(relation);
             output.relation(relation.addTagObj(newTag('deleted')));
         }
@@ -170,7 +162,7 @@ export default class TupleStore {
     select(plan: QueryPlan) {
         const { pattern, output } = plan;
 
-        for (const { slotId, relation } of this.findStored(pattern)) {
+        for (const { slotId, relation } of this.findStored(plan.tableName, pattern)) {
             output.relation(relation);
         }
 
@@ -188,7 +180,7 @@ export default class TupleStore {
     }
 
     searchUnplanned(pattern: Pattern, output: RelationReceiver) {
-        for (const { slotId, relation } of this.findStored(pattern)) {
+        for (const { slotId, relation } of this.findStored(null, pattern)) {
             output.relation(relation);
         }
         output.finish();
