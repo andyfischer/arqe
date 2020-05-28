@@ -1,13 +1,53 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
 
-export default class API {
-    graph: GraphLike
+interface NativeHandler {
+    selfTestResults: () => any[]
+}
 
-    constructor(graph: GraphLike) {
-        if (typeof graph.run !== 'function') {
-            throw new Error('(code-generation/selftest-provider constructor) expected Graph or GraphLike: ' + graph);
+export default class API implements StorageProvider {
+    handler: NativeHandler
+
+    constructor(handler: NativeHandler) {
+        this.handler = handler;
+    }
+
+    async runSearch(pattern: Pattern, output: RelationReceiver) {
+        // check for handler/selfTestResults (get self-test-results message passed)
+
+        if ((pattern.tagCount() == 3) && (pattern.hasType("self-test-results")) && (pattern.hasType("message")) && (pattern.hasType("passed"))) {
+            try {
+                const result = this.handler.selfTestResults();
+
+                if (!Array.isArray(result)) {
+                    throw new Error("expected selfTestResults to return an Array, got: " + JSON.stringify(result))
+                }
+
+                for (const item of result) {
+                    const outRelation = pattern
+                        .setTagValueForType("message", item.message)
+                        .setTagValueForType("passed", item.passed);
+                    output.relation(outRelation);
+                }
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
         }
 
-        this.graph = graph;
+        emitCommandError(output, "provider code-generation/selftest-provider doesn't support: get " + pattern.stringify());
+        output.finish()
+    }
+
+    async runSave(pattern: Pattern, output: RelationReceiver) {
+        emitCommandError(output, "provider code-generation/selftest-provider doesn't support: set " + pattern.stringify());
+        output.finish()
+    }
+
+    async runDelete(pattern: Pattern, output: RelationReceiver) {
+        emitCommandError(output, "provider code-generation/selftest-provider doesn't support: delete " + pattern.stringify());
+        output.finish()
     }
 }

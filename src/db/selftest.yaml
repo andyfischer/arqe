@@ -13,7 +13,7 @@
 - code-generation/selftest-provider:
    - destination-filename(src/selftest/generated/SelfTestProvider.ts)
    - ik-import(../..)
-   - strategy/consumer
+   - strategy/provider
    - handler/selfTestResults
 
 - handler/selfTestResults:
