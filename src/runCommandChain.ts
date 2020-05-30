@@ -7,7 +7,6 @@ import RelationPipe from './RelationPipe'
 import Command from './Command'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
-import runListen from './runListen'
 import { newRelationSearch } from './SearchOperation'
 import { newTag } from './PatternTag'
 import makeQueryPlan from './makeQueryPlan'
@@ -17,6 +16,7 @@ const knownCommands = {
     'join': true,
     'get': true,
     'set': true,
+    'count': true,
     'delete': true,
     'listen': true,
     'declare-object': true

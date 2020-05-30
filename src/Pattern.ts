@@ -360,6 +360,16 @@ export function commandToRelationPattern(str: string) {
     return parsed.pattern;
 }
 
+export function patternFromObject(object: { [k: string]: string }) {
+    const tags = [];
+
+    for (const key in object) {
+        tags.push(newTag(key, object[key]));
+    }
+
+    return new Pattern(tags);
+}
+
 export function patternFromMap(map: Map<string,string>) {
     const tags = []
     for (const [key,value] of map.entries()) {

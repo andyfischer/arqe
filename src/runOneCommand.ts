@@ -9,7 +9,8 @@ import Command from './Command'
 import RelationPipe from './RelationPipe'
 import CommandExecutionParams from './CommandExecutionParams'
 import { runJoinStep } from './runJoin'
-import runListen from './runListen'
+import listenCommand from './listenCommand'
+import countCommand from './countCommand'
 
 export function runGet(graph: Graph, pattern: Pattern, output: RelationReceiver) {
     const plan = makeQueryPlan(graph, pattern, output);
@@ -79,9 +80,15 @@ export default function runOneCommand(params: CommandExecutionParams) {
         }
 
         case 'listen': {
-            runListen(params);
+            listenCommand(params);
             return;
         }
+
+        case 'count': {
+            countCommand(params);
+            return;
+        }
+
         }
 
         emitCommandError(output, "unrecognized command: " + commandName);
