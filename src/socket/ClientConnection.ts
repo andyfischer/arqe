@@ -5,7 +5,7 @@ import RelationReceiver from '../RelationReceiver'
 import { parseRelation } from '../parseCommand'
 import IDSource from '../utils/IDSource'
 import GraphLike from '../GraphLike'
-import { receiveToRelationList, fallbackReceiver } from '../receivers'
+import { receiveToRelationList, fallbackReceiver } from '../receiveUtils'
 
 export type RespondFunc = (msg: string) => void
 

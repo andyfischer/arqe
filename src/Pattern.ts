@@ -230,12 +230,16 @@ export default class Pattern {
         return this.getTag(typeName);
     }
 
-    getTagValue(typeName: string) {
+    getValueForType(typeName: string) {
         const tag = this.getOneTagForType(typeName);
         if (!tag)
             throw new Error(`type "${typeName}" not found in pattern: ${this.stringify()}`);
 
         return tag.tagValue;
+    }
+
+    getTagValue(typeName: string) {
+        return this.getValueForType(typeName);
     }
 
     getTagValueOptional(typeName: string, defaultValue) {

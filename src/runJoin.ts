@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
 import RelationReceiver from './RelationReceiver'
-import { receiveToRelationList } from './receivers'
+import { receiveToRelationList } from './receiveUtils'
 import Pattern from './Pattern'
 import Relation from './Relation'
 import PatternTag from './PatternTag'

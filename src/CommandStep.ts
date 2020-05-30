@@ -4,7 +4,7 @@ import Graph from './Graph'
 import Relation from './Relation'
 import Pattern from './Pattern'
 import RelationReceiver from './RelationReceiver'
-import { receiveToRelationList } from './receivers'
+import { receiveToRelationList } from './receiveUtils'
 import SearchOperation from './SearchOperation'
 import RelationPipe from './RelationPipe'
 

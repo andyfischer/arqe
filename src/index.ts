@@ -10,7 +10,7 @@ export { default as startWebApp } from './toollib/startWebApp'
 export { default as StorageProvider } from './StorageProvider'
 export { rewriteDumpFile } from './DumpFile'
 export * from './CommandMeta'
-export * from './receivers'
+export * from './receiveUtils'
 
 if (require.main === module) {
     require('./startServer.js');
