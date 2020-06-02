@@ -9,7 +9,7 @@ import loadGraphFromFiles from './loadGraphFromFiles'
 export async function main() {
     require('source-map-support').install();
 
-    const graph = loadGraphFromFiles(Path.join(__dirname, 'db'));
+    const graph = loadGraphFromFiles(Path.join(__dirname, '../src/db'));
 
     const server = new WebServer(graph);
     await server.start();
