@@ -21,3 +21,8 @@ Collaboration - https://martin.kleppmann.com/papers/pushpin-papoc20.pdf
  - Imp lang - https://scattered-thoughts.net/writing/imp-intro/
  - Materialize - https://materialize.io/
  - Building a relational query compiler - https://scattered-thoughts.net/writing/a-practical-relational-query-compiler-in-500-lines/
+
+
+# Misc useful links
+
+ - Madge - https://www.npmjs.com/package/madge
