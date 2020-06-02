@@ -1,0 +1,3 @@
+launchctl unload ~/Library/LaunchAgents/fs.plist 
+launchctl load ~/Library/LaunchAgents/fs.plist
+launchctl start ~/Library/LaunchAgents/fs.plist
