@@ -229,7 +229,7 @@ function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: strin
             const varStr = item.varStr;
             const tagType = item.fromStr.replace('/*', '');
             if (outputs.length === 1) {
-                sendOneRelation.addRaw(`const outRelation = pattern.setTagValueForType("${tagType}", ${outputVar});`);
+                sendOneRelation.addRaw(`const outRelation = pattern.setTagValueForType("${tagType}", ${oneResultVar});`);
             } else {
                 if (isFirst)
                     sendOneRelation.addRaw('const outRelation = pattern');

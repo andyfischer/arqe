@@ -2,6 +2,7 @@
 import Graph from '../Graph'
 import FilesystemAPI from './generated/FilesystemAPI'
 import Fs from 'fs-extra'
+import Glob from 'glob'
 
 export default function init() {
     return new FilesystemAPI({
@@ -13,6 +14,18 @@ export default function init() {
         },
         async readDir(dir: string) {
             return await Fs.readdir(dir);
+        },
+        async listMatchingFiles(match: string) {
+
+            return new Promise((resolve, reject) => {
+                Glob(match, {}, (err, files) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(files);
+                    }
+                });
+            });
         }
     });
 }

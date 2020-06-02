@@ -41,16 +41,16 @@ class Column {
 }
 
 function centerPadSpaces(s: string, size: number) {
+    if (s.length > size)
+        throw new Error(`internal error, string '${s}' is bigger than size ${size}`);
+
     let spaceLeft = Math.floor((size - s.length) / 2);
     let spaceRight = Math.ceil((size - s.length) / 2);
-    if (spaceLeft < 0)
-        spaceLeft = 0;
-    if (spaceRight < 0)
-        spaceRight = 0;
 
     return ' '.repeat(spaceLeft) + s + ' '.repeat(spaceRight);
 }
 
+// see https://en.wikipedia.org/wiki/Box-drawing_character
 //const horizLineChar = '\u2500'
 //const vertLineChar = '\u2502'
 //const crossLineChar = '\u253c'

@@ -4,6 +4,7 @@ interface NativeHandler {
     readFile: (filename: string) => Promise<any>
     writeFile: (filename: string, contents: string) => void
     readDir: (dir: string) => Promise<any[]>
+    listMatchingFiles: (match: string) => Promise<any[]>
 }
 
 export default class API implements StorageProvider {
@@ -48,7 +49,31 @@ export default class API implements StorageProvider {
                 }
 
                 for (const item of filename) {
-                    const outRelation = pattern.setTagValueForType("filename", filename);
+                    const outRelation = pattern.setTagValueForType("filename", item);
+                    output.relation(outRelation);
+                }
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
+        }
+
+        // check for handler/listMatchingFiles (get fs match/$match filename)
+
+        if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("match")) && (pattern.hasValueForType("match")) && (pattern.hasType("filename"))) {
+            try {
+                const match = pattern.getTagValue("match");
+                const filename = await this.handler.listMatchingFiles(match);
+
+                if (!Array.isArray(filename)) {
+                    throw new Error("expected listMatchingFiles to return an Array, got: " + JSON.stringify(filename))
+                }
+
+                for (const item of filename) {
+                    const outRelation = pattern.setTagValueForType("filename", item);
                     output.relation(outRelation);
                 }
             }

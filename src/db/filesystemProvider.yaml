@@ -7,6 +7,7 @@
   - handler/readFile
   - handler/writeFile
   - handler/readDir
+  - handler/listMatchingFiles
 
 - handler/readFile:
   - function-name/readFile
@@ -30,3 +31,9 @@
   - handles-query(get fs dir/$dir filename)
   - async
 
+- handler/listMatchingFiles:
+  - function-name/listMatchingFiles
+  - input var/match type/string
+  - output var/filename from(filename/*)
+  - handles-query(get fs match/$match filename)
+  - async
