@@ -1,18 +1,29 @@
 
 - code-generation/working-files-provider:
-   - destination-filename(src/generated/WorkingFilesProviderAPI.ts)
-   - ik-import/..
+   - destination-filename(src/providers/generated/WorkingFilesProviderAPI.ts)
+   - ik-import(../..)
    - strategy/provider-api
-   - handler/setObjectColumn
-   - handler/setViewColumn
+   - handler/loadFile
+   - handler/fileContents
+   - handler/commitFile
 
 - handler/loadFile:
-   - handles-query(get working-file((unique)) filename)
+   - handles-query(get working-file((new)) filename/$filename)
    - function-name/loadFile
    - input var/filename type/string
-   - output var/filename from(working-file)
+   - output var/id from(working-file)
+   - output var/filename from(filename)
+   - output expectOne
+   - async
+
+- handler/fileContents:
+   - handles-query(get working-file/$id contents)
+   - function-name/fileContents
+   - input var/id type/string
+   - output var/text from(contents)
+   - output expectOne
  
-- handler/saveFile:
-   - handles-query(set schema column/$column view)
-   - function-name/setViewColumn
-   - input var/column type/string
+- handler/commitFile:
+   - handles-query(set working-file/$id commit)
+   - function-name/commitFile
+   - input var/id type/string

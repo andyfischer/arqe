@@ -1,3 +1,3 @@
 
-get fs match(src/**/*.ts) filename
+get working-file((new)) filename(tests/sample-files/file1)
 
