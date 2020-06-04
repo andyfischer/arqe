@@ -17,7 +17,6 @@ import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import SaveSearchHook from './SaveSearchHook'
 import StorageProvider from './StorageProvider'
-import LoggingHooks from './LoggingHooks'
 import TupleStore from './TupleStore'
 import Column from './Column'
 import getBuiltinViews from './getBuiltinViews'
@@ -35,7 +34,6 @@ export default class Graph {
     graphListenerIds = new IDSource()
 
     storageProvidersV3: StorageProvider[] = []
-    loggingHooks: LoggingHooks
 
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Relation) => void}[] = []
 
@@ -45,7 +43,6 @@ export default class Graph {
     constructor() {
         this.tupleStore = new TupleStore(this);
         this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
-        this.loggingHooks = new LoggingHooks(this)
 
         const builtinViews = getBuiltinViews(this);
 
