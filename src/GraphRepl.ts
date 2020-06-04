@@ -1,10 +1,10 @@
 
 import Graph from './Graph'
 import RelationReceiver from './RelationReceiver'
-import Runnable from './Runnable'
 import { receiveToRelationList } from './receiveUtils'
 import printAsTable from './console/printAsTable'
 import Relation from './Relation'
+import GraphLike from './GraphLike'
 
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
@@ -38,10 +38,10 @@ function printResult(rels: Relation[]) {
 }
 
 export default class GraphRepl {
-    graph: Runnable
+    graph: GraphLike
     repl: any
 
-    constructor(graph: Runnable) {
+    constructor(graph: GraphLike) {
         this.graph = graph;
     }
 

@@ -1,12 +1,12 @@
 import verifyRespondProtocol from '../../verifyRespondProtocol'
 import Graph from '../../Graph'
 import { ChaosMode } from './ChaosModes'
-import Runnable from '../../Runnable'
 import receiveToStringList from '../../receiveToStringList'
+import GraphLike from '../../GraphLike'
 
 interface RunOptions {
     allowError?: true
-    graph: Runnable
+    graph: GraphLike
     chaosMode?: ChaosMode
 }
 
