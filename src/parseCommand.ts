@@ -48,8 +48,6 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
         starValue = true;
     } else if (it.nextIs(t_lparen)) {
         valueExpr = parseExpr(it);
-        // TODO: don't set starValue for expr
-        starValue = true;
     } else {
 
         let iterationCount = 0;

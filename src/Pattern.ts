@@ -17,7 +17,6 @@ export default class Pattern {
     tagsForType: { [typename: string]: PatternTag[] } = {}
     hasStar?: boolean
     hasDoubleStar?: boolean
-    ntag?: string
     byIdentifier: { [identifier: string]: PatternTag } = {}
 
     constructor(tags: PatternTag[]) {
@@ -75,29 +74,34 @@ export default class Pattern {
         return this.copyWithNewTags(tags);
     }
 
-    getNtag() {
-        if (this.ntag == null)
-            this.ntag = normalizeExactTag(this.tags);
-
-        return this.ntag;
-    }
-
     tagCount() {
         return this.tags.length;
     }
 
     isSupersetOf(subPattern: Pattern) {
-        if (this.hasDoubleStar)
-            return true;
 
-        if (this.tagCount() !== subPattern.tagCount())
-            return false;
+        if (this.hasDoubleStar) {
+            const tagCountWithoutDoubleStar = this.tagCount() - 1;
+
+            if (tagCountWithoutDoubleStar == 0)
+                // This pattern is just '**'
+                return true;
+
+            if (subPattern.tagCount() < tagCountWithoutDoubleStar)
+                // Sub pattern doesn't have enough tags.
+                return false;
+
+        } else {
+            // Sub pattern doesn't have the right number of tags.
+            if (subPattern.tagCount() !== this.tagCount())
+                return false;
+        }
 
         for (const tag of this.tags) {
 
             let foundMatch = false;
 
-            if (tag.star)
+            if (tag.star || tag.doubleStar)
                 continue;
 
             for (const subTag of (subPattern.tagsForType[tag.tagType] || [])) {
@@ -122,44 +126,7 @@ export default class Pattern {
     }
 
     matches(rel: Pattern) {
-
-        // Check tag count on this relation.
-        if (this.hasDoubleStar) {
-            const tagCountWithoutDoubleStar = this.tagCount() - 1;
-            if (rel.tagCount() < tagCountWithoutDoubleStar)
-                return false;
-        } else {
-            if (rel.tagCount() !== this.tagCount())
-                return false;
-        }
-
-        // For all fixed args: Check that each one is found in this relation.
-        for (const arg of this.fixedTags) {
-
-            if (!rel.hasType(arg.tagType))
-                return false;
-            
-            if (!arg.tagValue) {
-                if (!rel.hasType(arg.tagType))
-                    return false;
-
-                //if (rel.hasValueForType(arg.tagType))
-                //    return false;
-
-                continue;
-            }
-
-            if (rel.getTagValue(arg.tagType) !== arg.tagValue)
-                return false;
-        }
-
-        // For all star values: Check that the relation has a tag of this type.
-        for (const arg of this.starValueTags) {
-            if (!rel.hasType(arg.tagType))
-                return false;
-        }
-
-        return true;
+        return this.isSupersetOf(rel);
     }
 
     isMultiMatch() {
