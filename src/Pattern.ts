@@ -78,6 +78,57 @@ export default class Pattern {
         return this.tags.length;
     }
 
+    expressionMatches(expr: string[], subExpr: string[]) {
+        if (expr.length !== subExpr.length)
+            return false;
+
+        for (let i = 0; i < expr.length; i++) {
+            if (typeof expr[i] !== 'string' || expr[i] !== subExpr[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    findMatchOfOneTag(tag: PatternTag, subPattern: Pattern) {
+        if (tag.star || tag.doubleStar)
+            // Tag has no type, always matches.
+            return true;
+
+        const tagsForType = subPattern.tagsForType[tag.tagType];
+
+        if (!tagsForType || tagsForType.length == 0)
+            // No matching tags for this type, stop here.
+            return false;
+
+        // Here - There is at least one tag matching the type.
+
+        if (tag.starValue)
+            // Tag matches any value, success.
+            return true;
+
+        if (!tag.tagValue && !tag.valueExpr)
+            // Tag matches any value, success.
+            return true;
+
+        for (const subTag of tagsForType) {
+            if (subTag.starValue)
+                continue;
+
+            if (tag.tagValue) {
+                if (tag.tagValue === subTag.tagValue)
+                    return true;
+            }
+
+            if (tag.valueExpr) {
+                if (subTag.valueExpr && this.expressionMatches(tag.valueExpr, subTag.valueExpr))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     isSupersetOf(subPattern: Pattern) {
 
         if (this.hasDoubleStar) {
@@ -97,30 +148,9 @@ export default class Pattern {
                 return false;
         }
 
-        for (const tag of this.tags) {
-
-            let foundMatch = false;
-
-            if (tag.star || tag.doubleStar)
-                continue;
-
-            for (const subTag of (subPattern.tagsForType[tag.tagType] || [])) {
-
-                if (!subTag)
-                    return false;
-
-                if (tag.starValue)
-                    foundMatch = true;
-                else if (subTag.starValue)
-                    return false;
-
-                if (!tag.tagValue || (tag.tagValue === subTag.tagValue))
-                    foundMatch = true;
-            }
-
-            if (!foundMatch)
+        for (const tag of this.tags)
+            if (!this.findMatchOfOneTag(tag, subPattern))
                 return false;
-        }
 
         return true;
     }

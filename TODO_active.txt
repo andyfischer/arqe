@@ -1,6 +1,6 @@
 
  - Working files db
-   - Tag expressions are not "star"
+   X Tag expressions are not "star"
    - Provider that uses underlying storage, and only implements certain operations.
 
  - Support query auto-expansion (table style)
