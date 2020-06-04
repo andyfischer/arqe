@@ -6,7 +6,6 @@ import SavedQuery from './SavedQuery'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
 import InheritTags, { updateInheritTags } from './InheritTags'
-import TypeInfo from './TypeInfo'
 import RelationReceiver from './RelationReceiver'
 import { receiveToRelationList, fallbackReceiver, receiveToRelationListPromise } from './receiveUtils'
 import runCommandChain from './runCommandChain'
@@ -30,7 +29,6 @@ export default class Graph {
     savedQueries: SavedQuery[] = []
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
-    typeInfo: { [typeName: string]: TypeInfo } = {}
     inheritTags: EagerValue<InheritTags>
 
     eagerValueIds = new IDSource()
@@ -83,14 +81,6 @@ export default class Graph {
         const ev = new EagerValue<T>(this, updateFn, initialValue);
         ev.runUpdate();
         return ev;
-    }
-
-    getTypeInfo(name: string) {
-        if (!this.typeInfo[name]) {
-            this.typeInfo[name] = new TypeInfo();
-        }
-
-        return this.typeInfo[name];
     }
 
     addListener(pattern: Pattern, listener: GraphListener) {
