@@ -164,6 +164,12 @@ export default class Graph {
         return this.runCommandChainSync(commandStr);
     }
 
+    runAsync(commandStr: string): Promise<Relation[]> {
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.run(commandStr, receiver);
+        return promise;
+    }
+
     runCommandChainSync(commandStr: string): Relation[] {
         const chain = parseCommandChain(commandStr);
 

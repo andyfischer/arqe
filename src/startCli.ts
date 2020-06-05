@@ -2,25 +2,34 @@
 import Fs from 'fs'
 import Graph from './Graph'
 import GraphRepl from './GraphRepl'
+import printResult from './console/printResult'
 import Repl from 'repl'
 import { connectToServer } from './socket/ClientConnection'
 import Minimist from 'minimist'
 import loadGraphFromFiles from './loadGraphFromFiles'
 import { parseFile } from './parseCommand'
+import Relation from './Relation'
+import { receiveToRelationList } from './receiveUtils'
 
 function runFile(graph: Graph, filename: string) {
     const contents = Fs.readFileSync(filename, 'utf8');
     const commands = parseFile(contents);
     for (const command of commands) {
+
+        const listReceiver = receiveToRelationList((rels: Relation[]) => {
+            printResult(rels);
+        });
+
         graph.run(command.stringify(), {
             relation(relation) {
-
                 if (relation.hasType('command-meta') && relation.hasType('search-pattern'))
                     return;
 
-                console.log(relation.stringify());
+                listReceiver.relation(relation);
             },
-            finish() {}
+            finish() {
+                listReceiver.finish();
+            }
         });
     }
 }

@@ -25,7 +25,7 @@ export default class API implements StorageProvider {
 
                 for (const item of result) {
                     const outRelation = pattern
-                        .setTagValueForType("filename", item.message)
+                        .setTagValueForType("filename", item.filename)
                         .setTagValueForType("message", item.message)
                         .setTagValueForType("lineno", item.lineno)
                         .setTagValueForType("colno", item.colno);

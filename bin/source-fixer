@@ -1,0 +1,19 @@
+#! /usr/bin/env node
+
+const { loadGraphFromLocalDatabase, printConsoleResult } = require('..');
+
+async function main() {
+
+    const graph = loadGraphFromLocalDatabase();
+
+    const compileErrs = (await graph.runAsync('get tsc-compile dir(../fs-labrat) filename message lineno colno'))
+        .filter(tup => !tup.hasType('command-meta'));
+
+
+    printConsoleResult(compileErrs);
+
+
+}
+
+main()
+.catch(console.error);

@@ -1,2 +1,2 @@
 
-get tsc-compile dir(/Users/afischer/bob/app) message lineno colno filename
+get tsc-compile dir(../fs-labrat) filename message lineno colno

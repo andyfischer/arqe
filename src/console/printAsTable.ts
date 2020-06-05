@@ -36,6 +36,7 @@ class Column {
     }
 
     format(s: string) {
+        s = s || '';
         return centerPadSpaces(s, this.width);
     }
 }
@@ -59,7 +60,7 @@ const horizLineChar = '\u2501'
 const vertLineChar = '\u2503'
 const crossLineChar = '\u254b'
 
-export default function printTable(patterns: Pattern[]): string[] {
+export default function printAsTable(patterns: Pattern[]): string[] {
 
     const columns = new LazyMap<string,Column>(title => new Column(title));
     const outputLines = [];
@@ -103,7 +104,7 @@ export default function printTable(patterns: Pattern[]): string[] {
         const outputEls = [];
         for (const column of columns.values()) {
             if (pattern.hasType(column.title)) {
-                outputEls.push(pattern.getValueForType(column.title));
+                outputEls.push(column.format(pattern.getValueForType(column.title)));
             }
         }
         outputLines.push(outputEls.join(` ${vertLineChar} `));
