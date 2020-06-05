@@ -102,6 +102,54 @@ export default class PatternTag {
         out.starValue = true;
         return out;
     }
+
+    compareCanonicalSort(rhs: PatternTag): number {
+        if (this.doubleStar !== rhs.doubleStar)
+            return boolCompare(this.doubleStar, rhs.doubleStar);
+
+        if (this.star !== rhs.star)
+            return boolCompare(this.star, rhs.star);
+
+        if (this.tagType !== rhs.tagType)
+            return stringCompare(this.tagType, rhs.tagType);
+
+        if (this.starValue !== rhs.starValue)
+            return boolCompare(this.starValue, rhs.starValue);
+
+        if (this.questionValue !== rhs.questionValue)
+            return boolCompare(this.questionValue, rhs.questionValue);
+
+        if (this.negate !== rhs.negate)
+            return boolCompare(this.negate, rhs.negate);
+        
+        if (this.tagValue !== rhs.tagValue)
+            return stringCompare(this.tagValue, rhs.tagValue);
+
+        if (this.star !== rhs.star)
+            return boolCompare(this.star, rhs.star);
+
+        return 0;
+    }
+
+    equals(rhs: PatternTag): boolean {
+        return this.compareCanonicalSort(rhs) === 0;
+    }
+}
+
+function stringCompare(a,b) {
+    if (a < b)
+        return -1;
+    if (a !== b)
+        return 1;
+    return 0;
+}
+
+function boolCompare(a,b) {
+    if (a)
+        return -1;
+    if (b)
+        return 1;
+    return 0;
 }
 
 export type FixedTag = PatternTag;
@@ -123,3 +171,4 @@ export function newTagFromObject(obj: PatternTagOptions) {
 
     return tag;
 }
+

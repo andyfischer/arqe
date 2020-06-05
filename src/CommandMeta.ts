@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import Pattern, { commandTagsToRelation } from './Pattern'
+import Pattern, { tagsToPattern } from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
 import RelationReceiver from './RelationReceiver'
 import Command from './Command'
@@ -14,7 +14,7 @@ export function emitCommandMeta(output: RelationReceiver, fields: any) {
         tags.push(newTag(k, fields[k]));
     }
 
-    output.relation(commandTagsToRelation(tags, null));
+    output.relation(tagsToPattern(tags));
 }
 
 export function emitCommandError(output: RelationReceiver, msg: string) {
@@ -25,7 +25,7 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
         newTag('message', msg)
     ];
 
-    output.relation(commandTagsToRelation(tags, null));
+    output.relation(tagsToPattern(tags));
 }
 
 export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver) {

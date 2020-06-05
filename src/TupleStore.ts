@@ -1,6 +1,6 @@
 
 import Relation from './Relation'
-import Pattern, { commandTagsToRelation } from './Pattern'
+import Pattern from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
 import SearchOperation from './SearchOperation'
 import RelationReceiver from './RelationReceiver'

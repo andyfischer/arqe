@@ -8,6 +8,7 @@ import PatternTag, { newTag, FixedTag } from './PatternTag'
 export default class Pattern {
     
     tags: PatternTag[] = []
+    sortedTags: PatternTag[] = null
 
     // derived data
     hasDerivedData: boolean
@@ -26,6 +27,15 @@ export default class Pattern {
         this.tags = tags;
         this.updateDerivedData();
         Object.freeze(this.tags);
+    }
+
+    getSortedTags() {
+        if (this.sortedTags === null) {
+            const sortedTags = this.tags.concat([]);
+            sortedTags.sort((a, b) => a.compareCanonicalSort(b));
+            this.sortedTags = sortedTags;
+        }
+        return this.sortedTags;
     }
 
     updateDerivedData() {
@@ -157,6 +167,23 @@ export default class Pattern {
 
     matches(rel: Pattern) {
         return this.isSupersetOf(rel);
+    }
+
+    equals(rhs: Pattern) {
+        if (this === rhs)
+            return true;
+
+        if (this.tags.length !== rhs.tags.length)
+            return false;
+
+        for (let i = 0; i < this.tags.length; i++) {
+            const leftTag = this.getSortedTags()[i];
+            const rightTag = rhs.getSortedTags()[i];
+            if (!leftTag.equals(rightTag))
+                return false;
+        }
+
+        return true;
     }
 
     isMultiMatch() {
@@ -383,9 +410,8 @@ export function patternFromMap(map: Map<string,string>) {
     return new Pattern(tags);
 }
 
-export function commandTagsToRelation(tags: PatternTag[], payload?: string): Pattern {
-    const pattern = new Pattern(tags)
-    return pattern;
+export function tagsToPattern(tags: PatternTag[]): Pattern {
+    return new Pattern(tags)
 }
 
 export function parsePattern(query: string) {

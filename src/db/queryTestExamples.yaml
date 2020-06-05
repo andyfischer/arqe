@@ -53,3 +53,7 @@
   - pattern(x/1 y/1) not-superset-of(x/1 z/1)
   - pattern(x/* y/1) not-superset-of(x/1 z/1)
   - pattern(working-file((new)) filename/$filename) not-superset-of(working-file((set)) filename(a))
+
+  - 'pattern(x/1) equals-from-json({"x": 1})'
+  - 'pattern(x/*) equals-from-json({"x": "*"})'
+  - 'pattern(**) equals-from-json({"**": true})'

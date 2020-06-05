@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import Relation from './Relation'
-import Pattern, { commandTagsToRelation } from './Pattern'
+import Pattern, { tagsToPattern } from './Pattern'
 import PatternTag, { newTagFromObject, PatternTagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
@@ -288,7 +288,7 @@ export function parseRelation(str: string): Relation {
         throw new Error("didn't expect any flags in parseRelation(): " + str)
     }
 
-    return commandTagsToRelation(query.tags as FixedTag[], null);
+    return tagsToPattern(query.tags as FixedTag[]);
 }
 
 export function parseTag(str: string): PatternTag {
