@@ -29,8 +29,8 @@ async function main() {
 
         const newLine = existingLine.replace('Relation', 'Tuple');
 
-        await graph.runAsync(`set working-file(${workingFileId}) line(${lineno}) text(${newLine})`);
-        await graph.runAsync(`set working-file(${workingFileId}) commit`);
+        await graph.setAsync({ 'working-file': workingFileId, line: lineno, text: newLine });
+        await graph.setAsync({ 'working-file': workingFileId, commit: true });
 
         /*
         const workingFileId = (await graph.runAsync(`get working-file((new)) filename(${filename})`))

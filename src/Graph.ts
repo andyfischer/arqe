@@ -19,6 +19,9 @@ import StorageProvider from './StorageProvider'
 import TupleStore from './TupleStore'
 import Column from './Column'
 import getBuiltinViews from './getBuiltinViews'
+import parseObjectToPattern from './parseObjectToPattern'
+import CommandChain from './CommandChain'
+import Command from './Command'
 
 export default class Graph {
 
@@ -192,7 +195,32 @@ export default class Graph {
         return callback(cxt);
     }
 
-    watchIsAnyoneListening(pattern: Pattern) {
+    get(patternInput: any, receiver: RelationReceiver) {
+        let pattern: Pattern;
+        if (typeof patternInput === 'string') {
+            pattern = parsePattern(patternInput);
+        } else {
+            pattern = parseObjectToPattern(patternInput);
+        }
+
+        runCommandChain(this, new CommandChain([new Command('get', pattern, {})]), receiver);
+    }
+
+    set(patternInput: any, receiver: RelationReceiver) {
+        let pattern: Pattern;
+        if (typeof patternInput === 'string') {
+            pattern = parsePattern(patternInput);
+        } else {
+            pattern = parseObjectToPattern(patternInput);
+        }
+
+        runCommandChain(this, new CommandChain([new Command('set', pattern, {})]), receiver);
+    }
+
+    setAsync(patternInput: any): Promise<Relation[]> {
+        const { receiver, promise } = receiveToRelationListPromise();
+        this.set(patternInput, receiver);
+        return promise;
     }
 
     close() { }
