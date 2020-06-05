@@ -91,7 +91,7 @@ export function runJoinStep(params: CommandExecutionParams) {
     });
 }
 
-function combineRelations(a: Pattern, b: Pattern) {
+function combineTuples(a: Pattern, b: Pattern) {
     const saw = {}
     const tags = [];
 
@@ -115,11 +115,11 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
     if (!inputSearchPattern)
         throw new Error('missing inputSearchPattern');
 
-    emitSearchPatternMeta(combineRelations(inputSearchPattern, searchPattern), output)
+    emitSearchPatternMeta(combineTuples(inputSearchPattern, searchPattern), output)
 
     // For each search result
     //   Look at all unfilled identifiers in this search result
-    //   Check if there is an input relation that:
+    //   Check if there is an input tuple that:
     //     1) contains at least one of the same identifiers
     //     2) has the same tag in that identifier
 
@@ -161,7 +161,7 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
         const relatedInput = keyed[key];
         if (!relatedInput)
             continue;
-        output.relation(combineRelations(relatedInput, search));
+        output.relation(combineTuples(relatedInput, search));
     }
 
     output.finish();
