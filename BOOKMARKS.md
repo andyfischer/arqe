@@ -26,6 +26,7 @@ Collaboration - https://martin.kleppmann.com/papers/pushpin-papoc20.pdf
 
  - https://www.openlinksw.com/describe/?uri=http%3A%2F%2Fdata.openlinksw.com%2Foplweb%2Fglossary-term%2FGraph%23this&graph=urn%3Adata%3Aopenlink%3Aglossary#this
  - https://www.openlinksw.com/describe/?uri=http%3A%2F%2Fdata.openlinksw.com%2Foplweb%2Fglossary-term%2FKnowledgeGraph%23this&graph=urn%3Adata%3Aopenlink%3Aglossary#this
+ - RDFStarTools - https://github.com/RDFstar/RDFstarTools
 
 
 # Misc useful links
