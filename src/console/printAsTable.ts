@@ -37,8 +37,17 @@ class Column {
 
     format(s: string) {
         s = s || '';
-        return centerPadSpaces(s, this.width);
+        return rightPadSpaces(s, this.width);
     }
+}
+
+function rightPadSpaces(s: string, size: number) {
+    if (s.length > size)
+        throw new Error(`internal error, string '${s}' is bigger than size ${size}`);
+
+
+    let spaceRight = size - s.length;
+    return s + ' '.repeat(spaceRight);
 }
 
 function centerPadSpaces(s: string, size: number) {

@@ -9,6 +9,7 @@ import { setupTestMathStorage } from './providers/TestMathStorage'
 import setupTypescriptTree from './providers/TypescriptTree'
 import setupTypescriptCompilation from './providers/TypescriptCompiler'
 import setupSelfTest from './selftest/SelfTest'
+import setupWorkingFile from './providers/WorkingFile'
 
 export default function getBuiltinViews(graph: Graph): {[name: string]: StorageProvider } {
     return {
@@ -19,6 +20,7 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
         'test-math': setupTestMathStorage(),
         'typescript-tree': setupTypescriptTree(),
         'tsc-compile': setupTypescriptCompilation(),
-        'self-test-results': setupSelfTest(graph)
+        'self-test-results': setupSelfTest(graph),
+        'working-file': setupWorkingFile(),
     }
 }

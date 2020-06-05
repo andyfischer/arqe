@@ -12,7 +12,36 @@ async function main() {
 
     printConsoleResult(compileErrs);
 
+    for (const err of compileErrs) {
+        console.log('looking at error: ', err.stringify());
 
+        const filename = err.getValueForType('filename');
+        const lineno = err.getValueForType('lineno');
+
+        const workingFileId = (await graph.runAsync(`get working-file((new)) filename(${filename})`))
+            .filter(tup => !tup.hasType('command-meta'))
+            [0]
+            .getValueForType('working-file');
+
+        const existingLine = (await graph.runAsync(`get working-file(${workingFileId}) line(${lineno}) text`))
+            .filter(tup => !tup.hasType('command-meta'))
+            [0]
+            .getValueForType('text');
+
+        const newLine = existingLine.replace('Relation', 'Tuple');
+
+        await graph.runAsync(`set working-file(${workingFileId}) line(${lineno}) text(${newLine})`);
+        await graph.runAsync(`set working-file(${workingFileId}) commit`);
+
+        /*
+        const workingFileId = (await graph.runAsync(`get working-file((new)) filename(${filename})`))
+            .filter(tup => !tup.hasType('command-meta'));
+            [0]
+            .getValueForType('working-file');
+
+        console.log('working file ID = ', workingFileId);
+        */
+    }
 }
 
 main()

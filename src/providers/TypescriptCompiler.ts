@@ -7,8 +7,6 @@ const exec = Util.promisify(ChildProcess.exec);
 const errorLineRegex = /^([a-zA-Z0-9\.\/-]+)\(([0-9]+),([0-9]+)\): (.*)$/
 const errorElaborationRegex = /  (.*)$/
 
-// console.log(errorLineRegex.exec("../fs-labrat/src/CommandMeta.ts(2,22): error TS2307: Cannot find module './Relation'."))
-
 export default function setup() {
     return new TypescriptCompilationAPI({
         async runTsc(dir: string) {
@@ -21,8 +19,6 @@ export default function setup() {
             for (const line of lines) {
 
                 const errorMatch = errorLineRegex.exec(line);
-
-                console.log('errorMatch = ', errorMatch);
 
                 if (errorMatch) {
                     const [full, filename, lineno, colno, message] = errorMatch;

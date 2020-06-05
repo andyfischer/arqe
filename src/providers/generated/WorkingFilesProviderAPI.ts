@@ -2,7 +2,8 @@ import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCo
 
 interface NativeHandler {
     loadFile: (filename: string) => Promise<any>
-    fileContents: (id: string) => any
+    getLine: (id: string, lineno: string) => any
+    setLine: (id: string, lineno: string, text: string) => void
     commitFile: (id: string) => void
 }
 
@@ -33,18 +34,19 @@ export default class API implements StorageProvider {
             return;
         }
 
-        // check for handler/fileContents (get working-file/$id contents)
+        // check for handler/getLine (get working-file/$id line/$lineno text)
 
-        if ((pattern.tagCount() == 2) && (pattern.hasType("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasType("contents"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasType("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasType("line")) && (pattern.hasValueForType("line")) && (pattern.hasType("text"))) {
             try {
                 const id = pattern.getTagValue("working-file");
-                const text = this.handler.fileContents(id);
+                const lineno = pattern.getTagValue("line");
+                const text = this.handler.getLine(id, lineno);
 
                 if (typeof text !== 'string') {
-                    throw new Error("expected fileContents to return a string, got: " + JSON.stringify(text))
+                    throw new Error("expected getLine to return a string, got: " + JSON.stringify(text))
                 }
 
-                const outRelation = pattern.setTagValueForType("contents", text);
+                const outRelation = pattern.setTagValueForType("text", text);
                 output.relation(outRelation);
             }
             catch(e) {
@@ -60,12 +62,30 @@ export default class API implements StorageProvider {
     }
 
     async runSave(pattern: Pattern, output: RelationReceiver) {
+        // check for handler/setLine (set working-file/$id line/$lineno text/$text)
+
+        if ((pattern.tagCount() == 3) && (pattern.hasType("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasType("line")) && (pattern.hasValueForType("line")) && (pattern.hasType("text")) && (pattern.hasValueForType("text"))) {
+            try {
+                const id = pattern.getTagValue("working-file");
+                const lineno = pattern.getTagValue("line");
+                const text = pattern.getTagValue("text");
+                this.handler.setLine(id, lineno, text);
+                output.relation(pattern);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
+        }
+
         // check for handler/commitFile (set working-file/$id commit)
 
         if ((pattern.tagCount() == 2) && (pattern.hasType("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasType("commit"))) {
             try {
                 const id = pattern.getTagValue("working-file");
-                this.handler.commitFile(id);
+                await this.handler.commitFile(id);
                 output.relation(pattern);
             }
             catch(e) {
