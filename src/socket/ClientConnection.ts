@@ -1,17 +1,17 @@
 
 import WebSocket from '../platform/ws'
 import EventEmitter from 'events'
-import RelationReceiver from '../RelationReceiver'
-import { parseRelation } from '../parseCommand'
+import TupleReceiver from '../TupleReceiver'
+import { parseTuple } from '../parseCommand'
 import IDSource from '../utils/IDSource'
 import GraphLike from '../GraphLike'
-import { receiveToRelationList, fallbackReceiver } from '../receiveUtils'
+import { receiveToTupleList, fallbackReceiver } from '../receiveUtils'
 
 export type RespondFunc = (msg: string) => void
 
 interface PendingQuery {
     query: string
-    output: RelationReceiver
+    output: TupleReceiver
 }
 
 type ConnectError = {
@@ -57,7 +57,7 @@ export default class ClientConnection implements GraphLike {
     autoReconnect = false
 
     pendingForConnection: PendingQuery[] = []
-    reqListeners: { [id: string]: RelationReceiver } = {}
+    reqListeners: { [id: string]: TupleReceiver } = {}
 
     connectAttemptInProgress = false;
     maxReconnectAttempts = 10;
@@ -138,7 +138,7 @@ export default class ClientConnection implements GraphLike {
                 return;
             }
             
-            listener.relation(parseRelation(rel));
+            listener.relation(parseTuple(rel));
         }
 
         this.ws.onclose = () => {
@@ -162,7 +162,7 @@ export default class ClientConnection implements GraphLike {
         this.ws.close();
     }
 
-    run(commandStr: string, output?: RelationReceiver) {
+    run(commandStr: string, output?: TupleReceiver) {
 
         if (typeof commandStr !== 'string')
             throw new Error("expected string for command, saw: " + commandStr);

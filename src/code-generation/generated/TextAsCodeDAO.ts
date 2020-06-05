@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -14,7 +14,7 @@ export default class API {
     fromFile(target: string): string {
         const command = `get ${target} from-file`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -34,7 +34,7 @@ export default class API {
     destinationFilename(target: string): string {
         const command = `get ${target} destination-filename/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result

@@ -1,10 +1,10 @@
 
 import Graph from './Graph'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Pattern from './Pattern'
-import RelationReceiver from './RelationReceiver'
+import TupleReceiver from './TupleReceiver'
 
-export default interface SearchOperation extends RelationReceiver {
+export default interface SearchOperation extends TupleReceiver {
     graph: Graph
     pattern: Pattern;
     subSearchDepth: number
@@ -13,7 +13,7 @@ export default interface SearchOperation extends RelationReceiver {
     finish: () => void
 }
 
-export function newRelationSearch(graph: Graph, pattern: Pattern, output: RelationReceiver): SearchOperation {
+export function newTupleSearch(graph: Graph, pattern: Pattern, output: TupleReceiver): SearchOperation {
     return {
         graph,
         pattern,

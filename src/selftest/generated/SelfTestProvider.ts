@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     selfTestResults: () => any[]
@@ -11,7 +11,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/selfTestResults (get self-test-results description resultMessage passed)
 
         if ((pattern.tagCount() == 4) && (pattern.hasType("self-test-results")) && (pattern.hasType("description")) && (pattern.hasType("resultMessage")) && (pattern.hasType("passed"))) {
@@ -42,12 +42,12 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/selftest-provider doesn't support: set " + pattern.stringify());
         output.finish()
     }
 
-    async runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/selftest-provider doesn't support: delete " + pattern.stringify());
         output.finish()
     }

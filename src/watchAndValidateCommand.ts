@@ -1,9 +1,9 @@
 
-import RelationReceiver from './RelationReceiver'
+import TupleReceiver from './TupleReceiver'
 import { parseCommandChain } from './parseCommand'
 import CommandChain from './CommandChain'
 import Pattern from './Pattern'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import internalError from './internalError'
 
 interface Validation {
@@ -35,7 +35,7 @@ class SetShouldEmitRelation {
         this.pattern = pattern;
     }
 
-    relation(rel: Relation) {
+    relation(rel: Tuple) {
         if (rel.hasType('command-meta')) {
             if (rel.hasType('error'))
                 this.commandErrored = true;
@@ -55,7 +55,7 @@ const validationClasses = [
     SetShouldEmitRelation
 ]
 
-export default function watchAndValidateCommand(commandStr: string, output: RelationReceiver) {
+export default function watchAndValidateCommand(commandStr: string, output: TupleReceiver) {
 
     const parsed = parseCommandChain(commandStr);
 

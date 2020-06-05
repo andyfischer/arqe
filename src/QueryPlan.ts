@@ -1,7 +1,7 @@
 
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
-import RelationReceiver from './RelationReceiver'
+import TupleReceiver from './TupleReceiver'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
 
@@ -26,7 +26,7 @@ export default interface QueryPlan {
 
     pattern: Pattern
     filterPattern: Pattern
-    output: RelationReceiver
+    output: TupleReceiver
     storageProvider?: StorageProvider
     tableName?: string
 

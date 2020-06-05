@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -14,9 +14,9 @@ export default class API {
     async listCliInputs(toolname: string): Promise<string[]> {
         const command = `get command-line-tool(${toolname}) cli-input name/*`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTagValue("name"));
@@ -25,9 +25,9 @@ export default class API {
     async getExitStyle(toolname: string): Promise<string> {
         const command = `get command-line-tool(${toolname}) exit-style/*`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -45,9 +45,9 @@ export default class API {
     async cliInputIsRequired(toolname: string, name: string): Promise<boolean> {
         const command = `get command-line-tool(${toolname}) cli-input name/* required`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.length > 0;
@@ -56,9 +56,9 @@ export default class API {
     async createToolExecution(): Promise<string> {
         const command = `set cli-tool-execution/(unique)`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -78,9 +78,9 @@ export default class API {
     async setCliInput(execId: string, name: string, value: string) {
         const command = `set ${execId} cli-input(${name}) value/(set ${value})`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?

@@ -2,11 +2,11 @@
 import Graph from './Graph'
 import Command from './Command'
 import RelationPipe from './RelationPipe'
-import RelationReceiver from './RelationReceiver'
+import TupleReceiver from './TupleReceiver'
 
 export default interface CommandRequest {
     graph: Graph
     command: Command
     input: RelationPipe
-    output: RelationReceiver
+    output: TupleReceiver
 }

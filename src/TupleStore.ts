@@ -1,9 +1,9 @@
 
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Pattern from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
 import SearchOperation from './SearchOperation'
-import RelationReceiver from './RelationReceiver'
+import TupleReceiver from './TupleReceiver'
 import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
@@ -11,10 +11,10 @@ import { newTagFromObject } from './PatternTag'
 import QueryPlan, { QueryTag } from './QueryPlan'
 
 interface Slot {
-    relation: Relation
+    relation: Tuple
 }
 
-function toInitialization(rel: Relation) {
+function toInitialization(rel: Tuple) {
     return rel.remapTags((tag: PatternTag) => {
         if (tag.valueExpr && tag.valueExpr[0] === 'set')
             return tag.setValue(tag.valueExpr[1]);
@@ -26,7 +26,7 @@ export default class TupleStore {
     graph: Graph
 
     nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
-    slots: { [ slotId: string]: Relation } = {};
+    slots: { [ slotId: string]: Tuple } = {};
     nextSlotId: IDSource = new IDSource();
     byTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
@@ -34,7 +34,7 @@ export default class TupleStore {
         this.graph = graph;
     }
 
-    resolveExpressionValues(rel: Relation) {
+    resolveExpressionValues(rel: Tuple) {
         return rel.remapTags((tag: PatternTag) => {
             if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
                 if (!this.nextUniqueIdPerType[tag.tagType])
@@ -47,7 +47,7 @@ export default class TupleStore {
         });
     }
 
-    *findStored(tableName: string, search: Pattern): Iterable<{slotId:string, relation: Relation, tableName: string}> {
+    *findStored(tableName: string, search: Pattern): Iterable<{slotId:string, relation: Tuple, tableName: string}> {
 
         if (tableName) {
             const indexedStorageIds = this.byTableName[tableName] || {};
@@ -105,7 +105,7 @@ export default class TupleStore {
 
         this.byTableName[plan.tableName] = this.byTableName[plan.tableName] || {};
         this.byTableName[plan.tableName][slotId] = true;
-        this.graph.onRelationUpdated(relation);
+        this.graph.onTupleUpdated(relation);
         output.finish();
     }
 
@@ -120,7 +120,7 @@ export default class TupleStore {
         for (const { slotId, relation } of this.findStored(plan.tableName, plan.filterPattern)) {
             const modified = plan.modificationCallback(relation);
             this.slots[slotId] = modified;
-            graph.onRelationUpdated(modified);
+            graph.onTupleUpdated(modified);
             output.relation(modified);
             hasFoundAny = true;
         }
@@ -145,7 +145,7 @@ export default class TupleStore {
             if (tableName) {
                 delete (this.byTableName[tableName] || {})[slotId];
             }
-            graph.onRelationDeleted(relation);
+            graph.onTupleDeleted(relation);
             output.relation(relation.addTagObj(newTag('deleted')));
         }
 
@@ -179,7 +179,7 @@ export default class TupleStore {
         }
     }
 
-    searchUnplanned(pattern: Pattern, output: RelationReceiver) {
+    searchUnplanned(pattern: Pattern, output: TupleReceiver) {
         for (const { slotId, relation } of this.findStored(null, pattern)) {
             output.relation(relation);
         }

@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -14,7 +14,7 @@ export default class API {
     createUniqueConnection(): string {
         const command = `set connection/(unique)`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -34,7 +34,7 @@ export default class API {
     getServerPort(): string {
         const command = `get defaultServerPort/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -54,7 +54,7 @@ export default class API {
     deleteConnection(connection: string) {
         const command = `delete ${connection}`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?

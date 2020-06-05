@@ -1,10 +1,10 @@
 
 import Command, { CommandFlags } from './Command'
 import Graph from './Graph'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Pattern from './Pattern'
-import RelationReceiver from './RelationReceiver'
-import { receiveToRelationList } from './receiveUtils'
+import TupleReceiver from './TupleReceiver'
+import { receiveToTupleList } from './receiveUtils'
 import SearchOperation from './SearchOperation'
 import RelationPipe from './RelationPipe'
 

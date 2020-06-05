@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     loadFile: (filename: string) => Promise<any>
@@ -14,7 +14,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/loadFile (get working-file((new)) filename/$filename)
 
         if ((pattern.tagCount() == 2) && (pattern.hasType("working-file")) && (pattern.hasType("filename")) && (pattern.hasValueForType("filename"))) {
@@ -61,7 +61,7 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/setLine (set working-file/$id line/$lineno text/$text)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasType("line")) && (pattern.hasValueForType("line")) && (pattern.hasType("text")) && (pattern.hasValueForType("text"))) {
@@ -100,7 +100,7 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/working-files-provider doesn't support: delete " + pattern.stringify());
         output.finish()
     }

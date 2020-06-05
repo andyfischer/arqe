@@ -1,13 +1,13 @@
 
 import { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import SavedQuery from './SavedQuery'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
 import InheritTags, { updateInheritTags } from './InheritTags'
-import RelationReceiver from './RelationReceiver'
-import { receiveToRelationList, fallbackReceiver, receiveToRelationListPromise } from './receiveUtils'
+import TupleReceiver from './TupleReceiver'
+import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import runCommandChain from './runCommandChain'
 import UpdateContext from './UpdateContext'
 import IDSource from './utils/IDSource'
@@ -37,7 +37,7 @@ export default class Graph {
 
     storageProvidersV3: StorageProvider[] = []
 
-    relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Relation) => void}[] = []
+    relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void}[] = []
 
     tupleStore: TupleStore
     columns: { [name: string]: Column } = {}
@@ -86,20 +86,20 @@ export default class Graph {
         this.listeners.push({ pattern, listener });
     }
 
-    onRelationCreated(rel: Relation) {
+    onTupleCreated(rel: Tuple) {
         for (const { pattern, onCreate } of this.relationCreatedListeners)
             if (rel.matches(pattern))
                 onCreate(rel);
     }
 
-    onRelationUpdated(rel: Relation) {
+    onTupleUpdated(rel: Tuple) {
 
         // console.log('onRelationUpdated: ' + rel.stringify() + ` (${this.listeners.length} listenrers)`);
 
         for (const entry of this.listeners) {
             if (entry.pattern.matches(rel)) {
                 // console.log(' listener matches: ' + entry.pattern.stringify())
-                entry.listener.onRelationUpdated(rel);
+                entry.listener.onTupleUpdated(rel);
             } else {
                 // console.log(' listener does not match: ' + entry.pattern.stringify())
             }
@@ -116,10 +116,10 @@ export default class Graph {
         }
     }
 
-    onRelationDeleted(rel: Relation) {
+    onTupleDeleted(rel: Tuple) {
         for (const entry of this.listeners) {
             if (entry.pattern.matches(rel))
-                entry.listener.onRelationDeleted(rel);
+                entry.listener.onTupleDeleted(rel);
         }
 
         for (const savedQuery of this.savedQueries) {
@@ -133,7 +133,7 @@ export default class Graph {
         }
     }
 
-    run(commandStr: string, output?: RelationReceiver) {
+    run(commandStr: string, output?: TupleReceiver) {
 
         if (/^ *\#/.exec(commandStr)) {
             // ignore comments
@@ -163,22 +163,22 @@ export default class Graph {
         return result;
     }
 
-    runSync(commandStr: string): Relation[] {
+    runSync(commandStr: string): Tuple[] {
         return this.runCommandChainSync(commandStr);
     }
 
-    runAsync(commandStr: string): Promise<Relation[]> {
-        const { receiver, promise } = receiveToRelationListPromise();
+    runAsync(commandStr: string): Promise<Tuple[]> {
+        const { receiver, promise } = receiveToTupleListPromise();
         this.run(commandStr, receiver);
         return promise;
     }
 
-    runCommandChainSync(commandStr: string): Relation[] {
+    runCommandChainSync(commandStr: string): Tuple[] {
         const chain = parseCommandChain(commandStr);
 
-        let rels: Relation[] = null;
+        let rels: Tuple[] = null;
 
-        const receiver = receiveToRelationList(r => {
+        const receiver = receiveToTupleList(r => {
             rels = r
         });
 
@@ -195,7 +195,7 @@ export default class Graph {
         return callback(cxt);
     }
 
-    get(patternInput: any, receiver: RelationReceiver) {
+    get(patternInput: any, receiver: TupleReceiver) {
         let pattern: Pattern;
         if (typeof patternInput === 'string') {
             pattern = parsePattern(patternInput);
@@ -206,7 +206,7 @@ export default class Graph {
         runCommandChain(this, new CommandChain([new Command('get', pattern, {})]), receiver);
     }
 
-    set(patternInput: any, receiver: RelationReceiver) {
+    set(patternInput: any, receiver: TupleReceiver) {
         let pattern: Pattern;
         if (typeof patternInput === 'string') {
             pattern = parsePattern(patternInput);
@@ -217,8 +217,8 @@ export default class Graph {
         runCommandChain(this, new CommandChain([new Command('set', pattern, {})]), receiver);
     }
 
-    setAsync(patternInput: any): Promise<Relation[]> {
-        const { receiver, promise } = receiveToRelationListPromise();
+    setAsync(patternInput: any): Promise<Tuple[]> {
+        const { receiver, promise } = receiveToTupleListPromise();
         this.set(patternInput, receiver);
         return promise;
     }

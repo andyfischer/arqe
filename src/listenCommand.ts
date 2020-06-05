@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
-import Relation from './Relation'
-import { emitRelationDeleted } from './CommandMeta'
+import Tuple from './Tuple'
+import { emitTupleDeleted } from './CommandMeta'
 import CommandExecutionParams from './CommandExecutionParams'
 
 export default function runListen(params: CommandExecutionParams) {
@@ -17,11 +17,11 @@ export default function runListen(params: CommandExecutionParams) {
     }
 
     graph.addListener(pattern, {
-        onRelationUpdated(rel: Relation) {
+        onTupleUpdated(rel: Tuple) {
             output.relation(rel);
         },
-        onRelationDeleted(rel: Relation) {
-            emitRelationDeleted(rel, output);
+        onTupleDeleted(rel: Tuple) {
+            emitTupleDeleted(rel, output);
         }
     });
 }

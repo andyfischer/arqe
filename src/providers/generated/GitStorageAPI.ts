@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     createBranch: (dir: string, branchName: string) => void
@@ -14,7 +14,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/listBranches (get git dir/$dir branch/*)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch"))) {
@@ -50,7 +50,7 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/createBranch (set git dir/$dir branch/$branchName)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
@@ -72,7 +72,7 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: TupleReceiver) {
         // check for handler/deleteBranch (delete git dir/$dir branch/$branch)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {

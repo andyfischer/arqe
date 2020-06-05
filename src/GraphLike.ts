@@ -1,8 +1,8 @@
 
-import Relation from './Relation'
-import RelationReceiver from './RelationReceiver'
+import Tuple from './Tuple'
+import TupleReceiver from './TupleReceiver'
 
 export default interface GraphLike {
-    runSync: (commandStr: string) => Relation[];
-    run: (commandStr: string, output: RelationReceiver) => void
+    runSync: (commandStr: string) => Tuple[];
+    run: (commandStr: string, output: TupleReceiver) => void
 }

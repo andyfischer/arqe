@@ -1,5 +1,5 @@
 
-import Relation from './Relation'
+import Tuple from './Tuple'
 import { patternTagToString } from './stringifyQuery'
 
 export default function stringifyRelationStream() {
@@ -9,7 +9,7 @@ export default function stringifyRelationStream() {
     let outputList = false;
     let sawError = null;
 
-    return (rel: Relation) => {
+    return (rel: Tuple) => {
 
         if (rel.hasType('command-meta')) {
             if (rel.hasType('search-pattern')) {

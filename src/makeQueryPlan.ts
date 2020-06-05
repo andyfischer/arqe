@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
-import RelationReceiver from './RelationReceiver'
+import TupleReceiver from './TupleReceiver'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
@@ -131,7 +131,7 @@ function getImpliedTableName(pattern: Pattern) {
     return els.join(' ');
 }
 
-function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
+function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleReceiver) {
 
     pattern = resolveExpressions(pattern);
 
@@ -227,7 +227,7 @@ function validatePlan(plan: QueryPlan) {
     plan.passedValidation = true;
 }
 
-export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: RelationReceiver) {
+export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: TupleReceiver) {
 
     const plan: QueryPlan = initialBuildQueryPlan(graph, pattern, output);
     sortThroughTags(plan);

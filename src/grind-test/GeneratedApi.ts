@@ -1,4 +1,4 @@
-import { Graph, Relation } from '..'
+import { Graph, Tuple } from '..'
 
 export default class API {
     graph: Graph

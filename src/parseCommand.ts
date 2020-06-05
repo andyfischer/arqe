@@ -1,7 +1,7 @@
 
 import Command from './Command'
 import CommandChain from './CommandChain'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Pattern, { tagsToPattern } from './Pattern'
 import PatternTag, { newTagFromObject, PatternTagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
@@ -266,7 +266,7 @@ function parseOneCommandChain(it: TokenIterator): CommandChain {
     return chain;
 }
 
-export function parseRelation(str: string): Relation {
+export function parseTuple(str: string): Tuple {
     if (typeof str !== 'string')
         throw new Error('expected string');
 

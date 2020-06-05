@@ -1,12 +1,12 @@
 
 import Graph from './Graph'
 import Command from './Command'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Pattern from './Pattern'
 
 export default interface GraphListener{
-    onRelationUpdated: (rel: Relation) => void
-    onRelationDeleted: (rel: Relation) => void
+    onTupleUpdated: (rel: Tuple) => void
+    onTupleDeleted: (rel: Tuple) => void
 }
 
 export class GraphListenerMount{

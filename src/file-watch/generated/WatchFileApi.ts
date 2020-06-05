@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -14,9 +14,9 @@ export default class API {
     async findFileWatch(filename: string): Promise<string> {
         const command = `get file-watch filename(${filename}) version`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -34,9 +34,9 @@ export default class API {
     async findFileWatch2(filename: string): Promise<string> {
         const command = `get file-watch filename(${filename}) version`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -55,7 +55,7 @@ export default class API {
         const command = `listen -get ${watch} filename version`;
 
         this.graph.run(command, {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta'))
                     return;
                 callback(rel.getTagValue("version"));
@@ -67,9 +67,9 @@ export default class API {
     async postChange(filename: string) {
         const command = `set file-watch/* filename(${filename}) version/(increment)`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -78,9 +78,9 @@ export default class API {
     async findWatchesForFilename(filename: string): Promise<string[]> {
         const command = `get file-watch/* filename(${filename}) version`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTag("file-watch"));
@@ -89,9 +89,9 @@ export default class API {
     async createWatch(filename: string): Promise<string> {
         const command = `set file-watch/(unique) filename(${filename}) version/1`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -111,9 +111,9 @@ export default class API {
     async incrementVersion(filename: string) {
         const command = `set file-watch/* filename(${filename}) version/(increment)`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?

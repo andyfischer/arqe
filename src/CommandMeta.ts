@@ -1,11 +1,11 @@
 
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Pattern, { tagsToPattern } from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
-import RelationReceiver from './RelationReceiver'
+import TupleReceiver from './TupleReceiver'
 import Command from './Command'
 
-export function emitCommandMeta(output: RelationReceiver, fields: any) {
+export function emitCommandMeta(output: TupleReceiver, fields: any) {
     const tags = [
         newTag('command-meta')
     ];
@@ -17,7 +17,7 @@ export function emitCommandMeta(output: RelationReceiver, fields: any) {
     output.relation(tagsToPattern(tags));
 }
 
-export function emitCommandError(output: RelationReceiver, msg: string) {
+export function emitCommandError(output: TupleReceiver, msg: string) {
 
     const tags = [
         newTag('command-meta'),
@@ -28,15 +28,15 @@ export function emitCommandError(output: RelationReceiver, msg: string) {
     output.relation(tagsToPattern(tags));
 }
 
-export function emitSearchPatternMeta(pattern: Pattern, output: RelationReceiver) {
+export function emitSearchPatternMeta(pattern: Pattern, output: TupleReceiver) {
     output.relation(pattern.addTags(['command-meta', 'search-pattern']));
 }
 
-export function emitActionPerformed(output: RelationReceiver) {
+export function emitActionPerformed(output: TupleReceiver) {
     emitCommandMeta(output, { 'action-performed': true })
 }
 
-export function emitCommandOutputFlags(command: Command, output: RelationReceiver) {
+export function emitCommandOutputFlags(command: Command, output: TupleReceiver) {
     if (command.flags.exists)
         emitCommandMeta(output, { 'output-flag': 'exists' })
     if (command.flags.count)
@@ -47,7 +47,7 @@ export function emitCommandOutputFlags(command: Command, output: RelationReceive
         emitCommandMeta(output, { 'output-flag': 'list' })
 }
 
-export function emitRelationDeleted(pattern: Pattern, output: RelationReceiver) {
+export function emitTupleDeleted(pattern: Pattern, output: TupleReceiver) {
     const rel = pattern.addTags(['command-meta', 'deleted']);
     output.relation(rel);
 }

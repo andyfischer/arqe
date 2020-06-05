@@ -1,9 +1,9 @@
 
 import Graph from './Graph'
-import RelationReceiver from './RelationReceiver'
-import { receiveToRelationList } from './receiveUtils'
+import TupleReceiver from './TupleReceiver'
+import { receiveToTupleList } from './receiveUtils'
 import printResult from './console/printResult'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import GraphLike from './GraphLike'
 
 function trimEndline(str) {
@@ -30,7 +30,7 @@ export default class GraphRepl {
             return;
         }
 
-        const listReceiver = receiveToRelationList((rels: Relation[]) => {
+        const listReceiver = receiveToTupleList((rels: Tuple[]) => {
             printResult(rels);
             isFinished = true;
             onDone();

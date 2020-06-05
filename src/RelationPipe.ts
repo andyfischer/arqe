@@ -1,18 +1,18 @@
 
-import Relation from './Relation'
-import RelationReceiver from './RelationReceiver'
+import Tuple from './Tuple'
+import TupleReceiver from './TupleReceiver'
 
 export default class RelationPipe {
-    _onRelation: (rel: Relation) => void
+    _onTuple: (rel: Tuple) => void
     _onDone: () => void
 
-    _backlog: Relation[] = []
+    _backlog: Tuple[] = []
     _wasClosed: boolean
 
     // Writer API
-    relation(rel: Relation) {
-        if (this._onRelation)
-            this._onRelation(rel);
+    relation(rel: Tuple) {
+        if (this._onTuple)
+            this._onTuple(rel);
         else
             this._backlog.push(rel);
     }
@@ -29,14 +29,14 @@ export default class RelationPipe {
     }
 
     // Reader API
-    onRelation(callback: (rel: Relation) => void) {
-        if (this._onRelation)
+    onTuple(callback: (rel: Tuple) => void) {
+        if (this._onTuple)
             throw new Error('already have an onRelation callback');
 
-        this._onRelation = callback;
+        this._onTuple = callback;
 
         for (const r of this._backlog)
-            this._onRelation(r);
+            this._onTuple(r);
     }
 
     onDone(callback: () => void) {
@@ -49,14 +49,14 @@ export default class RelationPipe {
             this._onDone();
     }
 
-    waitForAll(callback: (rels: Relation[]) => void) {
+    waitForAll(callback: (rels: Tuple[]) => void) {
         const rels = [];
-        this.onRelation(rel => { rels.push(rel) });
+        this.onTuple(rel => { rels.push(rel) });
         this.onDone(() => callback(rels));
     }
 
-    pipeToReceiver(receiver: RelationReceiver) {
-        this.onRelation(rel => receiver.relation(rel));
+    pipeToReceiver(receiver: TupleReceiver) {
+        this.onTuple(rel => receiver.relation(rel));
         this.onDone(() => receiver.finish());
     }
 }

@@ -1,9 +1,9 @@
 
 import Graph from './Graph'
-import RelationReceiver from './RelationReceiver'
-import { receiveToRelationList } from './receiveUtils'
+import TupleReceiver from './TupleReceiver'
+import { receiveToTupleList } from './receiveUtils'
 import Pattern from './Pattern'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { patternTagToString } from './stringifyQuery'
@@ -63,7 +63,7 @@ export function runJoinStep(params: CommandExecutionParams) {
         }
     }
 
-    const search = receiveToRelationList((rels) => {
+    const search = receiveToTupleList((rels) => {
         for (const rel of rels)
             searchRelations.push(rel);
 
@@ -110,7 +110,7 @@ function combineRelations(a: Pattern, b: Pattern) {
     return new Pattern(tags);
 }
 
-function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: RelationReceiver) {
+function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: TupleReceiver) {
 
     if (!inputSearchPattern)
         throw new Error('missing inputSearchPattern');

@@ -1,10 +1,10 @@
 
 import Graph from './Graph'
-import Relation from './Relation'
-import RelationReceiver from './RelationReceiver'
+import Tuple from './Tuple'
+import TupleReceiver from './TupleReceiver'
 
 export default interface SaveOperation {
     graph: Graph
-    relation: Relation
-    output: RelationReceiver
+    relation: Tuple
+    output: TupleReceiver
 }

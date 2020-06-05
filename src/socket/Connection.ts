@@ -4,7 +4,7 @@ import Graph from '../Graph'
 import SocketDAO from './generated/SocketDAO'
 import EventEmitter from 'events'
 import logError from '../logError'
-import Relation from '../Relation'
+import Tuple from '../Tuple'
 
 export default class Connection extends EventEmitter {
     ws: WebSocket
@@ -43,7 +43,7 @@ export default class Connection extends EventEmitter {
 
                 console.log(`[${id}] ${query}`);
                 this.graph.run(query, {
-                    relation: (rel: Relation) => {
+                    relation: (rel: Tuple) => {
                         this.send(query, { reqid, rel: rel.stringifyRelation() });
                     },
                     finish: () => {

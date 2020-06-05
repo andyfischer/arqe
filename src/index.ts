@@ -1,10 +1,10 @@
 
 export { default as Graph } from './Graph'
 export { default as GraphLike } from './GraphLike'
-export { default as Relation } from './Relation'
-export { default as RelationReceiver } from './RelationReceiver'
+export { default as Tuple } from './Tuple'
+export { default as TupleReceiver } from './TupleReceiver'
 export { default as Pattern } from './Pattern'
-export { default as receiveToRelationList } from './Relation'
+export { default as receiveToTupleList } from './Tuple'
 export { default as runStandardProcess } from './toollib/runStandardProcess'
 export { default as startWebApp } from './toollib/startWebApp'
 export { default as StorageProvider } from './StorageProvider'

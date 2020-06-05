@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from ".."
+import { GraphLike, Tuple, receiveToTupleListPromise } from ".."
 
 export default class API {
     graph: GraphLike
@@ -15,7 +15,7 @@ export default class API {
 
         // eventType/testEvent1
         this.graph.run("listen test-event-handler val/*", {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta'))
                     return;
                 handler({
@@ -28,7 +28,7 @@ export default class API {
 
         // eventType/testEvent2
         this.graph.run("listen test-event-handler obj/*", {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta'))
                     return;
                 handler({
@@ -41,7 +41,7 @@ export default class API {
 
         // eventType/testDeletionEvent
         this.graph.run("listen test-event-handler obj/*", {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta') && rel.hasType('deleted')) {
                     handler({
     id: 'objectDeleted',
@@ -56,7 +56,7 @@ export default class API {
     pushObject(obj: string) {
         const command = `set test-event-handler ${obj}`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -65,7 +65,7 @@ export default class API {
     deleteObject(obj: string) {
         const command = `delete test-event-handler ${obj}`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -74,7 +74,7 @@ export default class API {
     pushValueChange(val: string) {
         const command = `set test-event-handler val/(set ${val})`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -83,7 +83,7 @@ export default class API {
     pushInitialValue(val: string) {
         const command = `set test-event-handler val/${val}`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?

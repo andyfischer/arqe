@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -14,7 +14,7 @@ export default class API {
     getOneTag(): string {
         const command = `get a/1 b/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -34,7 +34,7 @@ export default class API {
     getOneTagValue(): string {
         const command = `get a/1 b/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -54,7 +54,7 @@ export default class API {
     getCurrentFlag(target: string): string {
         const command = `get ${target} flag/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -74,7 +74,7 @@ export default class API {
     getUsingCommandChain(target: string): string {
         const command = `get ${target} flag/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -94,7 +94,7 @@ export default class API {
     changeFlag(target: string, val: string) {
         const command = `delete ${target} flag/* | set ${target} flag/${val}`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?

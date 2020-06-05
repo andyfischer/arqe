@@ -1,10 +1,10 @@
 
 import Graph from './Graph'
-import Relation from './Relation'
-import RelationReceiver from './RelationReceiver'
+import Tuple from './Tuple'
+import TupleReceiver from './TupleReceiver'
 
-export function receiveToRelationList(onDone: (rels: Relation[]) => void): RelationReceiver {
-    const list: Relation[] = [];
+export function receiveToTupleList(onDone: (rels: Tuple[]) => void): TupleReceiver {
+    const list: Tuple[] = [];
     return {
         relation(rel) { list.push(rel) },
         finish() {
@@ -13,11 +13,11 @@ export function receiveToRelationList(onDone: (rels: Relation[]) => void): Relat
     }
 }
 
-export function receiveToRelationListPromise(): { receiver: RelationReceiver, promise: Promise<Relation[]> } {
+export function receiveToTupleListPromise(): { receiver: TupleReceiver, promise: Promise<Tuple[]> } {
 
     let receiver;
-    const promise: Promise<Relation[]> = new Promise((resolve, reject) => {
-        receiver = receiveToRelationList((rels: Relation[]) => {
+    const promise: Promise<Tuple[]> = new Promise((resolve, reject) => {
+        receiver = receiveToTupleList((rels: Tuple[]) => {
             for (const rel of rels) {
                 if (rel.hasType('command-meta') && rel.hasType('error')) {
                     reject(rel.stringify());
@@ -33,14 +33,14 @@ export function receiveToRelationListPromise(): { receiver: RelationReceiver, pr
 }
 
 export async function runAsync(graph: Graph, command: string) {
-    const { receiver, promise } = receiveToRelationListPromise();
+    const { receiver, promise } = receiveToTupleListPromise();
     graph.run(command, receiver);
-    const rels: Relation[] = (await promise)
+    const rels: Tuple[] = (await promise)
         .filter(rel => !rel.hasType("command-meta"));
     return rels;
 }
 
-export function fallbackReceiver(commandString: string): RelationReceiver {
+export function fallbackReceiver(commandString: string): TupleReceiver {
     return {
         relation(rel) {
             if (rel.hasType('command-meta') && rel.hasType('error')) {

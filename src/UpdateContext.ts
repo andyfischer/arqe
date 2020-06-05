@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import parseCommand from './parseCommand'
 import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
@@ -18,7 +18,7 @@ export default class UpdateContext {
         this.graph = graph;
     }
 
-    get(tags: string): Relation[] {
+    get(tags: string): Tuple[] {
         if (tags.startsWith('get '))
             throw new Error("getRelations(tags) should not include 'get': " + tags);
 
@@ -30,7 +30,7 @@ export default class UpdateContext {
         const commandExec = singleCommandExecution(this.graph, parsedCommand);
         commandExec.output.waitForAll(l => { rels = l });
 
-        let rels: Relation[] = null;
+        let rels: Tuple[] = null;
 
         const search = commandExec.toRelationSearch();
         this.graph.tupleStore.searchUnplanned(search.pattern, search);
@@ -41,7 +41,7 @@ export default class UpdateContext {
         return rels;
     }
 
-    getOne(tags: string): Relation {
+    getOne(tags: string): Tuple {
         const rels = this.get(tags);
         if (rels.length === 0)
             throw new Error(`relation not found: ${tags}`);
@@ -52,7 +52,7 @@ export default class UpdateContext {
         return rels[0];
     }
 
-    getRelations(tags: string): Relation[] {
+    getTuples(tags: string): Tuple[] {
         return this.get(tags);
     }
 

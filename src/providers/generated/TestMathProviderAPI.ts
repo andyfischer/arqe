@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     sum: (a: string, b: string) => any
@@ -11,7 +11,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/sum (get test-math sum a/$a b/$b)
 
         if ((pattern.tagCount() == 4) && (pattern.hasType("test-math")) && (pattern.hasType("sum")) && (pattern.hasType("a")) && (pattern.hasValueForType("a")) && (pattern.hasType("b")) && (pattern.hasValueForType("b"))) {
@@ -39,12 +39,12 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/test-math-provider doesn't support: set " + pattern.stringify());
         output.finish()
     }
 
-    async runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/test-math-provider doesn't support: delete " + pattern.stringify());
         output.finish()
     }

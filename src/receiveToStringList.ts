@@ -1,9 +1,9 @@
 
-import Relation from './Relation'
-import RelationReceiver from './RelationReceiver'
+import Tuple from './Tuple'
+import TupleReceiver from './TupleReceiver'
 import { patternTagToString } from './stringifyQuery'
 
-export default function receiveToStringList(onDone: (s: string|string[]) => void): RelationReceiver {
+export default function receiveToStringList(onDone: (s: string|string[]) => void): TupleReceiver {
 
     let searchPattern = null;
     let actionPerformed = null;
@@ -13,9 +13,9 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
     let outputList = false;
     let sawError = null;
 
-    const rels: Relation[] = [];
+    const rels: Tuple[] = [];
 
-    function stringifyRelation(rel: Relation) {
+    function stringifyTuple(rel: Tuple) {
 
         const tags = rel.tags.filter(tag => {
             if (searchPattern && !outputExtended && searchPattern.fixedTagsForType[tag.tagType])
@@ -33,7 +33,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
     }
 
     return {
-        relation: (rel: Relation) => {
+        relation: (rel: Tuple) => {
 
             if (rel.hasType('command-meta')) {
                 if (rel.hasType('action-performed')) {
@@ -106,7 +106,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
                 return;
             }
 
-            onDone(rels.map(rel => stringifyRelation(rel)))
+            onDone(rels.map(rel => stringifyTuple(rel)))
         }
     }
 }

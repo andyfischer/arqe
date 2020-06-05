@@ -1,6 +1,6 @@
 
-import Relation from '../Relation'
-import RelationReceiver from '../RelationReceiver'
+import Tuple from '../Tuple'
+import TupleReceiver from '../TupleReceiver'
 import Pattern from '../Pattern'
 import StorageProvider from '../StorageProvider'
 import Graph from '../Graph'
@@ -12,11 +12,11 @@ export default class ExpireAt implements StorageProvider {
         this.graph = graph;
     }
 
-    async runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: TupleReceiver) {
         output.finish();
     }
 
-    async runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: TupleReceiver) {
         const target = pattern.removeType('expires-at');
         const now = Date.now();
         const expireTime = parseInt(pattern.getTagValue('expires-at'));

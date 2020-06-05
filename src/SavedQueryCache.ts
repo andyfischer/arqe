@@ -1,10 +1,10 @@
 
 import Graph from './Graph'
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Command from './Command'
 import parseCommand from './parseCommand'
 
-type RecomputeFunc<T> = (rels: Relation[]) => T
+type RecomputeFunc<T> = (rels: Tuple[]) => T
 
 export default class SavedQueryCache<T> {
 
@@ -35,9 +35,9 @@ export default class SavedQueryCache<T> {
         return this.result;
     }
 
-    onRelationUpdated(rel: Relation) {
+    onTupleUpdated(rel: Tuple) {
     }
 
-    onRelationDeleted(rel: Relation) {
+    onTupleDeleted(rel: Tuple) {
     }
 }

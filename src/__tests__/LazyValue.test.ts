@@ -13,14 +13,14 @@ beforeEach(() => {
 
         // Concatenate a bunch of strings
         callCount += 1;
-        const rels = cxt.getRelations("string/* value/*");
+        const rels = cxt.getTuples("string/* value/*");
         rels.sort((a,b) => (a.getTagValue('string') as string)
                     .localeCompare(b.getTagValue('string') as string));
 
         let strs = rels.map(r => r.getTagValue('value'));
 
         // Just to add complication, delete strings from ignorestring/* tags.
-        for (const ignore of cxt.getRelations("ignorestring/* value/*")) {
+        for (const ignore of cxt.getTuples("ignorestring/* value/*")) {
             strs = strs.filter(s => s !== ignore.getTagValue('value'));
         }
 

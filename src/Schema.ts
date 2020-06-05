@@ -1,5 +1,5 @@
 
-import Relation from './Relation'
+import Tuple from './Tuple'
 import Pattern from './Pattern'
 import SchemaProviderAPI from './generated/SchemaProviderAPI'
 import Graph from './Graph'
@@ -61,7 +61,7 @@ export default class Schema {
         return this.columns[name];
     }
 
-    beforeSave(relation: Relation) {
+    beforeSave(relation: Tuple) {
         // Autocreate columns if necessary
         for (const tag of relation.tags) {
             if (tag.tagType)
@@ -69,7 +69,7 @@ export default class Schema {
         }
     }
 
-    checkTagsClassification(relation: Relation) {
+    checkTagsClassification(relation: Tuple) {
 
         const classified = [];
         for (const tag of relation.tags) {

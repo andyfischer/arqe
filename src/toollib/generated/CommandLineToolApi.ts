@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -16,9 +16,9 @@ export default class API {
         const execId = this.execId;
         const command = `get ${execId} cli-input(${name}) value/*`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result

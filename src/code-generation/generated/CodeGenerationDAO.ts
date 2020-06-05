@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -14,7 +14,7 @@ export default class API {
     listCodeGenerationTargets(): string[] {
         const command = `get code-generation/* destination-filename`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTag("code-generation"));
@@ -23,7 +23,7 @@ export default class API {
     codeGenerationTargetStrategy(target: string): string {
         const command = `get ${target} strategy/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result

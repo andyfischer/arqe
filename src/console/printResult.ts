@@ -1,8 +1,8 @@
 
-import Relation from '../Relation'
+import Tuple from '../Tuple'
 import printAsTable from './printAsTable'
 
-function isMultiColumn(rels: Relation[]) {
+function isMultiColumn(rels: Tuple[]) {
     const columns = new Map()
     for (const rel of rels) {
         for (const tag of rel.tags) {
@@ -14,7 +14,7 @@ function isMultiColumn(rels: Relation[]) {
     return false;
 }
 
-export default function printResult(rels: Relation[]) {
+export default function printResult(rels: Tuple[]) {
     if (isMultiColumn(rels)) {
         for (const line of printAsTable(rels)) {
             console.log('  ' + line);

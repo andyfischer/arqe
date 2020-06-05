@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     onChange: (filename: string) => void
@@ -11,12 +11,12 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/file-change-log doesn't support: get " + pattern.stringify());
         output.finish()
     }
 
-    async runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/onChange (set log file-changed filename/$filename)
 
         if ((pattern.tagCount() == 3) && (pattern.hasType("log")) && (pattern.hasType("file-changed")) && (pattern.hasType("filename")) && (pattern.hasValueForType("filename"))) {
@@ -37,7 +37,7 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/file-change-log doesn't support: delete " + pattern.stringify());
         output.finish()
     }

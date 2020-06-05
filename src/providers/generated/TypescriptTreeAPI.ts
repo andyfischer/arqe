@@ -1,4 +1,4 @@
-import { GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     createAstFromText: (text: string) => any
@@ -11,7 +11,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: RelationReceiver) {
+    async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/createAstFromText (get typescript-tree/* text/$text)
 
         if ((pattern.tagCount() == 2) && (pattern.hasType("typescript-tree")) && (pattern.hasType("text")) && (pattern.hasValueForType("text"))) {
@@ -38,12 +38,12 @@ export default class API implements StorageProvider {
         output.finish()
     }
 
-    async runSave(pattern: Pattern, output: RelationReceiver) {
+    async runSave(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/javascript-ast doesn't support: set " + pattern.stringify());
         output.finish()
     }
 
-    async runDelete(pattern: Pattern, output: RelationReceiver) {
+    async runDelete(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/javascript-ast doesn't support: delete " + pattern.stringify());
         output.finish()
     }

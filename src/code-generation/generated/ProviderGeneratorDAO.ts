@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
@@ -15,7 +15,7 @@ export default class API {
     getDestinationFilename(target: string): string {
         const command = `get ${target} destination-filename/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -35,7 +35,7 @@ export default class API {
     getIkImport(target: string): string {
         const command = `get ${target} ik-import/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -55,7 +55,7 @@ export default class API {
     touchpointFunctionName(touchpoint: string): string {
         const command = `get ${touchpoint} function-name/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -75,7 +75,7 @@ export default class API {
     touchpointInputs2(touchpoint: string) {
         const command = `get ${touchpoint} input var type`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => ({
@@ -87,7 +87,7 @@ export default class API {
     touchpointOutputs2(touchpoint: string) {
         const command = `get ${touchpoint} output from var`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => ({
@@ -99,7 +99,7 @@ export default class API {
     touchpointIsAsync(touchpoint: string): boolean {
         const command = `get ${touchpoint} async`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.length > 0;
@@ -108,7 +108,7 @@ export default class API {
     touchpointOutputExpectOne(touchpoint: string): boolean {
         const command = `get ${touchpoint} output expectOne`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.length > 0;
@@ -117,7 +117,7 @@ export default class API {
     getHandlesPattern(target: string): string {
         const command = `get ${target} handles-pattern/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -137,7 +137,7 @@ export default class API {
     touchpointOutputWithType(touchpoint: string): string {
         const command = `get ${touchpoint} output var type`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -156,7 +156,7 @@ export default class API {
         const target = this.target;
         const command = `get ${target} handler/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTag("handler"));
@@ -165,7 +165,7 @@ export default class API {
     handlerQuery(handler: string): string {
         const command = `get ${handler} handles-query/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result

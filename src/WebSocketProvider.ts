@@ -19,7 +19,7 @@ export default class WebSocketProvider {
 export function updateWebSocketProviders(cxt: UpdateContext) {
     const syncs: WebSocketProvider[] = [];
 
-    for (const rel of cxt.getRelations('schema provider/wssync *')) {
+    for (const rel of cxt.getTuples('schema provider/wssync *')) {
 
         const options = cxt.getOptionsObject(rel.stringify());
         const anchor = rel.removeType('provider').removeType('schema');
