@@ -13,9 +13,6 @@ export interface QueryTag {
 
 export default interface QueryPlan {
     tags: QueryTag[]
-    views: QueryTag[]
-    objects: QueryTag[]
-    values: QueryTag[]
 
     singleStar: boolean
     doubleStar: boolean

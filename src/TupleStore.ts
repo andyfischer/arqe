@@ -152,13 +152,6 @@ export default class TupleStore {
         output.finish();
     }
 
-    resolveUniqueTag(tag: PatternTag) {
-        if (!this.nextUniqueIdPerType[tag.tagType])
-            this.nextUniqueIdPerType[tag.tagType] = new IDSource();
-
-        return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
-    }
-
     select(plan: QueryPlan) {
         const { pattern, output } = plan;
 

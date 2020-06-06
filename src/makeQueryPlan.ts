@@ -174,9 +174,6 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleRece
 
     const plan: QueryPlan = {
         tags: planTags,
-        views: [],
-        objects: [],
-        values: [],
         pattern,
         filterPattern: modificationPatternToFilter(pattern),
         singleStar,
@@ -192,20 +189,7 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleRece
     return plan;
 }
 
-function sortThroughTags(plan: QueryPlan) {
-    // Sort tags by column type
-    for (const tag of plan.tags) {
-        if (tag.type === ViewColumn)
-            plan.views.push(tag);
-        else if (tag.type === ObjectColumn)
-            plan.objects.push(tag);
-        else if (tag.type === ValueColumn)
-            plan.values.push(tag);
-    }
-
-    if (plan.values.length > 0) {
-        plan.values.sort((a,b) => a.tag.tagType.localeCompare(b.tag.tagType));
-    }
+function findStorageProvider(plan: QueryPlan) {
 
     // Check if any columns have a storageProvider. First one wins.
     for (const tag of plan.tags) {
@@ -217,19 +201,14 @@ function sortThroughTags(plan: QueryPlan) {
 }
 
 function validatePlan(plan: QueryPlan) {
-    if (plan.views.length > 2) {
-        emitCommandError(plan.output, "Validation failure: Query has multiple views");
-        plan.output.finish();
-        plan.passedValidation = false;
-    }
-
+    // There was once something here
     plan.passedValidation = true;
 }
 
 export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: TupleReceiver) {
 
     const plan: QueryPlan = initialBuildQueryPlan(graph, pattern, output);
-    sortThroughTags(plan);
+    findStorageProvider(plan);
     validatePlan(plan);
     return plan;
 }
