@@ -5,3 +5,15 @@
 
  - Support query auto-expansion (table style)
  - Store listeners in the database
+
+Features:
+ - Providers that wrap on separate processes
+
+Code quality:
+ - Bidirectional conversion of patterns to JSON
+ - Better in-memory indexing
+ - Stop using YAML
+ 
+Force multipliers:
+ - Method to save error cases for later
+

@@ -381,6 +381,14 @@ export default class Pattern {
 
         return commandPrefix + this.stringifyRelation();
     }
+
+    isCommandMeta() {
+        return this.hasType('command-meta');
+    }
+
+    isCommandError() {
+        return this.hasType('command-meta') && this.hasType('error');
+    }
 }
 
 export function commandToRelationPattern(str: string) {

@@ -19,7 +19,6 @@ const exprFuncEffects = {
 };
 
 function expressionUpdatesExistingValue(expr: string[]) {
-
     const effects = expr && expr[0] && exprFuncEffects[expr[0]];
     return effects && effects.modifiesExisting;
 }
@@ -147,7 +146,7 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleRece
             } else if (tag.star) {
                 singleStar = true;
             } else {
-                throw new Error('what is this: ' + tag.stringify())
+                throw new Error('what is this tag: ' + tag.stringify())
             }
 
             continue;
@@ -219,7 +218,7 @@ function sortThroughTags(plan: QueryPlan) {
 
 function validatePlan(plan: QueryPlan) {
     if (plan.views.length > 2) {
-        emitCommandError(plan.output, "query has multiple views");
+        emitCommandError(plan.output, "Validation failure: Query has multiple views");
         plan.output.finish();
         plan.passedValidation = false;
     }
