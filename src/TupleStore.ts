@@ -9,6 +9,8 @@ import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
 import QueryPlan, { QueryTag } from './QueryPlan'
+import Table from './Table'
+import PrimaryKeyAttrSet from './PrimaryKeyAttrSet'
 
 interface Slot {
     relation: Tuple
@@ -30,8 +32,28 @@ export default class TupleStore {
     nextSlotId: IDSource = new IDSource();
     byTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
+    tables: { [ name: string]: Table } = {}
+
     constructor(graph: Graph) {
         this.graph = graph;
+
+        const tableSchema = this.initTable('tableSchema');
+    }
+
+    initTable(name: string) {
+        if (!this.tables[name]) {
+            const table = new Table(name);
+            this.tables[name] = table;
+            return table;
+        }
+
+        return this.tables[name];
+    }
+
+    setPrimaryKeyAttrs(attrs: string[], table: Table) {
+        const set = new PrimaryKeyAttrSet(attrs, table);
+
+        this.initTable(attrs[0]).possiblePrimaryKeyAttrSets.push(set);
     }
 
     resolveExpressionValues(rel: Tuple) {

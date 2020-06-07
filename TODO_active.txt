@@ -20,3 +20,9 @@ Force multipliers:
 Dashboard:
  - Show live tabular results
    - Improve listeners
+
+
+---
+
+Database will have a list of recognized tables
+For every query we might expand to a table based on the attrs

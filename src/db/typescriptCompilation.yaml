@@ -14,3 +14,15 @@
   - output var/lineno from(lineno/*)
   - output var/colno from(colno/*)
   - async
+
+- schema table/tsc-compile
+
+- schema table/tsc-compile:
+  - primary-key(tsc-compile)
+  - attr/tsc-compile
+  - attr/dir
+  - attr/filename
+  - attr/message
+  - attr/lineno
+  - attr/colno
+

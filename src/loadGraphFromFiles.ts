@@ -8,9 +8,13 @@ import Yaml from 'yaml'
 export function* yamlToCommands(yamlString: string) {
     const object = Yaml.parse(yamlString);
     for (const item of object) {
-        for (const key in item) {
-            for (const suffix of item[key]) {
-                yield `set ${key} ${suffix}`
+        if (typeof item === 'string') {
+            yield `set ${item}`
+        } else {
+            for (const key in item) {
+                for (const suffix of item[key]) {
+                    yield `set ${key} ${suffix}`
+                }
             }
         }
     }
