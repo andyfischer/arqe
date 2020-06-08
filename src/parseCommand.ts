@@ -20,7 +20,6 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
     let tagValue = null;
     let valueExpr = null;
     let starValue = false;
-    let questionValue = false;
     let identifier;
     let hasValue = false;
     let parenSyntax = false;
@@ -40,8 +39,6 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
 
     if (!parenSyntax && it.tryConsume(t_star)) {
         starValue = true;
-    } else if (!parenSyntax && it.tryConsume(t_question)) {
-        questionValue = true;
     } else if (!parenSyntax && it.nextIs(t_dollar) && it.nextIs(t_ident, 1)) {
         it.consume();
         identifier = it.consumeNextUnquotedText();
@@ -87,7 +84,6 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
         tagValue,
         valueExpr,
         starValue,
-        questionValue,
         identifier
     }
 }

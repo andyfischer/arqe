@@ -75,13 +75,6 @@ it('parses doubleStar', () => {
     expect(parsed.pattern.tags[0].doubleStar).toEqual(true)
 });
 
-it('parses question value', () => {
-    const parsed = parseCommand('test type/?');
-    expect(parsed.commandName).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('type')
-    expect(parsed.pattern.tags[0].questionValue).toEqual(true)
-});
-
 it('parses option syntax', () => {
     const parsed = parseCommand('test .foo');
     expect(parsed.commandName).toEqual('test')

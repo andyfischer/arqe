@@ -9,7 +9,6 @@ export interface PatternTagOptions {
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
-    questionValue?: boolean
     identifier?: string
 }
 
@@ -21,7 +20,6 @@ export default class PatternTag {
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
-    questionValue?: boolean
     identifier?: string
 
     isFrozen: boolean
@@ -34,7 +32,6 @@ export default class PatternTag {
         this.star = opts.star;
         this.doubleStar = opts.doubleStar;
         this.starValue = opts.starValue;
-        this.questionValue = opts.questionValue;
         this.identifier = opts.identifier;
 
         if (this.tagValue === undefined)
@@ -111,9 +108,6 @@ export default class PatternTag {
 
         if (this.starValue !== rhs.starValue)
             return boolCompare(this.starValue, rhs.starValue);
-
-        if (this.questionValue !== rhs.questionValue)
-            return boolCompare(this.questionValue, rhs.questionValue);
 
         if (this.negate !== rhs.negate)
             return boolCompare(this.negate, rhs.negate);
