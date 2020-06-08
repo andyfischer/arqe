@@ -79,7 +79,7 @@ export default class TupleStore {
 
             for (const slotId in indexedStorageIds) {
                 const relation = this.slots[slotId];
-                if (search.matches(relation))
+                if (search.isSupersetOf(relation))
                     yield { slotId, relation, tableName }
             }
             
@@ -89,7 +89,7 @@ export default class TupleStore {
         // Full scan
         for (const slotId in this.slots) {
             const relation = this.slots[slotId];
-            if (search.matches(relation))
+            if (search.isSupersetOf(relation))
                 yield { slotId, relation, tableName }
         }
     }

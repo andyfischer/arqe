@@ -88,7 +88,7 @@ export default class Graph {
 
     onTupleCreated(rel: Tuple) {
         for (const { pattern, onCreate } of this.relationCreatedListeners)
-            if (rel.matches(pattern))
+            if (rel.isSupersetOf(pattern))
                 onCreate(rel);
     }
 
@@ -97,8 +97,8 @@ export default class Graph {
         // console.log('onRelationUpdated: ' + rel.stringify() + ` (${this.listeners.length} listenrers)`);
 
         for (const entry of this.listeners) {
-            if (entry.pattern.matches(rel)) {
-                // console.log(' listener matches: ' + entry.pattern.stringify())
+            if (entry.pattern.isSupersetOf(rel)) {
+                // console.log(' listener isSupersetOf: ' + entry.pattern.stringify())
                 entry.listener.onTupleUpdated(rel);
             } else {
                 // console.log(' listener does not match: ' + entry.pattern.stringify())
@@ -106,7 +106,7 @@ export default class Graph {
         }
 
         for (const savedQuery of this.savedQueries) {
-            const matches = savedQuery.pattern.matches(rel);
+            const matches = savedQuery.pattern.isSupersetOf(rel);
 
             if (!matches)
                 continue;
@@ -118,12 +118,12 @@ export default class Graph {
 
     onTupleDeleted(rel: Tuple) {
         for (const entry of this.listeners) {
-            if (entry.pattern.matches(rel))
+            if (entry.pattern.isSupersetOf(rel))
                 entry.listener.onTupleDeleted(rel);
         }
 
         for (const savedQuery of this.savedQueries) {
-            const matches = savedQuery.pattern.matches(rel);
+            const matches = savedQuery.pattern.isSupersetOf(rel);
 
             if (!matches)
                 continue;
