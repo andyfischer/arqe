@@ -1,13 +1,14 @@
 
 import { patternTagToString } from './stringifyQuery'
 
-export interface PatternTagOptions {
+export interface TagOptions {
     attr?: string
     tagValue?: string
     valueExpr?: string[]
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
+    optional?: boolean
     identifier?: string
 }
 
@@ -18,17 +19,19 @@ export default class PatternTag {
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
+    optional?: boolean
     identifier?: string
 
     isFrozen: boolean
 
-    constructor(opts: PatternTagOptions) {
+    constructor(opts: TagOptions) {
         this.attr = opts.attr;
         this.tagValue = opts.tagValue;
         this.valueExpr = opts.valueExpr;
         this.star = opts.star;
         this.doubleStar = opts.doubleStar;
         this.starValue = opts.starValue;
+        this.optional = opts.optional;
         this.identifier = opts.identifier;
 
         if (this.tagValue === undefined)
@@ -106,6 +109,9 @@ export default class PatternTag {
         if (this.starValue !== rhs.starValue)
             return boolCompare(this.starValue, rhs.starValue);
 
+        if (this.optional !== rhs.optional)
+            return boolCompare(this.optional, rhs.optional);
+
         if (this.tagValue !== rhs.tagValue)
             return stringCompare(this.tagValue, rhs.tagValue);
 
@@ -139,7 +145,7 @@ export function newTag(attr: string, tagValue?: string): PatternTag {
     return new PatternTag({ attr, tagValue });
 }
 
-export function newTagFromObject(obj: PatternTagOptions) {
+export function newTagFromObject(obj: TagOptions) {
     return new PatternTag(obj);
 }
 

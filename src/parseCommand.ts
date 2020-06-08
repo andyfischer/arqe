@@ -3,20 +3,93 @@ import Command from './Command'
 import CommandChain from './CommandChain'
 import Tuple, { tagsToPattern } from './Tuple'
 import Pattern from './Pattern'
-import PatternTag, { newTagFromObject, PatternTagOptions, FixedTag } from './PatternTag'
+import PatternTag, { newTagFromObject, TagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen } from './lexer'
 
-
 interface InProgressQuery {
     tags: PatternTag[]
     flags: { [flag: string]: any }
 }
 
-function parseTagValue(it: TokenIterator): PatternTagOptions {
+function parseOneTag(it: TokenIterator): PatternTag {
+
+    let identifier;
+
+    // Identifier prefix
+    if (it.tryConsume(t_lbracket)) {
+        if (!it.nextIs(t_ident) || it.nextText() !== 'from')
+            throw new Error("expected 'from', found: " + it.nextText());
+
+        it.consume();
+        it.skipSpaces();
+        if (!it.tryConsume(t_dollar))
+            throw new Error("expected '$', found: " + it.nextText());
+
+        identifier = it.consumeNextText();
+
+        if (!it.tryConsume(t_rbracket))
+            throw new Error("expected ']', found: " + it.nextText());
+
+        it.skipSpaces();
+    }
+
+    if (it.tryConsume(t_star)) {
+        if (it.tryConsume(t_star)) {
+            return newTagFromObject({
+                doubleStar: true
+            });
+        }
+
+        return newTagFromObject({
+            star: true,
+            identifier
+        });
+    }
+
+    if (it.tryConsume(t_dot)) {
+        const optionValue = it.consumeNextUnquotedText();
+        return newTagFromObject({
+            attr: 'option',
+            tagValue: optionValue,
+            identifier,
+        })
+    }
+    
+    if (it.tryConsume(t_dollar)) {
+        const unboundVar = it.consumeNextUnquotedText();
+        return newTagFromObject({
+            attr: null,
+            identifier: unboundVar,
+            star: true
+        })
+    }
+
+    const attr = it.consumeNextUnquotedText();
+
+    if (attr === '/')
+        throw new Error("syntax error, attr was '/'");
+
+    let optional = null;
+
+    if (it.tryConsume(t_question)) {
+        optional = true;
+    }
+
+    const valueOptions = parseTagValue(it);
+
+    return newTagFromObject({
+        ...valueOptions,
+        attr,
+        optional,
+        identifier: identifier || valueOptions.identifier,
+    })
+}
+
+function parseTagValue(it: TokenIterator): TagOptions {
     let tagValue = null;
     let valueExpr = null;
     let starValue = false;
@@ -88,72 +161,6 @@ function parseTagValue(it: TokenIterator): PatternTagOptions {
     }
 }
 
-function parseOneTag(it: TokenIterator): PatternTag {
-
-    let identifier;
-
-    // Identifier prefix
-    if (it.tryConsume(t_lbracket)) {
-        if (!it.nextIs(t_ident) || it.nextText() !== 'from')
-            throw new Error("expected 'from', found: " + it.nextText());
-
-        it.consume();
-        it.skipSpaces();
-        if (!it.tryConsume(t_dollar))
-            throw new Error("expected '$', found: " + it.nextText());
-
-        identifier = it.consumeNextText();
-
-        if (!it.tryConsume(t_rbracket))
-            throw new Error("expected ']', found: " + it.nextText());
-
-        it.skipSpaces();
-    }
-
-    if (it.tryConsume(t_star)) {
-        if (it.tryConsume(t_star)) {
-            return newTagFromObject({
-                doubleStar: true
-            });
-        }
-
-        return newTagFromObject({
-            star: true,
-            identifier
-        });
-    }
-
-    if (it.tryConsume(t_dot)) {
-        const optionValue = it.consumeNextUnquotedText();
-        return newTagFromObject({
-            attr: 'option',
-            tagValue: optionValue,
-            identifier,
-        })
-    }
-    
-    if (it.tryConsume(t_dollar)) {
-        const unboundVar = it.consumeNextUnquotedText();
-        return newTagFromObject({
-            attr: null,
-            identifier: unboundVar,
-            star: true
-        })
-    }
-
-    const attr = it.consumeNextUnquotedText();
-
-    if (attr === '/')
-        throw new Error("syntax error, attr was '/'");
-
-    const valueOptions = parseTagValue(it);
-
-    return newTagFromObject({
-        ...valueOptions,
-        attr,
-        identifier: identifier || valueOptions.identifier,
-    })
-}
 
 function parseFlag(it: TokenIterator, query: InProgressQuery) {
     it.consume(t_dash);

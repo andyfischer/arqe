@@ -45,7 +45,6 @@ function oneKeyValueToTag(key: string, value: any) {
     if (typeof value === 'number')
         return newTagFromObject({attr: key, tagValue: value + ""});
 
-
     throw new Error(`Don't know how to convert into a tag: ${key}, ${value}`);
 }
 
@@ -87,25 +86,37 @@ function oneTagToKeyValue(tag: PatternTag, out: PatternJSON) {
         return
     }
 
+    let shouldUseExtended = false;
+    let objectKeyIsAttr = true;
+    let objectKey = tag.attr;
+
     if (tag.identifier) {
+        shouldUseExtended = true;
+        objectKey = '$' + tag.identifier;
+        objectKeyIsAttr = false;
+    }
+
+    if (tag.optional || tag.starValue)
+        shouldUseExtended = true;
+
+    if (shouldUseExtended) {
+
         let details: any = {};
 
-        if (tag.attr)
+        if (tag.attr && !objectKeyIsAttr)
             details.attr = tag.attr;
 
         if (tag.starValue)
             details.match = "*";
 
         if (tag.tagValue)
-            details.value = "*";
+            details.value = tag.tagValue;
 
-        addOutput('$' + tag.identifier, details);
+        if (tag.optional)
+            details.optional = true;
+
+        addOutput(objectKey, details);
         return;
-    }
-
-    if (tag.starValue) {
-        addOutput(tag.attr, {match: "*"});
-        return
     }
 
     if (!tag.tagValue) {
@@ -121,7 +132,7 @@ function oneTagToKeyValue(tag: PatternTag, out: PatternJSON) {
     throw new Error('unhandled case in parseObjectToPattern: ' + tag.stringify());
 }
 
-export function parsePatternToObject(pattern: Pattern): PatternJSON {
+export function patternToJson(pattern: Pattern): PatternJSON {
     const out: PatternJSON = {}
 
     for (const tag of pattern.tags) {

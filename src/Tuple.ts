@@ -10,6 +10,7 @@ export default class Tuple {
     tags: PatternTag[] = []
 
     // derived data
+    requiredTagCount: number
     sortedTags: PatternTag[] = null
     hasDerivedData: boolean
     starValueTags: PatternTag[] = []
@@ -42,6 +43,8 @@ export default class Tuple {
         if (this.hasDerivedData)
             return;
 
+        let requiredTagCount = 0;
+
         for (const tag of this.tags) {
             const { attr } = tag;
 
@@ -54,6 +57,7 @@ export default class Tuple {
                 this.hasDoubleStar = true;
             } else if (tag.star) {
                 this.hasStar = true;
+
             } else if (tag.starValue) {
                 this.starValueTags.push(tag);
             } else {
@@ -61,11 +65,15 @@ export default class Tuple {
                 this.fixedTagsForType[tag.attr] = true;
             }
 
+            if (!tag.doubleStar && !tag.optional)
+                requiredTagCount += 1;
+
             if (tag.identifier)
                 this.byIdentifier[tag.identifier] = tag;
         }
 
         this.hasDerivedData = true;
+        this.requiredTagCount = requiredTagCount;
     }
 
     copyWithNewTags(tags: PatternTag[]) {

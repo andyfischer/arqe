@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
 import { parsePattern } from '../parseCommand'
-import parseObjectToPattern, { parsePatternToObject } from '../parseObjectToPattern'
+import parseObjectToPattern, { patternToJson } from '../parseObjectToPattern'
 import Tuple from '../Tuple'
 
 class FuzzTestSession {
@@ -61,20 +61,20 @@ function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
                     `Expected: (${pattern.stringify()}) to equal (${patternFromObject.stringify()})`);
     }
 
-    const patternToObject = parsePatternToObject(pattern);
+    const patternToObject = patternToJson(pattern);
     const patternToObjectStr = JSON.stringify(patternToObject)
 
     if (patternToObjectStr === jsonStr) {
         session.markPass();
     } else {
-        session.markFail(`checkEqualsFromJson (parsePatternToObject): ${example.stringify()}. `+
+        session.markFail(`checkEqualsFromJson (patternToJson): ${example.stringify()}. `+
                     `Expected: (${patternToObjectStr}) to equal (${jsonStr})`);
     }
 }
 
 function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple) {
     const pattern = parsePattern(example.getValueForType("pattern"));
-    const asObject = parsePatternToObject(pattern);
+    const asObject = patternToJson(pattern);
     const backToPattern = parseObjectToPattern(asObject);
 
     if (pattern.equals(backToPattern)) {
