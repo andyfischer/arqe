@@ -19,13 +19,6 @@ it('parses tags with values', () => {
     expect(parsed.pattern.tags[0].tagValue).toEqual('1')
 });
 
-it('parses negation', () => {
-    const parsed = parseCommand('test !a');
-    expect(parsed.commandName).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('a')
-    expect(parsed.pattern.tags[0].negate).toEqual(true)
-});
-
 it('parses multiple tags', () => {
     const parsed = parseCommand('test a b c');
     expect(parsed.commandName).toEqual('test')

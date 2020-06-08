@@ -92,6 +92,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
 
     let identifier;
 
+    // Identifier prefix
     if (it.tryConsume(t_lbracket)) {
         if (!it.nextIs(t_ident) || it.nextText() !== 'from')
             throw new Error("expected 'from', found: " + it.nextText());
@@ -122,20 +123,12 @@ function parseOneTag(it: TokenIterator): PatternTag {
         });
     }
 
-    let negate = false;
-
-    if (it.nextIs(t_exclamation)) {
-        negate = true;
-        it.consume();
-    }
-
     if (it.tryConsume(t_dot)) {
         const optionValue = it.consumeNextUnquotedText();
         return newTagFromObject({
             attr: 'option',
             tagValue: optionValue,
             identifier,
-            negate
         })
     }
     
@@ -158,7 +151,6 @@ function parseOneTag(it: TokenIterator): PatternTag {
     return newTagFromObject({
         ...valueOptions,
         attr,
-        negate,
         identifier: identifier || valueOptions.identifier,
     })
 }

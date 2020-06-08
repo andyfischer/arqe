@@ -5,7 +5,6 @@ export interface PatternTagOptions {
     attr?: string
     tagValue?: string
     valueExpr?: string[]
-    negate?: boolean
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
@@ -16,7 +15,6 @@ export default class PatternTag {
     attr?: string
     tagValue?: string
     valueExpr?: string[]
-    negate?: boolean
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
@@ -28,7 +26,6 @@ export default class PatternTag {
         this.attr = opts.attr;
         this.tagValue = opts.tagValue;
         this.valueExpr = opts.valueExpr;
-        this.negate = opts.negate;
         this.star = opts.star;
         this.doubleStar = opts.doubleStar;
         this.starValue = opts.starValue;
@@ -109,9 +106,6 @@ export default class PatternTag {
         if (this.starValue !== rhs.starValue)
             return boolCompare(this.starValue, rhs.starValue);
 
-        if (this.negate !== rhs.negate)
-            return boolCompare(this.negate, rhs.negate);
-        
         if (this.tagValue !== rhs.tagValue)
             return stringCompare(this.tagValue, rhs.tagValue);
 
