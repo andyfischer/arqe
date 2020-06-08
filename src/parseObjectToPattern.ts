@@ -2,7 +2,7 @@
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
 import { newTagFromObject } from './PatternTag'
-import { tagsToPattern } from './Pattern'
+import { tagsToPattern } from './Tuple'
 
 type PatternJSON = { [key: string]: any }
 

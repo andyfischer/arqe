@@ -1,6 +1,6 @@
 
 import CommandExecutionParams from './CommandExecutionParams'
-import { patternFromObject } from './Pattern'
+import { patternFromObject } from './Tuple'
 import { combinePipes } from './pipeUtils'
 import { runGet } from './runOneCommand'
 import RelationPipe from './RelationPipe'

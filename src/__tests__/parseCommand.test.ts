@@ -3,6 +3,7 @@ import parseCommand, { parseCommandChain } from '../parseCommand'
 import { parsedCommandToString, appendTagInCommand } from '../stringifyQuery'
 import Pattern from '../Pattern'
 import { newTagFromObject } from '../PatternTag'
+import { tagsToPattern } from '../Tuple'
 
 it('parses tags with no values', () => {
     const parsed = parseCommand('test a');
@@ -161,10 +162,10 @@ it("restringify tests", () => {
 });
 
 it('stringifies tag identifiers', () => {
-    expect((new Pattern([newTagFromObject({identifier: 'foo', star: true})])).stringify()).toEqual('$foo');
-    expect((new Pattern([newTagFromObject({identifier: 'foo', attr: 'type', starValue: true})])).stringify()).toEqual('type/$foo');
-    expect((new Pattern([newTagFromObject({identifier: 'foo', attr: 'type'})])).stringify()).toEqual('[from $foo] type');
-    expect((new Pattern([newTagFromObject({identifier: 'foo', attr: 'type', tagValue: 'value'})])).stringify()).toEqual('[from $foo] type/value');
+    expect((tagsToPattern([newTagFromObject({identifier: 'foo', star: true})])).stringify()).toEqual('$foo');
+    expect((tagsToPattern([newTagFromObject({identifier: 'foo', attr: 'type', starValue: true})])).stringify()).toEqual('type/$foo');
+    expect((tagsToPattern([newTagFromObject({identifier: 'foo', attr: 'type'})])).stringify()).toEqual('[from $foo] type');
+    expect((tagsToPattern([newTagFromObject({identifier: 'foo', attr: 'type', tagValue: 'value'})])).stringify()).toEqual('[from $foo] type/value');
 });
 
 it('handles paren sections', () => {

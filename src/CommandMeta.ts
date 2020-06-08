@@ -1,6 +1,6 @@
 
-import Tuple from './Tuple'
-import Pattern, { tagsToPattern } from './Pattern'
+import Tuple, { tagsToPattern } from './Tuple'
+import Pattern from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
 import TupleReceiver from './TupleReceiver'
 import Command from './Command'

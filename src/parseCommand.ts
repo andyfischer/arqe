@@ -1,8 +1,8 @@
 
 import Command from './Command'
 import CommandChain from './CommandChain'
-import Tuple from './Tuple'
-import Pattern, { tagsToPattern } from './Pattern'
+import Tuple, { tagsToPattern } from './Tuple'
+import Pattern from './Pattern'
 import PatternTag, { newTagFromObject, PatternTagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
@@ -219,7 +219,7 @@ function parseOneCommand(it: TokenIterator): Command {
     // Parse tag args
     parseArgs(it, query);
 
-    const pattern = new Pattern(query.tags);
+    const pattern = tagsToPattern(query.tags);
     return new Command(command, pattern, query.flags);
 }
 
