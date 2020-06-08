@@ -1,17 +1,13 @@
 
 import PrimaryKey from './PrimaryKey'
+import Pattern from './Pattern'
 
 export default class Table {
     name: string
-    attrs: string[] = []
+    pattern: Pattern
 
-    possiblePrimaryKeys: PrimaryKey[] = []
-
-    constructor(name: string) {
+    constructor(name: string, pattern: Pattern) {
         this.name = name;
-    }
-
-    addAttr(name: string) {
-        this.attrs.push(name);
+        this.pattern = pattern;
     }
 }

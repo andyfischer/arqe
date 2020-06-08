@@ -11,6 +11,7 @@ import { newTagFromObject } from './PatternTag'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import Table from './Table'
 import PrimaryKey from './PrimaryKey'
+import { parsePattern } from './parseCommand'
 
 interface Slot {
     relation: Tuple
@@ -32,31 +33,23 @@ export default class TupleStore {
     nextSlotId: IDSource = new IDSource();
     byTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
-    tables: { [ name: string]: Table } = {}
+    tables: { [ name: string ]: Table } = {}
 
     constructor(graph: Graph) {
         this.graph = graph;
 
-        const tableSchema = this.initTable('tableSchema');
-    }
-
-    initTable(name: string) {
-        if (!this.tables[name]) {
-            const table = new Table(name);
-            this.tables[name] = table;
-            return table;
-        }
-
-        return this.tables[name];
+        this.defineTable('table_schema', parsePattern("table/* schema"));
     }
 
     findTable(name: string): Table {
         return this.tables[name] || null;
     }
 
-    setPrimaryKey(pattern: Pattern, table: Table) {
-        const pk = new PrimaryKey(pattern, table);
-        this.initTable(pattern.tags[0].attr).possiblePrimaryKeys.push(pk);
+    defineTable(name: string, pattern: Pattern) {
+        if (this.tables[name])
+            throw new Error("table already exists: " + name)
+
+        this.tables[name] = new Table(name, pattern);
     }
 
     resolveExpressionValues(rel: Tuple) {

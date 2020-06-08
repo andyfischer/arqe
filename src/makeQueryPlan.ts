@@ -202,6 +202,18 @@ function findStorageProvider(plan: QueryPlan) {
 }
 
 function findTable(plan: QueryPlan) {
+    // Check if the query specifies an exact table
+    const pattern = plan.pattern;
+
+    if (pattern.hasType('table')) {
+        const tableName = pattern.getValueForType('table');
+        const table = plan.graph.tupleStore.findTable();
+        if (!table) {
+            emitCommandError(plan.output, "table not found: " + tableName);
+            plan.failed = true;
+            return;
+        }
+    }
 }
 
 function validatePlan(plan: QueryPlan) {
