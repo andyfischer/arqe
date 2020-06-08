@@ -42,8 +42,6 @@ export function patternTagToString(tag: PatternTag) {
 
         if (needsParens) {
             s += tag.attr + '(';
-        } else if (tag.attr === 'option') {
-            s += '.'
         } else {
             s += tag.attr + '/';
         }
@@ -69,6 +67,10 @@ export function patternTagToString(tag: PatternTag) {
             s += `[from \$${tag.identifier}] `
         }
         s += tag.attr;
+
+        if (tag.optional)
+            s += '?';
+
         return s;
     }
     

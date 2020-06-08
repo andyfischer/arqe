@@ -87,12 +87,19 @@ function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple
     }
 }
 
-function pass(joinWith: Tuple, out: TupleReceiver, testName: string) {
+function pass(joinWith: Tuple, out: TupleReceiver) {
     out.relation(joinWith.addNewTag('passed'));
 }
 
-function fail(joinWith: Tuple, out: TupleReceiver, testName: string, message: string) {
+function fail(joinWith: Tuple, out: TupleReceiver, message: string) {
     out.relation(joinWith.addNewTag('failed').addNewTag('message', message));
+}
+
+function expectEquals(example: Tuple, expected: any, observed: any, out: TupleReceiver) {
+    if (expected === observed)
+        pass(example, out);
+    else
+        fail(example, out, `expected (${expected}) != observed (${observed})`);
 }
 
 function checkRequiredTagCount(example: Tuple, out: TupleReceiver) {
@@ -100,10 +107,20 @@ function checkRequiredTagCount(example: Tuple, out: TupleReceiver) {
     const expected = parseInt(example.getValueForType("expect-required-tag-count"));
     const observed = pattern.requiredTagCount;
 
-    if (expected === observed)
-        pass(example, out, 'checkRequiredTagCount');
-    else
-        fail(example, out, 'checkRequiredTagCount', `expected (${expected}) != observed (${observed})`);
+    expectEquals(example, expected, observed, out);
+}
+
+function checkPatternRestringify(example: Tuple, out: TupleReceiver) {
+    const patternStr = example.getValueForType("pattern");
+    const pattern = parsePattern(patternStr);
+
+    // ignore if this pattern has an expression
+    for (const tag of pattern.tags)
+        if (tag.valueExpr)
+            return;
+
+    const observed = pattern.stringify();
+    expectEquals(example, patternStr, observed, out);
 }
 
 function runCheck(session: FuzzTestSession, queryStr: string, verifier: (session: FuzzTestSession, example: Tuple) => void) {
@@ -129,13 +146,14 @@ function runCheck(session: FuzzTestSession, queryStr: string, verifier: (session
 
 function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple, out: TupleReceiver) => void) {
     const graph = session.graph;
+    const testName = verifier.name;
 
     const receiver = receiveToTupleList(list => {
         for (const result of list) {
             if (result.hasType('passed')) {
                 session.markPass();
             } else if (result.hasType('failed')) {
-                session.markFail(result.getValueForType('message'));
+                session.markFail(`(${testName}) ${result.getValueForType('message')}`);
             } else {
                 console.log('runCheck2 saw incomplete result: ' + result.stringify());
             }
@@ -170,6 +188,7 @@ export default function fuzzTestPatterns(graph: Graph) {
     runCheck(session, "get pattern-test-example pattern/* equals-from-json/*", checkEqualsFromJson);
     runCheck(session, "get pattern-test-example pattern/*", checkPatternToObjectConversion);
     runCheck2(session, "get pattern-test-example pattern/* expect-required-tag-count", checkRequiredTagCount);
+    runCheck2(session, "get pattern-test-example pattern/* ", checkPatternRestringify);
 
     return session;
 }

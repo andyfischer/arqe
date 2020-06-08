@@ -25,6 +25,10 @@
   - pattern(x((set 1)))
   - pattern(x/(set 1))
   - pattern(x/(increment))
+  - pattern(x?)
+  - pattern(x? y)
+  - pattern(y x?)
+  - pattern(x? y? z?)
 
   - pattern(x/* y/1) is-superset-of(x/1 y/1)
   - pattern(x/1 y/*) is-superset-of(x/1 y/1)

@@ -19,22 +19,6 @@ function oneKeyValueToTag(key: string, value: any) {
         return value.map(valueEl => oneKeyValueToTag(key, valueEl));
     }
 
-    if (value.attr && key[0] === '$') {
-        const identifier = key.slice(1);
-
-        let starValue = value.match === '*';
-        return newTagFromObject({
-            attr: value.attr,
-            identifier,
-            starValue: value.match === '*',
-            tagValue: value.value
-        });
-    }
-
-    if (value && value.match === '*') {
-        return newTagFromObject({attr: key, starValue: true});
-    }
-
     if (value === true) {
         return newTagFromObject({attr: key});
     }
@@ -44,6 +28,27 @@ function oneKeyValueToTag(key: string, value: any) {
 
     if (typeof value === 'number')
         return newTagFromObject({attr: key, tagValue: value + ""});
+
+    // Parse extended object
+    let identifier = null;
+    let attr = null;
+
+    if (key[0] === '$') {
+        identifier = key.slice(1);
+    } else {
+        attr = key;
+    }
+
+    if (value.attr)
+        attr = value.attr;
+
+    return newTagFromObject({
+        attr,
+        identifier,
+        tagValue: value.value,
+        starValue: value.match === '*',
+        optional: value.optional
+    });
 
     throw new Error(`Don't know how to convert into a tag: ${key}, ${value}`);
 }
