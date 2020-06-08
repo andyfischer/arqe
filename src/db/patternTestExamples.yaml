@@ -39,6 +39,12 @@
   - pattern(x/1 **) is-superset-of(x/1 y/1 **)
   - pattern(working-file((new)) filename/$filename) is-superset-of(working-file((new)) filename(a))
 
+  - pattern(x y?) is-superset-of(x)
+  - pattern(x y?) is-superset-of(x y)
+  - pattern(x y?) not-superset-of(x y z)
+  - pattern(x y?) not-superset-of(y)
+  - pattern(x y?) not-superset-of(x z)
+
   - pattern(x/1 **) not-superset-of()
   - pattern(x/1 **) not-superset-of(z/1)
   - pattern(x/1 **) not-superset-of(z/1 **)
@@ -52,12 +58,12 @@
   - 'pattern(x) equals-from-json({"x":true})'
   - 'pattern(x/$xvar) equals-from-json({"$xvar":{"attr":"x","match":"*"}})'
 
-  - pattern(x) expect-required-tag-count(1)
-  - pattern(x/1) expect-required-tag-count(1)
-  - pattern(x y) expect-required-tag-count(2)
-  - pattern(x **) expect-required-tag-count(1)
-  - pattern(x y **) expect-required-tag-count(2)
-  - pattern(**) expect-required-tag-count(0)
-  - pattern(x y z) expect-required-tag-count(3)
-  - pattern(x y z?) expect-required-tag-count(2)
-  - pattern(x? y? z?) expect-required-tag-count(0)
+  - pattern(x) expect-minimum-tag-count(1)
+  - pattern(x/1) expect-minimum-tag-count(1)
+  - pattern(x y) expect-minimum-tag-count(2)
+  - pattern(x **) expect-minimum-tag-count(1)
+  - pattern(x y **) expect-minimum-tag-count(2)
+  - pattern(**) expect-minimum-tag-count(0)
+  - pattern(x y z) expect-minimum-tag-count(3)
+  - pattern(x y z?) expect-minimum-tag-count(2)
+  - pattern(x? y? z?) expect-minimum-tag-count(0)

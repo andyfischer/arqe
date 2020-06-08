@@ -5,6 +5,7 @@ import parseObjectToPattern, { patternToJson } from '../parseObjectToPattern'
 import Tuple from '../Tuple'
 import TupleReceiver from '../TupleReceiver'
 import { receiveToTupleList } from '../receiveUtils'
+import loadGraphFromLocalDatabase from '../loadGraphFromLocalDatabase'
 
 class FuzzTestSession {
     graph: Graph
@@ -104,8 +105,8 @@ function expectEquals(example: Tuple, expected: any, observed: any, out: TupleRe
 
 function checkRequiredTagCount(example: Tuple, out: TupleReceiver) {
     const pattern = parsePattern(example.getValueForType("pattern"));
-    const expected = parseInt(example.getValueForType("expect-required-tag-count"));
-    const observed = pattern.requiredTagCount;
+    const expected = parseInt(example.getValueForType("expect-minimum-tag-count"));
+    const observed = pattern.minimumTagCount;
 
     expectEquals(example, expected, observed, out);
 }
@@ -187,8 +188,15 @@ export default function fuzzTestPatterns(graph: Graph) {
     runCheck(session, "get pattern-test-example pattern/* not-superset-of/*", checkNotSupersetOf);
     runCheck(session, "get pattern-test-example pattern/* equals-from-json/*", checkEqualsFromJson);
     runCheck(session, "get pattern-test-example pattern/*", checkPatternToObjectConversion);
-    runCheck2(session, "get pattern-test-example pattern/* expect-required-tag-count", checkRequiredTagCount);
+    runCheck2(session, "get pattern-test-example pattern/* expect-minimum-tag-count", checkRequiredTagCount);
     runCheck2(session, "get pattern-test-example pattern/* ", checkPatternRestringify);
 
     return session;
+}
+
+if (require.main === module) {
+    const graph = loadGraphFromLocalDatabase();
+    const session = fuzzTestPatterns(graph);
+
+    console.log({ passed: session.passed, failed: session.failed });
 }
