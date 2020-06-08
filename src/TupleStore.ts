@@ -10,7 +10,7 @@ import IDSource from './utils/IDSource'
 import { newTagFromObject } from './PatternTag'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import Table from './Table'
-import PrimaryKeyAttrSet from './PrimaryKeyAttrSet'
+import PrimaryKey from './PrimaryKey'
 
 interface Slot {
     relation: Tuple
@@ -50,10 +50,13 @@ export default class TupleStore {
         return this.tables[name];
     }
 
-    setPrimaryKeyAttrs(attrs: string[], table: Table) {
-        const set = new PrimaryKeyAttrSet(attrs, table);
+    findTable(name: string): Table {
+        return this.tables[name] || null;
+    }
 
-        this.initTable(attrs[0]).possiblePrimaryKeyAttrSets.push(set);
+    setPrimaryKey(pattern: Pattern, table: Table) {
+        const pk = new PrimaryKey(pattern, table);
+        this.initTable(pattern.tags[0].attr).possiblePrimaryKeys.push(pk);
     }
 
     resolveExpressionValues(rel: Tuple) {

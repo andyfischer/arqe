@@ -13,6 +13,7 @@ export { rewriteDumpFile } from './DumpFile'
 export * from './CommandMeta'
 export * from './receiveUtils'
 export { default as printConsoleResult } from './console/printResult'
+export { parsePattern } from './Pattern'
 
 if (require.main === module) {
     require('./startServer.js');

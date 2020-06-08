@@ -183,7 +183,8 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleRece
         initializeIfMissing,
         isDelete: patternIsDelete(pattern),
         tableName,
-        output
+        output,
+        failed: false
     };
 
     return plan;
@@ -200,14 +201,17 @@ function findStorageProvider(plan: QueryPlan) {
     }
 }
 
+function findTable(plan: QueryPlan) {
+}
+
 function validatePlan(plan: QueryPlan) {
     // There was once something here
-    plan.passedValidation = true;
 }
 
 export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: TupleReceiver) {
 
     const plan: QueryPlan = initialBuildQueryPlan(graph, pattern, output);
+    findTable(plan);
     findStorageProvider(plan);
     validatePlan(plan);
     return plan;

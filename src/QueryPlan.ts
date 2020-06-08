@@ -27,5 +27,5 @@ export default interface QueryPlan {
     storageProvider?: StorageProvider
     tableName?: string
 
-    passedValidation?: boolean
+    failed: boolean
 }

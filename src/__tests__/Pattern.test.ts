@@ -3,9 +3,7 @@ import { parsePattern } from '../parseCommand'
 import PatternTag from '../PatternTag'
 
 it('PatternTag.setValue works', () => {
-    const tag = new PatternTag();
-    tag.attr = 'a';
-    tag.tagValue = '1';
+    const tag = new PatternTag({ attr: 'a', tagValue: '1' });
     expect(tag.stringify()).toEqual('a/1');
 
     const tag2 = tag.setValue('3');

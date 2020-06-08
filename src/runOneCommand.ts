@@ -14,7 +14,7 @@ import countCommand from './countCommand'
 
 export function runGet(graph: Graph, pattern: Pattern, output: TupleReceiver) {
     const plan = makeQueryPlan(graph, pattern, output);
-    if (!plan.passedValidation)
+    if (plan.failed)
         return;
 
     emitSearchPatternMeta(pattern, output);
@@ -47,7 +47,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
         
         case 'set': {
             const plan = makeQueryPlan(graph, pattern, output);
-            if (!plan.passedValidation)
+            if (plan.failed)
                 return;
 
             if (plan.storageProvider) {
@@ -67,7 +67,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
             const deletePattern = pattern.addTagObj(newTag('deleted').setValueExpr(['set']));
 
             const plan = makeQueryPlan(graph, deletePattern, output);
-            if (!plan.passedValidation)
+            if (plan.failed)
                 return;
 
             if (plan.storageProvider) {

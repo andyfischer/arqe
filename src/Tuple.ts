@@ -8,9 +8,9 @@ import PatternTag, { newTag, FixedTag } from './PatternTag'
 export default class Tuple {
     
     tags: PatternTag[] = []
-    sortedTags: PatternTag[] = null
 
     // derived data
+    sortedTags: PatternTag[] = null
     hasDerivedData: boolean
     starValueTags: PatternTag[] = []
     fixedTags: FixedTag[] = []
@@ -404,9 +404,7 @@ export function patternFromObject(object: { [k: string]: string }) {
 export function patternFromMap(map: Map<string,string>) {
     const tags = []
     for (const [key,value] of map.entries()) {
-        const tag = new PatternTag();
-        tag.attr = key;
-        tag.tagValue = value;
+        const tag = new PatternTag({ attr: key, tagValue: value });
         tags.push(tag);
     }
 

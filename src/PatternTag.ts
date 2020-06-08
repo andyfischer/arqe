@@ -24,7 +24,22 @@ export default class PatternTag {
     questionValue?: boolean
     identifier?: string
 
-    isFrozen?: boolean
+    isFrozen: boolean
+
+    constructor(opts: PatternTagOptions) {
+        this.attr = opts.attr;
+        this.tagValue = opts.tagValue;
+        this.valueExpr = opts.valueExpr;
+        this.negate = opts.negate;
+        this.star = opts.star;
+        this.doubleStar = opts.doubleStar;
+        this.starValue = opts.starValue;
+        this.questionValue = opts.questionValue;
+        this.identifier = opts.identifier;
+
+        if (this.tagValue === undefined)
+            this.tagValue = null;
+    }
 
     str() {
         return patternTagToString(this);
@@ -35,59 +50,41 @@ export default class PatternTag {
     }
 
     copy(): PatternTag {
-        const tag = new PatternTag();
-        tag.attr = this.attr;
-        tag.tagValue = this.tagValue;
-        tag.negate = this.negate;
-        tag.star = this.star;
-        tag.doubleStar = this.doubleStar;
-        tag.starValue = this.starValue;
-        tag.questionValue = this.questionValue;
-        tag.identifier = this.identifier;
-        return tag;
-    }
-
-    freeze() {
-        if (this.isFrozen)
-            return;
-        
-        this.isFrozen = true;
-        Object.freeze(this);
-        return this;
+        return new PatternTag(this);
     }
 
     setValue(value: string): PatternTag {
-        const out = this.copy();
-        out.tagValue = value;
-        delete out.starValue;
-        delete out.valueExpr;
-        out.freeze();
-        return out;
+        return new PatternTag({
+            ...this,
+            tagValue: value,
+            starValue: null,
+            valueExpr: null,
+        });
     }
 
     setValueless(): PatternTag {
-        const out = this.copy();
-        delete out.tagValue;
-        delete out.starValue;
-        delete out.valueExpr;
-        out.freeze();
-        return out;
+        return new PatternTag({
+            ...this,
+            tagValue: null,
+            starValue: null,
+            valueExpr: null,
+        });
     }
 
     setStarValue(): PatternTag {
-        const out = this.copy();
-        out.starValue = true;
-        delete out.tagValue;
-        delete out.valueExpr;
-        out.freeze();
-        return out;
+        return new PatternTag({
+            ...this,
+            starValue: true,
+            tagValue: null,
+            valueExpr: null
+        });
     }
 
     setIdentifier(id: string): PatternTag {
-        const out = this.copy();
-        out.identifier = id;
-        out.freeze();
-        return out;
+        return new PatternTag({
+            ...this,
+            identifier: id
+        });
     }
 
     removeIdentifier(): PatternTag {
@@ -95,12 +92,11 @@ export default class PatternTag {
     }
 
     setValueExpr(expr: string[]): PatternTag {
-        const out = this.copy();
-        out.valueExpr = expr;
-        delete out.tagValue;
-        // TODO: don't set starValue for expr
-        out.starValue = true;
-        return out;
+        return new PatternTag({
+            ...this,
+            tagValue: null,
+            valueExpr: expr
+        });
     }
 
     compareCanonicalSort(rhs: PatternTag): number {
@@ -124,9 +120,6 @@ export default class PatternTag {
         
         if (this.tagValue !== rhs.tagValue)
             return stringCompare(this.tagValue, rhs.tagValue);
-
-        if (this.star !== rhs.star)
-            return boolCompare(this.star, rhs.star);
 
         return 0;
     }
@@ -155,20 +148,10 @@ function boolCompare(a,b) {
 export type FixedTag = PatternTag;
 
 export function newTag(attr: string, tagValue?: string): PatternTag {
-    const tag = new PatternTag();
-    tag.attr = attr;
-    tag.tagValue = tagValue;
-    return tag;
+    return new PatternTag({ attr, tagValue });
 }
 
 export function newTagFromObject(obj: PatternTagOptions) {
-    const tag = new PatternTag();
-    for (const k in obj)
-        tag[k] = obj[k];
-
-    if (tag.tagValue === undefined)
-        tag.tagValue = null;
-
-    return tag;
+    return new PatternTag(obj);
 }
 

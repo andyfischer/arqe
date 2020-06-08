@@ -1,11 +1,11 @@
 
-import PrimaryKeyAttrSet from './PrimaryKeyAttrSet'
+import PrimaryKey from './PrimaryKey'
 
 export default class Table {
     name: string
     attrs: string[] = []
 
-    possiblePrimaryKeyAttrSets: PrimaryKeyAttrSet[] = []
+    possiblePrimaryKeys: PrimaryKey[] = []
 
     constructor(name: string) {
         this.name = name;
