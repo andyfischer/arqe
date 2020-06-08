@@ -3,6 +3,8 @@ import Graph from '../Graph'
 import { parsePattern } from '../parseCommand'
 import parseObjectToPattern, { patternToJson } from '../parseObjectToPattern'
 import Tuple from '../Tuple'
+import TupleReceiver from '../TupleReceiver'
+import { receiveToTupleList } from '../receiveUtils'
 
 class FuzzTestSession {
     graph: Graph
@@ -85,6 +87,25 @@ function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple
     }
 }
 
+function pass(joinWith: Tuple, out: TupleReceiver, testName: string) {
+    out.relation(joinWith.addNewTag('passed'));
+}
+
+function fail(joinWith: Tuple, out: TupleReceiver, testName: string, message: string) {
+    out.relation(joinWith.addNewTag('failed').addNewTag('message', message));
+}
+
+function checkRequiredTagCount(example: Tuple, out: TupleReceiver) {
+    const pattern = parsePattern(example.getValueForType("pattern"));
+    const expected = parseInt(example.getValueForType("expect-required-tag-count"));
+    const observed = pattern.requiredTagCount;
+
+    if (expected === observed)
+        pass(example, out, 'checkRequiredTagCount');
+    else
+        fail(example, out, 'checkRequiredTagCount', `expected (${expected}) != observed (${observed})`);
+}
+
 function runCheck(session: FuzzTestSession, queryStr: string, verifier: (session: FuzzTestSession, example: Tuple) => void) {
     const graph = session.graph;
 
@@ -106,6 +127,40 @@ function runCheck(session: FuzzTestSession, queryStr: string, verifier: (session
     }
 }
 
+function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple, out: TupleReceiver) => void) {
+    const graph = session.graph;
+
+    const receiver = receiveToTupleList(list => {
+        for (const result of list) {
+            if (result.hasType('passed')) {
+                session.markPass();
+            } else if (result.hasType('failed')) {
+                session.markFail(result.getValueForType('message'));
+            } else {
+                console.log('runCheck2 saw incomplete result: ' + result.stringify());
+            }
+        }
+    });
+
+    for (const example of graph.runSync(queryStr)) {
+        if (example.isCommandMeta()) {
+            if (example.isCommandError()) {
+                session.markFail(`Query returned error on ${queryStr}: ${example.stringify()}`);
+                return;
+            }
+
+            continue;
+        }
+
+        try {
+            verifier(example, receiver);
+            receiver.finish();
+        } catch (e) {
+            session.markFail(`Uncaught exception looking at (${example.stringify()}): ${e.stack || e}`);
+        }
+    }
+}
+
 export default function fuzzTestPatterns(graph: Graph) {
 
     const session = new FuzzTestSession(graph, 'Patterns');
@@ -114,6 +169,7 @@ export default function fuzzTestPatterns(graph: Graph) {
     runCheck(session, "get pattern-test-example pattern/* not-superset-of/*", checkNotSupersetOf);
     runCheck(session, "get pattern-test-example pattern/* equals-from-json/*", checkEqualsFromJson);
     runCheck(session, "get pattern-test-example pattern/*", checkPatternToObjectConversion);
+    runCheck2(session, "get pattern-test-example pattern/* expect-required-tag-count", checkRequiredTagCount);
 
     return session;
 }
