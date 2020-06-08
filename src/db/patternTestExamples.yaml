@@ -38,6 +38,7 @@
   - pattern(x/1 **) is-superset-of(x/1 **)
   - pattern(x/1 **) is-superset-of(x/1 y/1 **)
   - pattern(working-file((new)) filename/$filename) is-superset-of(working-file((new)) filename(a))
+  - pattern(x/(set)) is-superset-of(x/(set))
 
   - pattern(x y?) is-superset-of(x)
   - pattern(x y?) is-superset-of(x y)
@@ -45,6 +46,9 @@
   - pattern(x y?) not-superset-of(y)
   - pattern(x y?) not-superset-of(x z)
 
+  - pattern(x/1) not-superset-of(y/1)
+  - pattern(x/1) not-superset-of(x/2)
+  - pattern(x/(set)) not-superset-of(x/(match))
   - pattern(x/1 **) not-superset-of()
   - pattern(x/1 **) not-superset-of(z/1)
   - pattern(x/1 **) not-superset-of(z/1 **)

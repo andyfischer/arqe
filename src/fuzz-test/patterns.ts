@@ -25,7 +25,7 @@ class FuzzTestSession {
 
     markFail(message: string) {
         this.failed += 1;
-        console.log(`Fuzz test "${this.name}" failed: ${message}`);
+        console.log(`Test failure (${this.name} test): ${message}`);
     }
 }
 
@@ -33,7 +33,7 @@ function checkIsSupersetOf(session: FuzzTestSession, example: Tuple) {
     const pattern = parsePattern(example.getValueForType("pattern"));
     const isSupersetOf = parsePattern(example.getValueForType("is-superset-of"));
 
-    if (pattern.isSupersetOf(isSupersetOf)) {
+    if (pattern.isSupersetOf2(isSupersetOf)) {
         session.markPass();
     } else {
         session.markFail(`checking is-superset-of: ${example.stringify()}`);
@@ -44,7 +44,7 @@ function checkNotSupersetOf(session: FuzzTestSession, example: Tuple) {
     const pattern = parsePattern(example.getValueForType("pattern"));
     const notSupersetOf = parsePattern(example.getValueForType("not-superset-of"));
 
-    if (!pattern.isSupersetOf(notSupersetOf)) {
+    if (!pattern.isSupersetOf2(notSupersetOf)) {
         session.markPass();
     } else {
         session.markFail(`checking not-superset-of: ${example.stringify()}`);
@@ -195,8 +195,9 @@ export default function fuzzTestPatterns(graph: Graph) {
 }
 
 if (require.main === module) {
+    require('source-map-support').install();
     const graph = loadGraphFromLocalDatabase();
     const session = fuzzTestPatterns(graph);
 
-    console.log({ passed: session.passed, failed: session.failed });
+    console.log("Finished: ", { passed: session.passed, failed: session.failed });
 }
