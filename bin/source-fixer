@@ -6,7 +6,7 @@ async function main() {
 
     const graph = loadGraphFromLocalDatabase();
 
-    const compileErrs = (await graph.runAsync('get tsc-compile dir(../fs-labrat) filename message lineno colno'))
+    const compileErrs = (await graph.runAsync('get tsc-compile dir(../fs-refactor) filename message lineno colno'))
         .filter(tup => !tup.hasType('command-meta'));
 
     printConsoleResult(compileErrs);
@@ -27,7 +27,7 @@ async function main() {
             [0]
             .getValueForType('text');
 
-        const newLine = existingLine.replace('Relation', 'Tuple');
+        const newLine = existingLine.replace('tagType', 'attr');
 
         await graph.setAsync({ 'working-file': workingFileId, line: lineno, text: newLine });
         await graph.setAsync({ 'working-file': workingFileId, commit: true });
