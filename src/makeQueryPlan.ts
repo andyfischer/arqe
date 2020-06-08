@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
-import Pattern from './Pattern'
 import PatternTag from './PatternTag'
+import Tuple from './Tuple'
 import TupleReceiver from './TupleReceiver'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
 import QueryPlan, { QueryTag } from './QueryPlan'
@@ -23,12 +23,12 @@ function expressionUpdatesExistingValue(expr: string[]) {
     return effects && effects.modifiesExisting;
 }
 
-function getEffects(pattern: Pattern) {
+function getEffects(tuple: Tuple) {
 
     let modifiesExisting = false;
     let canInitializeMissing = true;
 
-    for (const tag of pattern.tags) {
+    for (const tag of tuple.tags) {
         const expr = tag.valueExpr;
         const tagEffects = expr && expr[0] && exprFuncEffects[expr[0]];
 
@@ -50,8 +50,8 @@ function getEffects(pattern: Pattern) {
     }
 }
 
-function resolveExpressions(pattern: Pattern) {
-    return pattern.remapTags((tag: PatternTag) => {
+function resolveImmediateExpressions(tuple: Tuple) {
+    return tuple.remapTags((tag: PatternTag) => {
         if (tag.valueExpr && tag.valueExpr[0] === 'seconds-from-now') {
             const seconds = parseInt(tag.valueExpr[1]);
             return tag.setValue(Date.now() + (seconds * 1000) + '');
@@ -61,11 +61,11 @@ function resolveExpressions(pattern: Pattern) {
     });
 }
 
-function patternIsDelete(pattern: Pattern) {
-    if (!pattern.hasType('deleted'))
+function patternIsDelete(tuple: Tuple) {
+    if (!tuple.hasType('deleted'))
         return false;
 
-    const deletedExpr = pattern.getTagObject('deleted');
+    const deletedExpr = tuple.getTagObject('deleted');
     if (deletedExpr && deletedExpr.valueExpr && deletedExpr.valueExpr[0] === 'set') {
         return true;
     }
@@ -73,8 +73,8 @@ function patternIsDelete(pattern: Pattern) {
     return false;
 }
 
-function modificationPatternToFilter(pattern: Pattern) {
-    return pattern.remapTags((tag: PatternTag) => {
+function modificationPatternToFilter(tuple: Tuple) {
+    return tuple.remapTags((tag: PatternTag) => {
         if (tag.attr === 'deleted')
             return null;
 
@@ -102,7 +102,7 @@ function applyModificationExpr(expr: string[], value: string) {
     }
 }
 
-function applyModification(changeOperation: Pattern, storedRel: Pattern): Pattern {
+function applyModification(changeOperation: Tuple, storedRel: Tuple): Tuple {
 
     storedRel = storedRel.remapTags((tag: PatternTag) => {
         const modificationTag = changeOperation.getOneTagForType(tag.attr);
@@ -117,12 +117,12 @@ function applyModification(changeOperation: Pattern, storedRel: Pattern): Patter
     return storedRel;
 }
 
-function getImpliedTableName(pattern: Pattern) {
-    for (const tag of pattern.tags)
+function getImpliedTableName(tuple: Tuple) {
+    for (const tag of tuple.tags)
         if (tag.star || tag.doubleStar)
             return null;
     
-    const els = pattern.tags
+    const els = tuple.tags
         .filter(r => r.attr !== 'deleted')
         .map(r => r.attr);
 
@@ -130,25 +130,28 @@ function getImpliedTableName(pattern: Pattern) {
     return els.join(' ');
 }
 
-function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleReceiver) {
+function findTable(graph: Graph, tuple: Tuple, out: TupleReceiver) {
+    // Check if the query specifies an exact table
 
-    pattern = resolveExpressions(pattern);
+    if (tuple.hasType('table')) {
+        const tableName = tuple.getValueForType('table');
+        const table = graph.tupleStore.findTable(tableName);
+        if (!table) {
+            emitCommandError(out, "table not found: " + tableName);
+            return { failed: true }
+        }
 
+        return { table }
+    }
+
+    return { table: null }
+}
+
+function toPlanTags(graph: Graph, tuple: Tuple) {
     const planTags: QueryTag[] = [];
 
-    let singleStar = false;
-    let doubleStar = false;
-    
-    for (const tag of pattern.tags) {
+    for (const tag of tuple.tags) {
         if (!tag.attr) {
-            if (tag.doubleStar) {
-                doubleStar = true;
-            } else if (tag.star) {
-                singleStar = true;
-            } else {
-                throw new Error('what is this tag: ' + tag.stringify())
-            }
-
             continue;
         }
 
@@ -161,27 +164,33 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleRece
         });
     }
 
-    const { initializeIfMissing, modifiesExisting } = getEffects(pattern);
+    return planTags;
+}
+
+function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: TupleReceiver) {
+
+    const planTags = toPlanTags(graph, tuple);
+    const { initializeIfMissing, modifiesExisting } = getEffects(tuple);
 
     let modificationCallback = null;
     if (modifiesExisting) {
-        modificationCallback = (storedRel: Pattern) => {
-            return applyModification(pattern, storedRel);
+        modificationCallback = (storedRel: Tuple) => {
+            return applyModification(tuple, storedRel);
         }
     }
 
-    const tableName = getImpliedTableName(pattern);
+    const tableName = getImpliedTableName(tuple);
 
     const plan: QueryPlan = {
         tags: planTags,
-        pattern,
-        filterPattern: modificationPatternToFilter(pattern),
-        singleStar,
-        doubleStar,
+        tuple,
+        filterPattern: modificationPatternToFilter(tuple),
+        singleStar: tuple.hasStar,
+        doubleStar: tuple.hasDoubleStar,
         modifiesExisting,
         modificationCallback,
         initializeIfMissing,
-        isDelete: patternIsDelete(pattern),
+        isDelete: patternIsDelete(tuple),
         tableName,
         output,
         failed: false
@@ -201,29 +210,22 @@ function findStorageProvider(plan: QueryPlan) {
     }
 }
 
-function findTable(plan: QueryPlan) {
-    // Check if the query specifies an exact table
-    const pattern = plan.pattern;
-
-    if (pattern.hasType('table')) {
-        const tableName = pattern.getValueForType('table');
-        const table = plan.graph.tupleStore.findTable();
-        if (!table) {
-            emitCommandError(plan.output, "table not found: " + tableName);
-            plan.failed = true;
-            return;
-        }
-    }
-}
 
 function validatePlan(plan: QueryPlan) {
     // There was once something here
 }
 
-export default function patternToQueryPlan(graph: Graph, pattern: Pattern, output: TupleReceiver) {
+export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: TupleReceiver) {
 
-    const plan: QueryPlan = initialBuildQueryPlan(graph, pattern, output);
-    findTable(plan);
+    tuple = resolveImmediateExpressions(tuple);
+
+    const { table, failed } = findTable(graph, tuple, output);
+
+    if (failed)
+        return;
+
+
+    const plan: QueryPlan = initialBuildQueryPlan(graph, tuple, output);
     findStorageProvider(plan);
     validatePlan(plan);
     return plan;

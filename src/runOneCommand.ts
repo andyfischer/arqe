@@ -20,7 +20,7 @@ export function runGet(graph: Graph, pattern: Pattern, output: TupleReceiver) {
     emitSearchPatternMeta(pattern, output);
 
     if (plan.storageProvider) {
-        plan.storageProvider.runSearch(plan.pattern, plan.output);
+        plan.storageProvider.runSearch(plan.tuple, plan.output);
     } else {
         graph.tupleStore.select(plan);
     }
@@ -51,7 +51,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
                 return;
 
             if (plan.storageProvider) {
-                plan.storageProvider.runSave(plan.pattern, plan.output);
+                plan.storageProvider.runSave(plan.tuple, plan.output);
             } else {
                 graph.tupleStore.save(plan);
             }

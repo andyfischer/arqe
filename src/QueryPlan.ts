@@ -1,4 +1,5 @@
 
+import Tuple from './Tuple'
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
 import TupleReceiver from './TupleReceiver'
@@ -19,9 +20,9 @@ export default interface QueryPlan {
     modifiesExisting: boolean
     initializeIfMissing: boolean
     isDelete?: boolean
-    modificationCallback?: (pattern: Pattern) => Pattern
+    modificationCallback?: (tuple: Tuple) => Pattern
 
-    pattern: Pattern
+    tuple: Tuple
     filterPattern: Pattern
     output: TupleReceiver
     storageProvider?: StorageProvider

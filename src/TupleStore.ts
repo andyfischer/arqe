@@ -88,13 +88,13 @@ export default class TupleStore {
     }
 
     insert(plan: QueryPlan) {
-        const { pattern, output } = plan; 
-        let relation = pattern;
+        let tuple = plan.tuple;
+        const { output } = plan; 
 
-        // Save as new relation
-        relation = this.resolveExpressionValues(relation);
+        // Save as new row
+        tuple = this.resolveExpressionValues(tuple);
 
-        for (const tag of relation.tags) {
+        for (const tag of tuple.tags) {
             if (tag.valueExpr) {
                 emitCommandError(output, "TupleStore unhandled expression: " + tag.stringify());
                 output.finish();
@@ -103,35 +103,35 @@ export default class TupleStore {
         }
 
         // Check if this tuple is already saved.
-        for (const existing of this.findStored(plan.tableName, relation)) {
+        for (const existing of this.findStored(plan.tableName, tuple)) {
             // Already saved - No-op.
-            output.relation(relation);
+            output.relation(tuple);
             output.finish();
             return;
         }
 
         // Store a new tuple.
         const slotId = this.nextSlotId.take();
-        this.slots[slotId] = relation;
-        output.relation(relation);
+        this.slots[slotId] = tuple;
+        output.relation(tuple);
 
         if (!plan.tableName) {
-            emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.pattern.stringify());
+            emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.tuple.stringify());
             output.finish();
             return;
         }
 
         this.byTableName[plan.tableName] = this.byTableName[plan.tableName] || {};
         this.byTableName[plan.tableName][slotId] = true;
-        this.graph.onTupleUpdated(relation);
+        this.graph.onTupleUpdated(tuple);
         output.finish();
     }
 
     update(plan: QueryPlan) {
-        const { pattern, output } = plan;
+        const { tuple, output } = plan;
         const graph = this.graph;
 
-        const changeOperation = pattern;
+        const changeOperation = tuple;
         let hasFoundAny = false;
 
         // Apply the modificationCallback to every matching slot.
@@ -146,7 +146,7 @@ export default class TupleStore {
         // Check if the plan has 'initializeIfMissing' - this means we must insert the row
         // if no matches were found.
         if (!hasFoundAny && plan.initializeIfMissing) {
-            plan.pattern = toInitialization(pattern);
+            plan.tuple = toInitialization(tuple);
             this.insert(plan);
             return;
         }
@@ -171,9 +171,9 @@ export default class TupleStore {
     }
 
     select(plan: QueryPlan) {
-        const { pattern, output } = plan;
+        const { tuple, output } = plan;
 
-        for (const { slotId, relation } of this.findStored(plan.tableName, pattern)) {
+        for (const { slotId, relation } of this.findStored(plan.tableName, tuple)) {
             output.relation(relation);
         }
 
