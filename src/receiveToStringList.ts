@@ -18,7 +18,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
     function stringifyTuple(rel: Tuple) {
 
         const tags = rel.tags.filter(tag => {
-            if (searchPattern && !outputExtended && searchPattern.fixedTagsForType[tag.tagType])
+            if (searchPattern && !outputExtended && searchPattern.fixedTagsForType[tag.attr])
                 return false;
 
             return true;

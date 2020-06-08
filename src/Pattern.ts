@@ -43,12 +43,12 @@ export default class Pattern {
             return;
 
         for (const tag of this.tags) {
-            const { tagType } = tag;
+            const { attr } = tag;
 
-            if (!this.tagsForType[tagType])
-                this.tagsForType[tagType] = [];
+            if (!this.tagsForType[attr])
+                this.tagsForType[attr] = [];
 
-            this.tagsForType[tagType].push(tag);
+            this.tagsForType[attr].push(tag);
 
             if (tag.doubleStar) {
                 this.hasDoubleStar = true;
@@ -58,7 +58,7 @@ export default class Pattern {
                 this.starValueTags.push(tag);
             } else {
                 this.fixedTags.push(tag as FixedTag);
-                this.fixedTagsForType[tag.tagType] = true;
+                this.fixedTagsForType[tag.attr] = true;
             }
 
             if (tag.identifier)
@@ -105,7 +105,7 @@ export default class Pattern {
             // Tag has no type, always matches.
             return true;
 
-        const tagsForType = subPattern.tagsForType[tag.tagType];
+        const tagsForType = subPattern.tagsForType[tag.attr];
 
         if (!tagsForType || tagsForType.length == 0)
             // No matching tags for this type, stop here.
@@ -194,7 +194,7 @@ export default class Pattern {
         const outTags = [];
 
         for (const tag of rel.tags) {
-            if (this.fixedTagsForType[tag.tagType])
+            if (this.fixedTagsForType[tag.attr])
                 continue;
 
             outTags.push(patternTagToString(tag));
@@ -291,7 +291,7 @@ export default class Pattern {
 
     setValueForType(tagType: string, value: any) {
         return this.remapTags(tag => {
-            if (tag.tagType === tagType) {
+            if (tag.attr === tagType) {
 
                 if (value === null)
                     return null;
@@ -311,7 +311,7 @@ export default class Pattern {
 
     findTagForType(tagType: string) {
         for (let i = 0; i < this.tags.length; i++)
-            if (this.tags[i].tagType === tagType)
+            if (this.tags[i].attr === tagType)
                 return this.tags[i];
         return null;
     }
@@ -322,7 +322,7 @@ export default class Pattern {
 
     findTagIndexOfType(tagType: string) {
         for (let i = 0; i < this.tags.length; i++)
-            if (this.tags[i].tagType === tagType)
+            if (this.tags[i].attr === tagType)
                 return i;
         return -1;
     }
@@ -341,11 +341,11 @@ export default class Pattern {
     }
 
     removeType(typeName: string) {
-        return this.copyWithNewTags(this.tags.filter(tag => tag.tagType !== typeName));
+        return this.copyWithNewTags(this.tags.filter(tag => tag.attr !== typeName));
     }
 
     removeTypes(typeNames: string[]) {
-        return this.copyWithNewTags(this.tags.filter(tag => typeNames.indexOf(tag.tagType) === -1));
+        return this.copyWithNewTags(this.tags.filter(tag => typeNames.indexOf(tag.attr) === -1));
     }
 
     addTagStr(s: string) {
@@ -410,7 +410,7 @@ export function patternFromMap(map: Map<string,string>) {
     const tags = []
     for (const [key,value] of map.entries()) {
         const tag = new PatternTag();
-        tag.tagType = key;
+        tag.attr = key;
         tag.tagValue = value;
         tags.push(tag);
     }

@@ -37,7 +37,7 @@ export default function stringifyRelationStream() {
         }
 
         const tags = rel.tags.filter(tag => {
-            if (searchPattern && !outputExtended && searchPattern.fixedTagsForType[tag.tagType])
+            if (searchPattern && !outputExtended && searchPattern.fixedTagsForType[tag.attr])
                 return false;
 
             return true;

@@ -6,7 +6,7 @@ function isMultiColumn(rels: Tuple[]) {
     const columns = new Map()
     for (const rel of rels) {
         for (const tag of rel.tags) {
-            columns.set(tag.tagType, true)
+            columns.set(tag.attr, true)
             if (columns.size > 1)
                 return true;
         }

@@ -136,7 +136,7 @@ function parseOneTag(it: TokenIterator): PatternTag {
     if (it.tryConsume(t_dot)) {
         const optionValue = it.consumeNextUnquotedText();
         return newTagFromObject({
-            tagType: 'option',
+            attr: 'option',
             tagValue: optionValue,
             identifier,
             negate
@@ -146,22 +146,22 @@ function parseOneTag(it: TokenIterator): PatternTag {
     if (it.tryConsume(t_dollar)) {
         const unboundVar = it.consumeNextUnquotedText();
         return newTagFromObject({
-            tagType: null,
+            attr: null,
             identifier: unboundVar,
             star: true
         })
     }
 
-    const tagType = it.consumeNextUnquotedText();
+    const attr = it.consumeNextUnquotedText();
 
-    if (tagType === '/')
-        throw new Error("syntax error, tagType was '/'");
+    if (attr === '/')
+        throw new Error("syntax error, attr was '/'");
 
     const valueOptions = parseTagValue(it);
 
     return newTagFromObject({
         ...valueOptions,
-        tagType,
+        attr,
         negate,
         identifier: identifier || valueOptions.identifier,
     })

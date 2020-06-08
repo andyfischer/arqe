@@ -64,8 +64,8 @@ export default class Schema {
     beforeSave(relation: Tuple) {
         // Autocreate columns if necessary
         for (const tag of relation.tags) {
-            if (tag.tagType)
-                this.initColumn(tag.tagType);
+            if (tag.attr)
+                this.initColumn(tag.attr);
         }
     }
 
@@ -76,7 +76,7 @@ export default class Schema {
             if (tag.doubleStar) {
                 classified.push('**')
             } else {
-                classified.push(this.columns[tag.tagType].type);
+                classified.push(this.columns[tag.attr].type);
             }
         }
 

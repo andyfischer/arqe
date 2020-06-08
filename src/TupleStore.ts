@@ -59,10 +59,10 @@ export default class TupleStore {
     resolveExpressionValues(rel: Tuple) {
         return rel.remapTags((tag: PatternTag) => {
             if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
-                if (!this.nextUniqueIdPerType[tag.tagType])
-                    this.nextUniqueIdPerType[tag.tagType] = new IDSource();
+                if (!this.nextUniqueIdPerType[tag.attr])
+                    this.nextUniqueIdPerType[tag.attr] = new IDSource();
 
-                return tag.setValue(this.nextUniqueIdPerType[tag.tagType].take());
+                return tag.setValue(this.nextUniqueIdPerType[tag.attr].take());
             }
 
             return tag;

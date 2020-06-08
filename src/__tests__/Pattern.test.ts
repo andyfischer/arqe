@@ -4,7 +4,7 @@ import PatternTag from '../PatternTag'
 
 it('PatternTag.setValue works', () => {
     const tag = new PatternTag();
-    tag.tagType = 'a';
+    tag.attr = 'a';
     tag.tagValue = '1';
     expect(tag.stringify()).toEqual('a/1');
 

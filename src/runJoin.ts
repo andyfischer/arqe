@@ -20,12 +20,12 @@ function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pa
         for (const tag of identifierTags) {
             if (!rel.byIdentifier[tag.identifier]) {
 
-                if (!tag.tagType) {
+                if (!tag.attr) {
                     throw new Error("annotateRelationsWithMissingIdentifier doesn't know how "
                                     +"to handle ident tag: " + searchPattern.stringify());
                 }
 
-                rel = rel.updateTagAtIndex(rel.findTagIndexOfType(tag.tagType), t => t.setIdentifier(tag.identifier) )
+                rel = rel.updateTagAtIndex(rel.findTagIndexOfType(tag.attr), t => t.setIdentifier(tag.identifier) )
             }
         }
 
@@ -139,7 +139,7 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
     function getKeyForInput(pattern: Pattern) {
         const key = {}
         for (const correspondingTag of correspondingTags)
-            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.input.tagType);
+            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.input.attr);
 
         return JSON.stringify(key);
     }
@@ -147,7 +147,7 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
     function getKeyForSearch(pattern: Pattern) {
         const key = {}
         for (const correspondingTag of correspondingTags)
-            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.search.tagType);
+            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.search.attr);
 
         return JSON.stringify(key);
     }

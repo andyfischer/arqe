@@ -77,8 +77,8 @@ export default function printAsTable(patterns: Pattern[]): string[] {
     // Figure out all the columns.
     for (const pattern of patterns) {
         for (const tag of pattern.tags) {
-            if (tag.tagType) {
-                const column: Column = columns.get(tag.tagType);
+            if (tag.attr) {
+                const column: Column = columns.get(tag.attr);
                 column.items.push(tag.tagValue);
             }
         }

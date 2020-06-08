@@ -24,7 +24,7 @@ function oneKeyValueToTag(key: string, value: any) {
 
         let starValue = value.match === '*';
         return newTagFromObject({
-            tagType: value.attr,
+            attr: value.attr,
             identifier,
             starValue: value.match === '*',
             tagValue: value.value
@@ -32,18 +32,18 @@ function oneKeyValueToTag(key: string, value: any) {
     }
 
     if (value && value.match === '*') {
-        return newTagFromObject({tagType: key, starValue: true});
+        return newTagFromObject({attr: key, starValue: true});
     }
 
     if (value === true) {
-        return newTagFromObject({tagType: key});
+        return newTagFromObject({attr: key});
     }
 
     if (typeof value === 'string')
-        return newTagFromObject({tagType: key, tagValue: value});
+        return newTagFromObject({attr: key, tagValue: value});
 
     if (typeof value === 'number')
-        return newTagFromObject({tagType: key, tagValue: value + ""});
+        return newTagFromObject({attr: key, tagValue: value + ""});
 
 
     throw new Error(`Don't know how to convert into a tag: ${key}, ${value}`);
@@ -90,8 +90,8 @@ function oneTagToKeyValue(tag: PatternTag, out: PatternJSON) {
     if (tag.identifier) {
         let details: any = {};
 
-        if (tag.tagType)
-            details.attr = tag.tagType;
+        if (tag.attr)
+            details.attr = tag.attr;
 
         if (tag.starValue)
             details.match = "*";
@@ -104,17 +104,17 @@ function oneTagToKeyValue(tag: PatternTag, out: PatternJSON) {
     }
 
     if (tag.starValue) {
-        addOutput(tag.tagType, {match: "*"});
+        addOutput(tag.attr, {match: "*"});
         return
     }
 
     if (!tag.tagValue) {
-        addOutput(tag.tagType, true);
+        addOutput(tag.attr, true);
         return
     }
 
     if (tag.tagValue) {
-        addOutput(tag.tagType, tag.tagValue);
+        addOutput(tag.attr, tag.tagValue);
         return;
     }
 

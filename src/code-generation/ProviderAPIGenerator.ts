@@ -122,11 +122,11 @@ function patternCheckExpression(pattern: Pattern) {
         if (tag.doubleStar)
             continue;
 
-        conditions.push(`pattern.hasType("${tag.tagType}")`);
+        conditions.push(`pattern.hasType("${tag.attr}")`);
         if (tag.identifier) {
-            conditions.push(`pattern.hasValueForType("${tag.tagType}")`);
+            conditions.push(`pattern.hasValueForType("${tag.attr}")`);
         } else if (tag.tagValue) {
-            conditions.push(`pattern.getTagValue("${tag.tagType}") == "${tag.tagValue}"`);
+            conditions.push(`pattern.getTagValue("${tag.attr}") == "${tag.tagValue}"`);
         }
     }
 
@@ -139,7 +139,7 @@ function pullOutVarsFromPattern(pattern: Pattern, block: Block) {
 
     for (const tag of pattern.tags) {
         if (tag.identifier) {
-            block.addRaw(`const ${tag.identifier} = pattern.getTagValue("${tag.tagType}");`);
+            block.addRaw(`const ${tag.identifier} = pattern.getTagValue("${tag.attr}");`);
             vars.push(tag.identifier);
         }
     }

@@ -24,7 +24,7 @@ export function patternTagToString(tag: PatternTag) {
         return '**'
 
     if (tag.starValue && tag.identifier) {
-        return tag.tagType + '/$' + tag.identifier;
+        return tag.attr + '/$' + tag.identifier;
     }
 
     if (tag.tagValue) {
@@ -41,11 +41,11 @@ export function patternTagToString(tag: PatternTag) {
         const needsParens = tagValueNeedsParens(tag.tagValue);
 
         if (needsParens) {
-            s += tag.tagType + '(';
-        } else if (tag.tagType === 'option') {
+            s += tag.attr + '(';
+        } else if (tag.attr === 'option') {
             s += '.'
         } else {
-            s += tag.tagType + '/';
+            s += tag.attr + '/';
         }
 
         s += tag.tagValue;
@@ -57,18 +57,18 @@ export function patternTagToString(tag: PatternTag) {
     }
 
     if (tag.valueExpr) {
-        return tag.tagType + '/' + stringifyExpr(tag.valueExpr)
+        return tag.attr + '/' + stringifyExpr(tag.valueExpr)
 
     } else if (tag.starValue) {
-        return tag.tagType + '/*';
+        return tag.attr + '/*';
     }
 
-    if (tag.tagType) {
+    if (tag.attr) {
         let s = '';
         if (tag.identifier) {
             s += `[from \$${tag.identifier}] `
         }
-        s += tag.tagType;
+        s += tag.attr;
         return s;
     }
     
@@ -113,7 +113,7 @@ export function parseAsSet(str: string) {
 }
 
 export function normalizeExactTag(tags: PatternTag[]) {
-    const argStrs = tags.map(arg => arg.tagType + '/' + arg.tagValue)
+    const argStrs = tags.map(arg => arg.attr + '/' + arg.tagValue)
     argStrs.sort();
     return argStrs.join(' ');
 }

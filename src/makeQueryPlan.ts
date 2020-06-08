@@ -75,7 +75,7 @@ function patternIsDelete(pattern: Pattern) {
 
 function modificationPatternToFilter(pattern: Pattern) {
     return pattern.remapTags((tag: PatternTag) => {
-        if (tag.tagType === 'deleted')
+        if (tag.attr === 'deleted')
             return null;
 
         if (tagModifiesExistingRelations(tag))
@@ -105,7 +105,7 @@ function applyModificationExpr(expr: string[], value: string) {
 function applyModification(changeOperation: Pattern, storedRel: Pattern): Pattern {
 
     storedRel = storedRel.remapTags((tag: PatternTag) => {
-        const modificationTag = changeOperation.getOneTagForType(tag.tagType);
+        const modificationTag = changeOperation.getOneTagForType(tag.attr);
 
         if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
             tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));
@@ -123,8 +123,8 @@ function getImpliedTableName(pattern: Pattern) {
             return null;
     
     const els = pattern.tags
-        .filter(r => r.tagType !== 'deleted')
-        .map(r => r.tagType);
+        .filter(r => r.attr !== 'deleted')
+        .map(r => r.attr);
 
     els.sort();
     return els.join(' ');
@@ -140,7 +140,7 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleRece
     let doubleStar = false;
     
     for (const tag of pattern.tags) {
-        if (!tag.tagType) {
+        if (!tag.attr) {
             if (tag.doubleStar) {
                 doubleStar = true;
             } else if (tag.star) {
@@ -152,7 +152,7 @@ function initialBuildQueryPlan(graph: Graph, pattern: Pattern, output: TupleRece
             continue;
         }
 
-        const column = graph.initColumn(tag.tagType);
+        const column = graph.initColumn(tag.attr);
         
         planTags.push({
             tag,
