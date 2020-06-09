@@ -6,6 +6,7 @@ import TupleReceiver from './TupleReceiver'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
+import findTableForQuery from './findTableForQuery'
 
 const exprFuncEffects = {
     increment: {
@@ -130,23 +131,6 @@ function getImpliedTableName(tuple: Tuple) {
     return els.join(' ');
 }
 
-function findTable(graph: Graph, tuple: Tuple, out: TupleReceiver) {
-    // Check if the query specifies an exact table
-
-    if (tuple.hasType('table')) {
-        const tableName = tuple.getValueForType('table');
-        const table = graph.tupleStore.findTable(tableName);
-        if (!table) {
-            emitCommandError(out, "table not found: " + tableName);
-            return { failed: true }
-        }
-
-        return { table }
-    }
-
-    return { table: null }
-}
-
 function toPlanTags(graph: Graph, tuple: Tuple) {
     const planTags: QueryTag[] = [];
 
@@ -210,7 +194,6 @@ function findStorageProvider(plan: QueryPlan) {
     }
 }
 
-
 function validatePlan(plan: QueryPlan) {
     // There was once something here
 }
@@ -219,13 +202,15 @@ export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: T
 
     tuple = resolveImmediateExpressions(tuple);
 
-    const { table, failed } = findTable(graph, tuple, output);
-
-    if (failed)
-        return;
-
+    const { table, failed } = findTableForQuery(graph, tuple, output);
 
     const plan: QueryPlan = initialBuildQueryPlan(graph, tuple, output);
+
+    if (failed) {
+        plan.failed = true;
+        return plan;
+    }
+
     findStorageProvider(plan);
     validatePlan(plan);
     return plan;

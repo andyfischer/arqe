@@ -1,7 +1,7 @@
 
-- schema table/tableSchema
+- schema tableName/tableSchema
 
-- schema table/tableSchema:
+- schema tableName/tableSchema:
   - primary-key(schema table)
   - attr/schema
   - attr/table

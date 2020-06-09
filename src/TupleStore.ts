@@ -12,6 +12,7 @@ import QueryPlan, { QueryTag } from './QueryPlan'
 import Table from './Table'
 import PrimaryKey from './PrimaryKey'
 import { parsePattern } from './parseCommand'
+import TuplePatternMatcher from './TuplePatternMatcher'
 
 interface Slot {
     relation: Tuple
@@ -34,6 +35,7 @@ export default class TupleStore {
     byTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
     tables: { [ name: string ]: Table } = {}
+    tablePatternMap = new TuplePatternMatcher<Table>();
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -49,7 +51,10 @@ export default class TupleStore {
         if (this.tables[name])
             throw new Error("table already exists: " + name)
 
-        this.tables[name] = new Table(name, pattern);
+        const table = new Table(name, pattern);
+        this.tables[name] = table;
+        this.tablePatternMap.add(pattern, table);
+        return table;
     }
 
     resolveExpressionValues(rel: Tuple) {

@@ -17,12 +17,12 @@ export function emitCommandMeta(output: TupleReceiver, fields: any) {
     output.relation(tagsToPattern(tags));
 }
 
-export function emitCommandError(output: TupleReceiver, msg: string) {
+export function emitCommandError(output: TupleReceiver, message: string) {
 
     const tags = [
         newTag('command-meta'),
         newTag('error'),
-        newTag('message', msg)
+        newTag('message', message)
     ];
 
     output.relation(tagsToPattern(tags));
