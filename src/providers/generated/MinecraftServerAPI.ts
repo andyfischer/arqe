@@ -3,6 +3,8 @@ import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandE
 interface NativeHandler {
     readBlock: (x: string, y: string, z: string) => Promise<any>
     setBlock: (x: string, y: string, z: string, block: string) => void
+    setPredef: (x: string, y: string, z: string, predef: string) => void
+    undo: () => void
 }
 
 export default class API implements StorageProvider {
@@ -51,6 +53,40 @@ export default class API implements StorageProvider {
                 const z = pattern.getTagValue("z");
                 const block = pattern.getTagValue("block");
                 await this.handler.setBlock(x, y, z, block);
+                output.relation(pattern);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
+        }
+
+        // check for handler/setPredef (set mc x/$x y/$y z/$z predef/$predef)
+
+        if ((pattern.tagCount() == 5) && (pattern.hasType("mc")) && (pattern.hasType("x")) && (pattern.hasValueForType("x")) && (pattern.hasType("y")) && (pattern.hasValueForType("y")) && (pattern.hasType("z")) && (pattern.hasValueForType("z")) && (pattern.hasType("predef")) && (pattern.hasValueForType("predef"))) {
+            try {
+                const x = pattern.getTagValue("x");
+                const y = pattern.getTagValue("y");
+                const z = pattern.getTagValue("z");
+                const predef = pattern.getTagValue("predef");
+                await this.handler.setPredef(x, y, z, predef);
+                output.relation(pattern);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
+        }
+
+        // check for handler/mcundo (set mc undo)
+
+        if ((pattern.tagCount() == 2) && (pattern.hasType("mc")) && (pattern.hasType("undo"))) {
+            try {
+                await this.handler.undo();
                 output.relation(pattern);
             }
             catch(e) {

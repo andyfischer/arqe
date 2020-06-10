@@ -2,7 +2,7 @@
 import Tuple from '../Tuple'
 import { parsePattern } from '..'
 
-function move(tup: Tuple, dx: number, dy: number, dz: number) {
+export function move(tup: Tuple, dx: number, dy: number, dz: number) {
     const x = parseInt(tup.getVal("x"));
     const y = parseInt(tup.getVal("y"));
     const z = parseInt(tup.getVal("z"));
@@ -57,3 +57,5 @@ const predefs = {
         yield* story(nw);
     }
 }
+
+export default predefs;

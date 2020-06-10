@@ -5,6 +5,8 @@ import Repl from 'repl'
 import IDSource from '../utils/IDSource'
 import MinecraftServerAPI from './generated/MinecraftServerAPI'
 import BlockDb from './BlockDb'
+import Predefs, { move } from './MinecraftPredefs'
+import Tuple from '../Tuple'
 
 const PORT = 4000;
 
@@ -142,6 +144,19 @@ function expectSuccess(response) {
     }
 }
 
+let lastBlockSet = [];
+
+async function setBlocks(sets: Tuple[]) {
+    const ops = [];
+
+    for (const set of sets) {
+        const command = `/setblock ${set.getVal("x")} ${set.getVal("y")} ${set.getVal("z")}  ${set.getVal("block")}  0 replace`;
+        ops.push(sendCommand(command));
+    }
+
+    return Promise.all(ops);
+}
+
 export default function setup() {
     if (!server) {
         server = createWsServer();
@@ -170,6 +185,23 @@ export default function setup() {
         async setBlock(x, y, z, block) {
             const response = await sendCommand(`/setblock ${x} ${y} ${z} ${block} 0 replace`);
             expectSuccess(response);
+        },
+        async setPredef(x, y, z, predef) {
+            if (!Predefs[predef])
+                throw new Error("predef not found: " + predef);
+
+            const sets = [];
+
+            for (let set of Predefs[predef]()) {
+                set = move(set, parseInt(x), parseInt(y), parseInt(z));
+                sets.push(set);
+            }
+
+            await setBlocks(sets);
+            lastBlockSet = sets;
+        },
+        undo() {
+
         }
     });
 }

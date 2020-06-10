@@ -31,7 +31,7 @@
   - async
 
 - handler/setPredef:
-  - function-name/setBlock
+  - function-name/setPredef
   - input var/x type/string
   - input var/y type/string
   - input var/z type/string
