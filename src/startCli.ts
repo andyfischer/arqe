@@ -1,5 +1,6 @@
 
 import Fs from 'fs'
+import Path from 'path'
 import Graph from './Graph'
 import GraphRepl from './GraphRepl'
 import printResult from './console/printResult'
@@ -44,6 +45,7 @@ export default async function main() {
     let useRemoteServer = true;
     let runRepl = true;
 
+    //graph = loadGraphFromFiles(Path.join(__dirname, '../src/db'));
     if (cliArgs.db) {
         graph = loadGraphFromFiles(cliArgs.db);
         useRemoteServer = false;

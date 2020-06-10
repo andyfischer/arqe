@@ -3,7 +3,7 @@ import Graph from '../Graph'
 import WebSocket from 'ws'
 import Repl from 'repl'
 import IDSource from '../utils/IDSource'
-//import MinecraftServerAPI from './generated/MinecraftServerAPI'
+import MinecraftServerAPI from './generated/MinecraftServerAPI'
 
 const PORT = 4000;
 
@@ -50,6 +50,7 @@ async function createWsServer() {
             activeConnections.delete(id)
         }
 
+        /*
         // TEST
         conn.send(JSON.stringify({
             body: {
@@ -62,6 +63,7 @@ async function createWsServer() {
                 version: 1,
             }
         }))
+        */
     });
 
     return wsServer;
@@ -74,8 +76,12 @@ function receive(conn, connId, data) {
 const server = createWsServer();
 console.log(`Listening on port ${PORT}`)
 const nextConnId = new IDSource();
+const nextRequestId = new IDSource();
 const activeConnections = new Map();
 
+const messageListeners = {}
+
+/*
 const repl = Repl.start({
     prompt: '~ ',
     eval: line => {
@@ -83,8 +89,43 @@ const repl = Repl.start({
         }
     }
 });
+*/
+
+async function sendCommand(commandLine: string) {
+
+    if (activeConnections.size === 0)
+        throw new Error("no active connections");
+
+    for (const conn of activeConnections.values()) {
+
+        const reqId = nextRequestId.take();
+
+        conn.send(JSON.stringify({
+            body: {
+                commandLine,
+                version: 1
+            },
+            header: {
+                requestId: reqId,
+                messagePurpose: 'commandRequest',
+                version: 1,
+            }
+        }))
 
 
-export default function setup(graph: Graph) {
-    //return new MinecraftServerAPI({ });
+        return new Promise(resolve => {
+            messageListeners[reqId] = resolve;
+        });
+    }
+}
+
+export default function setup() {
+    return new MinecraftServerAPI({
+        async readBlock(x, y, z) {
+            const result = await sendCommand(`/data get block ${x} ${y} ${z}`);
+        },
+        async setBlock(x, y, z, block) {
+            await sendCommand(`/setblock ${x} ${y} ${z} ${block} 0 replace`);
+        }
+    });
 }

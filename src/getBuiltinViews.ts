@@ -10,6 +10,7 @@ import setupTypescriptTree from './providers/TypescriptTree'
 import setupTypescriptCompilation from './providers/TypescriptCompiler'
 import setupSelfTest from './selftest/SelfTest'
 import setupWorkingFile from './providers/WorkingFile'
+import setupMinecraftServer from './providers/MinecraftServer'
 
 export default function getBuiltinViews(graph: Graph): {[name: string]: StorageProvider } {
     return {
@@ -22,5 +23,6 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
         'tsc-compile': setupTypescriptCompilation(),
         'self-test-results': setupSelfTest(graph),
         'working-file': setupWorkingFile(),
+        'mc': setupMinecraftServer()
     }
 }
