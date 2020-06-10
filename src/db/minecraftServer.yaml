@@ -15,7 +15,7 @@
   - input var/z type/string
   - output var/contents from(block/*)
   - output expectOne
-  - handles-query(get mc x y z block/*)
+  - handles-query(get mc x/$x y/$y z/$z block/*)
   - async
 
 - handler/setBlock:
@@ -25,5 +25,5 @@
   - input var/z type/string
   - input var/block type/string
   - output expectOne
-  - handles-query(set mc x y z block/*)
+  - handles-query(set mc x/$x y/$y z/$z block/$block)
   - async

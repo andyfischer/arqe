@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "./fs"
+import { GraphLike, Tuple, receiveToTupleListPromise } from "./fs"
 
 export default class API {
     graph: GraphLike
@@ -14,9 +14,9 @@ export default class API {
     async getBranches(dir: string): Promise<string[]> {
         const command = `get git dir(${dir}) branch/*`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTagValue("branch"));
@@ -25,9 +25,9 @@ export default class API {
     async deleteBranch(dir: string, branch: string) {
         const command = `set git dir(${dir}) branch(${branch}) deleted/(set)`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?

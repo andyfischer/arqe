@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "ik"
+import { GraphLike, Tuple, receiveToTupleListPromise } from "ik"
 
 export default class API {
     graph: GraphLike
@@ -14,7 +14,7 @@ export default class API {
     listColumns(spreadsheet: string): string[] {
         const command = `get ${spreadsheet} col/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTag("col"));
@@ -23,7 +23,7 @@ export default class API {
     listRows(spreadsheet: string): string[] {
         const command = `get ${spreadsheet} row/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTag("row"));
@@ -32,7 +32,7 @@ export default class API {
     colName(col: string): string {
         const command = `get ${col} name/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -52,7 +52,7 @@ export default class API {
     getCellValue(col: string, row: string): string {
         const command = `get ${row} ${col} value/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -70,7 +70,7 @@ export default class API {
     setCellValue(col: string, row: string, value: string) {
         const command = `delete ${row} ${col} | set ${row} ${col} == ${value}`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -79,7 +79,7 @@ export default class API {
     spreadsheetForView(spreadsheetView: string): string {
         const command = `get ${spreadsheetView} spreadsheet/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -97,7 +97,7 @@ export default class API {
     getSelectedCell(spreadsheetView: string) {
         const command = `get ${spreadsheetView} selection col/* row/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -118,7 +118,7 @@ export default class API {
     clearSelection(spreadsheet: string) {
         const command = `delete ${spreadsheet} selection row/* col/*`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -127,7 +127,7 @@ export default class API {
     setSelection(view: string, row: string, col: string) {
         const command = `set ${view} selection ${row} ${col}`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -136,7 +136,7 @@ export default class API {
     isEditing(view: string): boolean {
         const command = `get ${view} now-editing`;
 
-        const rels: Relation[] = this.graph.runSync(command)
+        const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.length > 0;

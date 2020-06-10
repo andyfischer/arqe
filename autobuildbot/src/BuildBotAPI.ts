@@ -1,4 +1,4 @@
-import { GraphLike, Relation, receiveToRelationListPromise } from "./fs"
+import { GraphLike, Tuple, receiveToTupleListPromise } from "./fs"
 
 export default class API {
     graph: GraphLike
@@ -15,7 +15,7 @@ export default class API {
         const command = `listen file-watch filename/* version`;
 
         this.graph.run(command, {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta'))
                     return;
                 callback(rel.getTagValue("filename"));
@@ -27,9 +27,9 @@ export default class API {
     async findTasksByCommand(cmd: string, cwd: string): Promise<string[]> {
         const command = `get build-task/* cmd(${cmd}) cwd(${cwd}) status`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTag("build-task"));
@@ -38,9 +38,9 @@ export default class API {
     async createBuildTask(cmd: string, cwd: string, status: string): Promise<string> {
         const command = `set build-task/(unique) cmd(${cmd}) cwd(${cwd}) status/${status}`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -60,9 +60,9 @@ export default class API {
     async taskStatus(task: string): Promise<string> {
         const command = `get ${task} cmd cwd status`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -82,9 +82,9 @@ export default class API {
     async setPendingTaskTimer(task: string) {
         const command = `set ${task} pending-task-timer expires-at/(seconds-from-now 1)`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -101,11 +101,11 @@ export default class API {
         // no output
     }
 
-    listenToPendingTasks(callback: (rel: Relation) => void) {
+    listenToPendingTasks(callback: (rel: Tuple) => void) {
         const command = `listen build-task/* pending-task-timer expires-at`;
 
         this.graph.run(command, {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta'))
                     return;
                 callback(rel);
@@ -118,7 +118,7 @@ export default class API {
 
         // eventType/anyFileChange
         this.graph.run("listen file-watch filename/* version", {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta'))
                     return;
                 handler({
@@ -131,7 +131,7 @@ export default class API {
 
         // eventType/taskTimerExpired
         this.graph.run("listen build-task/* pending-task-timer expires-at", {
-            relation(rel: Relation) {
+            relation(rel: Tuple) {
                 if (rel.hasType('command-meta') && rel.hasType('deleted')) {
                     handler({
     id: 'taskTimerExpired',
@@ -146,9 +146,9 @@ export default class API {
     async getTaskInfo(task: string) {
         const command = `get ${task} cmd cwd status`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // Expect one result
@@ -172,9 +172,9 @@ export default class API {
     async setTaskStatus(task: string, status: string) {
         const command = `set ${task} cmd cwd status/(set ${status})`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -183,9 +183,9 @@ export default class API {
     async deleteTask(task: string) {
         const command = `delete ${task} cmd cwd status`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -194,9 +194,9 @@ export default class API {
     async setTaskWaitingFor(task: string, waitingForTask: string) {
         const command = `set ${task} waitingFor(${waitingForTask})`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?
@@ -205,9 +205,9 @@ export default class API {
     async getTaskWaitingFor(task: string): Promise<string[]> {
         const command = `get ${task} waitingFor/*`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         return rels.map(rel => rel.getTagValue("waitingFor"));
@@ -216,9 +216,9 @@ export default class API {
     async getDirectoryColor(directory: string): Promise<string> {
         const command = `get directory/${directory} color`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         if (rels.length === 0) {
@@ -236,9 +236,9 @@ export default class API {
     async setDirectoryColor(directory: string, color: string) {
         const command = `set directory/${directory} color/${color}`;
 
-        const { receiver, promise } = receiveToRelationListPromise();
+        const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
-        const rels: Relation[] = (await promise)
+        const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasType("command-meta"));
 
         // no output?

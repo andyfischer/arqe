@@ -1,4 +1,4 @@
-import { GraphLike, Tuple } from "../.."
+import { GraphLike, Tuple, receiveToTupleListPromise } from "../.."
 
 export default class API {
     graph: GraphLike
