@@ -37,16 +37,17 @@ async function createWsServer() {
 
         const id = nextConnId.take();
         activeConnections.set(id, conn);
-        console.log(`(connection ${id} opened)`);
+        console.log(`[mc] connection ${id} opened`);
 
         conn.onerror = (err) => { console.error('ws error: ' + err) }
 
-        conn.onmessage = (data) => {
+        conn.onmessage = (evt) => {
+            const { data } = evt;
             receive(conn, id, data);
         }
 
         conn.onclose = () => {
-            console.log(`(connection ${id} closed)`);
+            console.log(`[mc] connection ${id} closed`);
             activeConnections.delete(id)
         }
 
@@ -70,11 +71,15 @@ async function createWsServer() {
 }
 
 function receive(conn, connId, data) {
-    console.log(`[${connId}] received: ${data}`);
+    console.log(`[${connId}] received: ${JSON.stringify(data)}`);
+    const message = JSON.parse(data);
+
+    const reqId = message.header.requestId;
+    messageListeners[reqId](message);
+    delete messageListeners[reqId];
 }
 
-const server = createWsServer();
-console.log(`Listening on port ${PORT}`)
+let server;
 const nextConnId = new IDSource();
 const nextRequestId = new IDSource();
 const activeConnections = new Map();
@@ -112,14 +117,26 @@ async function sendCommand(commandLine: string) {
             }
         }))
 
-
-        return new Promise(resolve => {
+        const response = await new Promise<any>(resolve => {
             messageListeners[reqId] = resolve;
         });
+
+        if (response.body.statusCode === 0) {
+            return response.body;
+
+        } else {
+            console.log('MC replied with error: ', JSON.stringify(response))
+            throw new Error(response.body.statusMessage);
+        }
     }
 }
 
 export default function setup() {
+    if (!server) {
+        server = createWsServer();
+        console.log(`Minecraft server listening on port ${PORT}`)
+    }
+
     return new MinecraftServerAPI({
         async readBlock(x, y, z) {
             const result = await sendCommand(`/data get block ${x} ${y} ${z}`);
