@@ -6,11 +6,11 @@ import Table from './Table'
 type FindIterator = Iterable<{
     slotId:string,
     found: Tuple,
-    table: Table}>
+    table: Table
+}>
 
 interface PartialQueryPlan {
     tuple?: Tuple
-    tableName?: string
     filterPattern?: Tuple
 }
 
@@ -26,6 +26,6 @@ export default function* findStored(store: TupleStore, plan: PartialQueryPlan): 
     for (const slotId in table.slots) {
         const found = table.slots[slotId];
         if (searchPattern.isSupersetOf(found))
-            yield { slotId, found, table}
+            yield { slotId, found, table }
     }
 }

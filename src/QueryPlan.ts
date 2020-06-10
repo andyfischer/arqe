@@ -5,6 +5,7 @@ import PatternTag from './PatternTag'
 import TupleReceiver from './TupleReceiver'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
+import Table from './Table'
 
 export interface QueryTag {
     type: ColumnType
@@ -26,6 +27,8 @@ export default interface QueryPlan {
     filterPattern: Pattern
     output: TupleReceiver
     storageProvider?: StorageProvider
+
+    table?: Table
     tableName?: string
 
     failed: boolean

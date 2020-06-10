@@ -25,3 +25,4 @@ export default function findTableForQuery(graph: Graph, tuple: Tuple, out: Tuple
 
     return { table: null }
 }
+

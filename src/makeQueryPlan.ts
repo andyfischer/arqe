@@ -202,14 +202,15 @@ export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: T
 
     tuple = resolveImmediateExpressions(tuple);
 
-    const { table, failed } = findTableForQuery(graph, tuple, output);
-
     const plan: QueryPlan = initialBuildQueryPlan(graph, tuple, output);
+    const { table, failed } = findTableForQuery(graph, tuple, output);
 
     if (failed) {
         plan.failed = true;
         return plan;
     }
+
+    plan.table = table;
 
     findStorageProvider(plan);
     validatePlan(plan);

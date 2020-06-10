@@ -14,6 +14,7 @@ import PrimaryKey from './PrimaryKey'
 import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import findStored from './findStored'
+import maybeCreateImplicitTable from './maybeCreateImplicitTable'
 
 interface Slot {
     relation: Tuple
@@ -161,6 +162,9 @@ export default class TupleStore {
     }
 
     save(plan: QueryPlan) {
+        
+        maybeCreateImplicitTable(this, plan);
+
         if (plan.isDelete) {
             this.doDelete(plan);
         } else if (plan.modifiesExisting) {
