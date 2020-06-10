@@ -8,6 +8,8 @@ import BlockDb from './BlockDb'
 import Predefs, { move } from './MinecraftPredefs'
 import Tuple from '../Tuple'
 
+//const concurrentCommandCount = 20;
+const concurrentCommandCount = 1;
 const PORT = 4000;
 
 async function createWsServer() {
@@ -146,15 +148,22 @@ function expectSuccess(response) {
 
 let lastBlockSet = [];
 
-async function setBlocks(sets: Tuple[]) {
-    const ops = [];
 
+async function setBlocksConcurrent(sets: Tuple[]) {
+    const ops = []
     for (const set of sets) {
         const command = `/setblock ${set.getVal("x")} ${set.getVal("y")} ${set.getVal("z")}  ${set.getVal("block")}  0 replace`;
         ops.push(sendCommand(command));
     }
+    await Promise.all(ops);
+}
 
-    return Promise.all(ops);
+async function setBlocks(sets: Tuple[]) {
+    while (sets.length > 0) {
+        const next = sets.slice(0, concurrentCommandCount);
+        sets = sets.slice(concurrentCommandCount);
+        await setBlocksConcurrent(next);
+    }
 }
 
 export default function setup() {

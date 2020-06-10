@@ -3,6 +3,7 @@ const db = {
 air: 'Air',
 invisiblebedrock: 'Invisible Bedrock',
 stone: 'Stone',
+smooth_stone: 'Smooth Stone',
 grass: 'Grass Block',
 dirt: 'Dirt',
 cobblestone: 'Cobblestone',
@@ -398,6 +399,7 @@ dark_oak_button: 'Dark Oak Button',
 jungle_button: 'Jungle Button',
 spruce_button: 'Spruce Button',
 acacia_trapdoor: 'Acacia Trapdoor',
+scaffolding: 'Scaffolding'
 }
 
 export default db;

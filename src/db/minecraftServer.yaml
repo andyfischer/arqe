@@ -7,6 +7,7 @@
   - handles-pattern(mc **)
   - handler/readBlock
   - handler/setBlock
+  - handler/setBlockWithData
   - handler/setPredef
   - handler/mcundo
 
@@ -28,6 +29,17 @@
   - input var/block type/string
   - output expectOne
   - handles-query(set mc x/$x y/$y z/$z block/$block)
+  - async
+
+- handler/setBlockWithData:
+  - function-name/setBlockWithData
+  - input var/x type/string
+  - input var/y type/string
+  - input var/z type/string
+  - input var/block type/string
+  - input var/data type/string
+  - output expectOne
+  - handles-query(set mc x/$x y/$y z/$z block/$block data/$data)
   - async
 
 - handler/setPredef:
