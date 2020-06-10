@@ -13,6 +13,7 @@ import Table from './Table'
 import PrimaryKey from './PrimaryKey'
 import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
+import findStored from './findStored'
 
 interface Slot {
     relation: Tuple
@@ -29,7 +30,7 @@ function toInitialization(rel: Tuple) {
 export default class TupleStore {
     graph: Graph
 
-    nextUniqueIdPerType: { [ typeName: string]: IDSource } = {};
+    nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
     slots: { [ slotId: string]: Tuple } = {};
     nextSlotId: IDSource = new IDSource();
     byTableName: { [tn: string]: { [slotId: string]: true } } = {}
@@ -40,7 +41,7 @@ export default class TupleStore {
     constructor(graph: Graph) {
         this.graph = graph;
 
-        this.defineTable('table_schema', parsePattern("table/* schema"));
+        this.defineTable('table_schema', parsePattern("table(*) schema"));
     }
 
     findTable(name: string): Table {
@@ -57,39 +58,17 @@ export default class TupleStore {
         return table;
     }
 
-    resolveExpressionValues(rel: Tuple) {
+    resolveExpressionValuesForInsert(rel: Tuple) {
         return rel.remapTags((tag: PatternTag) => {
             if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
-                if (!this.nextUniqueIdPerType[tag.attr])
-                    this.nextUniqueIdPerType[tag.attr] = new IDSource();
+                if (!this.nextUniquePerAttr[tag.attr])
+                    this.nextUniquePerAttr[tag.attr] = new IDSource();
 
-                return tag.setValue(this.nextUniqueIdPerType[tag.attr].take());
+                return tag.setValue(this.nextUniquePerAttr[tag.attr].take());
             }
 
             return tag;
         });
-    }
-
-    *findStored(tableName: string, search: Pattern): Iterable<{slotId:string, relation: Tuple, tableName: string}> {
-
-        if (tableName) {
-            const indexedStorageIds = this.byTableName[tableName] || {};
-
-            for (const slotId in indexedStorageIds) {
-                const relation = this.slots[slotId];
-                if (search.isSupersetOf(relation))
-                    yield { slotId, relation, tableName }
-            }
-            
-            return;
-        }
-
-        // Full scan
-        for (const slotId in this.slots) {
-            const relation = this.slots[slotId];
-            if (search.isSupersetOf(relation))
-                yield { slotId, relation, tableName }
-        }
     }
 
     insert(plan: QueryPlan) {
@@ -97,7 +76,7 @@ export default class TupleStore {
         const { output } = plan; 
 
         // Save as new row
-        tuple = this.resolveExpressionValues(tuple);
+        tuple = this.resolveExpressionValuesForInsert(tuple);
 
         for (const tag of tuple.tags) {
             if (tag.valueExpr) {
@@ -108,7 +87,7 @@ export default class TupleStore {
         }
 
         // Check if this tuple is already saved.
-        for (const existing of this.findStored(plan.tableName, tuple)) {
+        for (const existing of findStored(this, plan)) {
             // Already saved - No-op.
             output.relation(tuple);
             output.finish();
@@ -140,8 +119,8 @@ export default class TupleStore {
         let hasFoundAny = false;
 
         // Apply the modificationCallback to every matching slot.
-        for (const { slotId, relation } of this.findStored(plan.tableName, plan.filterPattern)) {
-            const modified = plan.modificationCallback(relation);
+        for (const { slotId, found } of findStored(this, plan)) {
+            const modified = plan.modificationCallback(found);
             this.slots[slotId] = modified;
             graph.onTupleUpdated(modified);
             output.relation(modified);
@@ -163,13 +142,13 @@ export default class TupleStore {
         const { output } = plan;
         const graph = this.graph;
 
-        for (const { slotId, relation, tableName } of this.findStored(plan.tableName, plan.filterPattern)) {
+        for (const { slotId, found, tableName } of findStored(this, plan)) {
             delete this.slots[slotId];
             if (tableName) {
                 delete (this.byTableName[tableName] || {})[slotId];
             }
-            graph.onTupleDeleted(relation);
-            output.relation(relation.addTagObj(newTag('deleted')));
+            graph.onTupleDeleted(found);
+            output.relation(found.addTagObj(newTag('deleted')));
         }
 
         output.finish();
@@ -178,8 +157,8 @@ export default class TupleStore {
     select(plan: QueryPlan) {
         const { tuple, output } = plan;
 
-        for (const { slotId, relation } of this.findStored(plan.tableName, tuple)) {
-            output.relation(relation);
+        for (const { slotId, found } of findStored(this, plan)) {
+            output.relation(found);
         }
 
         output.finish();
@@ -196,8 +175,8 @@ export default class TupleStore {
     }
 
     searchUnplanned(pattern: Pattern, output: TupleReceiver) {
-        for (const { slotId, relation } of this.findStored(null, pattern)) {
-            output.relation(relation);
+        for (const { slotId, found } of findStored(this, { filterPattern: pattern })) {
+            output.relation(found);
         }
         output.finish();
     }
