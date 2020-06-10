@@ -15,7 +15,6 @@ function trimEndline(str) {
 
 export default class GraphRepl {
     graph: GraphLike
-    repl: any
 
     constructor(graph: GraphLike) {
         this.graph = graph;
