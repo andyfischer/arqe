@@ -37,8 +37,6 @@ export default class TupleStore {
     tables: { [ name: string ]: Table } = {}
     tablePatternMap = new TuplePatternMatcher<Table>();
 
-    supertable = new Table('supertable', parsePattern(''))
-
     constructor(graph: Graph) {
         this.graph = graph;
 
@@ -96,7 +94,11 @@ export default class TupleStore {
         }
 
         // Store a new tuple.
-        const table = this.supertable;
+        const table = plan.table;
+
+        if (!plan.table)
+            throw new Error("Internal error, missing table in insert()")
+
         const slotId = table.nextSlotId.take();
         table.slots[slotId] = tuple;
         output.relation(tuple);

@@ -12,6 +12,15 @@ type FindIterator = Iterable<{
 interface PartialQueryPlan {
     tuple?: Tuple
     filterPattern?: Tuple
+    table?: Table
+}
+
+function* scanOneTable(table: Table, searchPattern: Tuple): FindIterator {
+    for (const slotId in table.slots) {
+        const found = table.slots[slotId];
+        if (searchPattern.isSupersetOf(found))
+            yield { slotId, found, table }
+    }
 }
 
 export default function* findStored(store: TupleStore, plan: PartialQueryPlan): FindIterator {
@@ -20,12 +29,15 @@ export default function* findStored(store: TupleStore, plan: PartialQueryPlan): 
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');
 
-    const table = store.supertable;
-
-    // Full scan
-    for (const slotId in table.slots) {
-        const found = table.slots[slotId];
-        if (searchPattern.isSupersetOf(found))
-            yield { slotId, found, table }
+    const { table } = plan;
+    if (table) {
+        // One table scan
+        yield* scanOneTable(table, searchPattern);
+    } else {
+        // Multi table scan
+        for (const tableName in store.tables) {
+            const table = store.tables[tableName];
+            yield* scanOneTable(table, searchPattern);
+        }
     }
 }

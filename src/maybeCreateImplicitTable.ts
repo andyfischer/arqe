@@ -14,7 +14,7 @@ export default function maybeCreateImplicitTable(store: TupleStore, plan: Partia
     if (plan.table)
         return;
 
-    const tuple = plan.tuple || plan.filterPattern;
+    const tuple = plan.filterPattern || plan.tuple;
 
     const attrTags: PatternTag[] = []
     for (const tag of tuple.tags) {
@@ -23,5 +23,7 @@ export default function maybeCreateImplicitTable(store: TupleStore, plan: Partia
     }
 
     const tableName = '_' + attrTags.map(tag => tag.attr).join('_');
-    plan.table = store.defineTable(tableName, new Tuple(attrTags));
+    const tablePattern = new Tuple(attrTags);
+    // console.log(`created new implicit table ${tableName}: ${tablePattern.stringify()}`);
+    plan.table = store.defineTable(tableName, tablePattern);
 }
