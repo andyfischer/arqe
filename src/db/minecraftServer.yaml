@@ -1,0 +1,29 @@
+
+
+- code-generation/minecraft-server-provider:
+  - destination-filename(src/providers/generated/MinecraftServerAPI.ts)
+  - ik-import(../..)
+  - strategy/provider-api
+  - handles-pattern(mc **)
+  - handler/readBlock
+  - handler/setBlock
+
+- handler/readBlock:
+  - function-name/readBlock
+  - input var/x type/string
+  - input var/y type/string
+  - input var/z type/string
+  - output var/contents from(block/*)
+  - output expectOne
+  - handles-query(get mc x y z block/*)
+  - async
+
+- handler/setBlock:
+  - function-name/setBlock
+  - input var/x type/string
+  - input var/y type/string
+  - input var/z type/string
+  - input var/block type/string
+  - output expectOne
+  - handles-query(set mc x y z block/*)
+  - async

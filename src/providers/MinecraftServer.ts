@@ -1,7 +1,9 @@
 
+import Graph from '../Graph'
 import WebSocket from 'ws'
 import Repl from 'repl'
-import IDSource from './utils/IDSource'
+import IDSource from '../utils/IDSource'
+//import MinecraftServerAPI from './generated/MinecraftServerAPI'
 
 const PORT = 4000;
 
@@ -82,3 +84,7 @@ const repl = Repl.start({
     }
 });
 
+
+export default function setup(graph: Graph) {
+    //return new MinecraftServerAPI({ });
+}
