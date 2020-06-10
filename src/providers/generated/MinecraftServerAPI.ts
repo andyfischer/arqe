@@ -3,6 +3,7 @@ import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandE
 interface NativeHandler {
     readBlock: (x: string, y: string, z: string) => Promise<any>
     setBlock: (x: string, y: string, z: string, block: string) => void
+    setBlockWithData: (x: string, y: string, z: string, block: string, data: string) => void
     setPredef: (x: string, y: string, z: string, predef: string) => void
     undo: () => void
 }
@@ -53,6 +54,26 @@ export default class API implements StorageProvider {
                 const z = pattern.getTagValue("z");
                 const block = pattern.getTagValue("block");
                 await this.handler.setBlock(x, y, z, block);
+                output.relation(pattern);
+            }
+            catch(e) {
+                console.error(e.stack || e)
+            }
+
+            output.finish();
+            return;
+        }
+
+        // check for handler/setBlockWithData (set mc x/$x y/$y z/$z block/$block data/$data)
+
+        if ((pattern.tagCount() == 6) && (pattern.hasType("mc")) && (pattern.hasType("x")) && (pattern.hasValueForType("x")) && (pattern.hasType("y")) && (pattern.hasValueForType("y")) && (pattern.hasType("z")) && (pattern.hasValueForType("z")) && (pattern.hasType("block")) && (pattern.hasValueForType("block")) && (pattern.hasType("data")) && (pattern.hasValueForType("data"))) {
+            try {
+                const x = pattern.getTagValue("x");
+                const y = pattern.getTagValue("y");
+                const z = pattern.getTagValue("z");
+                const block = pattern.getTagValue("block");
+                const data = pattern.getTagValue("data");
+                await this.handler.setBlockWithData(x, y, z, block, data);
                 output.relation(pattern);
             }
             catch(e) {

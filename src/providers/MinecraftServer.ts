@@ -8,8 +8,8 @@ import BlockDb from './BlockDb'
 import Predefs, { move } from './MinecraftPredefs'
 import Tuple from '../Tuple'
 
-//const concurrentCommandCount = 20;
-const concurrentCommandCount = 1;
+const concurrentCommandCount = 20;
+//const concurrentCommandCount = 1;
 const PORT = 4000;
 
 async function createWsServer() {
@@ -113,6 +113,8 @@ function blockNameToId(name: string): string {
 
 async function sendCommand(commandLine: string) {
 
+    console.log('sending: ' + commandLine);
+
     if (activeConnections.size === 0)
         throw new Error("no active connections");
 
@@ -152,7 +154,8 @@ let lastBlockSet = [];
 async function setBlocksConcurrent(sets: Tuple[]) {
     const ops = []
     for (const set of sets) {
-        const command = `/setblock ${set.getVal("x")} ${set.getVal("y")} ${set.getVal("z")}  ${set.getVal("block")}  0 replace`;
+        const data = set.hasAttr('data') ? set.getVal('data') : '0'
+        const command = `/setblock ${set.getVal("x")} ${set.getVal("y")} ${set.getVal("z")}  ${set.getVal("block")}  ${data} replace`;
         ops.push(sendCommand(command));
     }
     await Promise.all(ops);
@@ -193,6 +196,10 @@ export default function setup() {
         },
         async setBlock(x, y, z, block) {
             const response = await sendCommand(`/setblock ${x} ${y} ${z} ${block} 0 replace`);
+            expectSuccess(response);
+        },
+        async setBlockWithData(x, y, z, block, data) {
+            const response = await sendCommand(`/setblock ${x} ${y} ${z} ${block} ${data} replace`);
             expectSuccess(response);
         },
         async setPredef(x, y, z, predef) {

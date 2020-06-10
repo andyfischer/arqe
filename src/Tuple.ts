@@ -256,6 +256,11 @@ export default class Tuple {
     }
 
     hasType(typeName: string) {
+        // TODO delete
+        return !!this.tagsByAttr[typeName];
+    }
+
+    hasAttr(typeName: string) {
         return !!this.tagsByAttr[typeName];
     }
 
