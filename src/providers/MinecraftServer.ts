@@ -4,6 +4,7 @@ import WebSocket from 'ws'
 import Repl from 'repl'
 import IDSource from '../utils/IDSource'
 import MinecraftServerAPI from './generated/MinecraftServerAPI'
+import BlockDb from './BlockDb'
 
 const PORT = 4000;
 
@@ -96,6 +97,16 @@ const repl = Repl.start({
 });
 */
 
+function blockNameToId(name: string): string {
+    for (const id in BlockDb)
+        if (BlockDb[id] === name)
+            return id;
+
+    console.log(`couldn't find block id for: ${name}`);
+
+    return null;
+}
+
 async function sendCommand(commandLine: string) {
 
     if (activeConnections.size === 0)
@@ -117,17 +128,17 @@ async function sendCommand(commandLine: string) {
             }
         }))
 
-        const response = await new Promise<any>(resolve => {
+        return new Promise<any>(resolve => {
             messageListeners[reqId] = resolve;
         });
 
-        if (response.body.statusCode === 0) {
-            return response.body;
+    }
+}
 
-        } else {
-            console.log('MC replied with error: ', JSON.stringify(response))
-            throw new Error(response.body.statusMessage);
-        }
+function expectSuccess(response) {
+    if (response.body.statusCode !== 0) {
+        console.log('MC replied with error: ', JSON.stringify(response))
+        throw new Error(response.body.statusMessage);
     }
 }
 
@@ -139,10 +150,26 @@ export default function setup() {
 
     return new MinecraftServerAPI({
         async readBlock(x, y, z) {
-            const result = await sendCommand(`/data get block ${x} ${y} ${z}`);
+            const response = await sendCommand(`/testforblock ${x} ${y} ${z} air`);
+
+            const message = response.body.statusMessage;
+
+            const regex = /The block at [0-9]+,[0-9]+,[0-9]+ is (.*) \(/
+            const match = regex.exec(message)
+
+            if (match) {
+                return blockNameToId(match[1]);
+            }
+
+            if (/Successfully/.exec(message))
+                return 'air'
+
+            throw new Error("didn't understand status message: " + message);
+
         },
         async setBlock(x, y, z, block) {
-            await sendCommand(`/setblock ${x} ${y} ${z} ${block} 0 replace`);
+            const response = await sendCommand(`/setblock ${x} ${y} ${z} ${block} 0 replace`);
+            expectSuccess(response);
         }
     });
 }

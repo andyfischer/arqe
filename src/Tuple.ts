@@ -313,7 +313,12 @@ export default class Tuple {
         return tag.tagValue;
     }
 
+    getVal(attr: string) {
+        return this.getValueForType(attr);
+    }
+
     getTagValue(typeName: string) {
+        // TODO: replace with getVal
         return this.getValueForType(typeName);
     }
 
@@ -340,10 +345,17 @@ export default class Tuple {
         return this.copyWithNewTags(tags);
     }
 
-    setValueForType(tagType: string, value: any) {
-        return this.remapTags(tag => {
-            if (tag.attr === tagType) {
+    setVal(attr: string, value: string) {
+        return this.setValueForType(attr, value);
+    }
 
+    setValueForType(attr: string, value: any) {
+
+        let found = false;
+
+        let out = this.remapTags(tag => {
+            if (tag.attr === attr) {
+                found = true;
                 if (value === null)
                     return null;
 
@@ -354,34 +366,39 @@ export default class Tuple {
             }
             return tag;
         });
+
+        if (!found)
+            out = out.addNewTag(attr, value);
+
+        return out;
     }
 
-    setTagValueForType(tagType: string, value: any) {
-        return this.setValueForType(tagType, value);
+    setTagValueForType(attr: string, value: any) {
+        return this.setValueForType(attr, value);
     }
 
-    findTagForType(tagType: string) {
+    findTagForType(attr: string) {
         for (let i = 0; i < this.tags.length; i++)
-            if (this.tags[i].attr === tagType)
+            if (this.tags[i].attr === attr)
                 return this.tags[i];
         return null;
     }
 
-    findTagWithType(tagType: string) {
-        return this.findTagForType(tagType);
+    findTagWithType(attr: string) {
+        return this.findTagForType(attr);
     }
 
-    findTagIndexOfType(tagType: string) {
+    findTagIndexOfType(attr: string) {
         for (let i = 0; i < this.tags.length; i++)
-            if (this.tags[i].attr === tagType)
+            if (this.tags[i].attr === attr)
                 return i;
         return -1;
     }
 
-    updateTagOfType(tagType: string, update: (t: PatternTag) => PatternTag) {
-        const index = this.findTagIndexOfType(tagType);
+    updateTagOfType(attr: string, update: (t: PatternTag) => PatternTag) {
+        const index = this.findTagIndexOfType(attr);
         if (index === -1)
-            throw new Error('tag type not found: ' + tagType);
+            throw new Error('attr not found: ' + attr);
         return this.updateTagAtIndex(index, update);
     }
 
