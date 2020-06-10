@@ -1,11 +1,12 @@
 
 import Tuple from './Tuple'
 import TupleStore from './TupleStore'
+import Table from './Table'
 
 type FindIterator = Iterable<{
     slotId:string,
     found: Tuple,
-    tableName: string}>
+    table: Table}>
 
 interface PartialQueryPlan {
     tuple?: Tuple
@@ -19,24 +20,12 @@ export default function* findStored(store: TupleStore, plan: PartialQueryPlan): 
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');
 
-    const tableName = plan.tableName;
-
-    if (tableName) {
-        const indexedStorageIds = store.byTableName[tableName] || {};
-
-        for (const slotId in indexedStorageIds) {
-            const found = store.slots[slotId];
-            if (searchPattern.isSupersetOf(found))
-                yield { slotId, found, tableName }
-        }
-        
-        return;
-    }
+    const table = store.supertable;
 
     // Full scan
-    for (const slotId in store.slots) {
-        const found = store.slots[slotId];
+    for (const slotId in table.slots) {
+        const found = table.slots[slotId];
         if (searchPattern.isSupersetOf(found))
-            yield { slotId, found, tableName }
+            yield { slotId, found, table}
     }
 }

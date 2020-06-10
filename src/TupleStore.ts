@@ -31,12 +31,12 @@ export default class TupleStore {
     graph: Graph
 
     nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
-    slots: { [ slotId: string]: Tuple } = {};
     nextSlotId: IDSource = new IDSource();
-    byTableName: { [tn: string]: { [slotId: string]: true } } = {}
 
     tables: { [ name: string ]: Table } = {}
     tablePatternMap = new TuplePatternMatcher<Table>();
+
+    supertable = new Table('supertable', parsePattern(''))
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -95,8 +95,9 @@ export default class TupleStore {
         }
 
         // Store a new tuple.
-        const slotId = this.nextSlotId.take();
-        this.slots[slotId] = tuple;
+        const table = this.supertable;
+        const slotId = table.nextSlotId.take();
+        table.slots[slotId] = tuple;
         output.relation(tuple);
 
         if (!plan.tableName) {
@@ -105,8 +106,6 @@ export default class TupleStore {
             return;
         }
 
-        this.byTableName[plan.tableName] = this.byTableName[plan.tableName] || {};
-        this.byTableName[plan.tableName][slotId] = true;
         this.graph.onTupleUpdated(tuple);
         output.finish();
     }
@@ -119,9 +118,9 @@ export default class TupleStore {
         let hasFoundAny = false;
 
         // Apply the modificationCallback to every matching slot.
-        for (const { slotId, found } of findStored(this, plan)) {
+        for (const { slotId, found, table } of findStored(this, plan)) {
             const modified = plan.modificationCallback(found);
-            this.slots[slotId] = modified;
+            table.slots[slotId] = modified;
             graph.onTupleUpdated(modified);
             output.relation(modified);
             hasFoundAny = true;
@@ -142,11 +141,8 @@ export default class TupleStore {
         const { output } = plan;
         const graph = this.graph;
 
-        for (const { slotId, found, tableName } of findStored(this, plan)) {
-            delete this.slots[slotId];
-            if (tableName) {
-                delete (this.byTableName[tableName] || {})[slotId];
-            }
+        for (const { slotId, found, table } of findStored(this, plan)) {
+            delete table.slots[slotId];
             graph.onTupleDeleted(found);
             output.relation(found.addTagObj(newTag('deleted')));
         }
