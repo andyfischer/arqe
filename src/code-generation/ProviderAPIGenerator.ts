@@ -45,7 +45,7 @@ function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
 function createFileAst(api: ProviderGeneratorDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
-    file.addImport('{ GraphLike, Relation, Pattern, RelationReceiver, StorageProvider, emitCommandError }', importPath);
+    file.addImport('{ GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError }', importPath);
 
     createHandlerInterface(api, file);
 
@@ -72,17 +72,17 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
     const runSearch = apiClass.contents.addMethod('runSearch');
     runSearch.isAsync = true;
     runSearch.addInput('pattern', 'Pattern');
-    runSearch.addInput('output', 'RelationReceiver');
+    runSearch.addInput('output', 'TupleReceiver');
 
     const runSave = apiClass.contents.addMethod('runSave');
     runSave.isAsync = true;
     runSave.addInput('pattern', 'Pattern');
-    runSave.addInput('output', 'RelationReceiver');
+    runSave.addInput('output', 'TupleReceiver');
 
     const runDelete = apiClass.contents.addMethod('runDelete');
     runDelete.isAsync = true;
     runDelete.addInput('pattern', 'Pattern');
-    runDelete.addInput('output', 'RelationReceiver');
+    runDelete.addInput('output', 'TupleReceiver');
 
     for (const handler of api.listHandlers()) {
         const query = api.handlerQuery(handler);

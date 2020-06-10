@@ -73,7 +73,7 @@ function getTypeForListenerCallback(api: DAOGeneratorDAO, touchpoint: string) {
         return `(${varName}: string) => void`
     }
 
-    return `(rel: Relation) => void`
+    return `(rel: Tuple) => void`
 }
 
 function defineMethod(api: DAOGeneratorDAO, block: Block, touchpoint: string) {
@@ -144,12 +144,12 @@ function defineMethod(api: DAOGeneratorDAO, block: Block, touchpoint: string) {
 
     // Fetch relations
     if (isAsync) {
-        func.contents.addRaw(`const { receiver, promise } = receiveToRelationListPromise();`);
+        func.contents.addRaw(`const { receiver, promise } = receiveToTupleListPromise();`);
         func.contents.addRaw(`this.graph.run(command, receiver)`);
-        func.contents.addRaw(`const rels: Relation[] = (await promise)`);
+        func.contents.addRaw(`const rels: Tuple[] = (await promise)`);
 
     } else {
-        func.contents.addRaw(`const rels: Relation[] = this.graph.runSync(command)`);
+        func.contents.addRaw(`const rels: Tuple[] = this.graph.runSync(command)`);
     }
 
     func.contents.addRaw('    .filter(rel => !rel.hasType("command-meta"));');
@@ -175,7 +175,7 @@ function defineEventListener(api: DAOGeneratorDAO, block: Block, touchpoint: str
         handlerInput.addObjectField('id', `'${id}'`);
 
         for (const { fromStr, varStr } of api.eventTypeProvides(eventType)) {
-            handlerInput.addObjectField(varStr, oneRelationOutputExpression(api, fromStr));
+            handlerInput.addObjectField(varStr, oneTupleOutputExpression(api, fromStr));
         }
 
         formatBlock(handlerInput);
@@ -186,7 +186,7 @@ function defineEventListener(api: DAOGeneratorDAO, block: Block, touchpoint: str
         contents.addRaw('// ' + eventType);
 
         contents.addRaw(`this.graph.run("${api.eventTypeQuery(eventType)}", {`);
-        contents.addRaw('    relation(rel: Relation) {')
+        contents.addRaw('    relation(rel: Tuple) {')
 
         if (api.eventTypeIsDeletion(eventType)) {
             contents.addRaw(`        if (rel.hasType('command-meta') && rel.hasType('deleted')) {`)
@@ -204,7 +204,7 @@ function defineEventListener(api: DAOGeneratorDAO, block: Block, touchpoint: str
     }
 }
 
-function oneRelationOutputExpression(api: DAOGeneratorDAO, fromStr: string, relVarName = 'rel') {
+function oneTupleOutputExpression(api: DAOGeneratorDAO, fromStr: string, relVarName = 'rel') {
     if (fromStr.endsWith('/*')) {
         return `${relVarName}.getTagValue("${fromStr.replace('/*', '')}")`
     } else {
@@ -216,14 +216,14 @@ function relationOutputExpression(api: DAOGeneratorDAO, touchpoint: string, relV
     const outputs = api.touchpointOutputs2(touchpoint);
 
     if (outputs.length === 1) {
-        return oneRelationOutputExpression(api, outputs[0].fromStr, relVarName);
+        return oneTupleOutputExpression(api, outputs[0].fromStr, relVarName);
     }
 
     if (outputs.length > 1) {
         let out = '({\n';
 
         for (const { fromStr, varStr } of outputs) {
-            out += `    ${varStr}: ${oneRelationOutputExpression(api, fromStr, relVarName)},\n`;
+            out += `    ${varStr}: ${oneTupleOutputExpression(api, fromStr, relVarName)},\n`;
         }
 
         out += '})';
@@ -235,7 +235,7 @@ function relationOutputExpression(api: DAOGeneratorDAO, touchpoint: string, relV
 
 function methodBodyForListener(api: DAOGeneratorDAO, touchpoint: string, block: Block) {
     block.addRaw('this.graph.run(command, {')
-    block.addRaw('    relation(rel: Relation) {')
+    block.addRaw('    relation(rel: Tuple) {')
     block.addRaw(`        if (rel.hasType('command-meta'))`)
     block.addRaw(`            return;`)
     block.addRaw(`        callback(${relationOutputExpression(api, touchpoint)});`)
@@ -324,7 +324,7 @@ function methodReturnResult(api: DAOGeneratorDAO, touchpoint: string, block: Blo
 function createFileAst(api: DAOGeneratorDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
-    file.addImport('{ GraphLike, Relation, receiveToRelationListPromise }', importPath);
+    file.addImport('{ GraphLike, Tuple, receiveToTupleListPromise }', importPath);
 
     const apiClass = file.addClass('API');
     apiClass.isExportDefault = true;
