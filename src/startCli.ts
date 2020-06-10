@@ -11,6 +11,8 @@ import loadGraphFromFiles from './loadGraphFromFiles'
 import { parseFile } from './parseCommand'
 import Tuple from './Tuple'
 import { receiveToTupleList } from './receiveUtils'
+import WebServer from './socket/WebServer'
+import loadGraphFromLocalDatabase from './loadGraphFromLocalDatabase'
 
 function runFile(graph: Graph, filename: string) {
     const contents = Fs.readFileSync(filename, 'utf8');
@@ -45,7 +47,12 @@ export default async function main() {
     let useRemoteServer = true;
     let runRepl = true;
 
-    //graph = loadGraphFromFiles(Path.join(__dirname, '../src/db'));
+    if (cliArgs.server) {
+        graph = loadGraphFromLocalDatabase();
+        const server = new WebServer(graph);
+        await server.start();
+    }
+
     if (cliArgs.db) {
         graph = loadGraphFromFiles(cliArgs.db);
         useRemoteServer = false;

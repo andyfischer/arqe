@@ -38,10 +38,11 @@ function* zwall(nw: Tuple, length: number, height: number) {
 function* story(nw: Tuple) {
     yield* floor(setBlock(nw, 'planks'), 5, 5);
 
+    nw = move(nw, 0, 1, 0);
     yield* xwall(setBlock(nw, 'glass'), 5, 5);
     yield* zwall(setBlock(nw, 'glass'), 5, 5);
-    yield* xwall(move(setBlock(nw, 'glass'), 0, 0, 5), 5, 5);
-    yield* zwall(move(setBlock(nw, 'glass'), 5, 0, 0), 5, 5);
+    //yield* xwall(move(setBlock(nw, 'glass'), 0, 0, 5), 5, 5);
+    // yield* zwall(move(setBlock(nw, 'glass'), 5, 0, 0), 5, 5);
 }
 
 const predefs = {

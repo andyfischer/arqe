@@ -9,6 +9,7 @@ import Minimist from 'minimist'
 import runStandardProcess from '../toollib/runStandardProcess'
 import { runProviderGenerator } from './ProviderAPIGenerator'
 import loadGraphFromFiles from '../loadGraphFromFiles'
+import loadGraphFromLocalDatabase from '../loadGraphFromLocalDatabase'
 
 function runGenerationForTarget(dataSource: Graph, api: CodeGenerationDAO, target) {
     const strategy = api.codeGenerationTargetStrategy(target);
@@ -29,7 +30,7 @@ async function runGeneration(graph: Graph) {
     const cliArgs = Minimist(process.argv.slice(2));
     const dbDir = cliArgs['db'];
 
-    watchFile(graph, dbDir, () => {
+    //watchFile(graph, dbDir, () => {
 
         console.log(`running code generation (using ${dbDir})`);
 
@@ -44,11 +45,13 @@ async function runGeneration(graph: Graph) {
                 console.error(e)
             }
         }
-    });
+    //});
 
-    await new Promise(resolve => {});
+    //await new Promise(resolve => {});
 }
 
 export function main() {
-    runStandardProcess('generate-api', async (graph: Graph) => runGeneration(graph));
+    const graph = loadGraphFromLocalDatabase();
+    runGeneration(graph);
+    // runStandardProcess('generate-api', async (graph: Graph) => runGeneration(graph));
 }

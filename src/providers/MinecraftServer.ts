@@ -200,8 +200,10 @@ export default function setup() {
             await setBlocks(sets);
             lastBlockSet = sets;
         },
-        undo() {
 
+        async undo() {
+
+            await setBlocks(lastBlockSet.map(set => set.setVal("block", "air")));
         }
     });
 }
