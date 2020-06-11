@@ -68,7 +68,6 @@ class Vec3 {
 
         throw new Error("can't toRodData vec3: " + JSON.stringify(this));
     }
-
 }
 
 export function move(tup: Tuple, dx: number, dy: number, dz: number) {
@@ -129,22 +128,22 @@ function* fourCorners(nw: Tuple, dx: number, dz: number) {
 
 
 function* story(nw: Tuple) {
-    //yield* floor(setBlock(nw, 'planks'), houseSize, houseSize);
+    yield* floor(setBlock(nw, 'planks'), houseSize, houseSize);
 
     nw = move(nw, 0, 1, 0);
-    //yield* xwall(setBlock(nw, 'glass'), houseSize, storyHeight);
-    //yield* zwall(setBlock(nw, 'glass'), houseSize, storyHeight);
-    //yield* xwall(move(setBlock(nw, 'glass'), 0, 0, houseSize), houseSize, storyHeight);
-    //yield* zwall(move(setBlock(nw, 'glass'), houseSize, 0, 0), houseSize, storyHeight);
+    yield* xwall(setBlock(nw, 'glass'), houseSize, storyHeight);
+    yield* zwall(setBlock(nw, 'glass'), houseSize, storyHeight);
+    yield* xwall(move(setBlock(nw, 'glass'), 0, 0, houseSize), houseSize, storyHeight);
+    yield* zwall(move(setBlock(nw, 'glass'), houseSize, 0, 0), houseSize, storyHeight);
 
     // Corners
-    //for (const corner of fourCorners(setBlock(nw, 'redstone_block'), houseSize, houseSize))
-    //    yield* vbar(corner, storyHeight);
+    for (const corner of fourCorners(setBlock(nw, 'redstone_block'), houseSize, houseSize))
+        yield* vbar(corner, storyHeight + 1);
 
     // Elevator
-    //const eleNw = setBlock(move(nw, 1, -1, 1), 'scaffolding');
-    //yield setBlock(move(nw, 1, 0, 0), 'air');
-    //yield* vbar(eleNw, storyHeight + 2);
+    const eleNw = setBlock(move(nw, 1, -1, 1), 'scaffolding');
+    yield setBlock(move(eleNw, 1, 0, 0), 'air');
+    yield* vbar(eleNw, storyHeight + 2);
 
     // Lighting
     let side = new Vec3(1, 0, 0);
@@ -152,13 +151,12 @@ function* story(nw: Tuple) {
 
     const rodDist = 2;
 
-    /*
     for (let corner of fourCorners(nw, houseSize, houseSize)) {
         corner = setBlock(corner, 'end_rod');
         corner = move(corner, 0, 3, 0);
         yield setBlock(corner, 'redstone_block');
-        corner = move(corner, side.x, rodDist, side.z);
-        corner = move(corner, front.x, rodDist, front.z);
+        corner = move(corner, side.x, 0, side.z);
+        corner = move(corner, front.x, 0, front.z);
 
         yield setData(move(corner, side.x * rodDist, 0, side.z * rodDist),
                       side.cw_yrotate().toRodData());
@@ -168,7 +166,6 @@ function* story(nw: Tuple) {
         front = front.cw_yrotate();
         side = side.cw_yrotate();
     }
-    */
 }
 
 function* xline(start: Tuple, length: number) {
