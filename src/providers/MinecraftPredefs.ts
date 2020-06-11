@@ -4,8 +4,8 @@ import { parsePattern } from '..'
 
 const houseSize = 9;
 const halfHouseSize = 4;
-const storyHeight = 5;
-const storyCount = 3;
+const storyHeight = 4;
+const storyCount = 10;
 
 const rodDownData = '0'
 const rodUpData = '1'
@@ -18,6 +18,24 @@ const stairUpX = '0'
 const stairDownX = '1'
 const stairUpZ = '2'
 const stairDownZ = '3'
+
+const floorMaterial = 'quartz_block'
+const cornerMaterial = 'stonebrick'
+const doorframeMaterial = 'quartz_block'
+
+const floorMaterials = [
+    [ 'quartz_block', 0 ],
+    [ 'concrete', 6 ],
+    [ 'concrete', 14 ],
+    [ 'concrete', 1 ],
+    [ 'concrete', 4 ],
+    [ 'concrete', 5 ],
+    [ 'concrete', 9 ],
+    [ 'concrete', 10 ],
+    [ 'concrete', 11 ],
+    [ 'concrete', 2 ],
+]
+
 
 class Vec3 {
     x: number
@@ -88,6 +106,10 @@ export function move(tup: Tuple, dx: number, dy: number, dz: number) {
             .setVal("z", z + dz + ''));
 }
 
+export function up(tup: Tuple, dy) {
+    return move(tup, 0, dy, 0);
+}
+
 function setBlock(tup: Tuple, block: string) {
     return tup.setVal("block", block)
 }
@@ -126,9 +148,14 @@ function* fourCorners(nw: Tuple, dx: number, dz: number) {
     yield move(nw, 0, 0, dz);
 }
 
+function* story(nw: Tuple, storyIndex: number) {
 
-function* story(nw: Tuple) {
-    yield* floor(setBlock(nw, 'planks'), houseSize, houseSize);
+    const material = floorMaterials[storyIndex];
+
+    nw = setBlock(nw, material[0]+'')
+    nw = setData(nw, material[1]+'')
+
+    yield* floor(nw, houseSize, houseSize);
 
     nw = move(nw, 0, 1, 0);
     yield* xwall(setBlock(nw, 'glass'), houseSize, storyHeight);
@@ -137,8 +164,8 @@ function* story(nw: Tuple) {
     yield* zwall(move(setBlock(nw, 'glass'), houseSize, 0, 0), houseSize, storyHeight);
 
     // Corners
-    for (const corner of fourCorners(setBlock(nw, 'redstone_block'), houseSize, houseSize))
-        yield* vbar(corner, storyHeight + 1);
+    for (const corner of fourCorners(setBlock(nw, cornerMaterial), houseSize, houseSize))
+        yield* vbar(move(corner, 0, -1, 0), storyHeight + 1);
 
     // Elevator
     const eleNw = setBlock(move(nw, 1, -1, 1), 'scaffolding');
@@ -154,7 +181,7 @@ function* story(nw: Tuple) {
     for (let corner of fourCorners(nw, houseSize, houseSize)) {
         corner = setBlock(corner, 'end_rod');
         corner = move(corner, 0, 3, 0);
-        yield setBlock(corner, 'redstone_block');
+        yield setBlock(corner, cornerMaterial);
         corner = move(corner, side.x, 0, side.z);
         corner = move(corner, front.x, 0, front.z);
 
@@ -183,6 +210,11 @@ function* zline(start: Tuple, length: number) {
         yield move(start, 0, 0, i);
 }
 
+function* zline_v2(start: Tuple, length: number) {
+    for (let i = 0; i < length; i++)
+        yield move(start, 0, 0, i);
+}
+
 function* ydonut(nw: Tuple, dx: number, dz: number) {
 
     yield* xline(nw, dx);
@@ -191,20 +223,41 @@ function* ydonut(nw: Tuple, dx: number, dz: number) {
     yield* zline(move(nw, dx, 0, 0), dz);
 }
 
-function* roof(nw: Tuple) {
+function* roof(nw: Tuple, size) {
     nw = setBlock(nw, 'quartz_block');
-    yield* floor(nw, houseSize, houseSize);
+    yield* floor(nw, size, size);
 
     nw = setBlock(nw, 'quartz_stairs');
     nw = move(nw, -1, 0, -1);
 
-    const dx = houseSize + 2;
-    const dz = houseSize + 2;
+    const dx = size + 2;
+    const dz = size + 2;
 
     yield* xline(setData(nw, stairUpZ), dx);
     yield* xline(setData(move(nw, 0, 0, dz), stairDownZ), dx);
     yield* zline(setData(nw, stairUpX), dz);
     yield* zline(setData(move(nw, dx, 0, 0), stairDownX), dz);
+}
+
+function* frontDoor(nw: Tuple) {
+    const door = move(nw, houseSize, 1, halfHouseSize);
+
+    yield setData(setBlock(door, 'iron_door'), '2')
+    yield setData(setBlock(move(door, 0, 0, 1), 'iron_door'), '2')
+
+    //yield setData(setBlock(up(door, 1), 'iron_door'), '8');
+    //yield setData(setBlock(move(door, 0, 1, 1), 'iron_door'), '9');
+
+    yield* yline(setBlock(move(door, 0, 0, -1), doorframeMaterial), 2);
+    yield* yline(setBlock(move(door, 0, 0, 2), doorframeMaterial), 2);
+
+    yield* zline_v2(setBlock(move(door, 0, 2, -1), doorframeMaterial), 4);
+
+    yield* zline_v2(setBlock(move(door, 1, -1, 0), doorframeMaterial), 2);
+    yield* zline_v2(setBlock(move(door, 1, 0, 0), 'heavy_weighted_pressure_plate'), 2);
+    yield* zline_v2(setBlock(move(door, -1, 0, 0), 'heavy_weighted_pressure_plate'), 2);
+
+    yield* zline_v2(setData(setBlock(move(door, 2, -1, 0), 'quartz_stairs'), stairDownX), 2);
 }
 
 const predefs = {
@@ -213,15 +266,24 @@ const predefs = {
 
         let nw = move(bottomCenter, -halfHouseSize, 0, -halfHouseSize);
 
+        const groundNw = nw;
+
         // below the bottom elevator
         yield move(setBlock(nw, 'cobblestone'), 1, -1, 1);
 
         for (let s = 0; s < storyCount; s++) {
-            yield* story(nw);
+            yield* story(nw, s);
             nw = move(nw, 0, storyHeight + 1, 0);
+
+            if (s === 0)
+                yield* frontDoor(groundNw);
         }
 
-        yield* roof(nw);
+        yield* roof(nw, houseSize);
+        yield* roof(move(nw, 1, 1, 1), houseSize -2);
+        yield* roof(move(nw, 2, 2, 2), houseSize -4);
+        yield* roof(move(nw, 3, 3, 3), houseSize -6);
+
     },
     *rodtest() {
         const start = parsePattern("x/0 y/0 z/0");

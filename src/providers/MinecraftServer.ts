@@ -8,7 +8,8 @@ import BlockDb from './BlockDb'
 import Predefs, { move } from './MinecraftPredefs'
 import Tuple from '../Tuple'
 
-const concurrentCommandCount = 20;
+//const concurrentCommandCount = 30;
+const concurrentCommandCount = 5;
 //const concurrentCommandCount = 1;
 const PORT = 4000;
 
@@ -192,7 +193,6 @@ export default function setup() {
                 return 'air'
 
             throw new Error("didn't understand status message: " + message);
-
         },
         async setBlock(x, y, z, block) {
             const response = await sendCommand(`/setblock ${x} ${y} ${z} ${block} 0 replace`);

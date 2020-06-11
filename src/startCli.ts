@@ -10,7 +10,7 @@ import Minimist from 'minimist'
 import loadGraphFromFiles from './loadGraphFromFiles'
 import { parseFile } from './parseCommand'
 import Tuple from './Tuple'
-import { receiveToTupleList } from './receiveUtils'
+import { receiveToTupleList, receiveToTupleListPromise } from './receiveUtils'
 import WebServer from './socket/WebServer'
 import loadGraphFromLocalDatabase from './loadGraphFromLocalDatabase'
 
@@ -63,6 +63,19 @@ export default async function main() {
         console.log('connecting to remote server..')
         const port = process.env.PORT || '42940'
         graph = await connectToServer(port);
+    }
+
+    if (cliArgs.c) {
+
+        const { promise, receiver } = receiveToTupleListPromise();
+        graph.run(cliArgs.c, receiver);
+
+        const rels = await promise;
+        printResult(rels);
+        runRepl = false;
+        graph.close();
+        process.exit(0);
+        return;
     }
 
     if (cliArgs._.length > 0) {

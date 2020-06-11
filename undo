@@ -1,0 +1,2 @@
+
+bin/fs -c "set remote/42940 mc undo"
