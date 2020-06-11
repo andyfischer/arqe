@@ -56,21 +56,6 @@ async function createWsServer() {
             console.log(`[mc] connection ${id} closed`);
             activeConnections.delete(id)
         }
-
-        /*
-        // TEST
-        conn.send(JSON.stringify({
-            body: {
-                commandLine: "/setblock 0 90 0 grass 0 replace",
-                version: 1
-            },
-            header: {
-                requestId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-                messagePurpose: 'commandRequest',
-                version: 1,
-            }
-        }))
-        */
     });
 
     return wsServer;
@@ -89,18 +74,7 @@ let server;
 const nextConnId = new IDSource();
 const nextRequestId = new IDSource();
 const activeConnections = new Map();
-
 const messageListeners = {}
-
-/*
-const repl = Repl.start({
-    prompt: '~ ',
-    eval: line => {
-        for (const conn of activeConnections.values()) {
-        }
-    }
-});
-*/
 
 function blockNameToId(name: string): string {
     for (const id in BlockDb)
@@ -138,7 +112,6 @@ async function sendCommand(commandLine: string) {
         return new Promise<any>(resolve => {
             messageListeners[reqId] = resolve;
         });
-
     }
 }
 
@@ -151,12 +124,11 @@ function expectSuccess(response) {
 
 let lastBlockSet = [];
 
-
 async function setBlocksConcurrent(sets: Tuple[]) {
     const ops = []
     for (const set of sets) {
         const data = set.hasAttr('data') ? set.getVal('data') : '0'
-        const command = `/setblock ${set.getVal("x")} ${set.getVal("y")} ${set.getVal("z")}  ${set.getVal("block")}  ${data} replace`;
+        const command = `/setblock ${set.getVal("x")} ${set.getVal("y")} ${set.getVal("z")}  ${set.getVal("block")} ${data} replace`;
         ops.push(sendCommand(command));
     }
     await Promise.all(ops);

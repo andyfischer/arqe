@@ -1,4 +1,25 @@
 
+From house project:
+
+ - Easier way to split work between local & server
+ - All CLIs run a local server and load YAML db
+ - Unify startServer and startCli
+
+ - Easy way to set config-style values
+
+ - Optional arguments to providers
+
+ - Easier buildout of providers
+
+ - Easier link to fetch data (DI style)
+   - Use this for BlockDb
+
+ - Tables that just iterate 0...n
+ 
+ - Save history across process execution
+
+------
+
  - Working files db
    X Tag expressions are not "star"
    - Provider that uses underlying storage, and only implements certain operations.
