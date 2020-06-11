@@ -11,9 +11,11 @@ import setupTypescriptCompilation from './providers/TypescriptCompiler'
 import setupSelfTest from './selftest/SelfTest'
 import setupWorkingFile from './providers/WorkingFile'
 import setupMinecraftServer from './providers/MinecraftServer'
+import setupRemoteProvider from './providers/RemoteProvider'
 
 export default function getBuiltinViews(graph: Graph): {[name: string]: StorageProvider } {
-    return {
+    const views = {
+        'remote': setupRemoteProvider(),
         'fs': setupFilesystemProvider(),
         'git': setupGitProvider(),
         'file-changed': setupFileChangeLog(graph),
@@ -23,6 +25,10 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
         'tsc-compile': setupTypescriptCompilation(),
         'self-test-results': setupSelfTest(graph),
         'working-file': setupWorkingFile(),
-        'mc': setupMinecraftServer()
     }
+
+    if (process.env.WITH_MINECRAFT_SERVER)
+        views['mc'] = setupMinecraftServer()
+
+    return views;
 }

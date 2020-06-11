@@ -61,7 +61,7 @@ class MatchHelper {
 
         if (valueTag.valueExpr) {
             for (const tag of tags) {
-                if (expressionMatches(valueTag.valueExpr, tag.valueExpr))
+                if (tag.valueExpr && expressionMatches(valueTag.valueExpr, tag.valueExpr))
                     return true;
             }
 
@@ -413,7 +413,12 @@ export default class Tuple {
         return this.copyWithNewTags(tags);
     }
 
+    removeAttr(typeName: string) {
+        return this.copyWithNewTags(this.tags.filter(tag => tag.attr !== typeName));
+    }
+
     removeType(typeName: string) {
+        // TODO - remove
         return this.copyWithNewTags(this.tags.filter(tag => tag.attr !== typeName));
     }
 

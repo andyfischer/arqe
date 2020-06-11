@@ -51,6 +51,7 @@ export default async function main() {
         graph = loadGraphFromLocalDatabase();
         const server = new WebServer(graph);
         await server.start();
+        useRemoteServer = false;
     }
 
     if (cliArgs.db) {
@@ -60,7 +61,8 @@ export default async function main() {
 
     if (useRemoteServer) {
         console.log('connecting to remote server..')
-        graph = await connectToServer();
+        const port = process.env.PORT || '42940'
+        graph = await connectToServer(port);
     }
 
     if (cliArgs._.length > 0) {
