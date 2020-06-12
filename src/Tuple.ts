@@ -14,8 +14,6 @@ export default class Tuple {
     // derived data
     sortedTags: PatternTag[] = null
     starValueTags: PatternTag[] = []
-    fixedTags: FixedTag[] = []
-    fixedTagsForType: { [typename: string]: true } = {}
     tagsByAttr: { [typename: string]: PatternTag[] } = {}
     byIdentifier: { [identifier: string]: PatternTag } = {}
 
@@ -69,8 +67,6 @@ export default class Tuple {
             } else if (tag.starValue) {
                 this.starValueTags.push(tag);
             } else {
-                this.fixedTags.push(tag as FixedTag);
-                this.fixedTagsForType[tag.attr] = true;
             }
 
             if (tag.identifier)
@@ -151,7 +147,7 @@ export default class Tuple {
         const outTags = [];
 
         for (const tag of rel.tags) {
-            if (this.fixedTagsForType[tag.attr])
+            if (this.derivedData().fixedTagsForAttr.has(tag.attr))
                 continue;
 
             outTags.push(patternTagToString(tag));

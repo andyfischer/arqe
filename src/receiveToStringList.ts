@@ -1,6 +1,7 @@
 
 import Tuple from './Tuple'
 import TupleReceiver from './TupleReceiver'
+import PatternTag from './PatternTag'
 import { patternTagToString } from './stringifyQuery'
 
 export default function receiveToStringList(onDone: (s: string|string[]) => void): TupleReceiver {
@@ -17,8 +18,9 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
 
     function stringifyTuple(rel: Tuple) {
 
-        const tags = rel.tags.filter(tag => {
-            if (searchPattern && !outputExtended && searchPattern.fixedTagsForType[tag.attr])
+        const tags = rel.tags.filter((tag: PatternTag) => {
+            if (searchPattern && !outputExtended
+                && searchPattern.derivedData().fixedTagsForAttr.has(tag.attr))
                 return false;
 
             return true;
