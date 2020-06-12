@@ -200,7 +200,7 @@ export default class Tuple {
     }
 
     getVal(attr: string) {
-        return this.getValueForType(attr);
+        return this.asMap().get(attr).tagValue;
     }
 
     getTagValueOptional(typeName: string, defaultValue) {
