@@ -16,9 +16,9 @@ export default class API {
 
         this.graph.run(command, {
             relation(rel: Tuple) {
-                if (rel.hasType('command-meta'))
+                if (rel.hasAttr('command-meta'))
                     return;
-                callback(rel.getTagValue("filename"));
+                callback(rel.getVal("filename"));
             },
             finish() { }
         });
@@ -30,9 +30,9 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("build-task"));
+        return rels.map(rel => rel.getTagAsString("build-task"));
     }
 
     async createBuildTask(cmd: string, cwd: string, status: string): Promise<string> {
@@ -41,7 +41,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -54,7 +54,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("build-task");
+        return oneRel.getTagAsString("build-task");
     }
 
     async taskStatus(task: string): Promise<string> {
@@ -63,7 +63,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -76,7 +76,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("status");
+        return oneRel.getVal("status");
     }
 
     async setPendingTaskTimer(task: string) {
@@ -85,7 +85,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -106,7 +106,7 @@ export default class API {
 
         this.graph.run(command, {
             relation(rel: Tuple) {
-                if (rel.hasType('command-meta'))
+                if (rel.hasAttr('command-meta'))
                     return;
                 callback(rel);
             },
@@ -119,11 +119,11 @@ export default class API {
         // eventType/anyFileChange
         this.graph.run("listen file-watch filename/* version", {
             relation(rel: Tuple) {
-                if (rel.hasType('command-meta'))
+                if (rel.hasAttr('command-meta'))
                     return;
                 handler({
     id: 'fileChanged',
-    filename: rel.getTagValue("filename"),
+    filename: rel.getVal("filename"),
 });
             },
             finish() { }
@@ -132,10 +132,10 @@ export default class API {
         // eventType/taskTimerExpired
         this.graph.run("listen build-task/* pending-task-timer expires-at", {
             relation(rel: Tuple) {
-                if (rel.hasType('command-meta') && rel.hasType('deleted')) {
+                if (rel.hasAttr('command-meta') && rel.hasAttr('deleted')) {
                     handler({
     id: 'taskTimerExpired',
-    buildTask: rel.getTag("build-task"),
+    buildTask: rel.getTagAsString("build-task"),
 });
                 }
             },
@@ -149,7 +149,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -163,9 +163,9 @@ export default class API {
 
         const oneRel = rels[0];
         return ({
-    cmd: oneRel.getTagValue("cmd"),
-    cwd: oneRel.getTagValue("cwd"),
-    status: oneRel.getTagValue("status"),
+    cmd: oneRel.getVal("cmd"),
+    cwd: oneRel.getVal("cwd"),
+    status: oneRel.getVal("status"),
 });
     }
 
@@ -175,7 +175,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -186,7 +186,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -197,7 +197,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -208,9 +208,9 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTagValue("waitingFor"));
+        return rels.map(rel => rel.getVal("waitingFor"));
     }
 
     async getDirectoryColor(directory: string): Promise<string> {
@@ -219,7 +219,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -230,7 +230,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("color");
+        return oneRel.getVal("color");
     }
 
     async setDirectoryColor(directory: string, color: string) {
@@ -239,7 +239,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }

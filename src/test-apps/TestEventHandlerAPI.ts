@@ -33,7 +33,7 @@ export default class API {
                     return;
                 handler({
     id: 'objectChanged',
-    obj: rel.getTag("obj"),
+    obj: rel.getTagAsString("obj"),
 });
             },
             finish() { }
@@ -45,7 +45,7 @@ export default class API {
                 if (rel.hasAttr('command-meta') && rel.hasAttr('deleted')) {
                     handler({
     id: 'objectDeleted',
-    obj: rel.getTag("obj"),
+    obj: rel.getTagAsString("obj"),
 });
                 }
             },

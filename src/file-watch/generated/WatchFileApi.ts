@@ -28,7 +28,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("file-watch");
+        return oneRel.getTagAsString("file-watch");
     }
 
     async findFileWatch2(filename: string): Promise<string> {
@@ -48,7 +48,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("file-watch");
+        return oneRel.getTagAsString("file-watch");
     }
 
     listenToFile(watch: string, callback: (version: string) => void) {
@@ -83,7 +83,7 @@ export default class API {
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("file-watch"));
+        return rels.map(rel => rel.getTagAsString("file-watch"));
     }
 
     async createWatch(filename: string): Promise<string> {
@@ -105,7 +105,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("file-watch");
+        return oneRel.getTagAsString("file-watch");
     }
 
     async incrementVersion(filename: string) {

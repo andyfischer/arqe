@@ -17,9 +17,9 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTagValue("branch"));
+        return rels.map(rel => rel.getVal("branch"));
     }
 
     async deleteBranch(dir: string, branch: string) {
@@ -28,7 +28,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }

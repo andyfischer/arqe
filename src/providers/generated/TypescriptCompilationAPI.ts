@@ -14,7 +14,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/runTsc (get tsc-compile dir/$dir filename message lineno colno)
 
-        if ((pattern.tagCount() == 6) && (pattern.hasAttr("tsc-compile")) && (pattern.hasAttr("dir")) && (pattern.hasAttr("dir")) && (pattern.hasAttr("filename")) && (pattern.hasAttr("message")) && (pattern.hasAttr("lineno")) && (pattern.hasAttr("colno"))) {
+        if ((pattern.tagCount() == 6) && (pattern.hasAttr("tsc-compile")) && (pattern.hasAttr("dir")) && (pattern.hasValueForAttr("dir")) && (pattern.hasAttr("filename")) && (pattern.hasAttr("message")) && (pattern.hasAttr("lineno")) && (pattern.hasAttr("colno"))) {
             try {
                 const dir = pattern.getVal("dir");
                 const result = await this.handler.runTsc(dir);

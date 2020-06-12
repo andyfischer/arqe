@@ -72,7 +72,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("cli-tool-execution");
+        return oneRel.getTagAsString("cli-tool-execution");
     }
 
     async setCliInput(execId: string, name: string, value: string) {

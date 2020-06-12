@@ -159,7 +159,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("handler"));
+        return rels.map(rel => rel.getTagAsString("handler"));
     }
 
     handlerQuery(handler: string): string {

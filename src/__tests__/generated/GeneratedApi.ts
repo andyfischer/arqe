@@ -28,7 +28,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("b");
+        return oneRel.getTagAsString("b");
     }
 
     getOneTagValue(): string {

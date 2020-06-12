@@ -18,7 +18,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/readBlock (get mc x/$x y/$y z/$z block/*)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasAttr("z")) && (pattern.hasAttr("block"))) {
+        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForAttr("z")) && (pattern.hasAttr("block"))) {
             try {
                 const x = pattern.getVal("x");
                 const y = pattern.getVal("y");
@@ -47,7 +47,7 @@ export default class API implements StorageProvider {
     async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/setBlock (set mc x/$x y/$y z/$z block/$block)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasAttr("z")) && (pattern.hasAttr("block")) && (pattern.hasAttr("block"))) {
+        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForAttr("z")) && (pattern.hasAttr("block")) && (pattern.hasValueForAttr("block"))) {
             try {
                 const x = pattern.getVal("x");
                 const y = pattern.getVal("y");
@@ -66,7 +66,7 @@ export default class API implements StorageProvider {
 
         // check for handler/setBlockWithData (set mc x/$x y/$y z/$z block/$block data/$data)
 
-        if ((pattern.tagCount() == 6) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasAttr("z")) && (pattern.hasAttr("block")) && (pattern.hasAttr("block")) && (pattern.hasAttr("data")) && (pattern.hasAttr("data"))) {
+        if ((pattern.tagCount() == 6) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForAttr("z")) && (pattern.hasAttr("block")) && (pattern.hasValueForAttr("block")) && (pattern.hasAttr("data")) && (pattern.hasValueForAttr("data"))) {
             try {
                 const x = pattern.getVal("x");
                 const y = pattern.getVal("y");
@@ -86,7 +86,7 @@ export default class API implements StorageProvider {
 
         // check for handler/setPredef (set mc x/$x y/$y z/$z predef/$predef)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasAttr("z")) && (pattern.hasAttr("predef")) && (pattern.hasAttr("predef"))) {
+        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForAttr("z")) && (pattern.hasAttr("predef")) && (pattern.hasValueForAttr("predef"))) {
             try {
                 const x = pattern.getVal("x");
                 const y = pattern.getVal("y");

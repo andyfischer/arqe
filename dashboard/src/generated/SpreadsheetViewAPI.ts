@@ -15,25 +15,25 @@ export default class API {
         const command = `get ${spreadsheet} col/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("col"));
+        return rels.map(rel => rel.getTagAsString("col"));
     }
 
     listRows(spreadsheet: string): string[] {
         const command = `get ${spreadsheet} row/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("row"));
+        return rels.map(rel => rel.getTagAsString("row"));
     }
 
     colName(col: string): string {
         const command = `get ${col} name/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -46,14 +46,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("name");
+        return oneRel.getVal("name");
     }
 
     getCellValue(col: string, row: string): string {
         const command = `get ${row} ${col} value/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -64,14 +64,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("value");
+        return oneRel.getVal("value");
     }
 
     setCellValue(col: string, row: string, value: string) {
         const command = `delete ${row} ${col} | set ${row} ${col} == ${value}`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -80,7 +80,7 @@ export default class API {
         const command = `get ${spreadsheetView} spreadsheet/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -91,14 +91,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("spreadsheet");
+        return oneRel.getTagAsString("spreadsheet");
     }
 
     getSelectedCell(spreadsheetView: string) {
         const command = `get ${spreadsheetView} selection col/* row/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -110,8 +110,8 @@ export default class API {
 
         const oneRel = rels[0];
         return {
-            col: oneRel.getTag("col"),
-            row: oneRel.getTag("row"),
+            col: oneRel.getTagAsString("col"),
+            row: oneRel.getTagAsString("row"),
         }
     }
 
@@ -119,7 +119,7 @@ export default class API {
         const command = `delete ${spreadsheet} selection row/* col/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -128,7 +128,7 @@ export default class API {
         const command = `set ${view} selection ${row} ${col}`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -137,7 +137,7 @@ export default class API {
         const command = `get ${view} now-editing`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }

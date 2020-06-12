@@ -20,7 +20,7 @@ export default class API implements StorageProvider {
     async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/setObjectColumn (set schema column/$column object)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasAttr("schema")) && (pattern.hasAttr("column")) && (pattern.hasAttr("column")) && (pattern.hasAttr("object"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("schema")) && (pattern.hasAttr("column")) && (pattern.hasValueForAttr("column")) && (pattern.hasAttr("object"))) {
             try {
                 const column = pattern.getVal("column");
                 this.handler.setObjectColumn(column);
@@ -36,7 +36,7 @@ export default class API implements StorageProvider {
 
         // check for handler/setViewColumn (set schema column/$column view)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasAttr("schema")) && (pattern.hasAttr("column")) && (pattern.hasAttr("column")) && (pattern.hasAttr("view"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("schema")) && (pattern.hasAttr("column")) && (pattern.hasValueForAttr("column")) && (pattern.hasAttr("view"))) {
             try {
                 const column = pattern.getVal("column");
                 this.handler.setViewColumn(column);

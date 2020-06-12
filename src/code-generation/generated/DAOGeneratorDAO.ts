@@ -17,7 +17,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("code-generation"));
+        return rels.map(rel => rel.getTagAsString("code-generation"));
     }
 
     getInterfaceFields(target: string) {
@@ -38,7 +38,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("touchpoint"));
+        return rels.map(rel => rel.getTagAsString("touchpoint"));
     }
 
     getIkImport(target: string): string {
@@ -225,7 +225,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("input"));
+        return rels.map(rel => rel.getTagAsString("input"));
     }
 
     touchpointInputs2(touchpoint: string) {
@@ -371,7 +371,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("objectdef");
+        return oneRel.getTagAsString("objectdef");
     }
 
     getObjectdefFields(objectdef: string): string[] {
@@ -380,7 +380,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("objectdef"));
+        return rels.map(rel => rel.getTagAsString("objectdef"));
     }
 
     touchpointOutputObject(touchpoint: string): string {
@@ -398,7 +398,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("output-object");
+        return oneRel.getTagAsString("output-object");
     }
 
     outputObjectFields(outputObject: string) {
@@ -443,7 +443,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("eventType"));
+        return rels.map(rel => rel.getTagAsString("eventType"));
     }
 
     eventTypeQuery(eventType: string): string[] {

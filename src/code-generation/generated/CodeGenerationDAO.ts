@@ -17,7 +17,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTag("code-generation"));
+        return rels.map(rel => rel.getTagAsString("code-generation"));
     }
 
     codeGenerationTargetStrategy(target: string): string {

@@ -15,7 +15,7 @@ export default class API {
         const command = `get ${spreadsheetView} spreadsheet/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -26,14 +26,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("spreadsheet");
+        return oneRel.getTagAsString("spreadsheet");
     }
 
     findKeyForBrowserName(browserName: string): string {
         const command = `get key/* browsername/${browserName}`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -44,14 +44,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("key");
+        return oneRel.getTagAsString("key");
     }
 
     findActionForKey(key: string): string {
         const command = `get ${key} action/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -62,14 +62,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("action");
+        return oneRel.getTagAsString("action");
     }
 
     getCurrentView(): string {
         const command = `get current-view spreadsheet-view/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -82,14 +82,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("spreadsheet-view");
+        return oneRel.getTagAsString("spreadsheet-view");
     }
 
     getSpreadsheetSelectionPos(view: string) {
         const command = `get ${view} selection col/* row/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -103,8 +103,8 @@ export default class API {
 
         const oneRel = rels[0];
         return {
-            col: oneRel.getTag("col"),
-            row: oneRel.getTag("row"),
+            col: oneRel.getTagAsString("col"),
+            row: oneRel.getTagAsString("row"),
         }
     }
 
@@ -112,7 +112,7 @@ export default class API {
         const command = `get ${action} delta-x/* delta-y/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -124,8 +124,8 @@ export default class API {
 
         const oneRel = rels[0];
         return {
-            x: oneRel.getTagValue("delta-x"),
-            y: oneRel.getTagValue("delta-y"),
+            x: oneRel.getVal("delta-x"),
+            y: oneRel.getVal("delta-y"),
         }
     }
 
@@ -133,7 +133,7 @@ export default class API {
         const command = `get ${spreadsheet} ${item}`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -142,7 +142,7 @@ export default class API {
         const command = `delete ${spreadsheet} selection row/* col/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -151,7 +151,7 @@ export default class API {
         const command = `set ${view} selection ${row} ${col}`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -160,7 +160,7 @@ export default class API {
         const command = `set ${view} now-editing`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -169,7 +169,7 @@ export default class API {
         const command = `delete ${view} now-editing`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -178,7 +178,7 @@ export default class API {
         const command = `get ${view} now-editing`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -187,7 +187,7 @@ export default class API {
         const command = `get ${view} input-mode/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -200,14 +200,14 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("input-mode");
+        return oneRel.getVal("input-mode");
     }
 
     setInputMode(view: string, inputMode: string) {
         const command = `delete ${view} input-mode/* | set ${view} ${inputMode}`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -216,7 +216,7 @@ export default class API {
         const command = `get ${view} input-mode/$m | join ${key} action/* active-for-mode input-mode/$m`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -227,6 +227,6 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTag("action");
+        return oneRel.getTagAsString("action");
     }
 }
