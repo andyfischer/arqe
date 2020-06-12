@@ -152,7 +152,7 @@ function defineMethod(api: DAOGeneratorDAO, block: Block, touchpoint: string) {
         func.contents.addRaw(`const rels: Tuple[] = this.graph.runSync(command)`);
     }
 
-    func.contents.addRaw('    .filter(rel => !rel.hasType("command-meta"));');
+    func.contents.addRaw('    .filter(rel => !rel.hasAttr("command-meta"));');
 
     func.contents.addBlank();
 
@@ -189,11 +189,11 @@ function defineEventListener(api: DAOGeneratorDAO, block: Block, touchpoint: str
         contents.addRaw('    relation(rel: Tuple) {')
 
         if (api.eventTypeIsDeletion(eventType)) {
-            contents.addRaw(`        if (rel.hasType('command-meta') && rel.hasType('deleted')) {`)
+            contents.addRaw(`        if (rel.hasAttr('command-meta') && rel.hasAttr('deleted')) {`)
             contents.addRaw(`            handler(${handlerInput.stringify()});`)
             contents.addRaw(`        }`);
         } else {
-            contents.addRaw(`        if (rel.hasType('command-meta'))`);
+            contents.addRaw(`        if (rel.hasAttr('command-meta'))`);
             contents.addRaw(`            return;`);
             contents.addRaw(`        handler(${handlerInput.stringify()});`);
         }
@@ -236,7 +236,7 @@ function relationOutputExpression(api: DAOGeneratorDAO, touchpoint: string, relV
 function methodBodyForListener(api: DAOGeneratorDAO, touchpoint: string, block: Block) {
     block.addRaw('this.graph.run(command, {')
     block.addRaw('    relation(rel: Tuple) {')
-    block.addRaw(`        if (rel.hasType('command-meta'))`)
+    block.addRaw(`        if (rel.hasAttr('command-meta'))`)
     block.addRaw(`            return;`)
     block.addRaw(`        callback(${relationOutputExpression(api, touchpoint)});`)
     block.addRaw(`    },`)

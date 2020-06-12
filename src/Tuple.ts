@@ -156,6 +156,10 @@ export default class Tuple {
         return this.asMap().has(attr);
     }
 
+    hasValueForAttr(attr: string) {
+        return this.asMap().has(attr) && !!this.asMap().get(attr).tagValue;
+    }
+
     getOneTagForType(typeName: string): PatternTag {
         const tags = this.tagsByAttr[typeName];
         if (!tags)

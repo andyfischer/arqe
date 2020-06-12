@@ -122,9 +122,9 @@ function patternCheckExpression(pattern: Pattern) {
         if (tag.doubleStar)
             continue;
 
-        conditions.push(`pattern.hasType("${tag.attr}")`);
+        conditions.push(`pattern.hasAttr("${tag.attr}")`);
         if (tag.identifier) {
-            conditions.push(`pattern.hasValueForType("${tag.attr}")`);
+            conditions.push(`pattern.hasValueForAttr("${tag.attr}")`);
         } else if (tag.tagValue) {
             conditions.push(`pattern.getTagValue("${tag.attr}") == "${tag.tagValue}"`);
         }
