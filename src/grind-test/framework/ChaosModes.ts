@@ -47,7 +47,7 @@ export const InsertExtraTag: ChaosMode = {
                 // Don't mess with certain relations.
                 const pattern = command.toPattern();
 
-                if (pattern.hasType('typeinfo') || pattern.hasType('filesystem-mount'))
+                if (pattern.hasAttr('typeinfo') || pattern.hasAttr('filesystem-mount'))
                     return;
 
                 command.pattern = command.pattern.addTagObj(newTag('extra'));

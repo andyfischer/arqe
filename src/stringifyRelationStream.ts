@@ -11,13 +11,13 @@ export default function stringifyRelationStream() {
 
     return (rel: Tuple) => {
 
-        if (rel.hasType('command-meta')) {
-            if (rel.hasType('search-pattern')) {
+        if (rel.hasAttr('command-meta')) {
+            if (rel.hasAttr('search-pattern')) {
                 searchPattern = rel.removeTypes(['command-meta','search-pattern']);
                 return;
             }
 
-            if (rel.hasType('output-flag')) {
+            if (rel.hasAttr('output-flag')) {
                 if (rel.getTagValue('output-flag') === 'extended')
                     outputExtended = true;
                 if (rel.getTagValue('output-flag') === 'list')
@@ -25,11 +25,11 @@ export default function stringifyRelationStream() {
                 return;
             }
 
-            if (rel.hasType('error')) {
+            if (rel.hasAttr('error')) {
                 return '#error ' + sawError.getTagValue('message');
             }
 
-            if (rel.hasType('deleted')) {
+            if (rel.hasAttr('deleted')) {
                 return 'delete ' + rel.removeType('command-meta').removeType('deleted').stringify()
             }
 

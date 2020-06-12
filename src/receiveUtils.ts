@@ -19,7 +19,7 @@ export function receiveToTupleListPromise(): { receiver: TupleReceiver, promise:
     const promise: Promise<Tuple[]> = new Promise((resolve, reject) => {
         receiver = receiveToTupleList((rels: Tuple[]) => {
             for (const rel of rels) {
-                if (rel.hasType('command-meta') && rel.hasType('error')) {
+                if (rel.hasAttr('command-meta') && rel.hasAttr('error')) {
                     reject(rel.stringify());
                     return;
                 }
@@ -36,14 +36,14 @@ export async function runAsync(graph: Graph, command: string) {
     const { receiver, promise } = receiveToTupleListPromise();
     graph.run(command, receiver);
     const rels: Tuple[] = (await promise)
-        .filter(rel => !rel.hasType("command-meta"));
+        .filter(rel => !rel.hasAttr("command-meta"));
     return rels;
 }
 
 export function fallbackReceiver(commandString: string): TupleReceiver {
     return {
         relation(rel) {
-            if (rel.hasType('command-meta') && rel.hasType('error')) {
+            if (rel.hasAttr('command-meta') && rel.hasAttr('error')) {
                 console.log(`Uncaught error for command (${commandString}): ${rel.stringifyRelation()}`);
             }
         },

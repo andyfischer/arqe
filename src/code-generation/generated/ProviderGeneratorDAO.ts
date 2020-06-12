@@ -16,7 +16,7 @@ export default class API {
         const command = `get ${target} destination-filename/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -36,7 +36,7 @@ export default class API {
         const command = `get ${target} ik-import/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -56,7 +56,7 @@ export default class API {
         const command = `get ${touchpoint} function-name/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -76,7 +76,7 @@ export default class API {
         const command = `get ${touchpoint} input var type`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
     varStr: rel.getTagValue("var"),
@@ -88,7 +88,7 @@ export default class API {
         const command = `get ${touchpoint} output from var`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
     fromStr: rel.getTagValue("from"),
@@ -100,7 +100,7 @@ export default class API {
         const command = `get ${touchpoint} async`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -109,7 +109,7 @@ export default class API {
         const command = `get ${touchpoint} output expectOne`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -118,7 +118,7 @@ export default class API {
         const command = `get ${target} handles-pattern/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -138,7 +138,7 @@ export default class API {
         const command = `get ${touchpoint} output var type`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -157,7 +157,7 @@ export default class API {
         const command = `get ${target} handler/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("handler"));
     }
@@ -166,7 +166,7 @@ export default class API {
         const command = `get ${handler} handles-query/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 

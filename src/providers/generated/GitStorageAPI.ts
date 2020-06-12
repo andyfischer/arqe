@@ -17,7 +17,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/listBranches (get git dir/$dir branch/*)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch"))) {
             try {
                 const dir = pattern.getTagValue("dir");
                 await this.handler.listBranches(dir);
@@ -32,7 +32,7 @@ export default class API implements StorageProvider {
 
         // check for handler/checkBranchExists (get git dir/$dir branch/$branch)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch")) && (pattern.hasValueForType("branch"))) {
             try {
                 const dir = pattern.getTagValue("dir");
                 const branch = pattern.getTagValue("branch");
@@ -53,7 +53,7 @@ export default class API implements StorageProvider {
     async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/createBranch (set git dir/$dir branch/$branchName)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch")) && (pattern.hasValueForType("branch"))) {
             try {
                 const dir = pattern.getTagValue("dir");
                 const branchName = pattern.getTagValue("branch");
@@ -75,7 +75,7 @@ export default class API implements StorageProvider {
     async runDelete(pattern: Pattern, output: TupleReceiver) {
         // check for handler/deleteBranch (delete git dir/$dir branch/$branch)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("git")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("branch")) && (pattern.hasValueForType("branch"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch")) && (pattern.hasValueForType("branch"))) {
             try {
                 const dir = pattern.getTagValue("dir");
                 const branch = pattern.getTagValue("branch");

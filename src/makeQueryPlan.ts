@@ -63,7 +63,7 @@ function resolveImmediateExpressions(tuple: Tuple) {
 }
 
 function patternIsDelete(tuple: Tuple) {
-    if (!tuple.hasType('deleted'))
+    if (!tuple.hasAttr('deleted'))
         return false;
 
     const deletedExpr = tuple.getTagObject('deleted');

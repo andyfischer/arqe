@@ -25,7 +25,7 @@ function runFile(graph: Graph, filename: string) {
 
         graph.run(command.stringify(), {
             relation(relation) {
-                if (relation.hasType('command-meta') && relation.hasType('search-pattern'))
+                if (relation.hasAttr('command-meta') && relation.hasAttr('search-pattern'))
                     return;
 
                 listReceiver.relation(relation);

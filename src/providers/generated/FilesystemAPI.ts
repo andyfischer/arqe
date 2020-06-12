@@ -17,7 +17,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/readFile (get fs filename/$filename file-contents)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasType("file-contents"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasAttr("file-contents"))) {
             try {
                 const filename = pattern.getTagValue("filename");
                 const contents = await this.handler.readFile(filename);
@@ -39,7 +39,7 @@ export default class API implements StorageProvider {
 
         // check for handler/readDir (get fs dir/$dir filename)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasType("filename"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("filename"))) {
             try {
                 const dir = pattern.getTagValue("dir");
                 const filename = await this.handler.readDir(dir);
@@ -63,7 +63,7 @@ export default class API implements StorageProvider {
 
         // check for handler/listMatchingFiles (get fs match/$match filename)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("match")) && (pattern.hasValueForType("match")) && (pattern.hasType("filename"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("match")) && (pattern.hasValueForType("match")) && (pattern.hasAttr("filename"))) {
             try {
                 const match = pattern.getTagValue("match");
                 const filename = await this.handler.listMatchingFiles(match);
@@ -92,7 +92,7 @@ export default class API implements StorageProvider {
     async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/writeFile (set fs filename/$filename file-contents/$contents)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasType("fs")) && (pattern.hasType("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasType("file-contents")) && (pattern.hasValueForType("file-contents"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasAttr("file-contents")) && (pattern.hasValueForType("file-contents"))) {
             try {
                 const filename = pattern.getTagValue("filename");
                 const contents = pattern.getTagValue("file-contents");

@@ -14,7 +14,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/createAstFromText (get typescript-tree/* text/$text)
 
-        if ((pattern.tagCount() == 2) && (pattern.hasType("typescript-tree")) && (pattern.hasType("text")) && (pattern.hasValueForType("text"))) {
+        if ((pattern.tagCount() == 2) && (pattern.hasAttr("typescript-tree")) && (pattern.hasAttr("text")) && (pattern.hasValueForType("text"))) {
             try {
                 const text = pattern.getTagValue("text");
                 const filename = this.handler.createAstFromText(text);

@@ -76,8 +76,8 @@ export function runJoinStep(params: CommandExecutionParams) {
     input.waitForAll((rels) => {
 
         for (const rel of rels) {
-            if (rel.hasType('command-meta')) {
-                if (rel.hasType('search-pattern')) {
+            if (rel.hasAttr('command-meta')) {
+                if (rel.hasAttr('search-pattern')) {
                     inputSearchPattern = rel;
                 }
                 continue;

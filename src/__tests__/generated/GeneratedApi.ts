@@ -15,7 +15,7 @@ export default class API {
         const command = `get a/1 b/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -35,7 +35,7 @@ export default class API {
         const command = `get a/1 b/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -55,7 +55,7 @@ export default class API {
         const command = `get ${target} flag/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -75,7 +75,7 @@ export default class API {
         const command = `get ${target} flag/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -95,7 +95,7 @@ export default class API {
         const command = `delete ${target} flag/* | set ${target} flag/${val}`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }

@@ -29,7 +29,7 @@ export default function test(name, callback) {
 
         graph.run(command, {
             relation(rel) {
-                if (rel.hasType('command-meta'))
+                if (rel.hasAttr('command-meta'))
                     return;
                 log.push(rel.stringify());
             },

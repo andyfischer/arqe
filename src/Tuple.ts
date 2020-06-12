@@ -167,17 +167,12 @@ export default class Tuple {
         return str;
     }
 
-    hasType(typeName: string) {
-        // TODO delete
-        return !!this.tagsByAttr[typeName];
-    }
-
     hasAttr(typeName: string) {
         return !!this.tagsByAttr[typeName];
     }
 
     hasValueForType(typeName: string) {
-        if (!this.hasType(typeName))
+        if (!this.hasAttr(typeName))
             return false;
 
         for (const tag of this.tagsByAttr[typeName])
@@ -373,11 +368,11 @@ export default class Tuple {
     }
 
     isCommandMeta() {
-        return this.hasType('command-meta');
+        return this.hasAttr('command-meta');
     }
 
     isCommandError() {
-        return this.hasType('command-meta') && this.hasType('error');
+        return this.hasAttr('command-meta') && this.hasAttr('error');
     }
 }
 

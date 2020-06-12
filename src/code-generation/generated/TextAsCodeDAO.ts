@@ -15,7 +15,7 @@ export default class API {
         const command = `get ${target} from-file`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -35,7 +35,7 @@ export default class API {
         const command = `get ${target} destination-filename/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 

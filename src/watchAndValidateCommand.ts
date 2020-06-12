@@ -36,8 +36,8 @@ class SetShouldEmitRelation {
     }
 
     relation(rel: Tuple) {
-        if (rel.hasType('command-meta')) {
-            if (rel.hasType('error'))
+        if (rel.hasAttr('command-meta')) {
+            if (rel.hasAttr('error'))
                 this.commandErrored = true;
         }
 

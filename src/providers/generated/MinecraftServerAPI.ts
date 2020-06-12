@@ -18,7 +18,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/readBlock (get mc x/$x y/$y z/$z block/*)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasType("mc")) && (pattern.hasType("x")) && (pattern.hasValueForType("x")) && (pattern.hasType("y")) && (pattern.hasValueForType("y")) && (pattern.hasType("z")) && (pattern.hasValueForType("z")) && (pattern.hasType("block"))) {
+        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("block"))) {
             try {
                 const x = pattern.getTagValue("x");
                 const y = pattern.getTagValue("y");
@@ -47,7 +47,7 @@ export default class API implements StorageProvider {
     async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/setBlock (set mc x/$x y/$y z/$z block/$block)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasType("mc")) && (pattern.hasType("x")) && (pattern.hasValueForType("x")) && (pattern.hasType("y")) && (pattern.hasValueForType("y")) && (pattern.hasType("z")) && (pattern.hasValueForType("z")) && (pattern.hasType("block")) && (pattern.hasValueForType("block"))) {
+        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("block")) && (pattern.hasValueForType("block"))) {
             try {
                 const x = pattern.getTagValue("x");
                 const y = pattern.getTagValue("y");
@@ -66,7 +66,7 @@ export default class API implements StorageProvider {
 
         // check for handler/setBlockWithData (set mc x/$x y/$y z/$z block/$block data/$data)
 
-        if ((pattern.tagCount() == 6) && (pattern.hasType("mc")) && (pattern.hasType("x")) && (pattern.hasValueForType("x")) && (pattern.hasType("y")) && (pattern.hasValueForType("y")) && (pattern.hasType("z")) && (pattern.hasValueForType("z")) && (pattern.hasType("block")) && (pattern.hasValueForType("block")) && (pattern.hasType("data")) && (pattern.hasValueForType("data"))) {
+        if ((pattern.tagCount() == 6) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("block")) && (pattern.hasValueForType("block")) && (pattern.hasAttr("data")) && (pattern.hasValueForType("data"))) {
             try {
                 const x = pattern.getTagValue("x");
                 const y = pattern.getTagValue("y");
@@ -86,7 +86,7 @@ export default class API implements StorageProvider {
 
         // check for handler/setPredef (set mc x/$x y/$y z/$z predef/$predef)
 
-        if ((pattern.tagCount() == 5) && (pattern.hasType("mc")) && (pattern.hasType("x")) && (pattern.hasValueForType("x")) && (pattern.hasType("y")) && (pattern.hasValueForType("y")) && (pattern.hasType("z")) && (pattern.hasValueForType("z")) && (pattern.hasType("predef")) && (pattern.hasValueForType("predef"))) {
+        if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("predef")) && (pattern.hasValueForType("predef"))) {
             try {
                 const x = pattern.getTagValue("x");
                 const y = pattern.getTagValue("y");
@@ -105,7 +105,7 @@ export default class API implements StorageProvider {
 
         // check for handler/mcundo (set mc undo)
 
-        if ((pattern.tagCount() == 2) && (pattern.hasType("mc")) && (pattern.hasType("undo"))) {
+        if ((pattern.tagCount() == 2) && (pattern.hasAttr("mc")) && (pattern.hasAttr("undo"))) {
             try {
                 await this.handler.undo();
                 output.relation(pattern);

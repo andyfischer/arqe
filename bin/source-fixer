@@ -2,13 +2,19 @@
 
 const { loadGraphFromLocalDatabase, printConsoleResult } = require('..');
 
+const dir = '.'
+// const dir = '../fs-refactor'
+const replaceFrom = 'hasType'
+const replaceTo = 'hasAttr'
+
 async function main() {
 
     const graph = loadGraphFromLocalDatabase();
 
-    const compileErrs = (await graph.runAsync('get tsc-compile dir(../fs-refactor) filename message lineno colno'))
+    const compileErrs = (await graph.runAsync(`get tsc-compile dir(${dir}) filename message lineno colno`))
         .filter(tup => !tup.hasType('command-meta'));
 
+    console.log('Ran TSC, compile error count = ' + compileErrs.length);
     printConsoleResult(compileErrs);
 
     for (const err of compileErrs) {
@@ -27,19 +33,10 @@ async function main() {
             [0]
             .getValueForType('text');
 
-        const newLine = existingLine.replace('tagType', 'attr');
+        const newLine = existingLine.replace(replaceFrom, replaceTo);
 
         await graph.setAsync({ 'working-file': workingFileId, line: lineno, text: newLine });
         await graph.setAsync({ 'working-file': workingFileId, commit: true });
-
-        /*
-        const workingFileId = (await graph.runAsync(`get working-file((new)) filename(${filename})`))
-            .filter(tup => !tup.hasType('command-meta'));
-            [0]
-            .getValueForType('working-file');
-
-        console.log('working file ID = ', workingFileId);
-        */
     }
 }
 

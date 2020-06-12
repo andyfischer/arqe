@@ -15,7 +15,7 @@ export default class API {
         const command = `get code-generation/* destination-filename`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("code-generation"));
     }
@@ -24,7 +24,7 @@ export default class API {
         const command = `get ${target} field/* type/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
     field: rel.getTagValue("field"),
@@ -36,7 +36,7 @@ export default class API {
         const command = `get ${target} touchpoint/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("touchpoint"));
     }
@@ -45,7 +45,7 @@ export default class API {
         const command = `get ${target} ik-import/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -65,7 +65,7 @@ export default class API {
         const command = `get ${target} verbose-logging`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -74,7 +74,7 @@ export default class API {
         const command = `get ${touchpoint} function-name/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -94,7 +94,7 @@ export default class API {
         const command = `get ${touchpoint} style/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -112,7 +112,7 @@ export default class API {
         const command = `get ${touchpoint} expectOne`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -121,7 +121,7 @@ export default class API {
         const command = `get ${touchpoint} async`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -130,7 +130,7 @@ export default class API {
         const command = `get ${touchpoint} listener`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -139,7 +139,7 @@ export default class API {
         const command = `get ${touchpoint} output optional`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -148,7 +148,7 @@ export default class API {
         const command = `get ${touchpoint} output value`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -157,7 +157,7 @@ export default class API {
         const command = `get ${touchpoint} output exists`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -166,7 +166,7 @@ export default class API {
         const command = `get ${touchpoint} output from var`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -184,7 +184,7 @@ export default class API {
         const command = `get ${touchpoint} output from var`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTagValue("from"));
     }
@@ -193,7 +193,7 @@ export default class API {
         const command = `get ${touchpoint} output from var`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
     fromStr: rel.getTagValue("from"),
@@ -205,7 +205,7 @@ export default class API {
         const command = `get ${touchpoint} input var(${varStr}) dataFrom`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -223,7 +223,7 @@ export default class API {
         const command = `get ${touchpoint} input/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("input"));
     }
@@ -232,7 +232,7 @@ export default class API {
         const command = `get ${touchpoint} input var type`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
     varStr: rel.getTagValue("var"),
@@ -244,7 +244,7 @@ export default class API {
         const command = `get ${input} tagType/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -262,7 +262,7 @@ export default class API {
         const command = `get ${input} name/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -282,7 +282,7 @@ export default class API {
         const command = `get ${input} sortOrder/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -300,7 +300,7 @@ export default class API {
         const command = `get ${input} type/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -318,7 +318,7 @@ export default class API {
         const command = `get ${touchpoint} query/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -338,7 +338,7 @@ export default class API {
         const command = `get ${target} destination-filename/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -358,7 +358,7 @@ export default class API {
         const command = `get ${touchpoint} output objectdef/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -378,7 +378,7 @@ export default class API {
         const command = `get ${objectdef} objectfield/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("objectdef"));
     }
@@ -387,7 +387,7 @@ export default class API {
         const command = `get ${touchpoint} output output-object/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -405,7 +405,7 @@ export default class API {
         const command = `get ${outputObject} field/* tagValue/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
@@ -417,7 +417,7 @@ export default class API {
         const command = `get ${outputObject} field/* tag/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
@@ -429,7 +429,7 @@ export default class API {
         const command = `get ${outputObject} field/* tagValue/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
             field: rel.getTagValue("field"),
@@ -441,7 +441,7 @@ export default class API {
         const command = `get ${touchpoint} eventType/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("eventType"));
     }
@@ -450,7 +450,7 @@ export default class API {
         const command = `get ${eventType} query/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTagValue("query"));
     }
@@ -459,7 +459,7 @@ export default class API {
         const command = `get ${eventType} deletion`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.length > 0;
     }
@@ -468,7 +468,7 @@ export default class API {
         const command = `get ${eventType} id/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTagValue("id"));
     }
@@ -477,7 +477,7 @@ export default class API {
         const command = `get ${eventType} provide var/* from/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
     fromStr: rel.getTagValue("from"),

@@ -16,7 +16,7 @@ export default function countCommand(params: CommandExecutionParams) {
     
     combined.pipeToReceiver({
         relation(rel) {
-            if (rel.hasType('command-meta'))
+            if (rel.hasAttr('command-meta'))
                 return;
             count += 1;
         },

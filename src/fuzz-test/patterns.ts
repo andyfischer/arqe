@@ -151,9 +151,9 @@ function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple
 
     const receiver = receiveToTupleList(list => {
         for (const result of list) {
-            if (result.hasType('passed')) {
+            if (result.hasAttr('passed')) {
                 session.markPass();
-            } else if (result.hasType('failed')) {
+            } else if (result.hasAttr('failed')) {
                 session.markFail(`(${testName}) ${result.getValueForType('message')}`);
             } else {
                 console.log('runCheck2 saw incomplete result: ' + result.stringify());

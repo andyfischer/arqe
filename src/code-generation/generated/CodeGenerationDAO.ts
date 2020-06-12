@@ -15,7 +15,7 @@ export default class API {
         const command = `get code-generation/* destination-filename`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("code-generation"));
     }
@@ -24,7 +24,7 @@ export default class API {
         const command = `get ${target} strategy/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 

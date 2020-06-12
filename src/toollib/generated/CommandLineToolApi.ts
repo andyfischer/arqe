@@ -19,7 +19,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 

@@ -35,18 +35,18 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
     return {
         relation: (rel: Tuple) => {
 
-            if (rel.hasType('command-meta')) {
-                if (rel.hasType('action-performed')) {
+            if (rel.hasAttr('command-meta')) {
+                if (rel.hasAttr('action-performed')) {
                     actionPerformed = rel;
                     return;
                 }
 
-                if (rel.hasType('search-pattern')) {
+                if (rel.hasAttr('search-pattern')) {
                     searchPattern = rel.removeTypes(['command-meta', 'search-pattern']);
                     return;
                 }
 
-                if (rel.hasType('output-flag')) {
+                if (rel.hasAttr('output-flag')) {
                     if (rel.getTagValue('output-flag') === 'exists')
                         outputExists = true;
                     if (rel.getTagValue('output-flag') === 'count')
@@ -58,7 +58,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
                     return;
                 }
 
-                if (rel.hasType('error')) {
+                if (rel.hasAttr('error')) {
                     if (!sawError)
                         sawError = rel;
                     return;

@@ -17,7 +17,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -37,7 +37,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         if (rels.length === 0) {
             return null;
@@ -56,7 +56,7 @@ export default class API {
 
         this.graph.run(command, {
             relation(rel: Tuple) {
-                if (rel.hasType('command-meta'))
+                if (rel.hasAttr('command-meta'))
                     return;
                 callback(rel.getTagValue("version"));
             },
@@ -70,7 +70,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }
@@ -81,7 +81,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTag("file-watch"));
     }
@@ -92,7 +92,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // Expect one result
 
@@ -114,7 +114,7 @@ export default class API {
         const { receiver, promise } = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         // no output?
     }

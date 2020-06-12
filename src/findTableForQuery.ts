@@ -7,7 +7,7 @@ import { emitCommandError } from './CommandMeta'
 export default function findTableForQuery(graph: Graph, tuple: Tuple, out: TupleReceiver) {
     // Check if the query specifies an exact table
 
-    if (tuple.hasType('table')) {
+    if (tuple.hasAttr('table')) {
         const tableName = tuple.getValueForType('table');
         const table = graph.tupleStore.findTable(tableName);
         if (!table) {

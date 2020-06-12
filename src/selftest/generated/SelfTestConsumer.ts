@@ -15,7 +15,7 @@ export default class API {
         const command = `get query-test-example query/*`;
 
         const rels: Tuple[] = this.graph.runSync(command)
-            .filter(rel => !rel.hasType("command-meta"));
+            .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => rel.getTagValue("query"));
     }

@@ -14,7 +14,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/selfTestResults (get self-test-results description resultMessage passed)
 
-        if ((pattern.tagCount() == 4) && (pattern.hasType("self-test-results")) && (pattern.hasType("description")) && (pattern.hasType("resultMessage")) && (pattern.hasType("passed"))) {
+        if ((pattern.tagCount() == 4) && (pattern.hasAttr("self-test-results")) && (pattern.hasAttr("description")) && (pattern.hasAttr("resultMessage")) && (pattern.hasAttr("passed"))) {
             try {
                 const result = this.handler.selfTestResults();
 
