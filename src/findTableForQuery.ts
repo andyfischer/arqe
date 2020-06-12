@@ -8,7 +8,7 @@ export default function findTableForQuery(graph: Graph, tuple: Tuple, out: Tuple
     // Check if the query specifies an exact table
 
     if (tuple.hasAttr('table')) {
-        const tableName = tuple.getValueForType('table');
+        const tableName = tuple.getVal('table');
         const table = graph.tupleStore.findTable(tableName);
         if (!table) {
             emitCommandError(out, "table not found: " + tableName);

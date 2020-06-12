@@ -30,8 +30,8 @@ class FuzzTestSession {
 }
 
 function checkIsSupersetOf(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getValueForType("pattern"));
-    const isSupersetOf = parsePattern(example.getValueForType("is-superset-of"));
+    const pattern = parsePattern(example.getVal("pattern"));
+    const isSupersetOf = parsePattern(example.getVal("is-superset-of"));
 
     if (pattern.isSupersetOf(isSupersetOf)) {
         session.markPass();
@@ -41,8 +41,8 @@ function checkIsSupersetOf(session: FuzzTestSession, example: Tuple) {
 }
 
 function checkNotSupersetOf(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getValueForType("pattern"));
-    const notSupersetOf = parsePattern(example.getValueForType("not-superset-of"));
+    const pattern = parsePattern(example.getVal("pattern"));
+    const notSupersetOf = parsePattern(example.getVal("not-superset-of"));
 
     if (!pattern.isSupersetOf(notSupersetOf)) {
         session.markPass();
@@ -52,8 +52,8 @@ function checkNotSupersetOf(session: FuzzTestSession, example: Tuple) {
 }
 
 function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getValueForType("pattern"));
-    const jsonStr = example.getValueForType("equals-from-json");
+    const pattern = parsePattern(example.getVal("pattern"));
+    const jsonStr = example.getVal("equals-from-json");
     const json = JSON.parse(jsonStr);
     const patternFromObject = parseObjectToPattern(json);
 
@@ -76,7 +76,7 @@ function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
 }
 
 function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getValueForType("pattern"));
+    const pattern = parsePattern(example.getVal("pattern"));
     const asObject = patternToJson(pattern);
     const backToPattern = parseObjectToPattern(asObject);
 
@@ -104,7 +104,7 @@ function expectEquals(example: Tuple, expected: any, observed: any, out: TupleRe
 }
 
 function checkPatternRestringify(example: Tuple, out: TupleReceiver) {
-    const patternStr = example.getValueForType("pattern");
+    const patternStr = example.getVal("pattern");
     const pattern = parsePattern(patternStr);
 
     // ignore if this pattern has an expression
@@ -146,7 +146,7 @@ function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple
             if (result.hasAttr('passed')) {
                 session.markPass();
             } else if (result.hasAttr('failed')) {
-                session.markFail(`(${testName}) ${result.getValueForType('message')}`);
+                session.markFail(`(${testName}) ${result.getVal('message')}`);
             } else {
                 console.log('runCheck2 saw incomplete result: ' + result.stringify());
             }

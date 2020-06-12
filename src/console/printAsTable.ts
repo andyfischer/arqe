@@ -113,7 +113,7 @@ export default function printAsTable(patterns: Pattern[]): string[] {
         const outputEls = [];
         for (const column of columns.values()) {
             if (pattern.hasAttr(column.title)) {
-                outputEls.push(column.format(pattern.getValueForType(column.title)));
+                outputEls.push(column.format(pattern.getVal(column.title)));
             }
         }
         outputLines.push(outputEls.join(` ${vertLineChar} `));

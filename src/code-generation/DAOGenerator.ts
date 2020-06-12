@@ -208,7 +208,7 @@ function oneTupleOutputExpression(api: DAOGeneratorDAO, fromStr: string, relVarN
     if (fromStr.endsWith('/*')) {
         return `${relVarName}.getTagValue("${fromStr.replace('/*', '')}")`
     } else {
-        return `${relVarName}.getTag("${fromStr}")`
+        return `${relVarName}.getTagAsString("${fromStr}")`
     }
 }
 
@@ -284,7 +284,7 @@ function methodReturnResult(api: DAOGeneratorDAO, touchpoint: string, block: Blo
             }
             
             for (const { field, tag } of api.outputObjectTagFields(outputObject)) {
-                block.addRaw(`    ${field}: oneRel.getTag("${tag}"),`);
+                block.addRaw(`    ${field}: oneRel.getTagAsString("${tag}"),`);
             }
 
             block.addRaw('}');

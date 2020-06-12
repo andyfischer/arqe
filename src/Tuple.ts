@@ -175,7 +175,11 @@ export default class Tuple {
         return tag;
     }
 
-    getTag(typeName: string) {
+    getTag(attr: string) {
+        return this.getTagAsString(attr);
+    }
+
+    getTagAsString(typeName: string) {
         const tag = this.getOneTagForType(typeName);
 
         if (!tag)
@@ -185,18 +189,6 @@ export default class Tuple {
             return typeName;
 
         return typeName + '/' + tag.tagValue;
-    }
-
-    getTagString(typeName: string) {
-        return this.getTag(typeName);
-    }
-
-    getValueForType(typeName: string) {
-        const tag = this.getOneTagForType(typeName);
-        if (!tag)
-            throw new Error(`type "${typeName}" not found in pattern: ${this.stringify()}`);
-
-        return tag.tagValue;
     }
 
     getVal(attr: string) {
