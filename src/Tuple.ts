@@ -51,32 +51,20 @@ export default class Tuple {
                 this.tagsByAttr[attr].push(tag);
             }
 
-            if (tag.doubleStar) {
-            } else if (tag.star) {
-
-            } else if (tag.starValue) {
-            } else {
-            }
-
             if (tag.identifier)
                 this.byIdentifier[tag.identifier] = tag;
         }
     }
 
-    copyWithNewTags(tags: PatternTag[]) {
-        const pattern = new Tuple(tags);
-        return pattern;
-    }
-
     remapTags(func: (tag:PatternTag) => PatternTag) {
         const tags = this.tags.map(func)
             .filter(tag => tag);
-        return this.copyWithNewTags(tags);
+        return new Tuple(tags);
     }
 
     modifyTagsList(func: (tags: PatternTag[]) => PatternTag[]) {
         const tags = func(this.tags);
-        return this.copyWithNewTags(tags);
+        return new Tuple(tags);
     }
 
     tagCount() {
@@ -225,7 +213,7 @@ export default class Tuple {
         if (index >= this.tags.length)
             throw new Error('index out of range: ' + index);
 
-        return this.copyWithNewTags(this.tags.slice(0,index).concat(this.tags.slice(index + 1)));
+        return new Tuple(this.tags.slice(0,index).concat(this.tags.slice(index + 1)));
     }
 
     setTagValueAtIndex(index: number, value: any) {
@@ -233,7 +221,7 @@ export default class Tuple {
         tags[index] = tags[index].copy();
         tags[index].tagValue = value;
 
-        return this.copyWithNewTags(tags);
+        return new Tuple(tags);
     }
 
     setVal(attr: string, value: string) {
@@ -296,23 +284,23 @@ export default class Tuple {
     updateTagAtIndex(index: number, update: (t: PatternTag) => PatternTag) {
         const tags = this.tags.map(t => t);
         tags[index] = update(tags[index]);
-        return this.copyWithNewTags(tags);
+        return new Tuple(tags);
     }
 
     removeAttr(typeName: string) {
-        return this.copyWithNewTags(this.tags.filter(tag => tag.attr !== typeName));
+        return new Tuple(this.tags.filter(tag => tag.attr !== typeName));
     }
 
     removeTypes(typeNames: string[]) {
-        return this.copyWithNewTags(this.tags.filter(tag => typeNames.indexOf(tag.attr) === -1));
+        return new Tuple(this.tags.filter(tag => typeNames.indexOf(tag.attr) === -1));
     }
 
     addTagStr(s: string) {
-        return this.copyWithNewTags(this.tags.concat([parseTag(s)]));
+        return new Tuple(this.tags.concat([parseTag(s)]));
     }
 
     addTagObj(tag: PatternTag) {
-        return this.copyWithNewTags(this.tags.concat([tag]));
+        return new Tuple(this.tags.concat([tag]));
     }
 
     addNewTag(tagType: string, tagValue?: string) {
@@ -320,7 +308,7 @@ export default class Tuple {
     }
 
     addTags(strs: string[]) {
-        return this.copyWithNewTags(this.tags.concat(strs.map(parseTag)));
+        return new Tuple(this.tags.concat(strs.map(parseTag)));
     }
 
     str() {

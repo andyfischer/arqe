@@ -38,6 +38,11 @@ export default class TupleDerivedData {
         const sortedTags = tuple.tags.concat([]);
         sortedTags.sort((a, b) => a.compareCanonicalSort(b));
         this.sortedTags = sortedTags;
+
+        Object.freeze(this.fixedTags);
+        Object.freeze(this.fixedTagsForAttr);
+        Object.freeze(this.sortedTags);
+        Object.freeze(this);
     }
 }
 

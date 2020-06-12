@@ -52,6 +52,10 @@ export default class TupleMatchHelper {
                 this.valueTagsByAttr[attr].push(tag);
             }
         }
+
+        Object.freeze(this.countsByAttr);
+        Object.freeze(this.valueTagsByAttr);
+        Object.freeze(this);
     }
 
     findMatchingFixedTag(valueTag: PatternTag, tags: PatternTag[]) {
