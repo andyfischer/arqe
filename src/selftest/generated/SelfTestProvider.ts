@@ -24,9 +24,9 @@ export default class API implements StorageProvider {
 
                 for (const item of result) {
                     const outRelation = pattern
-                        .setTagValueForType("description", item.description)
-                        .setTagValueForType("resultMessage", item.resultMessage)
-                        .setTagValueForType("passed", item.passed);
+                        .setVal("description", item.description)
+                        .setVal("resultMessage", item.resultMessage)
+                        .setVal("passed", item.passed);
                     output.relation(outRelation);
                 }
             }

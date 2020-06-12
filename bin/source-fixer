@@ -4,8 +4,8 @@ const { loadGraphFromLocalDatabase, printConsoleResult } = require('..');
 
 const dir = '.'
 // const dir = '../fs-refactor'
-const replaceFrom = 'getTag'
-const replaceTo = 'getTagAsString'
+const replaceFrom = 'setTagValueForType'
+const replaceTo = 'setVal'
 
 async function main() {
 
@@ -20,18 +20,18 @@ async function main() {
     for (const err of compileErrs) {
         console.log('looking at error: ', err.stringify());
 
-        const filename = err.getValueForType('filename');
-        const lineno = err.getValueForType('lineno');
+        const filename = err.getVal('filename');
+        const lineno = err.getVal('lineno');
 
         const workingFileId = (await graph.runAsync(`get working-file((new)) filename(${filename})`))
             .filter(tup => !tup.hasAttr('command-meta'))
             [0]
-            .getValueForType('working-file');
+            .getVal('working-file');
 
         const existingLine = (await graph.runAsync(`get working-file(${workingFileId}) line(${lineno}) text`))
             .filter(tup => !tup.hasAttr('command-meta'))
             [0]
-            .getValueForType('text');
+            .getVal('text');
 
         const newLine = existingLine.replace(replaceFrom, replaceTo);
 

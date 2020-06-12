@@ -26,7 +26,7 @@ export default class API implements StorageProvider {
                     throw new Error("expected readFile to return a string, got: " + JSON.stringify(contents))
                 }
 
-                const outRelation = pattern.setTagValueForType("file-contents", contents);
+                const outRelation = pattern.setVal("file-contents", contents);
                 output.relation(outRelation);
             }
             catch(e) {
@@ -49,7 +49,7 @@ export default class API implements StorageProvider {
                 }
 
                 for (const item of filename) {
-                    const outRelation = pattern.setTagValueForType("filename", item);
+                    const outRelation = pattern.setVal("filename", item);
                     output.relation(outRelation);
                 }
             }
@@ -73,7 +73,7 @@ export default class API implements StorageProvider {
                 }
 
                 for (const item of filename) {
-                    const outRelation = pattern.setTagValueForType("filename", item);
+                    const outRelation = pattern.setVal("filename", item);
                     output.relation(outRelation);
                 }
             }

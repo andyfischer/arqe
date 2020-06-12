@@ -3,7 +3,7 @@ import { patternTagToString } from './stringifyQuery'
 
 export interface TagOptions {
     attr?: string
-    tagValue?: string
+    tagValue?: string | true
     valueExpr?: string[]
     star?: boolean
     doubleStar?: boolean
@@ -26,7 +26,7 @@ export default class PatternTag {
 
     constructor(opts: TagOptions) {
         this.attr = opts.attr;
-        this.tagValue = opts.tagValue;
+        this.tagValue = opts.tagValue as any;
         this.valueExpr = opts.valueExpr;
         this.star = opts.star;
         this.doubleStar = opts.doubleStar;
@@ -34,7 +34,7 @@ export default class PatternTag {
         this.optional = opts.optional;
         this.identifier = opts.identifier;
 
-        if (this.tagValue === undefined)
+        if (opts.tagValue === undefined || opts.tagValue === true)
             this.tagValue = null;
     }
 
@@ -141,7 +141,7 @@ function boolCompare(a,b) {
 
 export type FixedTag = PatternTag;
 
-export function newTag(attr: string, tagValue?: string): PatternTag {
+export function newTag(attr: string, tagValue?: string | true): PatternTag {
     return new PatternTag({ attr, tagValue });
 }
 

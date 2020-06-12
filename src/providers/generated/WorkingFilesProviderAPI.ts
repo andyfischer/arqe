@@ -22,8 +22,8 @@ export default class API implements StorageProvider {
                 const filename = pattern.getVal("filename");
                 const result = await this.handler.loadFile(filename);
                 const outRelation = pattern
-                    .setTagValueForType("working-file", result.id)
-                    .setTagValueForType("filename", result.filename);
+                    .setVal("working-file", result.id)
+                    .setVal("filename", result.filename);
                 output.relation(outRelation);
             }
             catch(e) {
@@ -46,7 +46,7 @@ export default class API implements StorageProvider {
                     throw new Error("expected getLine to return a string, got: " + JSON.stringify(text))
                 }
 
-                const outRelation = pattern.setTagValueForType("text", text);
+                const outRelation = pattern.setVal("text", text);
                 output.relation(outRelation);
             }
             catch(e) {

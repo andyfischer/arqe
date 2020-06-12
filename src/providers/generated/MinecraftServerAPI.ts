@@ -29,7 +29,7 @@ export default class API implements StorageProvider {
                     throw new Error("expected readBlock to return a string, got: " + JSON.stringify(contents))
                 }
 
-                const outRelation = pattern.setTagValueForType("block", contents);
+                const outRelation = pattern.setVal("block", contents);
                 output.relation(outRelation);
             }
             catch(e) {

@@ -201,12 +201,7 @@ export default class Tuple {
         return new Tuple(tags);
     }
 
-    setVal(attr: string, value: string) {
-        return this.setValueForType(attr, value);
-    }
-
-    setValueForType(attr: string, value: any) {
-
+    setVal(attr: string, value: string | true) {
         let found = false;
 
         let out = this.remapTags(tag => {
@@ -227,10 +222,6 @@ export default class Tuple {
             out = out.addNewTag(attr, value);
 
         return out;
-    }
-
-    setTagValueForType(attr: string, value: any) {
-        return this.setValueForType(attr, value);
     }
 
     findTagForType(attr: string) {
@@ -280,7 +271,7 @@ export default class Tuple {
         return new Tuple(this.tags.concat([tag]));
     }
 
-    addNewTag(tagType: string, tagValue?: string) {
+    addNewTag(tagType: string, tagValue?: string | true) {
         return this.addTagObj(newTag(tagType, tagValue));
     }
 
