@@ -126,7 +126,7 @@ function patternCheckExpression(pattern: Pattern) {
         if (tag.identifier) {
             conditions.push(`pattern.hasValueForAttr("${tag.attr}")`);
         } else if (tag.tagValue) {
-            conditions.push(`pattern.getTagValue("${tag.attr}") == "${tag.tagValue}"`);
+            conditions.push(`pattern.getVal("${tag.attr}") == "${tag.tagValue}"`);
         }
     }
 
@@ -139,7 +139,7 @@ function pullOutVarsFromPattern(pattern: Pattern, block: Block) {
 
     for (const tag of pattern.tags) {
         if (tag.identifier) {
-            block.addRaw(`const ${tag.identifier} = pattern.getTagValue("${tag.attr}");`);
+            block.addRaw(`const ${tag.identifier} = pattern.getVal("${tag.attr}");`);
             vars.push(tag.identifier);
         }
     }

@@ -206,7 +206,7 @@ function defineEventListener(api: DAOGeneratorDAO, block: Block, touchpoint: str
 
 function oneTupleOutputExpression(api: DAOGeneratorDAO, fromStr: string, relVarName = 'rel') {
     if (fromStr.endsWith('/*')) {
-        return `${relVarName}.getTagValue("${fromStr.replace('/*', '')}")`
+        return `${relVarName}.getVal("${fromStr.replace('/*', '')}")`
     } else {
         return `${relVarName}.getTagAsString("${fromStr}")`
     }
@@ -280,7 +280,7 @@ function methodReturnResult(api: DAOGeneratorDAO, touchpoint: string, block: Blo
             block.addRaw('return {');
 
             for (const { field, tagValue } of api.outputObjectTagValueFields(outputObject)) {
-                block.addRaw(`    ${field}: oneRel.getTagValue("${tagValue}"),`);
+                block.addRaw(`    ${field}: oneRel.getVal("${tagValue}"),`);
             }
             
             for (const { field, tag } of api.outputObjectTagFields(outputObject)) {
@@ -310,7 +310,7 @@ function methodReturnResult(api: DAOGeneratorDAO, touchpoint: string, block: Blo
         block.addRaw('return rels.map(rel => ({');
 
         for (const { field, tagValue } of api.outputObjectFields(outputObject)) {
-            block.addRaw(`    ${field}: rel.getTagValue("${tagValue}"),`);
+            block.addRaw(`    ${field}: rel.getVal("${tagValue}"),`);
         }
 
         block.addRaw('}));');
