@@ -17,7 +17,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/loadFile (get working-file((new)) filename/$filename)
 
-        if ((pattern.tagCount() == 2) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename"))) {
+        if ((pattern.tagCount() == 2) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("filename")) && (pattern.hasAttr("filename"))) {
             try {
                 const filename = pattern.getVal("filename");
                 const result = await this.handler.loadFile(filename);
@@ -36,7 +36,7 @@ export default class API implements StorageProvider {
 
         // check for handler/getLine (get working-file/$id line/$lineno text)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasAttr("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasAttr("line")) && (pattern.hasValueForType("line")) && (pattern.hasAttr("text"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("line")) && (pattern.hasAttr("line")) && (pattern.hasAttr("text"))) {
             try {
                 const id = pattern.getVal("working-file");
                 const lineno = pattern.getVal("line");
@@ -64,7 +64,7 @@ export default class API implements StorageProvider {
     async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/setLine (set working-file/$id line/$lineno text/$text)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasAttr("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasAttr("line")) && (pattern.hasValueForType("line")) && (pattern.hasAttr("text")) && (pattern.hasValueForType("text"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("line")) && (pattern.hasAttr("line")) && (pattern.hasAttr("text")) && (pattern.hasAttr("text"))) {
             try {
                 const id = pattern.getVal("working-file");
                 const lineno = pattern.getVal("line");
@@ -82,7 +82,7 @@ export default class API implements StorageProvider {
 
         // check for handler/commitFile (set working-file/$id commit)
 
-        if ((pattern.tagCount() == 2) && (pattern.hasAttr("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasAttr("commit"))) {
+        if ((pattern.tagCount() == 2) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("commit"))) {
             try {
                 const id = pattern.getVal("working-file");
                 await this.handler.commitFile(id);

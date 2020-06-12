@@ -4,8 +4,8 @@ const { loadGraphFromLocalDatabase, printConsoleResult } = require('..');
 
 const dir = '.'
 // const dir = '../fs-refactor'
-const replaceFrom = 'getTagValue'
-const replaceTo = 'getVal'
+const replaceFrom = 'hasValueForType'
+const replaceTo = 'hasAttr'
 
 async function main() {
 

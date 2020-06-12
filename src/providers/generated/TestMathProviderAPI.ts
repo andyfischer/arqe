@@ -14,7 +14,7 @@ export default class API implements StorageProvider {
     async runSearch(pattern: Pattern, output: TupleReceiver) {
         // check for handler/sum (get test-math sum a/$a b/$b)
 
-        if ((pattern.tagCount() == 4) && (pattern.hasAttr("test-math")) && (pattern.hasAttr("sum")) && (pattern.hasAttr("a")) && (pattern.hasValueForType("a")) && (pattern.hasAttr("b")) && (pattern.hasValueForType("b"))) {
+        if ((pattern.tagCount() == 4) && (pattern.hasAttr("test-math")) && (pattern.hasAttr("sum")) && (pattern.hasAttr("a")) && (pattern.hasAttr("a")) && (pattern.hasAttr("b")) && (pattern.hasAttr("b"))) {
             try {
                 const a = pattern.getVal("a");
                 const b = pattern.getVal("b");

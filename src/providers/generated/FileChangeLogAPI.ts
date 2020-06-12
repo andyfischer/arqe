@@ -19,7 +19,7 @@ export default class API implements StorageProvider {
     async runSave(pattern: Pattern, output: TupleReceiver) {
         // check for handler/onChange (set log file-changed filename/$filename)
 
-        if ((pattern.tagCount() == 3) && (pattern.hasAttr("log")) && (pattern.hasAttr("file-changed")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename"))) {
+        if ((pattern.tagCount() == 3) && (pattern.hasAttr("log")) && (pattern.hasAttr("file-changed")) && (pattern.hasAttr("filename")) && (pattern.hasAttr("filename"))) {
             try {
                 const filename = pattern.getVal("filename");
                 this.handler.onChange(filename);
