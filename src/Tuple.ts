@@ -5,22 +5,21 @@ import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
 import PatternTag, { newTag, FixedTag } from './PatternTag'
 import TupleMatchHelper from './TupleMatchHelper'
+import TupleDerivedData from './TupleDerivedData'
 
 export default class Tuple {
     
     tags: PatternTag[] = []
 
     // derived data
-    minimumTagCount: number
     sortedTags: PatternTag[] = null
-    hasDerivedData: boolean
     starValueTags: PatternTag[] = []
     fixedTags: FixedTag[] = []
     fixedTagsForType: { [typename: string]: true } = {}
     tagsByAttr: { [typename: string]: PatternTag[] } = {}
-    hasStar?: boolean
-    hasDoubleStar?: boolean
     byIdentifier: { [identifier: string]: PatternTag } = {}
+
+    _derivedData?: TupleDerivedData
     matchHelper?: TupleMatchHelper
 
     constructor(tags: PatternTag[]) {
@@ -30,6 +29,12 @@ export default class Tuple {
         this.tags = tags;
         this.updateDerivedData();
         Object.freeze(this.tags);
+    }
+
+    derivedData() {
+        if (!this._derivedData)
+            this._derivedData = new TupleDerivedData(this);
+        return this._derivedData;
     }
 
     getSortedTags() {
@@ -48,11 +53,6 @@ export default class Tuple {
     }
 
     updateDerivedData() {
-        if (this.hasDerivedData)
-            return;
-
-        let minimumTagCount = 0;
-
         for (const tag of this.tags) {
             const { attr } = tag;
 
@@ -64,9 +64,7 @@ export default class Tuple {
             }
 
             if (tag.doubleStar) {
-                this.hasDoubleStar = true;
             } else if (tag.star) {
-                this.hasStar = true;
 
             } else if (tag.starValue) {
                 this.starValueTags.push(tag);
@@ -75,15 +73,9 @@ export default class Tuple {
                 this.fixedTagsForType[tag.attr] = true;
             }
 
-            if (!tag.doubleStar && !tag.optional)
-                minimumTagCount += 1;
-
             if (tag.identifier)
                 this.byIdentifier[tag.identifier] = tag;
         }
-
-        this.hasDerivedData = true;
-        this.minimumTagCount = minimumTagCount;
     }
 
     copyWithNewTags(tags: PatternTag[]) {
@@ -109,11 +101,13 @@ export default class Tuple {
     isSupersetOf(subPattern: Tuple) {
 
         const matchHelper = this.getMatchHelper();
+        const thisDerived = this.derivedData();
+        const subDerived = subPattern.derivedData();
 
-        if (subPattern.hasDoubleStar && !this.hasDoubleStar)
+        if (subDerived.hasDoubleStar && !thisDerived.hasDoubleStar)
             return false;
 
-        if (subPattern.hasStar && !this.hasStar)
+        if (subDerived.hasSingleStar && !thisDerived.hasSingleStar)
             return false;
 
         // Check each attr
@@ -123,7 +117,7 @@ export default class Tuple {
         }
         
         // Check if subPattern has extra attrs that we don't have.
-        if (!this.hasDoubleStar && !this.hasStar) {
+        if (!thisDerived.hasDoubleStar && !thisDerived.hasSingleStar) {
             for (const subAttr in subPattern.tagsByAttr)
                 if (!this.tagsByAttr[subAttr])
                     return false;
@@ -150,7 +144,7 @@ export default class Tuple {
     }
 
     isMultiMatch() {
-        return this.hasStar || this.hasDoubleStar || (this.starValueTags.length > 0);
+        return this.derivedData().hasAnyStars;
     }
 
     formatRelationRelative(rel: Tuple) {

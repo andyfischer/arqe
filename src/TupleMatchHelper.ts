@@ -1,3 +1,11 @@
+/**
+ TupleMatchHelper
+
+ Helper functions and derived data for calculating isSupersetOf.
+
+ This data is only needed for the X tuple in "x.isSupersetOf(y)"
+
+*/
 
 import Tuple from './Tuple'
 import PatternTag from './PatternTag'
@@ -14,7 +22,7 @@ function expressionMatches(expr: string[], subExpr: string[]) {
     return true;
 }
 
-export default class MatchHelper {
+export default class TupleMatchHelper {
     tuple: Tuple
     countsByAttr: { [attr: string]: { min: number, max?: number } } = {}
     valueTagsByAttr: { [ attr: string]: PatternTag[] } = {}

@@ -112,7 +112,7 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
 function patternCheckExpression(pattern: Pattern) {
     const conditions = [];
 
-    if (pattern.hasDoubleStar) {
+    if (pattern.derivedData().hasDoubleStar) {
         conditions.push(`pattern.tagCount() >= ${pattern.tagCount()}`);
     } else {
         conditions.push(`pattern.tagCount() == ${pattern.tagCount()}`);

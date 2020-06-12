@@ -103,14 +103,6 @@ function expectEquals(example: Tuple, expected: any, observed: any, out: TupleRe
         fail(example, out, `expected (${expected}) != observed (${observed})`);
 }
 
-function checkRequiredTagCount(example: Tuple, out: TupleReceiver) {
-    const pattern = parsePattern(example.getValueForType("pattern"));
-    const expected = parseInt(example.getValueForType("expect-minimum-tag-count"));
-    const observed = pattern.minimumTagCount;
-
-    expectEquals(example, expected, observed, out);
-}
-
 function checkPatternRestringify(example: Tuple, out: TupleReceiver) {
     const patternStr = example.getValueForType("pattern");
     const pattern = parsePattern(patternStr);
@@ -188,7 +180,6 @@ export default function fuzzTestPatterns(graph: Graph) {
     runCheck(session, "get pattern-test-example pattern/* not-superset-of/*", checkNotSupersetOf);
     runCheck(session, "get pattern-test-example pattern/* equals-from-json/*", checkEqualsFromJson);
     runCheck(session, "get pattern-test-example pattern/*", checkPatternToObjectConversion);
-    runCheck2(session, "get pattern-test-example pattern/* expect-minimum-tag-count", checkRequiredTagCount);
     runCheck2(session, "get pattern-test-example pattern/* ", checkPatternRestringify);
 
     return session;
