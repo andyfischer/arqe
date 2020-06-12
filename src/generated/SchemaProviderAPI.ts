@@ -22,7 +22,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("schema")) && (pattern.hasAttr("column")) && (pattern.hasValueForType("column")) && (pattern.hasAttr("object"))) {
             try {
-                const column = pattern.getTagValue("column");
+                const column = pattern.getVal("column");
                 this.handler.setObjectColumn(column);
                 output.relation(pattern);
             }
@@ -38,7 +38,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("schema")) && (pattern.hasAttr("column")) && (pattern.hasValueForType("column")) && (pattern.hasAttr("view"))) {
             try {
-                const column = pattern.getTagValue("column");
+                const column = pattern.getVal("column");
                 this.handler.setViewColumn(column);
                 output.relation(pattern);
             }

@@ -16,7 +16,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 2) && (pattern.hasAttr("typescript-tree")) && (pattern.hasAttr("text")) && (pattern.hasValueForType("text"))) {
             try {
-                const text = pattern.getTagValue("text");
+                const text = pattern.getVal("text");
                 const filename = this.handler.createAstFromText(text);
 
                 if (typeof filename !== 'string') {

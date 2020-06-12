@@ -19,7 +19,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasAttr("file-contents"))) {
             try {
-                const filename = pattern.getTagValue("filename");
+                const filename = pattern.getVal("filename");
                 const contents = await this.handler.readFile(filename);
 
                 if (typeof contents !== 'string') {
@@ -41,7 +41,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("filename"))) {
             try {
-                const dir = pattern.getTagValue("dir");
+                const dir = pattern.getVal("dir");
                 const filename = await this.handler.readDir(dir);
 
                 if (!Array.isArray(filename)) {
@@ -65,7 +65,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("match")) && (pattern.hasValueForType("match")) && (pattern.hasAttr("filename"))) {
             try {
-                const match = pattern.getTagValue("match");
+                const match = pattern.getVal("match");
                 const filename = await this.handler.listMatchingFiles(match);
 
                 if (!Array.isArray(filename)) {
@@ -94,8 +94,8 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename")) && (pattern.hasAttr("file-contents")) && (pattern.hasValueForType("file-contents"))) {
             try {
-                const filename = pattern.getTagValue("filename");
-                const contents = pattern.getTagValue("file-contents");
+                const filename = pattern.getVal("filename");
+                const contents = pattern.getVal("file-contents");
                 await this.handler.writeFile(filename, contents);
                 output.relation(pattern);
             }

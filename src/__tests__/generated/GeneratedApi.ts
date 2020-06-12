@@ -48,7 +48,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("b");
+        return oneRel.getVal("b");
     }
 
     getCurrentFlag(target: string): string {
@@ -68,7 +68,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("flag");
+        return oneRel.getVal("flag");
     }
 
     getUsingCommandChain(target: string): string {
@@ -88,7 +88,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("flag");
+        return oneRel.getVal("flag");
     }
 
     changeFlag(target: string, val: string) {

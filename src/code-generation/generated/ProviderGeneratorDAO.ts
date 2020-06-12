@@ -29,7 +29,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("destination-filename");
+        return oneRel.getVal("destination-filename");
     }
 
     getIkImport(target: string): string {
@@ -49,7 +49,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("ik-import");
+        return oneRel.getVal("ik-import");
     }
 
     touchpointFunctionName(touchpoint: string): string {
@@ -69,7 +69,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("function-name");
+        return oneRel.getVal("function-name");
     }
 
     touchpointInputs2(touchpoint: string) {
@@ -79,8 +79,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-    varStr: rel.getTagValue("var"),
-    typeStr: rel.getTagValue("type"),
+    varStr: rel.getVal("var"),
+    typeStr: rel.getVal("type"),
 }));
     }
 
@@ -91,8 +91,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-    fromStr: rel.getTagValue("from"),
-    varStr: rel.getTagValue("var"),
+    fromStr: rel.getVal("from"),
+    varStr: rel.getVal("var"),
 }));
     }
 
@@ -131,7 +131,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("handles-pattern");
+        return oneRel.getVal("handles-pattern");
     }
 
     touchpointOutputWithType(touchpoint: string): string {
@@ -149,7 +149,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("type");
+        return oneRel.getVal("type");
     }
 
     listHandlers(): string[] {
@@ -179,6 +179,6 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("handles-query");
+        return oneRel.getVal("handles-query");
     }
 }

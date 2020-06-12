@@ -19,7 +19,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch"))) {
             try {
-                const dir = pattern.getTagValue("dir");
+                const dir = pattern.getVal("dir");
                 await this.handler.listBranches(dir);
             }
             catch(e) {
@@ -34,8 +34,8 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch")) && (pattern.hasValueForType("branch"))) {
             try {
-                const dir = pattern.getTagValue("dir");
-                const branch = pattern.getTagValue("branch");
+                const dir = pattern.getVal("dir");
+                const branch = pattern.getVal("branch");
                 await this.handler.checkBranchExists(dir, branch);
             }
             catch(e) {
@@ -55,8 +55,8 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch")) && (pattern.hasValueForType("branch"))) {
             try {
-                const dir = pattern.getTagValue("dir");
-                const branchName = pattern.getTagValue("branch");
+                const dir = pattern.getVal("dir");
+                const branchName = pattern.getVal("branch");
                 await this.handler.createBranch(dir, branchName);
                 output.relation(pattern);
             }
@@ -77,8 +77,8 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("git")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("branch")) && (pattern.hasValueForType("branch"))) {
             try {
-                const dir = pattern.getTagValue("dir");
-                const branch = pattern.getTagValue("branch");
+                const dir = pattern.getVal("dir");
+                const branch = pattern.getVal("branch");
                 await this.handler.deleteBranch(dir, branch);
             }
             catch(e) {

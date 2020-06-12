@@ -19,7 +19,7 @@ export default class API {
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTagValue("name"));
+        return rels.map(rel => rel.getVal("name"));
     }
 
     async getExitStyle(toolname: string): Promise<string> {
@@ -39,7 +39,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("exit-style");
+        return oneRel.getVal("exit-style");
     }
 
     async cliInputIsRequired(toolname: string, name: string): Promise<boolean> {

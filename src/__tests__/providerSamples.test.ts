@@ -10,7 +10,7 @@ it('test with getTuples', () => {
     const result = runUpdateOnce(graph, cxt => {
         const out = []
         for (const rel of cxt.getTuples("a b/*")) {
-            out.push(rel.getTagValue("b"));
+            out.push(rel.getVal("b"));
         }
         return out;
     });

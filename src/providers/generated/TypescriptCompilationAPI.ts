@@ -16,7 +16,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 6) && (pattern.hasAttr("tsc-compile")) && (pattern.hasAttr("dir")) && (pattern.hasValueForType("dir")) && (pattern.hasAttr("filename")) && (pattern.hasAttr("message")) && (pattern.hasAttr("lineno")) && (pattern.hasAttr("colno"))) {
             try {
-                const dir = pattern.getTagValue("dir");
+                const dir = pattern.getVal("dir");
                 const result = await this.handler.runTsc(dir);
 
                 if (!Array.isArray(result)) {

@@ -58,7 +58,7 @@ export default class API {
             relation(rel: Tuple) {
                 if (rel.hasAttr('command-meta'))
                     return;
-                callback(rel.getTagValue("version"));
+                callback(rel.getVal("version"));
             },
             finish() { }
         });

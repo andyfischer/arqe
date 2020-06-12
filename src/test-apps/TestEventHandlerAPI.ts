@@ -20,7 +20,7 @@ export default class API {
                     return;
                 handler({
     id: 'valueChanged',
-    val: rel.getTagValue("val"),
+    val: rel.getVal("val"),
 });
             },
             finish() { }

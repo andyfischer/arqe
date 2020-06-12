@@ -196,11 +196,6 @@ export default class Tuple {
         return this.getValueForType(attr);
     }
 
-    getTagValue(typeName: string) {
-        // TODO: replace with getVal
-        return this.getValueForType(typeName);
-    }
-
     getTagValueOptional(typeName: string, defaultValue) {
         const tag = this.getOneTagForType(typeName);
         if (!tag)

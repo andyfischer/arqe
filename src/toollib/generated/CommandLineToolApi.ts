@@ -32,6 +32,6 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("value");
+        return oneRel.getVal("value");
     }
 }

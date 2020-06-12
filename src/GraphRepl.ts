@@ -42,7 +42,7 @@ export default class GraphRepl {
 
                 if (rel.hasAttr('command-meta')) {
                     if (rel.hasAttr('error')) {
-                        console.log('error: ' + rel.getTagValue('message'));
+                        console.log('error: ' + rel.getVal('message'));
                     }
 
                     return;

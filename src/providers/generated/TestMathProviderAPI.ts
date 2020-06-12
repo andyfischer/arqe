@@ -16,8 +16,8 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 4) && (pattern.hasAttr("test-math")) && (pattern.hasAttr("sum")) && (pattern.hasAttr("a")) && (pattern.hasValueForType("a")) && (pattern.hasAttr("b")) && (pattern.hasValueForType("b"))) {
             try {
-                const a = pattern.getTagValue("a");
-                const b = pattern.getTagValue("b");
+                const a = pattern.getVal("a");
+                const b = pattern.getVal("b");
                 const sum = this.handler.sum(a, b);
 
                 if (typeof sum !== 'string') {

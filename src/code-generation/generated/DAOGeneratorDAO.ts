@@ -27,8 +27,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-    field: rel.getTagValue("field"),
-    typeStr: rel.getTagValue("type"),
+    field: rel.getVal("field"),
+    typeStr: rel.getVal("type"),
 }));
     }
 
@@ -58,7 +58,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("ik-import");
+        return oneRel.getVal("ik-import");
     }
 
     enableVerboseLogging(target: string): boolean {
@@ -87,7 +87,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("function-name");
+        return oneRel.getVal("function-name");
     }
 
     touchpointStyle(touchpoint: string): string {
@@ -105,7 +105,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("style");
+        return oneRel.getVal("style");
     }
 
     touchpointExpectOne(touchpoint: string): boolean {
@@ -177,7 +177,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("from");
+        return oneRel.getVal("from");
     }
 
     touchpointOutputs(touchpoint: string): string[] {
@@ -186,7 +186,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTagValue("from"));
+        return rels.map(rel => rel.getVal("from"));
     }
 
     touchpointOutputs2(touchpoint: string) {
@@ -196,8 +196,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-    fromStr: rel.getTagValue("from"),
-    varStr: rel.getTagValue("var"),
+    fromStr: rel.getVal("from"),
+    varStr: rel.getVal("var"),
 }));
     }
 
@@ -216,7 +216,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("dataFrom");
+        return oneRel.getVal("dataFrom");
     }
 
     touchpointInputs(touchpoint: string): string[] {
@@ -235,8 +235,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-    varStr: rel.getTagValue("var"),
-    typeStr: rel.getTagValue("type"),
+    varStr: rel.getVal("var"),
+    typeStr: rel.getVal("type"),
 }));
     }
 
@@ -255,7 +255,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("tagType");
+        return oneRel.getVal("tagType");
     }
 
     inputName(input: string): string {
@@ -275,7 +275,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("name");
+        return oneRel.getVal("name");
     }
 
     inputSortOrder(input: string): string {
@@ -293,7 +293,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("sortOrder");
+        return oneRel.getVal("sortOrder");
     }
 
     inputType(input: string): string {
@@ -311,7 +311,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("type");
+        return oneRel.getVal("type");
     }
 
     touchpointQueryString(touchpoint: string): string {
@@ -331,7 +331,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("query");
+        return oneRel.getVal("query");
     }
 
     getDestinationFilename(target: string): string {
@@ -351,7 +351,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("destination-filename");
+        return oneRel.getVal("destination-filename");
     }
 
     getOutputObjectdef(touchpoint: string): string {
@@ -408,8 +408,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-            field: rel.getTagValue("field"),
-            tagValue: rel.getTagValue("tagValue"),
+            field: rel.getVal("field"),
+            tagValue: rel.getVal("tagValue"),
         }));
     }
 
@@ -420,8 +420,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-            field: rel.getTagValue("field"),
-            tag: rel.getTagValue("tag"),
+            field: rel.getVal("field"),
+            tag: rel.getVal("tag"),
         }));
     }
 
@@ -432,8 +432,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-            field: rel.getTagValue("field"),
-            tagValue: rel.getTagValue("tagValue"),
+            field: rel.getVal("field"),
+            tagValue: rel.getVal("tagValue"),
         }));
     }
 
@@ -452,7 +452,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTagValue("query"));
+        return rels.map(rel => rel.getVal("query"));
     }
 
     eventTypeIsDeletion(eventType: string): boolean {
@@ -470,7 +470,7 @@ export default class API {
         const rels: Tuple[] = this.graph.runSync(command)
             .filter(rel => !rel.hasAttr("command-meta"));
 
-        return rels.map(rel => rel.getTagValue("id"));
+        return rels.map(rel => rel.getVal("id"));
     }
 
     eventTypeProvides(eventType: string) {
@@ -480,8 +480,8 @@ export default class API {
             .filter(rel => !rel.hasAttr("command-meta"));
 
         return rels.map(rel => ({
-    fromStr: rel.getTagValue("from"),
-    varStr: rel.getTagValue("var"),
+    fromStr: rel.getVal("from"),
+    varStr: rel.getVal("var"),
 }));
     }
 }

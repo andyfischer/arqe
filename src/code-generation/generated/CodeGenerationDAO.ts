@@ -37,6 +37,6 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("strategy");
+        return oneRel.getVal("strategy");
     }
 }

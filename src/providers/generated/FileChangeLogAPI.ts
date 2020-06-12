@@ -21,7 +21,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("log")) && (pattern.hasAttr("file-changed")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename"))) {
             try {
-                const filename = pattern.getTagValue("filename");
+                const filename = pattern.getVal("filename");
                 this.handler.onChange(filename);
                 output.relation(pattern);
             }

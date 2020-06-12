@@ -139,7 +139,7 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
     function getKeyForInput(pattern: Pattern) {
         const key = {}
         for (const correspondingTag of correspondingTags)
-            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.input.attr);
+            key[correspondingTag.identifier] = pattern.getVal(correspondingTag.input.attr);
 
         return JSON.stringify(key);
     }
@@ -147,7 +147,7 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
     function getKeyForSearch(pattern: Pattern) {
         const key = {}
         for (const correspondingTag of correspondingTags)
-            key[correspondingTag.identifier] = pattern.getTagValue(correspondingTag.search.attr);
+            key[correspondingTag.identifier] = pattern.getVal(correspondingTag.search.attr);
 
         return JSON.stringify(key);
     }

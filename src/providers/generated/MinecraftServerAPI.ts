@@ -20,9 +20,9 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("block"))) {
             try {
-                const x = pattern.getTagValue("x");
-                const y = pattern.getTagValue("y");
-                const z = pattern.getTagValue("z");
+                const x = pattern.getVal("x");
+                const y = pattern.getVal("y");
+                const z = pattern.getVal("z");
                 const contents = await this.handler.readBlock(x, y, z);
 
                 if (typeof contents !== 'string') {
@@ -49,10 +49,10 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("block")) && (pattern.hasValueForType("block"))) {
             try {
-                const x = pattern.getTagValue("x");
-                const y = pattern.getTagValue("y");
-                const z = pattern.getTagValue("z");
-                const block = pattern.getTagValue("block");
+                const x = pattern.getVal("x");
+                const y = pattern.getVal("y");
+                const z = pattern.getVal("z");
+                const block = pattern.getVal("block");
                 await this.handler.setBlock(x, y, z, block);
                 output.relation(pattern);
             }
@@ -68,11 +68,11 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 6) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("block")) && (pattern.hasValueForType("block")) && (pattern.hasAttr("data")) && (pattern.hasValueForType("data"))) {
             try {
-                const x = pattern.getTagValue("x");
-                const y = pattern.getTagValue("y");
-                const z = pattern.getTagValue("z");
-                const block = pattern.getTagValue("block");
-                const data = pattern.getTagValue("data");
+                const x = pattern.getVal("x");
+                const y = pattern.getVal("y");
+                const z = pattern.getVal("z");
+                const block = pattern.getVal("block");
+                const data = pattern.getVal("data");
                 await this.handler.setBlockWithData(x, y, z, block, data);
                 output.relation(pattern);
             }
@@ -88,10 +88,10 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForType("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForType("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForType("z")) && (pattern.hasAttr("predef")) && (pattern.hasValueForType("predef"))) {
             try {
-                const x = pattern.getTagValue("x");
-                const y = pattern.getTagValue("y");
-                const z = pattern.getTagValue("z");
-                const predef = pattern.getTagValue("predef");
+                const x = pattern.getVal("x");
+                const y = pattern.getVal("y");
+                const z = pattern.getVal("z");
+                const predef = pattern.getVal("predef");
                 await this.handler.setPredef(x, y, z, predef);
                 output.relation(pattern);
             }

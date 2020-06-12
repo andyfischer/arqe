@@ -28,7 +28,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("from-file");
+        return oneRel.getVal("from-file");
     }
 
     destinationFilename(target: string): string {
@@ -48,6 +48,6 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("destination-filename");
+        return oneRel.getVal("destination-filename");
     }
 }

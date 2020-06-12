@@ -12,7 +12,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
     let outputCount = false;
     let outputExtended = false;
     let outputList = false;
-    let sawError = null;
+    let sawError: Tuple = null;
 
     const rels: Tuple[] = [];
 
@@ -49,13 +49,13 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
                 }
 
                 if (rel.hasAttr('output-flag')) {
-                    if (rel.getTagValue('output-flag') === 'exists')
+                    if (rel.getVal('output-flag') === 'exists')
                         outputExists = true;
-                    if (rel.getTagValue('output-flag') === 'count')
+                    if (rel.getVal('output-flag') === 'count')
                         outputCount = true;
-                    if (rel.getTagValue('output-flag') === 'extended')
+                    if (rel.getVal('output-flag') === 'extended')
                         outputExtended = true;
-                    if (rel.getTagValue('output-flag') === 'list')
+                    if (rel.getVal('output-flag') === 'list')
                         outputList = true;
                     return;
                 }
@@ -71,7 +71,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
         },
         finish: () => {
             if (sawError) {
-                onDone('#error ' + sawError.getTagValue('message'));
+                onDone('#error ' + sawError.getVal('message'));
                 return;
             }
 

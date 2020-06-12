@@ -19,7 +19,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 2) && (pattern.hasAttr("working-file")) && (pattern.hasAttr("filename")) && (pattern.hasValueForType("filename"))) {
             try {
-                const filename = pattern.getTagValue("filename");
+                const filename = pattern.getVal("filename");
                 const result = await this.handler.loadFile(filename);
                 const outRelation = pattern
                     .setTagValueForType("working-file", result.id)
@@ -38,8 +38,8 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasAttr("line")) && (pattern.hasValueForType("line")) && (pattern.hasAttr("text"))) {
             try {
-                const id = pattern.getTagValue("working-file");
-                const lineno = pattern.getTagValue("line");
+                const id = pattern.getVal("working-file");
+                const lineno = pattern.getVal("line");
                 const text = this.handler.getLine(id, lineno);
 
                 if (typeof text !== 'string') {
@@ -66,9 +66,9 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasAttr("line")) && (pattern.hasValueForType("line")) && (pattern.hasAttr("text")) && (pattern.hasValueForType("text"))) {
             try {
-                const id = pattern.getTagValue("working-file");
-                const lineno = pattern.getTagValue("line");
-                const text = pattern.getTagValue("text");
+                const id = pattern.getVal("working-file");
+                const lineno = pattern.getVal("line");
+                const text = pattern.getVal("text");
                 this.handler.setLine(id, lineno, text);
                 output.relation(pattern);
             }
@@ -84,7 +84,7 @@ export default class API implements StorageProvider {
 
         if ((pattern.tagCount() == 2) && (pattern.hasAttr("working-file")) && (pattern.hasValueForType("working-file")) && (pattern.hasAttr("commit"))) {
             try {
-                const id = pattern.getTagValue("working-file");
+                const id = pattern.getVal("working-file");
                 await this.handler.commitFile(id);
                 output.relation(pattern);
             }

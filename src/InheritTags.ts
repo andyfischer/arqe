@@ -13,7 +13,7 @@ export function updateInheritTags(cxt: UpdateContext) {
 
     for (const rel of cxt.getTuples('typeinfo/* option/inherits')) {
         tags.anyFound = true;
-        tags.byTypeName[rel.getTagValue('typeinfo') as string] = true;
+        tags.byTypeName[rel.getVal('typeinfo') as string] = true;
     }
 
     return tags;

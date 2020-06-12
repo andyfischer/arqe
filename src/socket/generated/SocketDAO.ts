@@ -48,7 +48,7 @@ export default class API {
         }
 
         const oneRel = rels[0];
-        return oneRel.getTagValue("defaultServerPort");
+        return oneRel.getVal("defaultServerPort");
     }
 
     deleteConnection(connection: string) {

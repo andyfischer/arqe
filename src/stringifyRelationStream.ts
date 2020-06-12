@@ -18,9 +18,9 @@ export default function stringifyRelationStream() {
             }
 
             if (rel.hasAttr('output-flag')) {
-                if (rel.getTagValue('output-flag') === 'extended')
+                if (rel.getVal('output-flag') === 'extended')
                     outputExtended = true;
-                if (rel.getTagValue('output-flag') === 'list')
+                if (rel.getVal('output-flag') === 'list')
                     outputList = true;
                 return;
             }
