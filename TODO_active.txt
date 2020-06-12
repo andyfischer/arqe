@@ -2,6 +2,9 @@
 From house project:
 
  - Easier way to split work between local & server
+   - Each node can provide services
+   - Coordination to know which server (and port) is providing which service
+   - Migrate Provider system to custom tables
  - All CLIs run a local server and load YAML db
  - Unify startServer and startCli
 
