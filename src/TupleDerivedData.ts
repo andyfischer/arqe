@@ -10,6 +10,8 @@ export default class TupleDerivedData {
     fixedTags: PatternTag[] = []
     fixedTagsForAttr = new Map<string,PatternTag>()
 
+    sortedTags: PatternTag[]
+
     constructor(tuple: Tuple) {
 
         this.hasSingleStar = false;
@@ -32,6 +34,10 @@ export default class TupleDerivedData {
                 this.fixedTagsForAttr.set(tag.attr, tag);
             }
         }
+
+        const sortedTags = tuple.tags.concat([]);
+        sortedTags.sort((a, b) => a.compareCanonicalSort(b));
+        this.sortedTags = sortedTags;
     }
 }
 

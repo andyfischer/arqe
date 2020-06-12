@@ -12,13 +12,11 @@ export default class Tuple {
     tags: PatternTag[] = []
 
     // derived data
-    sortedTags: PatternTag[] = null
-    starValueTags: PatternTag[] = []
     tagsByAttr: { [typename: string]: PatternTag[] } = {}
     byIdentifier: { [identifier: string]: PatternTag } = {}
 
     _derivedData?: TupleDerivedData
-    matchHelper?: TupleMatchHelper
+    _matchHelper?: TupleMatchHelper
 
     constructor(tags: PatternTag[]) {
         if (!Array.isArray(tags))
@@ -35,19 +33,11 @@ export default class Tuple {
         return this._derivedData;
     }
 
-    getSortedTags() {
-        if (this.sortedTags === null) {
-            const sortedTags = this.tags.concat([]);
-            sortedTags.sort((a, b) => a.compareCanonicalSort(b));
-            this.sortedTags = sortedTags;
-        }
-        return this.sortedTags;
-    }
 
-    getMatchHelper() {
-        if (!this.matchHelper)
-            this.matchHelper = new TupleMatchHelper(this);
-        return this.matchHelper;
+    matchHelper() {
+        if (!this._matchHelper)
+            this._matchHelper = new TupleMatchHelper(this);
+        return this._matchHelper;
     }
 
     updateDerivedData() {
@@ -65,7 +55,6 @@ export default class Tuple {
             } else if (tag.star) {
 
             } else if (tag.starValue) {
-                this.starValueTags.push(tag);
             } else {
             }
 
@@ -96,7 +85,7 @@ export default class Tuple {
 
     isSupersetOf(subPattern: Tuple) {
 
-        const matchHelper = this.getMatchHelper();
+        const matchHelper = this.matchHelper();
         const thisDerived = this.derivedData();
         const subDerived = subPattern.derivedData();
 
@@ -130,8 +119,8 @@ export default class Tuple {
             return false;
 
         for (let i = 0; i < this.tags.length; i++) {
-            const leftTag = this.getSortedTags()[i];
-            const rightTag = rhs.getSortedTags()[i];
+            const leftTag = this.derivedData().sortedTags[i];
+            const rightTag = rhs.derivedData().sortedTags[i];
             if (!leftTag.equals(rightTag))
                 return false;
         }
