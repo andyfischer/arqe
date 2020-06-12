@@ -324,11 +324,6 @@ export default class Tuple {
         return this.copyWithNewTags(this.tags.filter(tag => tag.attr !== typeName));
     }
 
-    removeType(typeName: string) {
-        // TODO - remove
-        return this.copyWithNewTags(this.tags.filter(tag => tag.attr !== typeName));
-    }
-
     removeTypes(typeNames: string[]) {
         return this.copyWithNewTags(this.tags.filter(tag => typeNames.indexOf(tag.attr) === -1));
     }

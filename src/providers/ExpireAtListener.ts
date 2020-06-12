@@ -17,7 +17,7 @@ export default class ExpireAt implements StorageProvider {
     }
 
     async runSave(pattern: Pattern, output: TupleReceiver) {
-        const target = pattern.removeType('expires-at');
+        const target = pattern.removeAttr('expires-at');
         const now = Date.now();
         const expireTime = parseInt(pattern.getTagValue('expires-at'));
         const delay = expireTime - now;

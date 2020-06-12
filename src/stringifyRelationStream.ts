@@ -30,7 +30,7 @@ export default function stringifyRelationStream() {
             }
 
             if (rel.hasAttr('deleted')) {
-                return 'delete ' + rel.removeType('command-meta').removeType('deleted').stringify()
+                return 'delete ' + rel.removeAttr('command-meta').removeAttr('deleted').stringify()
             }
 
             return null;
