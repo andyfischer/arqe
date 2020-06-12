@@ -15,6 +15,7 @@ export default class Tuple {
     tagsByAttr: { [typename: string]: PatternTag[] } = {}
     byIdentifier: { [identifier: string]: PatternTag } = {}
 
+    _asMap?: Map<string, PatternTag>
     _derivedData?: TupleDerivedData
     _matchHelper?: TupleMatchHelper
 
@@ -33,11 +34,28 @@ export default class Tuple {
         return this._derivedData;
     }
 
-
     matchHelper() {
         if (!this._matchHelper)
             this._matchHelper = new TupleMatchHelper(this);
         return this._matchHelper;
+    }
+
+    asMap() {
+        if (!this._asMap) {
+            this._asMap = new Map();
+
+            for (const tag of this.tags) {
+                if (!tag.attr)
+                    continue;
+
+                //if (this._asMap.has(tag.attr))
+                //    throw new Error("duplicate attrs not allowed: " + tag.attr);
+
+                this._asMap.set(tag.attr, tag);
+            }
+        }
+
+        return this._asMap;
     }
 
     updateDerivedData() {
@@ -84,15 +102,15 @@ export default class Tuple {
             return false;
 
         // Check each attr
-        for (const attr in this.tagsByAttr) {
+        for (const attr of this.asMap().keys()) {
             if (!matchHelper.isSupersetCheckOneAttr(attr, subPattern))
                 return false;
         }
         
         // Check if subPattern has extra attrs that we don't have.
         if (!thisDerived.hasDoubleStar && !thisDerived.hasSingleStar) {
-            for (const subAttr in subPattern.tagsByAttr)
-                if (!this.tagsByAttr[subAttr])
+            for (const subAttr of subPattern.asMap().keys())
+                if (!this.hasAttr(subAttr))
                     return false;
         }
 
@@ -134,8 +152,8 @@ export default class Tuple {
         return str;
     }
 
-    hasAttr(typeName: string) {
-        return !!this.tagsByAttr[typeName];
+    hasAttr(attr: string) {
+        return this.asMap().has(attr);
     }
 
     hasValueForType(typeName: string) {
