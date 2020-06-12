@@ -160,51 +160,30 @@ export default class Tuple {
         return this.asMap().has(attr) && !!this.asMap().get(attr).tagValue;
     }
 
-    getOneTagForType(typeName: string): PatternTag {
-        const tags = this.tagsByAttr[typeName];
-        if (!tags)
-            return null;
-
-        if (tags.length > 1)
-            throw new Error("getOneTagForType - multiple tags found for: " + typeName);
-
-        return tags[0];
+    getTagObject(attr: string): PatternTag {
+        return this.asMap().get(attr);
     }
 
-    getTagObject(typeName: string): PatternTag {
-        const tag = this.getOneTagForType(typeName);
-        if (!tag)
-            throw new Error('tag not found for type: ' + typeName);
-
-        return tag;
-    }
-
-    getTag(attr: string) {
-        return this.getTagAsString(attr);
-    }
-
-    getTagAsString(typeName: string) {
-        const tag = this.getOneTagForType(typeName);
-
-        if (!tag)
-            throw new Error('tag not found for type: ' + typeName);
-
+    getTagAsString(attr: string) {
+        const tag = this.getTagObject(attr);
         if (!tag.tagValue)
-            return typeName;
+            return attr;
 
-        return typeName + '/' + tag.tagValue;
+        return attr + '/' + tag.tagValue;
     }
 
     getVal(attr: string) {
         return this.asMap().get(attr).tagValue;
     }
 
-    getTagValueOptional(typeName: string, defaultValue) {
-        const tag = this.getOneTagForType(typeName);
-        if (!tag)
-            return defaultValue;
+    getValOptional(attr: string, defaultValue) {
+        if (this.asMap().has(attr)) {
+            const tag = this.asMap().get(attr);
+            if (!!tag.tagValue)
+                return tag.tagValue;
+        }
 
-        return tag.tagValue;
+        return defaultValue;
     }
 
     dropTagIndex(index: number) {

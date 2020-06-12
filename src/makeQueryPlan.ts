@@ -106,7 +106,7 @@ function applyModificationExpr(expr: string[], value: string) {
 function applyModification(changeOperation: Tuple, storedRel: Tuple): Tuple {
 
     storedRel = storedRel.remapTags((tag: PatternTag) => {
-        const modificationTag = changeOperation.getOneTagForType(tag.attr);
+        const modificationTag = changeOperation.getTagObject(tag.attr);
 
         if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
             tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));

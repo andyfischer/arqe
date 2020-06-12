@@ -26,12 +26,12 @@ it('uses explicit table if provided', () => {
 
 it(`errors if the table doesn't exist`, () => {
     const tuple = parsePattern('table(tableX)');
-    let output = [];
+    let output: Tuple[] = [];
     const receiver = { relation(r) { output.push(r) }, finish() {} };
     const { table, failed } = findTableForQuery(graph, tuple, receiver);
     expect(table).toBeFalsy();
     expect(failed).toEqual(true);
-    expect(output[0].getValueForType('message')).toEqual('table not found: tableX')
+    expect(output[0].getVal('message')).toEqual('table not found: tableX')
 });
 
 it(`finds a defined table`, () => {
