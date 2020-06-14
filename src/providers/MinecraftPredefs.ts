@@ -5,7 +5,7 @@ import { parsePattern } from '..'
 const houseSize = 9;
 const halfHouseSize = 4;
 const storyHeight = 4;
-const storyCount = 10;
+const storyCount = 4;
 
 const rodDownData = '0'
 const rodUpData = '1'

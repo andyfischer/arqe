@@ -9,7 +9,7 @@ import Predefs, { move } from './MinecraftPredefs'
 import Tuple from '../Tuple'
 
 //const concurrentCommandCount = 30;
-const concurrentCommandCount = 5;
+const concurrentCommandCount = 10;
 //const concurrentCommandCount = 1;
 const PORT = 4000;
 
