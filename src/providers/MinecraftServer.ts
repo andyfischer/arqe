@@ -124,21 +124,28 @@ function expectSuccess(response) {
 
 let lastBlockSet = [];
 
-async function setBlocksConcurrent(sets: Tuple[]) {
-    const ops = []
-    for (const set of sets) {
-        const data = set.hasAttr('data') ? set.getVal('data') : '0'
-        const command = `/setblock ${set.getVal("x")} ${set.getVal("y")} ${set.getVal("z")}  ${set.getVal("block")} ${data} replace`;
-        ops.push(sendCommand(command));
+async function runCommandsConcurrent(commands: Tuple[]) {
+    const promises = []
+    for (const c of commands) {
+
+        if (!c.hasAttr("command") || c.getVal("command") === 'setblock') {
+            const data = c.getValOptional("data", "0");
+            const command = `/setblock ${c.getVal("x")} ${c.getVal("y")} ${c.getVal("z")}  ${c.getVal("block")} ${data} replace`;
+            promises.push(sendCommand(command));
+        } else if (c.getVal("command") === 'fill') {
+            const data = c.getValOptional("data", "0");
+            const handling = c.getValOptional('handling', 'replace');
+            const command = `/fill ${c.getVal("x")} ${c.getVal("y")} ${c.getVal("z")} ${c.getVal("x2")} ${c.getVal("y2")} ${c.getVal("z2")} ${c.getVal("block")} ${data} ${handling}`
+        }
     }
-    await Promise.all(ops);
+    await Promise.all(promises);
 }
 
-async function setBlocks(sets: Tuple[]) {
-    while (sets.length > 0) {
-        const next = sets.slice(0, concurrentCommandCount);
-        sets = sets.slice(concurrentCommandCount);
-        await setBlocksConcurrent(next);
+async function runCommands(commands: Tuple[]) {
+    while (commands.length > 0) {
+        const next = commands.slice(0, concurrentCommandCount);
+        commands = commands.slice(concurrentCommandCount);
+        await runCommandsConcurrent(next);
     }
 }
 
@@ -185,13 +192,13 @@ export default function setup() {
                 sets.push(set);
             }
 
-            await setBlocks(sets);
+            await runCommands(sets);
             lastBlockSet = sets;
         },
 
         async undo() {
 
-            await setBlocks(lastBlockSet.map(set => set.setVal("block", "air")));
+            await runCommands(lastBlockSet.map(set => set.setVal("block", "air")));
         }
     });
 }

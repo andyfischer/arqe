@@ -36,7 +36,6 @@ const floorMaterials = [
     [ 'concrete', 2 ],
 ]
 
-
 class Vec3 {
     x: number
     y: number
@@ -260,6 +259,21 @@ function* frontDoor(nw: Tuple) {
     yield* zline_v2(setData(setBlock(move(door, 2, -1, 0), 'quartz_stairs'), stairDownX), 2);
 }
 
+function* box(p: Tuple, dx: number, dy: number, dz: number) {
+    for (let x = 0; x < dx; x++)
+        for (let y = 0; y < dy; y++)
+            for (let z = 0; z < dz; z++)
+                yield move(p, x, y, z);
+}
+
+function* fill(p: Tuple, x2: number, y2: number, z2: number) {
+    yield (
+        p.setVal("command", "fill")
+        .setVal("x2", x2+'')
+        .setVal("y2", y2+'')
+        .setVal("z2", z2+''));
+}
+
 const predefs = {
     *vincentHouse() {
         const bottomCenter = parsePattern("x/0 y/0 z/0");
@@ -304,6 +318,15 @@ const predefs = {
         for (let i = 0; i < 16; i++) {
             yield move(setData(start, i+''), i, 0, 0);
         }
+    },
+    *emptyground() {
+        const p = parsePattern("x/0 y/0 z/0 block/grass");
+
+        const air = setBlock(p, 'air');
+        yield* fill(move(air, -20, 40, -20), 40, 40, 40);
+        yield* floor(move(p, -20, 0, -20), 40, 40);
+    },
+    *mansion() {
     }
 }
 
