@@ -1,5 +1,4 @@
 
-import PrimaryKey from './PrimaryKey'
 import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'

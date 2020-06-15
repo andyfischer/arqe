@@ -5,7 +5,6 @@ import Tuple from './Tuple'
 import SavedQuery from './SavedQuery'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
-import InheritTags, { updateInheritTags } from './InheritTags'
 import TupleReceiver from './TupleReceiver'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import runCommandChain from './runCommandChain'
@@ -30,8 +29,6 @@ export default class Graph {
     savedQueries: SavedQuery[] = []
     savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
-    inheritTags: EagerValue<InheritTags>
-
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
 
@@ -44,7 +41,6 @@ export default class Graph {
 
     constructor() {
         this.tupleStore = new TupleStore(this);
-        this.inheritTags = this.eagerValue(updateInheritTags, new InheritTags());
 
         const builtinViews = getBuiltinViews(this);
 
