@@ -1,6 +1,6 @@
 
 import loadGraphFromLocalDatabase from '../loadGraphFromLocalDatabase'
-import patternFuzzTest from '../fuzz-test/patterns'
+import patternFuzzTest from '../test/pattern-examples'
 
 it("patterns fuzz-test", () => {
     const graph = loadGraphFromLocalDatabase();

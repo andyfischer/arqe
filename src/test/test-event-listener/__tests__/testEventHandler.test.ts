@@ -1,5 +1,5 @@
 
-import Graph from '../../Graph'
+import Graph from '../../../Graph'
 import TestEventHandlerAPI from '../TestEventHandlerAPI'
 
 let graph: Graph;
