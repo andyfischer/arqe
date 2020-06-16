@@ -16,10 +16,9 @@ interface PartialQueryPlan {
 }
 
 function* scanOneTable(table: Table, searchPattern: Tuple): FindIterator {
-    for (const slotId in table.slots) {
-        const found = table.slots[slotId];
-        if (searchPattern.isSupersetOf(found))
-            yield { slotId, found, table }
+    for (const { slotId, tuple } of table.scanSlots()) {
+        if (searchPattern.isSupersetOf(tuple))
+            yield { slotId, found: tuple, table }
     }
 }
 

@@ -99,7 +99,7 @@ export default class TupleStore {
             throw new Error("Internal error, missing table in insert()")
 
         const slotId = table.nextSlotId.take();
-        table.slots[slotId] = tuple;
+        table.set(slotId, tuple);
         output.relation(tuple);
 
         if (!plan.tableName) {
@@ -122,7 +122,7 @@ export default class TupleStore {
         // Apply the modificationCallback to every matching slot.
         for (const { slotId, found, table } of findStored(this, plan)) {
             const modified = plan.modificationCallback(found);
-            table.slots[slotId] = modified;
+            table.set(slotId, modified);
             graph.onTupleUpdated(modified);
             output.relation(modified);
             hasFoundAny = true;
@@ -144,7 +144,7 @@ export default class TupleStore {
         const graph = this.graph;
 
         for (const { slotId, found, table } of findStored(this, plan)) {
-            delete table.slots[slotId];
+            table.delete(slotId);
             graph.onTupleDeleted(found);
             output.relation(found.addTagObj(newTag('deleted')));
         }

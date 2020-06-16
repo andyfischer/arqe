@@ -8,10 +8,23 @@ export default class Table {
     pattern: Pattern
 
     nextSlotId: IDSource = new IDSource();
-    slots: { [ slotId: string]: Tuple } = {};
+    _slots = new Map<string, Tuple>();
 
     constructor(name: string, pattern: Pattern) {
         this.name = name;
         this.pattern = pattern;
+    }
+
+    *scanSlots() {
+        for (const [slotId, tuple] of this._slots.entries())
+            yield { slotId, tuple }
+    }
+
+    set(slotId: string, tuple: Tuple) {
+        this._slots.set(slotId, tuple);
+    }
+
+    delete(slotId: string) {
+        this._slots.delete(slotId);
     }
 }
