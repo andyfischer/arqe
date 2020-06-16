@@ -8,23 +8,19 @@ import TupleMatchHelper from './TupleMatchHelper'
 import TupleDerivedData from './TupleDerivedData'
 
 export default class Tuple {
-    
-    tags: PatternTag[] = []
 
-    // derived data
-    tagsByAttr: { [typename: string]: PatternTag[] } = {}
-    byIdentifier: { [identifier: string]: PatternTag } = {}
+    tags: PatternTag[] = []
 
     _asMap?: Map<string, PatternTag>
     _derivedData?: TupleDerivedData
     _matchHelper?: TupleMatchHelper
+    _byIdentifier?: Map<string, PatternTag>
 
     constructor(tags: PatternTag[]) {
         if (!Array.isArray(tags))
             throw new Error("expected 'tags' to be an Array");
 
         this.tags = tags;
-        this.updateDerivedData();
         Object.freeze(this.tags);
     }
 
@@ -48,30 +44,22 @@ export default class Tuple {
                 if (!tag.attr)
                     continue;
 
-                //if (this._asMap.has(tag.attr))
-                //    throw new Error("duplicate attrs not allowed: " + tag.attr);
-
                 this._asMap.set(tag.attr, tag);
             }
         }
 
         return this._asMap;
     }
-
-    updateDerivedData() {
-        for (const tag of this.tags) {
-            const { attr } = tag;
-
-            if (attr) {
-                if (!this.tagsByAttr[attr])
-                    this.tagsByAttr[attr] = [];
-
-                this.tagsByAttr[attr].push(tag);
+    
+    byIdentifier() {
+        if (!this._byIdentifier) {
+            this._byIdentifier = new Map();
+            for (const tag of this.tags) {
+                if (tag.identifier)
+                    this._byIdentifier.set(tag.identifier, tag);
             }
-
-            if (tag.identifier)
-                this.byIdentifier[tag.identifier] = tag;
         }
+        return this._byIdentifier;
     }
 
     remapTags(func: (tag:PatternTag) => PatternTag) {

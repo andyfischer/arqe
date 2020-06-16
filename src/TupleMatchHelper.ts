@@ -79,8 +79,8 @@ export default class TupleMatchHelper {
     }
 
     isSupersetCheckOneAttr(attr: string, subPattern: Tuple) {
-        const thisTags = this.tuple.tagsByAttr[attr];
-        const subTags = subPattern.tagsByAttr[attr];
+        const subTag = subPattern.asMap().get(attr);
+        const subTags = subTag ? [subTag] : [];
 
         // Check min/max counts
         const { min, max } = this.countsByAttr[attr];

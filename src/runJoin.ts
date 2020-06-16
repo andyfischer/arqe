@@ -19,7 +19,7 @@ function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pa
     rels = rels.map(rel => {
 
         for (const tag of identifierTags) {
-            if (!rel.byIdentifier[tag.identifier]) {
+            if (!rel.byIdentifier().get(tag.identifier)) {
 
                 if (!tag.attr) {
                     throw new Error("annotateRelationsWithMissingIdentifier doesn't know how "
@@ -127,9 +127,8 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
     const correspondingTags: { identifier: string, input: PatternTag, search: PatternTag }[] = [];
     const unboundTags: PatternTag[] = []
 
-    for (const identifier in searchPattern.byIdentifier) {
-        const identifierKey = searchPattern.byIdentifier[identifier];
-        const inputKey = inputSearchPattern.byIdentifier[identifier];
+    for (const [identifier, identifierKey] of searchPattern.byIdentifier().entries()) {
+        const inputKey = inputSearchPattern.byIdentifier().get(identifier);
         if (!inputKey) {
             unboundTags.push(identifierKey);
         } else {

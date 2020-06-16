@@ -2,7 +2,7 @@
 import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
-import TableInterface from './TableInterface'
+import TableInterface, { TupleReceiverFunc, SlotReceiverFunc }  from './TableInterface'
 
 export default class Table {
     name: string
@@ -14,6 +14,13 @@ export default class Table {
     constructor(name: string, pattern: Pattern) {
         this.name = name;
         this.pattern = pattern;
+    }
+
+    scan(receiver: SlotReceiverFunc) {
+        for (const [slotId, tuple] of this._slots.entries())
+            receiver(false, {slotId, tuple})
+
+        receiver(true);
     }
 
     *scanSlots() {

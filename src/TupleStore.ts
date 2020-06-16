@@ -14,6 +14,7 @@ import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import findStored from './findStored'
 import maybeCreateImplicitTable from './maybeCreateImplicitTable'
+import { TupleReceiverFunc } from './TableInterface'
 
 interface Slot {
     relation: Tuple
@@ -73,14 +74,36 @@ export default class TupleStore {
         });
     }
 
+    scan(plan: QueryPlan, receiver: TupleReceiverFunc) {
+        /*
+        const searchPattern = plan.filterPattern || plan.tuple;
+        if (!searchPattern)
+            throw new Error('missing filterPattern or tuple');
+
+        let pendingCount = plan.searchPattern.length;
+        for (const table of plan.searchTables) {
+            table.scan((done, slot) => {
+                if (done) {
+                    pendingCount--;
+                    if (pendingCount === 0)
+                        receiver(true);
+                    return;
+                }
+
+                if (searchPattern.isSupersetOf(slot.tuple))
+
+            });
+        }
+        */
+    }
+
     insert(plan: QueryPlan) {
-        let tuple = plan.tuple;
         const { output } = plan; 
 
         // Save as new row
-        tuple = this.resolveExpressionValuesForInsert(tuple);
+        plan.tuple = this.resolveExpressionValuesForInsert(plan.tuple);
 
-        for (const tag of tuple.tags) {
+        for (const tag of plan.tuple.tags) {
             if (tag.valueExpr) {
                 emitCommandError(output, "TupleStore unhandled expression: " + tag.stringify());
                 output.finish();
@@ -91,10 +114,17 @@ export default class TupleStore {
         // Check if this tuple is already saved.
         for (const existing of findStored(this, plan)) {
             // Already saved - No-op.
-            output.relation(tuple);
+            output.relation(plan.tuple);
             output.finish();
             return;
         }
+
+        this.insertConfirmedNotExists(plan);
+    }
+
+    insertConfirmedNotExists(plan: QueryPlan) {
+
+        const { output } = plan; 
 
         // Store a new tuple.
         const table = plan.table;
@@ -103,8 +133,8 @@ export default class TupleStore {
             throw new Error("Internal error, missing table in insert()")
 
         const slotId = table.nextSlotId.take();
-        table.set(slotId, tuple);
-        output.relation(tuple);
+        table.set(slotId, plan.tuple);
+        output.relation(plan.tuple);
 
         if (!plan.tableName) {
             emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.tuple.stringify());
@@ -112,7 +142,7 @@ export default class TupleStore {
             return;
         }
 
-        this.graph.onTupleUpdated(tuple);
+        this.graph.onTupleUpdated(plan.tuple);
         output.finish();
     }
 
