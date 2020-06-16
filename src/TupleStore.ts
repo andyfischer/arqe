@@ -19,6 +19,10 @@ interface Slot {
     relation: Tuple
 }
 
+function isThenable(result: any) {
+    return result.then !== undefined;
+}
+
 function toInitialization(rel: Tuple) {
     return rel.remapTags((tag: PatternTag) => {
         if (tag.valueExpr && tag.valueExpr[0] === 'set')
@@ -33,7 +37,7 @@ export default class TupleStore {
     nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
     nextSlotId: IDSource = new IDSource();
 
-    tables: { [ name: string ]: Table } = {}
+    _tables = new Map<string, Table>()
     tablePatternMap = new TuplePatternMatcher<Table>();
 
     constructor(graph: Graph) {
@@ -43,15 +47,15 @@ export default class TupleStore {
     }
 
     findTable(name: string): Table {
-        return this.tables[name] || null;
+        return this._tables.get(name) || null;
     }
 
     defineTable(name: string, pattern: Pattern) {
-        if (this.tables[name])
+        if (this._tables.has(name))
             throw new Error("table already exists: " + name)
 
         const table = new Table(name, pattern);
-        this.tables[name] = table;
+        this._tables.set(name, table);
         this.tablePatternMap.add(pattern, table);
         return table;
     }
@@ -173,12 +177,5 @@ export default class TupleStore {
         } else {
             this.insert(plan);
         }
-    }
-
-    searchUnplanned(pattern: Pattern, output: TupleReceiver) {
-        for (const { slotId, found } of findStored(this, { filterPattern: pattern })) {
-            output.relation(found);
-        }
-        output.finish();
     }
 }

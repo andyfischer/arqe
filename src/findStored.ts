@@ -12,7 +12,7 @@ type FindIterator = Iterable<{
 interface PartialQueryPlan {
     tuple?: Tuple
     filterPattern?: Tuple
-    table?: Table
+    searchTables?: Table[]
 }
 
 function* scanOneTable(table: Table, searchPattern: Tuple): FindIterator {
@@ -28,15 +28,7 @@ export default function* findStored(store: TupleStore, plan: PartialQueryPlan): 
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');
 
-    const { table } = plan;
-    if (table) {
-        // One table scan
+    for (const table of plan.searchTables) {
         yield* scanOneTable(table, searchPattern);
-    } else {
-        // Multi table scan
-        for (const tableName in store.tables) {
-            const table = store.tables[tableName];
-            yield* scanOneTable(table, searchPattern);
-        }
     }
 }

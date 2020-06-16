@@ -2,6 +2,7 @@
 import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
+import TableInterface from './TableInterface'
 
 export default class Table {
     name: string

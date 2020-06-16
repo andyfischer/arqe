@@ -200,6 +200,7 @@ function validatePlan(plan: QueryPlan) {
 
 export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: TupleReceiver) {
 
+    const store = graph.tupleStore;
     tuple = resolveImmediateExpressions(tuple);
 
     const plan: QueryPlan = initialBuildQueryPlan(graph, tuple, output);
@@ -211,6 +212,11 @@ export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: T
     }
 
     plan.table = table;
+
+    if (table)
+        plan.searchTables = [table];
+    else
+        plan.searchTables = Array.from(store._tables.values());
 
     findStorageProvider(plan);
     validatePlan(plan);

@@ -6,6 +6,7 @@ import SavedQuery from './SavedQuery'
 import SavedQueryWatch from './SavedQueryWatch'
 import CommandStep from './CommandStep'
 import { singleCommandExecution } from './runCommandChain'
+import { runGet } from './runOneCommand'
 
 export type UpdateFn<T> = (cxt: UpdateContext) => T
 
@@ -33,7 +34,15 @@ export default class UpdateContext {
         let rels: Tuple[] = null;
 
         const search = commandExec.toRelationSearch();
-        this.graph.tupleStore.searchUnplanned(search.pattern, search);
+        runGet(this.graph, search.pattern, {
+            relation(t) {
+                if (!t.isCommandMeta())
+                    search.relation(t);
+            },
+            finish() {
+                search.finish()
+            }
+        });
 
         if (rels === null)
             throw new Error("get didn't finish synchronously: " + commandStr);

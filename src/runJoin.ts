@@ -8,6 +8,7 @@ import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { patternTagToString } from './stringifyQuery'
 import CommandExecutionParams from './CommandExecutionParams'
+import { runGet } from './runOneCommand'
 
 function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
     const identifierTags: PatternTag[] = []
@@ -71,7 +72,7 @@ export function runJoinStep(params: CommandExecutionParams) {
         check();
     });
 
-    graph.tupleStore.searchUnplanned(searchPattern, search);
+    runGet(graph, searchPattern, search);
 
     input.waitForAll((rels) => {
 

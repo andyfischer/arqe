@@ -30,6 +30,7 @@ export default interface QueryPlan {
 
     table?: Table
     tableName?: string
+    searchTables?: Table[]
 
     failed: boolean
 }
