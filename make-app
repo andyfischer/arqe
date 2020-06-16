@@ -1,0 +1,8 @@
+
+mkdir apps/$1
+mkdir apps/$1/src
+cp tsconfig.json apps/$1/tsconfig.json
+ln -s `pwd`/src apps/$1/src/fd
+cd $1
+npm init -y
+yarn
