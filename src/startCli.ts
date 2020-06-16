@@ -44,25 +44,25 @@ export default async function main() {
     });
 
     let graph;
-    let useRemoteServer = true;
+    let useRemoteServer = false;
     let runRepl = true;
 
-    if (cliArgs.server) {
-        graph = loadGraphFromLocalDatabase();
-        const server = new WebServer(graph);
-        await server.start();
-        useRemoteServer = false;
-    }
-
-    if (cliArgs.db) {
-        graph = loadGraphFromFiles(cliArgs.db);
-        useRemoteServer = false;
-    }
-
-    if (useRemoteServer) {
+    if (cliArgs.connect) {
         console.log('connecting to remote server..')
         const port = process.env.PORT || '42940'
         graph = await connectToServer(port);
+    } else {
+        if (cliArgs.server) {
+            graph = loadGraphFromLocalDatabase();
+            const server = new WebServer(graph);
+            await server.start();
+        }
+
+        if (cliArgs.db) {
+            graph = loadGraphFromFiles(cliArgs.db);
+        } else {
+            graph = loadGraphFromLocalDatabase();
+        }
     }
 
     if (cliArgs.c) {

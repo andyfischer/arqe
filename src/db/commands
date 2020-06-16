@@ -293,7 +293,7 @@ set touchpoint/30 query(delete ${target} flag/* | set ${target} flag/${val})
 ### DASHBOARD ###
 
 set code-generation/spreadsheet-view
-set code-generation/spreadsheet-view destination-filename(dashboard/src/generated/SpreadsheetViewAPI.ts)
+set code-generation/spreadsheet-view destination-filename(src/dashboard/src/generated/SpreadsheetViewAPI.ts)
 set code-generation/spreadsheet-view ik-import/ik
 set code-generation/spreadsheet-view strategy/dao-api
 # set code-generation/spreadsheet-view verbose-logging
@@ -329,7 +329,7 @@ set touchpoint/db4.1 query(delete ${row} ${col} | set ${row} ${col} == ${value})
 
 
 # set code-generation/db2
-# set code-generation/db2 destination-filename(dashboard/src/GraphSource.ts)
+# set code-generation/db2 destination-filename(apps/dashboard/src/GraphSource.ts)
 # set code-generation/db2 strategy/text-as-code
 # set code-generation/db2 from-file(src/source.graph)
 
@@ -385,7 +385,7 @@ set spreadsheet-view/1 selection col/1 row/2
 set current-view spreadsheet-view/1
 
 set code-generation/edit-model
-set code-generation/edit-model destination-filename(dashboard/src/generated/EditModelAPI.ts)
+set code-generation/edit-model destination-filename(apps/dashboard/src/generated/EditModelAPI.ts)
 set code-generation/edit-model ik-import/ik
 set code-generation/edit-model strategy/dao-api
 
@@ -569,7 +569,7 @@ set defaultServerPort/42940
 # Auto rebuilder
 
 set code-generation/autobuildbot
-set code-generation/autobuildbot destination-filename(autobuildbot/src/BuildBotAPI.ts)
+set code-generation/autobuildbot destination-filename(apps/autobuildbot/src/BuildBotAPI.ts)
 set code-generation/autobuildbot ik-import(./fs)
 set code-generation/autobuildbot strategy/dao-api
 
@@ -931,7 +931,7 @@ set command-line-tool/git-branch-browser
 set command-line-tool/git-branch-browser exit-style/runs-until-killed
 
 set code-generation/gitBranches
-set code-generation/gitBranches destination-filename(git-branch-browser/src/GitBranchesApi.ts)
+set code-generation/gitBranches destination-filename(apps/git-branch-browser/src/GitBranchesApi.ts)
 set code-generation/gitBranches ik-import(./fs)
 set code-generation/gitBranches strategy/dao-api
 
