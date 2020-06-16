@@ -2,10 +2,10 @@
 import Tuple from './Tuple'
 
 interface Stream<T> {
-    receive: (done: boolean, val?: T) => void
+    receive: (val: T | null) => void
 }
 
-export type ReceiverFunc<T> = (done: boolean, val?: T) => void
+export type ReceiverFunc<T> = (val: T | null) => void
 export type TupleReceiverFunc = ReceiverFunc<Tuple>
 export type SlotReceiverFunc = ReceiverFunc<{slotId: string, tuple: Tuple}>
 

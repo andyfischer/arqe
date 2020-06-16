@@ -18,9 +18,9 @@ export default class Table {
 
     scan(receiver: SlotReceiverFunc) {
         for (const [slotId, tuple] of this._slots.entries())
-            receiver(false, {slotId, tuple})
+            receiver({slotId, tuple})
 
-        receiver(true);
+        receiver(null);
     }
 
     *scanSlots() {

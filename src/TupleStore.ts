@@ -12,13 +12,11 @@ import QueryPlan, { QueryTag } from './QueryPlan'
 import Table from './Table'
 import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
-import findStored from './findStored'
 import maybeCreateImplicitTable from './maybeCreateImplicitTable'
-import { TupleReceiverFunc } from './TableInterface'
+import { ReceiverFunc, TupleReceiverFunc } from './TableInterface'
 
-interface Slot {
-    relation: Tuple
-}
+type SlotReceiverFunc = ReceiverFunc<{slotId: string, tuple: Tuple}>
+type TableSlotReceiverFunc = ReceiverFunc<{table: Table, slotId: string, tuple: Tuple}>
 
 function isThenable(result: any) {
     return result.then !== undefined;
@@ -74,27 +72,27 @@ export default class TupleStore {
         });
     }
 
-    scan(plan: QueryPlan, receiver: TupleReceiverFunc) {
-        /*
+    scan(plan: QueryPlan, receiver: TableSlotReceiverFunc) {
         const searchPattern = plan.filterPattern || plan.tuple;
         if (!searchPattern)
             throw new Error('missing filterPattern or tuple');
 
-        let pendingCount = plan.searchPattern.length;
+        let pendingCount = plan.searchTables.length;
+
         for (const table of plan.searchTables) {
-            table.scan((done, slot) => {
-                if (done) {
+            table.scan((slot) => {
+                if (slot === null) {
                     pendingCount--;
                     if (pendingCount === 0)
-                        receiver(true);
+                        receiver(null);
                     return;
                 }
 
+                const { slotId, tuple } = slot;
                 if (searchPattern.isSupersetOf(slot.tuple))
-
+                    receiver({ table, slotId, tuple });
             });
         }
-        */
     }
 
     insert(plan: QueryPlan) {
@@ -112,14 +110,21 @@ export default class TupleStore {
         }
 
         // Check if this tuple is already saved.
-        for (const existing of findStored(this, plan)) {
-            // Already saved - No-op.
-            output.relation(plan.tuple);
-            output.finish();
-            return;
-        }
-
-        this.insertConfirmedNotExists(plan);
+        let found = false;
+        this.scan(plan, (tableSlot) => {
+            if (!found) {
+                if (tableSlot === null) {
+                    // Not saved, insert
+                    if (!found)
+                        this.insertConfirmedNotExists(plan);
+                } else {
+                    // Already saved - No-op.
+                    found = true;
+                    output.relation(plan.tuple);
+                    output.finish();
+                }
+            }
+        });
     }
 
     insertConfirmedNotExists(plan: QueryPlan) {
@@ -154,46 +159,59 @@ export default class TupleStore {
         let hasFoundAny = false;
 
         // Apply the modificationCallback to every matching slot.
-        for (const { slotId, found, table } of findStored(this, plan)) {
-            const modified = plan.modificationCallback(found);
-            table.set(slotId, modified);
-            graph.onTupleUpdated(modified);
-            output.relation(modified);
-            hasFoundAny = true;
-        }
 
-        // Check if the plan has 'initializeIfMissing' - this means we must insert the row
-        // if no matches were found.
-        if (!hasFoundAny && plan.initializeIfMissing) {
-            plan.tuple = toInitialization(tuple);
-            this.insert(plan);
-            return;
-        }
+        this.scan(plan, (tableSlot) => {
+            if (tableSlot) {
+                const { slotId, table } = tableSlot;
+                const found = tableSlot.tuple;
 
-        output.finish();
+                const modified = plan.modificationCallback(found);
+                table.set(slotId, modified);
+                graph.onTupleUpdated(modified);
+                output.relation(modified);
+                hasFoundAny = true;
+
+            } else {
+
+                // Check if the plan has 'initializeIfMissing' - this means we must insert the row
+                // if no matches were found.
+                if (!hasFoundAny && plan.initializeIfMissing) {
+                    plan.tuple = toInitialization(tuple);
+                    this.insert(plan);
+                } else {
+                    output.finish();
+                }
+            }
+        });
     }
 
     doDelete(plan: QueryPlan) {
         const { output } = plan;
         const graph = this.graph;
 
-        for (const { slotId, found, table } of findStored(this, plan)) {
-            table.delete(slotId);
-            graph.onTupleDeleted(found);
-            output.relation(found.addTagObj(newTag('deleted')));
-        }
-
-        output.finish();
+        this.scan(plan, (tableSlot) => {
+            if (tableSlot) {
+                const { table, slotId, tuple } = tableSlot;
+                table.delete(slotId);
+                graph.onTupleDeleted(tuple);
+                output.relation(tuple.addTagObj(newTag('deleted')));
+            } else {
+                output.finish();
+            }
+        });
     }
 
     select(plan: QueryPlan) {
         const { tuple, output } = plan;
 
-        for (const { slotId, found } of findStored(this, plan)) {
-            output.relation(found);
-        }
-
-        output.finish();
+        this.scan(plan, (tableSlot) => {
+            if (tableSlot) {
+                const { tuple } = tableSlot;
+                output.relation(tuple);
+            } else {
+                output.finish();
+            }
+        });
     }
 
     save(plan: QueryPlan) {
