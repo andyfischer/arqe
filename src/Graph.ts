@@ -34,7 +34,7 @@ export default class Graph {
 
     storageProvidersV3: StorageProvider[] = []
 
-    relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void}[] = []
+    relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void }[] = []
 
     tupleStore: TupleStore
     columns: { [name: string]: Column } = {}

@@ -31,7 +31,8 @@ export class StreamCombine<T> {
 
 export default interface TableInterface {
     scan: (out: GenericStream<{slotId: string, tuple: Tuple}>) => void
-    set: (slotId: string, tuple: Tuple, out: Stream) => void
+    insert: (tuple: Tuple, out: Stream) => void
+    update: (slotId: string, tuple: Tuple, out: Stream) => void
     delete: (slotId: string, out: Stream) => void
 }
 

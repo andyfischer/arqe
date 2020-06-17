@@ -143,8 +143,7 @@ export default class TupleStore {
             return;
         }
 
-        const slotId = table.nextSlotId.take();
-        table.set(slotId, plan.tuple, {
+        table.insert(plan.tuple, {
             next: output.next,
             done: () => {
                 output.next(plan.tuple);
@@ -185,7 +184,7 @@ export default class TupleStore {
                 const modified = plan.modificationCallback(found);
                 const setOutput = addToResult();
 
-                table.set(slotId, modified, {
+                table.update(slotId, modified, {
                     next() {},
                     done() {
                         graph.onTupleUpdated(modified);

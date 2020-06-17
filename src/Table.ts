@@ -24,7 +24,13 @@ export default class Table implements TableInterface {
         out.finish();
     }
 
-    set(slotId: string, tuple: Tuple, out: Stream) {
+    insert(tuple: Tuple, out: Stream) {
+        const slotId = this.nextSlotId.take();
+        this._slots.set(slotId, tuple);
+        out.done();
+    }
+
+    update(slotId: string, tuple: Tuple, out: Stream) {
         this._slots.set(slotId, tuple);
         out.done();
     }
