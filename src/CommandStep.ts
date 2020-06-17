@@ -37,7 +37,7 @@ export default class CommandStep {
             pattern: this.pattern,
             subSearchDepth: 0,
             next(r) { output.next(r) },
-            finish() { output.finish() },
+            done() { output.done() },
         }
     }
 }

@@ -20,8 +20,8 @@ class RemoteProvider implements StorageProvider {
             next(rel) {
                 output.next(rel.setVal("remote", port))
             },
-            finish() {
-                output.finish()
+            done() {
+                output.done()
             }
         });
     }
@@ -34,8 +34,8 @@ class RemoteProvider implements StorageProvider {
             next(rel) {
                 output.next(rel.setVal("remote", port))
             },
-            finish() {
-                output.finish()
+            done() {
+                output.done()
             }
         });
     }

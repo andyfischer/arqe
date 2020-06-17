@@ -23,7 +23,7 @@ export default class API {
     val: rel.getVal("val"),
 });
             },
-            finish() { }
+            done() { }
         });
 
         // eventType/testEvent2
@@ -36,7 +36,7 @@ export default class API {
     obj: rel.getTagAsString("obj"),
 });
             },
-            finish() { }
+            done() { }
         });
 
         // eventType/testDeletionEvent
@@ -49,7 +49,7 @@ export default class API {
 });
                 }
             },
-            finish() { }
+            done() { }
         });
     }
 

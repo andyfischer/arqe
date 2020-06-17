@@ -25,7 +25,7 @@ const knownCommands = {
 export function singleCommandExecution(graph: Graph, command: Command): CommandStep {
     const step = new CommandStep(graph, command);
     step.input = new RelationPipe();
-    step.input.finish();
+    step.input.done();
     step.output = new RelationPipe();
     return step;
 }
@@ -36,7 +36,7 @@ export default function runCommandChain(graph: Graph, chain: CommandChain, outpu
         throw new Error('graph is null');
 
     if (chain.commands.length === 0) {
-        output.finish();
+        output.done();
         return;
     }
 
@@ -44,7 +44,7 @@ export default function runCommandChain(graph: Graph, chain: CommandChain, outpu
     for (const command of chain.commands) {
         if (!knownCommands[command.commandName]) {
             emitCommandError(output, "unrecognized command: " + command.commandName);
-            output.finish();
+            output.done();
             return;
         }
     }
@@ -62,7 +62,7 @@ export default function runCommandChain(graph: Graph, chain: CommandChain, outpu
     }
 
     // The first input pipe has no data.
-    steps[0].input.finish();
+    steps[0].input.done();
 
     // Last pipe sends to output.
     steps[steps.length - 1].output.pipeToReceiver(output);

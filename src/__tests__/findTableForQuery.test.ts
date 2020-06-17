@@ -12,7 +12,7 @@ const table2alt = graph.tupleStore.defineTable("table2alt", parsePattern("table2
 
 function findNoError(tuple: Tuple) {
     let output = [];
-    const receiver = { next(r) { output.push(r) }, finish() {} };
+    const receiver = { next(r) { output.push(r) }, done() {} };
     const { table, failed } = findTableForQuery(graph, tuple, receiver);
     expect(failed).toBeFalsy();
     expect(output).toEqual([]);
@@ -27,7 +27,7 @@ it('uses explicit table if provided', () => {
 it(`errors if the table doesn't exist`, () => {
     const tuple = parsePattern('table(tableX)');
     let output: Tuple[] = [];
-    const receiver = { next(r) { output.push(r) }, finish() {} };
+    const receiver = { next(r) { output.push(r) }, done() {} };
     const { table, failed } = findTableForQuery(graph, tuple, receiver);
     expect(table).toBeFalsy();
     expect(failed).toEqual(true);

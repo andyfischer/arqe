@@ -69,7 +69,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
 
             rels.push(rel);
         },
-        finish: () => {
+        done: () => {
             if (sawError) {
                 onDone('#error ' + sawError.getVal('message'));
                 return;

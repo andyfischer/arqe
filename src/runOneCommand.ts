@@ -92,11 +92,11 @@ export default function runOneCommand(params: CommandExecutionParams) {
         }
 
         emitCommandError(output, "unrecognized command: " + commandName);
-        output.finish();
+        output.done();
 
     } catch (err) {
         console.log(err.stack || err);
         emitCommandError(output, "internal error: " + (err.stack || err));
-        output.finish();
+        output.done();
     }
 }

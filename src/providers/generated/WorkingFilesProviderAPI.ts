@@ -30,7 +30,7 @@ export default class API implements StorageProvider {
                 console.error(e.stack || e)
             }
 
-            output.finish();
+            output.done();
             return;
         }
 
@@ -53,12 +53,12 @@ export default class API implements StorageProvider {
                 console.error(e.stack || e)
             }
 
-            output.finish();
+            output.done();
             return;
         }
 
         emitCommandError(output, "provider code-generation/working-files-provider doesn't support: get " + pattern.stringify());
-        output.finish()
+        output.done()
     }
 
     async runSave(pattern: Pattern, output: TupleReceiver) {
@@ -76,7 +76,7 @@ export default class API implements StorageProvider {
                 console.error(e.stack || e)
             }
 
-            output.finish();
+            output.done();
             return;
         }
 
@@ -92,16 +92,16 @@ export default class API implements StorageProvider {
                 console.error(e.stack || e)
             }
 
-            output.finish();
+            output.done();
             return;
         }
 
         emitCommandError(output, "provider code-generation/working-files-provider doesn't support: set " + pattern.stringify());
-        output.finish()
+        output.done()
     }
 
     async runDelete(pattern: Pattern, output: TupleReceiver) {
         emitCommandError(output, "provider code-generation/working-files-provider doesn't support: delete " + pattern.stringify());
-        output.finish()
+        output.done()
     }
 }

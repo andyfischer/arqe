@@ -39,8 +39,8 @@ export default class UpdateContext {
                 if (!t.isCommandMeta())
                     search.next(t);
             },
-            finish() {
-                search.finish()
+            done() {
+                search.done()
             }
         });
 

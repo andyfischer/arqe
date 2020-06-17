@@ -50,8 +50,8 @@ export default class GraphRepl {
 
                 listReceiver.next(rel);
             },
-            finish: () => {
-                listReceiver.finish();
+            done: () => {
+                listReceiver.done();
                 onDone();
             }
         });

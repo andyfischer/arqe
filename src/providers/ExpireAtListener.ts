@@ -13,7 +13,7 @@ export default class ExpireAt implements StorageProvider {
     }
 
     async runSearch(pattern: Pattern, output: TupleReceiver) {
-        output.finish();
+        output.done();
     }
 
     async runSave(pattern: Pattern, output: TupleReceiver) {

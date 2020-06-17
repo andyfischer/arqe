@@ -26,11 +26,11 @@ export default class Table implements TableInterface {
 
     set(slotId: string, tuple: Tuple, out: TupleReceiver) {
         this._slots.set(slotId, tuple);
-        out.finish();
+        out.done();
     }
 
     delete(slotId: string, out: TupleReceiver) {
         this._slots.delete(slotId);
-        out.finish();
+        out.done();
     }
 }

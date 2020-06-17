@@ -104,7 +104,7 @@ export default class TupleStore {
         for (const tag of plan.tuple.tags) {
             if (tag.valueExpr) {
                 emitCommandError(output, "TupleStore unhandled expression: " + tag.stringify());
-                output.finish();
+                output.done();
                 return;
             }
         }
@@ -117,7 +117,7 @@ export default class TupleStore {
                 if (!found) {
                     found = true;
                     output.next(plan.tuple);
-                    output.finish();
+                    output.done();
                 }
             },
             finish: () => {
@@ -141,17 +141,17 @@ export default class TupleStore {
 
         if (!plan.tableName) {
             emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.tuple.stringify());
-            output.finish();
+            output.done();
             return;
         }
 
         const slotId = table.nextSlotId.take();
         table.set(slotId, plan.tuple, {
             next: output.next,
-            finish: () => {
+            done: () => {
                 output.next(plan.tuple);
                 this.graph.onTupleUpdated(plan.tuple);
-                output.finish();
+                output.done();
             }
         });
     }
@@ -166,14 +166,14 @@ export default class TupleStore {
 
         const addToResult = combineStreams({
             next: output.next,
-            finish: () => {
+            done: () => {
                 // Check if the plan has 'initializeIfMissing' - this means we must insert the row
                 // if no matches were found.
                 if (!hasFoundAny && plan.initializeIfMissing) {
                     plan.tuple = toInitialization(plan.tuple);
                     this.insert(plan);
                 } else {
-                    output.finish();
+                    output.done();
                 }
             }
         });
@@ -189,16 +189,16 @@ export default class TupleStore {
 
                 table.set(slotId, modified, {
                     next() {},
-                    finish() {
+                    done() {
                         graph.onTupleUpdated(modified);
                         hasFoundAny = true;
                         setOutput.next(modified);
-                        setOutput.finish();
+                        setOutput.done();
                     }
                 });
             },
             finish() {
-                scanStream.finish();
+                scanStream.done();
             }
         });
     }
@@ -217,15 +217,15 @@ export default class TupleStore {
 
                 table.delete(slotId, {
                     next: deleteResult.next,
-                    finish() {
+                    done() {
                         graph.onTupleDeleted(tuple);
                         output.next(tuple.addTagObj(newTag('deleted')));
-                        deleteResult.finish()
+                        deleteResult.done()
                     }
                 });
             },
             finish() {
-                scanFinished.finish();
+                scanFinished.done();
             }
         });
     }
@@ -238,7 +238,7 @@ export default class TupleStore {
                 output.next(tuple);
             },
             finish() {
-                output.finish();
+                output.done();
             }
         });
     }

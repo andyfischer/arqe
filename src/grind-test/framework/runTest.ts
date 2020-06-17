@@ -33,7 +33,7 @@ export default function test(name, callback) {
                     return;
                 log.push(rel.stringify());
             },
-            finish() { }
+            done() { }
         });
 
         return function getLog() {

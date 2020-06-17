@@ -38,7 +38,7 @@ export default class WebServer extends EventEmitter {
                 res.write(rel.stringify() + '\n');
                 this.emit('send', { query, rel });
             },
-            finish: () => {
+            done: () => {
                 res.end();
                 this.emit('send', { query, finish: true });
             }

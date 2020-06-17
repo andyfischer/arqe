@@ -129,7 +129,7 @@ export default class ClientConnection implements GraphLike {
 
             if (finish) {
                 delete this.reqListeners[reqid];
-                listener.finish();
+                listener.done();
                 return;
             }
 

@@ -13,7 +13,7 @@ export default function receiveToStringStream(onStr: (s: string) => void): Tuple
                 onStr(str);
         },
 
-        finish() {
+        done() {
             onStr('#done');
         }
     }

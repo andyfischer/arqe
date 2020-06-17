@@ -20,9 +20,9 @@ export default function countCommand(params: CommandExecutionParams) {
                 return;
             count += 1;
         },
-        finish() {
+        done() {
             output.next(patternFromObject({count: count+''}));
-            output.finish();
+            output.done();
         }
     });
 }

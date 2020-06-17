@@ -17,7 +17,7 @@ export default class RelationPipe {
             this._backlog.push(rel);
     }
 
-    finish = () => {
+    done = () => {
         if (this._onDone)
             this._onDone();
         else
@@ -57,6 +57,6 @@ export default class RelationPipe {
 
     pipeToReceiver(receiver: TupleReceiver) {
         this.onTuple(rel => receiver.next(rel));
-        this.onDone(() => receiver.finish());
+        this.onDone(() => receiver.done());
     }
 }

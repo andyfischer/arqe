@@ -165,7 +165,7 @@ function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple
 
         try {
             verifier(example, receiver);
-            receiver.finish();
+            receiver.done();
         } catch (e) {
             session.markFail(`Uncaught exception looking at (${example.stringify()}): ${e.stack || e}`);
         }

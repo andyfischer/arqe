@@ -46,7 +46,7 @@ export default class Connection extends EventEmitter {
                     next: (rel: Tuple) => {
                         this.send(query, { reqid, rel: rel.stringifyRelation() });
                     },
-                    finish: () => {
+                    done: () => {
                         if (sentFinish)
                             throw new Error(`saw duplicate 'finish' event`);
 

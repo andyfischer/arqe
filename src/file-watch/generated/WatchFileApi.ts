@@ -60,7 +60,7 @@ export default class API {
                     return;
                 callback(rel.getVal("version"));
             },
-            finish() { }
+            done() { }
         });
     }
 

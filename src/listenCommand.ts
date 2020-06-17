@@ -16,7 +16,7 @@ export default function runListen(params: CommandExecutionParams) {
                 if (!rel.isCommandMeta())
                     output.next(rel)
             },
-            finish() {}
+            done() {}
         });
     }
 

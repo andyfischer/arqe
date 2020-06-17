@@ -164,5 +164,5 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
         output.next(combineTuples(relatedInput, search));
     }
 
-    output.finish();
+    output.done();
 }

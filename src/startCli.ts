@@ -30,8 +30,8 @@ function runFile(graph: Graph, filename: string) {
 
                 listReceiver.next(relation);
             },
-            finish() {
-                listReceiver.finish();
+            done() {
+                listReceiver.done();
             }
         });
     }

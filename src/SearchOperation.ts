@@ -10,7 +10,7 @@ export default interface SearchOperation extends TupleReceiver {
     subSearchDepth: number
 
     next: (rel: Pattern) => void
-    finish: () => void
+    done: () => void
 }
 
 export function newTupleSearch(graph: Graph, pattern: Pattern, output: TupleReceiver): SearchOperation {
@@ -19,7 +19,6 @@ export function newTupleSearch(graph: Graph, pattern: Pattern, output: TupleRece
         pattern,
         subSearchDepth: 0,
         next(rel) { output.next(rel) },
-        finish() { output.finish() }
+        done() { output.done() }
     }
-
 }

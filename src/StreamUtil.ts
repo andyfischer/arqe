@@ -19,10 +19,10 @@ export function combineStreams(output: TupleReceiver): NewReceiverFunc {
         waitingForCount += 1;
         return {
             next(t) { output.next(t) },
-            finish() {
+            done() {
                 waitingForCount--;
                 if (waitingForCount === 0)
-                    output.finish();
+                    output.done();
             }
         }
     }

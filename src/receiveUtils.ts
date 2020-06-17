@@ -7,7 +7,7 @@ export function receiveToTupleList(onDone: (rels: Tuple[]) => void): TupleReceiv
     const list: Tuple[] = [];
     return {
         next(rel) { list.push(rel) },
-        finish() {
+        done() {
             onDone(list);
         }
     }
@@ -47,6 +47,6 @@ export function fallbackReceiver(commandString: string): TupleReceiver {
                 console.log(`Uncaught error for command (${commandString}): ${rel.stringifyRelation()}`);
             }
         },
-        finish() { }
+        done() { }
     }
 }

@@ -44,7 +44,7 @@ class SetShouldEmitRelation {
         this.sawRelation = true;
     }
 
-    finish = () => {
+    done = () => {
         if (!this.sawRelation && !this.commandErrored) {
             internalError('SetShouldEmitRelation validation failed on: ' + this.commandStr);
         }
@@ -80,22 +80,22 @@ export default function watchAndValidateCommand(commandStr: string, output: Tupl
 
             output.next(rel);
         },
-        finish() {
+        done() {
             if (sentFinish) {
-                console.error('Validation failed, received two finish() calls: ' + commandStr);
-                console.error('First finish() call: ' + finishStackTrace.stack);
-                console.error('Second finish call: ' + (new Error()).stack);
-                internalError('Validation failed, received two finish() calls: ' + commandStr);
+                console.error('Validation failed, received two done() calls: ' + commandStr);
+                console.error('First done() call: ' + finishStackTrace.stack);
+                console.error('Second done call: ' + (new Error()).stack);
+                internalError('Validation failed, received two done() calls: ' + commandStr);
                 return;
             }
 
             for (const v of validations)
-                v.finish();
+                v.done();
 
             sentFinish = true;
             finishStackTrace = new Error();
 
-            output.finish();
+            output.done();
         }
     }
 }
