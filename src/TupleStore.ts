@@ -13,12 +13,8 @@ import Table from './Table'
 import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import maybeCreateImplicitTable from './maybeCreateImplicitTable'
-import { ReceiverFunc, TupleReceiverFunc, ReceiverCombine, TupleReceiverCombine } from './ReceiverFunc'
-import CombineTupleStreams from './CombineTupleStreams'
-
-type SlotReceiverFunc = ReceiverFunc<{slotId: string, tuple: Tuple}>
-type TableSlotReceiverFunc = ReceiverFunc<{table: Table, slotId: string, tuple: Tuple}>
-import { Stream } from './TableInterface'
+import { Stream, StreamCombine } from './TableInterface'
+import { combineStreams } from './StreamUtil'
 
 function isThenable(result: any) {
     return result.then !== undefined;
@@ -79,19 +75,24 @@ export default class TupleStore {
         if (!searchPattern)
             throw new Error('missing filterPattern or tuple');
 
-        let pendingCount = plan.searchTables.length;
+        const combined = new StreamCombine<{table, slotId, tuple}>(out);
+        const iteratedTables = combined.receive();
 
         for (const table of plan.searchTables) {
+            const tableOut = combined.receive();
+
             table.scan({
                 receive({slotId, tuple}) {
                     if (searchPattern.isSupersetOf(tuple))
-                        out.receive({ table, slotId, tuple });
+                        tableOut.receive({ table, slotId, tuple });
                 },
-                finish() { }
+                finish() {
+                    tableOut.finish();
+                }
             });
         }
 
-        out.finish()
+        iteratedTables.finish();
     }
 
     insert(plan: QueryPlan) {
@@ -146,7 +147,7 @@ export default class TupleStore {
 
         const slotId = table.nextSlotId.take();
         table.set(slotId, plan.tuple, {
-            relation() {},
+            relation: output.relation,
             finish: () => {
                 output.relation(plan.tuple);
                 this.graph.onTupleUpdated(plan.tuple);
@@ -161,27 +162,11 @@ export default class TupleStore {
 
         let hasFoundAny = false;
 
-        // Apply the modificationCallback to every matching slot.
+        // Scan and apply the modificationCallback to every matching slot.
 
-        this.scan(plan, {
-            receive({slotId, table, tuple}) {
-
-                const found = tuple;
-
-                const modified = plan.modificationCallback(found);
-                table.set(slotId, modified, {
-                    relation() {},
-                    finish() {
-                        graph.onTupleUpdated(modified);
-                        output.relation(modified);
-                        hasFoundAny = true;
-                    }
-                });
-            },
+        const addToResult = combineStreams({
+            relation: output.relation,
             finish: () => {
-
-                // TODO- This needs to wait until after the set() calls have finished.
-
                 // Check if the plan has 'initializeIfMissing' - this means we must insert the row
                 // if no matches were found.
                 if (!hasFoundAny && plan.initializeIfMissing) {
@@ -192,30 +177,50 @@ export default class TupleStore {
                 }
             }
         });
+
+        const scanStream = addToResult();
+
+        this.scan(plan, {
+            receive({slotId, table, tuple}) {
+                const found = tuple;
+
+                const modified = plan.modificationCallback(found);
+                const setOutput = addToResult();
+
+                table.set(slotId, modified, {
+                    relation() {},
+                    finish() {
+                        graph.onTupleUpdated(modified);
+                        hasFoundAny = true;
+                        setOutput.relation(modified);
+                        setOutput.finish();
+                    }
+                });
+            },
+            finish() {
+                scanStream.finish();
+            }
+        });
     }
 
     doDelete(plan: QueryPlan) {
         const { output } = plan;
         const graph = this.graph;
 
-        const combineDeletes = new CombineTupleStreams({
-            relation(t: Tuple) { },
-            finish() { output.finish() }
-        });
+        const addToOutput = combineStreams(output);
 
-        const scanFinished = combineDeletes.receive();
+        const scanFinished = addToOutput();
 
         this.scan(plan, {
             receive({table, slotId, tuple}) {
-
-                const onFinishedDelete = combineDeletes.receive();
+                const deleteResult = addToOutput();
 
                 table.delete(slotId, {
-                    relation(t) {},
+                    relation: deleteResult.relation,
                     finish() {
                         graph.onTupleDeleted(tuple);
                         output.relation(tuple.addTagObj(newTag('deleted')));
-                        onFinishedDelete.finish()
+                        deleteResult.finish()
                     }
                 });
             },

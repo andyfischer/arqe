@@ -3,9 +3,9 @@ import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
 import TupleReceiver from './TupleReceiver'
-import { Stream } from './TableInterface'
+import TableInterface, { Stream } from './TableInterface'
 
-export default class Table {
+export default class Table implements TableInterface {
     name: string
     pattern: Pattern
 

@@ -10,22 +10,22 @@ export default class RelationPipe {
     _wasClosed: boolean
 
     // Writer API
-    relation(rel: Tuple) {
+    relation = (rel: Tuple) => {
         if (this._onTuple)
             this._onTuple(rel);
         else
             this._backlog.push(rel);
     }
 
-    isDone() {
-        return false;
-    }
-
-    finish() {
+    finish = () => {
         if (this._onDone)
             this._onDone();
         else
             this._wasClosed = true;
+    }
+
+    isDone() {
+        return false;
     }
 
     // Reader API
