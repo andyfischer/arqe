@@ -200,7 +200,6 @@ function validatePlan(plan: QueryPlan) {
 
 export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
 
-    const store = graph.tupleStore;
     tuple = resolveImmediateExpressions(tuple);
 
     const plan: QueryPlan = initialBuildQueryPlan(graph, tuple, output);

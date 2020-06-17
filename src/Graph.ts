@@ -15,7 +15,6 @@ import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import StorageProvider from './StorageProvider'
-import TupleStore from './TupleStore'
 import Column from './Column'
 import getBuiltinViews from './getBuiltinViews'
 import parseObjectToPattern from './parseObjectToPattern'
@@ -56,14 +55,10 @@ export default class Graph {
 
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void }[] = []
 
-    tupleStore: TupleStore
-
     // deprecated:
     columns: { [name: string]: Column } = {}
 
     constructor() {
-        this.tupleStore = new TupleStore(this);
-
         const builtinViews = getBuiltinViews(this);
 
         for (const name in builtinViews) {
@@ -140,7 +135,7 @@ export default class Graph {
 
         for (const tag of plan.tuple.tags) {
             if (tag.valueExpr) {
-                emitCommandError(output, "TupleStore unhandled expression: " + tag.stringify());
+                emitCommandError(output, "insert unhandled expression: " + tag.stringify());
                 output.done();
                 return;
             }
@@ -282,7 +277,7 @@ export default class Graph {
 
     save(plan: QueryPlan) {
         
-        maybeCreateImplicitTable(this.tupleStore, plan);
+        maybeCreateImplicitTable(this, plan);
 
         if (plan.isDelete) {
             this.doDelete(plan);

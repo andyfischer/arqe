@@ -1,6 +1,5 @@
 
 import Graph from '../Graph'
-import TupleStore from '../TupleStore'
 import { parsePattern } from '..'
 
 describe("findTable", () => {

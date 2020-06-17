@@ -1,8 +1,8 @@
 
 import PatternTag, { newTag } from './PatternTag'
 import Tuple from './Tuple'
-import TupleStore from './TupleStore'
 import TableInterface from './TableInterface'
+import Graph from './Graph'
 
 interface PartialQueryPlan {
     tuple?: Tuple
@@ -10,8 +10,7 @@ interface PartialQueryPlan {
     table?: TableInterface
 }
 
-export default function maybeCreateImplicitTable(store: TupleStore, plan: PartialQueryPlan) {
-    const graph = store.graph;
+export default function maybeCreateImplicitTable(graph: Graph, plan: PartialQueryPlan) {
     if (plan.table)
         return;
 
