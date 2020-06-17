@@ -2,12 +2,12 @@
 import PatternTag, { newTag } from './PatternTag'
 import Tuple from './Tuple'
 import TupleStore from './TupleStore'
-import Table from './Table'
+import TableInterface from './TableInterface'
 
 interface PartialQueryPlan {
     tuple?: Tuple
     filterPattern?: Tuple
-    table?: Table
+    table?: TableInterface
 }
 
 export default function maybeCreateImplicitTable(store: TupleStore, plan: PartialQueryPlan) {

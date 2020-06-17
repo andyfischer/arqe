@@ -6,6 +6,7 @@ import Stream from './Stream'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
 import Table from './Table'
+import TableInterface from './TableInterface'
 
 export interface QueryTag {
     type: ColumnType
@@ -28,9 +29,9 @@ export default interface QueryPlan {
     output: Stream
     storageProvider?: StorageProvider
 
-    table?: Table
+    table?: TableInterface
     tableName?: string
-    searchTables?: Table[]
+    searchTables?: TableInterface[]
 
     failed: boolean
 }

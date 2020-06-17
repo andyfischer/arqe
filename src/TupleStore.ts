@@ -8,6 +8,7 @@ import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import Table from './Table'
+import TableInterface from './TableInterface'
 import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import maybeCreateImplicitTable from './maybeCreateImplicitTable'
@@ -32,8 +33,8 @@ export default class TupleStore {
     nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
     nextSlotId: IDSource = new IDSource();
 
-    _tables = new Map<string, Table>()
-    tablePatternMap = new TuplePatternMatcher<Table>();
+    _tables = new Map<string, TableInterface>()
+    tablePatternMap = new TuplePatternMatcher<TableInterface>();
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -41,7 +42,7 @@ export default class TupleStore {
         // this.defineInMemoryTable('table_schema', parsePattern("table(*) schema"));
     }
 
-    findTable(name: string): Table {
+    findTable(name: string): TableInterface {
         return this._tables.get(name) || null;
     }
 
