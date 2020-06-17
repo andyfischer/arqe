@@ -5,7 +5,7 @@ import Tuple from './Tuple'
 import Pattern from './Pattern'
 import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
-import RelationPipe from './RelationPipe'
+import Pipe from './Pipe'
 
 export default class CommandStep {
     graph: Graph
@@ -13,8 +13,8 @@ export default class CommandStep {
     command: Command
     commandName: string
     pattern: Pattern
-    input: RelationPipe
-    output: RelationPipe
+    input: Pipe
+    output: Pipe
 
     constructor (graph: Graph, command: Command) {
         this.graph = graph;

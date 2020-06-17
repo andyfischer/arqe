@@ -3,7 +3,7 @@ import Graph from './Graph'
 import CommandStep from './CommandStep'
 import CommandChain from './CommandChain'
 import Stream from './Stream'
-import RelationPipe from './RelationPipe'
+import Pipe from './Pipe'
 import Command from './Command'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
@@ -23,9 +23,9 @@ const knownCommands = {
 
 export function singleCommandExecution(graph: Graph, command: Command): CommandStep {
     const step = new CommandStep(graph, command);
-    step.input = new RelationPipe();
+    step.input = new Pipe();
     step.input.done();
-    step.output = new RelationPipe();
+    step.output = new Pipe();
     return step;
 }
 
@@ -55,8 +55,8 @@ export default function runCommandChain(graph: Graph, chain: CommandChain, outpu
     
     for (const command of chain.commands) {
         const step = new CommandStep(graph, command);
-        step.input = (steps.length === 0) ? new RelationPipe() : steps[steps.length - 1].output;
-        step.output = new RelationPipe();
+        step.input = (steps.length === 0) ? new Pipe() : steps[steps.length - 1].output;
+        step.output = new Pipe();
         steps.push(step);
     }
 

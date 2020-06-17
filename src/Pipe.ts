@@ -2,7 +2,7 @@
 import Tuple from './Tuple'
 import Stream from './Stream'
 
-export default class RelationPipe {
+export default class Pipe {
     _onTuple: (rel: Tuple) => void
     _onDone: () => void
 

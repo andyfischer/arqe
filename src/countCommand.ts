@@ -3,13 +3,13 @@ import CommandExecutionParams from './CommandExecutionParams'
 import { patternFromObject } from './Tuple'
 import { combinePipes } from './pipeUtils'
 import { runGet } from './runOneCommand'
-import RelationPipe from './RelationPipe'
+import Pipe from './Pipe'
 
 export default function countCommand(params: CommandExecutionParams) {
     const { output } = params;
     let count = 0;
 
-    const combined = new RelationPipe();
+    const combined = new Pipe();
     runGet(params.graph, params.command.pattern, combined);
 
     params.input.pipeToReceiver(combined);

@@ -21,15 +21,15 @@
 
 */
 
-import RelationPipe from './RelationPipe'
+import Pipe from './Pipe'
 
-export function combinePipes(pipe1: RelationPipe, pipe2: RelationPipe) {
-    const out = new RelationPipe();
+export function combinePipes(pipe1: Pipe, pipe2: Pipe) {
+    const out = new Pipe();
     pipe1.pipeToReceiver(out);
     pipe2.pipeToReceiver(out);
     return out;
 }
 
-export function deduplicate(pipe: RelationPipe) {
+export function deduplicate(pipe: Pipe) {
     // Very simple approach
 }
