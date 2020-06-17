@@ -6,7 +6,6 @@ import Stream from './Stream'
 import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
-import { newTagFromObject } from './PatternTag'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import Table from './Table'
 import { parsePattern } from './parseCommand'
@@ -39,14 +38,14 @@ export default class TupleStore {
     constructor(graph: Graph) {
         this.graph = graph;
 
-        this.defineTable('table_schema', parsePattern("table(*) schema"));
+        // this.defineInMemoryTable('table_schema', parsePattern("table(*) schema"));
     }
 
     findTable(name: string): Table {
         return this._tables.get(name) || null;
     }
 
-    defineTable(name: string, pattern: Pattern) {
+    defineInMemoryTable(name: string, pattern: Pattern) {
         if (this._tables.has(name))
             throw new Error("table already exists: " + name)
 

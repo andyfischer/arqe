@@ -25,5 +25,5 @@ export default function maybeCreateImplicitTable(store: TupleStore, plan: Partia
     const tableName = '_' + attrTags.map(tag => tag.attr).join('_');
     const tablePattern = new Tuple(attrTags);
     // console.log(`created new implicit table ${tableName}: ${tablePattern.stringify()}`);
-    plan.table = store.defineTable(tableName, tablePattern);
+    plan.table = store.defineInMemoryTable(tableName, tablePattern);
 }

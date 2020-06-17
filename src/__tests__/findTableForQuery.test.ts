@@ -6,9 +6,9 @@ import { receiveToTupleList } from '../receiveUtils'
 import { parsePattern } from '../parseCommand'
 
 const graph = new Graph();
-const table1 = graph.tupleStore.defineTable("table1", parsePattern("table1"));
-const table2 = graph.tupleStore.defineTable("table2", parsePattern("table2 main b? c?"));
-const table2alt = graph.tupleStore.defineTable("table2alt", parsePattern("table2 alt b? c?"));
+const table1 = graph.tupleStore.defineInMemoryTable("table1", parsePattern("table1"));
+const table2 = graph.tupleStore.defineInMemoryTable("table2", parsePattern("table2 main b? c?"));
+const table2alt = graph.tupleStore.defineInMemoryTable("table2alt", parsePattern("table2 alt b? c?"));
 
 function findNoError(tuple: Tuple) {
     let output = [];

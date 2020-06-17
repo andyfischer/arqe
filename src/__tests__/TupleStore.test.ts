@@ -8,9 +8,9 @@ describe("findTable", () => {
         const graph = new Graph();
         const store = graph.tupleStore;
 
-        const abTable = store.defineTable('a_b', parsePattern("a b?"))
-        const acTable = store.defineTable('a_c', parsePattern("a c?"))
-        const dTable = store.defineTable('d', parsePattern("d"))
+        const abTable = store.defineInMemoryTable('a_b', parsePattern("a b?"))
+        const acTable = store.defineInMemoryTable('a_c', parsePattern("a c?"))
+        const dTable = store.defineInMemoryTable('d', parsePattern("d"))
 
 
     });
