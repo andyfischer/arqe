@@ -1,7 +1,7 @@
 
 import Fs from 'fs'
 import Path from 'path'
-import Graph from '../Graph'
+import Graph from '../../Graph'
 
 let graph: Graph;
 
