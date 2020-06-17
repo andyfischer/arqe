@@ -35,9 +35,9 @@ export default class UpdateContext {
 
         const search = commandExec.toRelationSearch();
         runGet(this.graph, search.pattern, {
-            relation(t) {
+            next(t) {
                 if (!t.isCommandMeta())
-                    search.relation(t);
+                    search.next(t);
             },
             finish() {
                 search.finish()

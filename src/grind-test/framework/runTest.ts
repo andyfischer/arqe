@@ -28,7 +28,7 @@ export default function test(name, callback) {
         let log = [];
 
         graph.run(command, {
-            relation(rel) {
+            next(rel) {
                 if (rel.hasAttr('command-meta'))
                     return;
                 log.push(rel.stringify());

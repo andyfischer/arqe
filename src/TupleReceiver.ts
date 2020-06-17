@@ -4,20 +4,20 @@ import Command from './Command'
 import Tuple from './Tuple'
 
 export default interface TupleReceiver {
-    relation: (t: Tuple) => void
+    next: (t: Tuple) => void
     finish: () => void
 }
 
 export function receiveToTupleStream(onRel: (t: Tuple) => void, onDone: () => void): TupleReceiver {
     return {
-        relation: onRel,
+        next: onRel,
         finish: onDone
     }
 }
 
 export function receiveToNull(): TupleReceiver {
     return {
-        relation(rel) {  },
+        next(rel) {  },
         finish() {  }
     }
 }

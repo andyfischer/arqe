@@ -15,13 +15,13 @@ export default function countCommand(params: CommandExecutionParams) {
     params.input.pipeToReceiver(combined);
     
     combined.pipeToReceiver({
-        relation(rel) {
+        next(rel) {
             if (rel.hasAttr('command-meta'))
                 return;
             count += 1;
         },
         finish() {
-            output.relation(patternFromObject({count: count+''}));
+            output.next(patternFromObject({count: count+''}));
             output.finish();
         }
     });

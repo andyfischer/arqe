@@ -55,7 +55,7 @@ export default class API {
         const command = `listen -get ${watch} filename version`;
 
         this.graph.run(command, {
-            relation(rel: Tuple) {
+            next(rel: Tuple) {
                 if (rel.hasAttr('command-meta'))
                     return;
                 callback(rel.getVal("version"));

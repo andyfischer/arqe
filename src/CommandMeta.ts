@@ -14,7 +14,7 @@ export function emitCommandMeta(output: TupleReceiver, fields: any) {
         tags.push(newTag(k, fields[k]));
     }
 
-    output.relation(tagsToPattern(tags));
+    output.next(tagsToPattern(tags));
 }
 
 export function emitCommandError(output: TupleReceiver, message: string) {
@@ -25,11 +25,11 @@ export function emitCommandError(output: TupleReceiver, message: string) {
         newTag('message', message)
     ];
 
-    output.relation(tagsToPattern(tags));
+    output.next(tagsToPattern(tags));
 }
 
 export function emitSearchPatternMeta(pattern: Pattern, output: TupleReceiver) {
-    output.relation(pattern.addTags(['command-meta', 'search-pattern']));
+    output.next(pattern.addTags(['command-meta', 'search-pattern']));
 }
 
 export function emitActionPerformed(output: TupleReceiver) {
@@ -49,5 +49,5 @@ export function emitCommandOutputFlags(command: Command, output: TupleReceiver) 
 
 export function emitTupleDeleted(pattern: Pattern, output: TupleReceiver) {
     const rel = pattern.addTags(['command-meta', 'deleted']);
-    output.relation(rel);
+    output.next(rel);
 }

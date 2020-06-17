@@ -138,7 +138,7 @@ export default class ClientConnection implements GraphLike {
                 return;
             }
             
-            listener.relation(parseTuple(rel));
+            listener.next(parseTuple(rel));
         }
 
         this.ws.onclose = () => {

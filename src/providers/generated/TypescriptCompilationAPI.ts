@@ -29,7 +29,7 @@ export default class API implements StorageProvider {
                         .setVal("message", item.message)
                         .setVal("lineno", item.lineno)
                         .setVal("colno", item.colno);
-                    output.relation(outRelation);
+                    output.next(outRelation);
                 }
             }
             catch(e) {

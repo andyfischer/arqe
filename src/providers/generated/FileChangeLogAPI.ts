@@ -23,7 +23,7 @@ export default class API implements StorageProvider {
             try {
                 const filename = pattern.getVal("filename");
                 this.handler.onChange(filename);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)

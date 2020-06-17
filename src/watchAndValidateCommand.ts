@@ -35,7 +35,7 @@ class SetShouldEmitRelation {
         this.pattern = pattern;
     }
 
-    relation(rel: Tuple) {
+    next = (rel: Tuple) => {
         if (rel.hasAttr('command-meta')) {
             if (rel.hasAttr('error'))
                 this.commandErrored = true;
@@ -44,7 +44,7 @@ class SetShouldEmitRelation {
         this.sawRelation = true;
     }
 
-    finish() {
+    finish = () => {
         if (!this.sawRelation && !this.commandErrored) {
             internalError('SetShouldEmitRelation validation failed on: ' + this.commandStr);
         }
@@ -74,11 +74,11 @@ export default function watchAndValidateCommand(commandStr: string, output: Tupl
     let finishStackTrace = null;
 
     return {
-        relation(rel) {
+        next(rel) {
             for (const v of validations)
-                v.relation(rel);
+                v.next(rel);
 
-            output.relation(rel);
+            output.next(rel);
         },
         finish() {
             if (sentFinish) {

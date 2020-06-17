@@ -18,7 +18,7 @@ export function combineStreams(output: TupleReceiver): NewReceiverFunc {
     return () => {
         waitingForCount += 1;
         return {
-            relation(t) { output.relation(t) },
+            next(t) { output.next(t) },
             finish() {
                 waitingForCount--;
                 if (waitingForCount === 0)

@@ -24,7 +24,7 @@ export default class API implements StorageProvider {
             try {
                 const column = pattern.getVal("column");
                 this.handler.setObjectColumn(column);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -40,7 +40,7 @@ export default class API implements StorageProvider {
             try {
                 const column = pattern.getVal("column");
                 this.handler.setViewColumn(column);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)

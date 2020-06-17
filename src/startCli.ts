@@ -24,11 +24,11 @@ function runFile(graph: Graph, filename: string) {
         });
 
         graph.run(command.stringify(), {
-            relation(relation) {
+            next(relation) {
                 if (relation.hasAttr('command-meta') && relation.hasAttr('search-pattern'))
                     return;
 
-                listReceiver.relation(relation);
+                listReceiver.next(relation);
             },
             finish() {
                 listReceiver.finish();

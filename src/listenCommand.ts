@@ -12,9 +12,9 @@ export default function runListen(params: CommandExecutionParams) {
 
     if (command.flags.get) {
         runGet(graph, pattern, {
-            relation(rel) {
+            next(rel) {
                 if (!rel.isCommandMeta())
-                    output.relation(rel)
+                    output.next(rel)
             },
             finish() {}
         });
@@ -22,7 +22,7 @@ export default function runListen(params: CommandExecutionParams) {
 
     graph.addListener(pattern, {
         onTupleUpdated(rel: Tuple) {
-            output.relation(rel);
+            output.next(rel);
         },
         onTupleDeleted(rel: Tuple) {
             emitTupleDeleted(rel, output);

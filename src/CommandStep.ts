@@ -36,7 +36,7 @@ export default class CommandStep {
             graph: this.graph,
             pattern: this.pattern,
             subSearchDepth: 0,
-            relation(r) { output.relation(r) },
+            next(r) { output.next(r) },
             finish() { output.finish() },
         }
     }

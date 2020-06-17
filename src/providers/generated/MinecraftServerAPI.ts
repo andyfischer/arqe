@@ -30,7 +30,7 @@ export default class API implements StorageProvider {
                 }
 
                 const outRelation = pattern.setVal("block", contents);
-                output.relation(outRelation);
+                output.next(outRelation);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -54,7 +54,7 @@ export default class API implements StorageProvider {
                 const z = pattern.getVal("z");
                 const block = pattern.getVal("block");
                 await this.handler.setBlock(x, y, z, block);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -74,7 +74,7 @@ export default class API implements StorageProvider {
                 const block = pattern.getVal("block");
                 const data = pattern.getVal("data");
                 await this.handler.setBlockWithData(x, y, z, block, data);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -93,7 +93,7 @@ export default class API implements StorageProvider {
                 const z = pattern.getVal("z");
                 const predef = pattern.getVal("predef");
                 await this.handler.setPredef(x, y, z, predef);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -108,7 +108,7 @@ export default class API implements StorageProvider {
         if ((pattern.tagCount() == 2) && (pattern.hasAttr("mc")) && (pattern.hasAttr("undo"))) {
             try {
                 await this.handler.undo();
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)

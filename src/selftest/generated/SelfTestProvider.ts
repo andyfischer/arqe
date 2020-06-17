@@ -27,7 +27,7 @@ export default class API implements StorageProvider {
                         .setVal("description", item.description)
                         .setVal("resultMessage", item.resultMessage)
                         .setVal("passed", item.passed);
-                    output.relation(outRelation);
+                    output.next(outRelation);
                 }
             }
             catch(e) {

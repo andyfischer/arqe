@@ -24,7 +24,7 @@ export default class API implements StorageProvider {
                 const outRelation = pattern
                     .setVal("working-file", result.id)
                     .setVal("filename", result.filename);
-                output.relation(outRelation);
+                output.next(outRelation);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -47,7 +47,7 @@ export default class API implements StorageProvider {
                 }
 
                 const outRelation = pattern.setVal("text", text);
-                output.relation(outRelation);
+                output.next(outRelation);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -70,7 +70,7 @@ export default class API implements StorageProvider {
                 const lineno = pattern.getVal("line");
                 const text = pattern.getVal("text");
                 this.handler.setLine(id, lineno, text);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -86,7 +86,7 @@ export default class API implements StorageProvider {
             try {
                 const id = pattern.getVal("working-file");
                 await this.handler.commitFile(id);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)

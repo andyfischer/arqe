@@ -58,7 +58,7 @@ export default class API implements StorageProvider {
                 const dir = pattern.getVal("dir");
                 const branchName = pattern.getVal("branch");
                 await this.handler.createBranch(dir, branchName);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)

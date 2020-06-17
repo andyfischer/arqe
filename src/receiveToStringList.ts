@@ -35,7 +35,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
     }
 
     return {
-        relation: (rel: Tuple) => {
+        next: (rel: Tuple) => {
 
             if (rel.hasAttr('command-meta')) {
                 if (rel.hasAttr('action-performed')) {

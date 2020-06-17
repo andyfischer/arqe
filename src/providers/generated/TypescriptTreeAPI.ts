@@ -24,7 +24,7 @@ export default class API implements StorageProvider {
                 }
 
                 const outRelation = pattern.setVal("typescript-tree", filename);
-                output.relation(outRelation);
+                output.next(outRelation);
             }
             catch(e) {
                 console.error(e.stack || e)

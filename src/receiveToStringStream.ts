@@ -7,7 +7,7 @@ export default function receiveToStringStream(onStr: (s: string) => void): Tuple
     const stringifier = stringifyRelationStream();
 
     return {
-        relation(rel: Tuple) { 
+        next(rel: Tuple) { 
             const str = stringifier(rel);
             if (str)
                 onStr(str);

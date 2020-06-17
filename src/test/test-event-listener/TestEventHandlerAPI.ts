@@ -15,7 +15,7 @@ export default class API {
 
         // eventType/testEvent1
         this.graph.run("listen test-event-handler val/*", {
-            relation(rel: Tuple) {
+            next(rel: Tuple) {
                 if (rel.hasAttr('command-meta'))
                     return;
                 handler({
@@ -28,7 +28,7 @@ export default class API {
 
         // eventType/testEvent2
         this.graph.run("listen test-event-handler obj/*", {
-            relation(rel: Tuple) {
+            next(rel: Tuple) {
                 if (rel.hasAttr('command-meta'))
                     return;
                 handler({
@@ -41,7 +41,7 @@ export default class API {
 
         // eventType/testDeletionEvent
         this.graph.run("listen test-event-handler obj/*", {
-            relation(rel: Tuple) {
+            next(rel: Tuple) {
                 if (rel.hasAttr('command-meta') && rel.hasAttr('deleted')) {
                     handler({
     id: 'objectDeleted',

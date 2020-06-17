@@ -17,8 +17,8 @@ class RemoteProvider implements StorageProvider {
         const forwarded = pattern.removeAttr("remote");
         const conn = await getOrInitConnection(port);
         conn.run('get ' + forwarded.stringify(), {
-            relation(rel) {
-                output.relation(rel.setVal("remote", port))
+            next(rel) {
+                output.next(rel.setVal("remote", port))
             },
             finish() {
                 output.finish()
@@ -31,8 +31,8 @@ class RemoteProvider implements StorageProvider {
         const forwarded = pattern.removeAttr("remote");
         const conn = await getOrInitConnection(port);
         conn.run('set ' + forwarded.stringify(), {
-            relation(rel) {
-                output.relation(rel.setVal("remote", port))
+            next(rel) {
+                output.next(rel.setVal("remote", port))
             },
             finish() {
                 output.finish()

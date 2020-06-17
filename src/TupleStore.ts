@@ -116,7 +116,7 @@ export default class TupleStore {
                 // Already saved - No-op.
                 if (!found) {
                     found = true;
-                    output.relation(plan.tuple);
+                    output.next(plan.tuple);
                     output.finish();
                 }
             },
@@ -147,9 +147,9 @@ export default class TupleStore {
 
         const slotId = table.nextSlotId.take();
         table.set(slotId, plan.tuple, {
-            relation: output.relation,
+            next: output.next,
             finish: () => {
-                output.relation(plan.tuple);
+                output.next(plan.tuple);
                 this.graph.onTupleUpdated(plan.tuple);
                 output.finish();
             }
@@ -165,7 +165,7 @@ export default class TupleStore {
         // Scan and apply the modificationCallback to every matching slot.
 
         const addToResult = combineStreams({
-            relation: output.relation,
+            next: output.next,
             finish: () => {
                 // Check if the plan has 'initializeIfMissing' - this means we must insert the row
                 // if no matches were found.
@@ -188,11 +188,11 @@ export default class TupleStore {
                 const setOutput = addToResult();
 
                 table.set(slotId, modified, {
-                    relation() {},
+                    next() {},
                     finish() {
                         graph.onTupleUpdated(modified);
                         hasFoundAny = true;
-                        setOutput.relation(modified);
+                        setOutput.next(modified);
                         setOutput.finish();
                     }
                 });
@@ -216,10 +216,10 @@ export default class TupleStore {
                 const deleteResult = addToOutput();
 
                 table.delete(slotId, {
-                    relation: deleteResult.relation,
+                    next: deleteResult.next,
                     finish() {
                         graph.onTupleDeleted(tuple);
-                        output.relation(tuple.addTagObj(newTag('deleted')));
+                        output.next(tuple.addTagObj(newTag('deleted')));
                         deleteResult.finish()
                     }
                 });
@@ -235,7 +235,7 @@ export default class TupleStore {
 
         this.scan(plan, {
             receive({tuple}) {
-                output.relation(tuple);
+                output.next(tuple);
             },
             finish() {
                 output.finish();

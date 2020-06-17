@@ -6,7 +6,7 @@ import TupleReceiver from './TupleReceiver'
 export function receiveToTupleList(onDone: (rels: Tuple[]) => void): TupleReceiver {
     const list: Tuple[] = [];
     return {
-        relation(rel) { list.push(rel) },
+        next(rel) { list.push(rel) },
         finish() {
             onDone(list);
         }
@@ -42,7 +42,7 @@ export async function runAsync(graph: Graph, command: string) {
 
 export function fallbackReceiver(commandString: string): TupleReceiver {
     return {
-        relation(rel) {
+        next(rel) {
             if (rel.hasAttr('command-meta') && rel.hasAttr('error')) {
                 console.log(`Uncaught error for command (${commandString}): ${rel.stringifyRelation()}`);
             }

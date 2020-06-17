@@ -34,7 +34,7 @@ export default class WebServer extends EventEmitter {
 
         res.statusCode = 200;
         this.graph.run(query, {
-            relation: (rel) => {
+            next: (rel) => {
                 res.write(rel.stringify() + '\n');
                 this.emit('send', { query, rel });
             },

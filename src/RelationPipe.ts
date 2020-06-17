@@ -10,7 +10,7 @@ export default class RelationPipe {
     _wasClosed: boolean
 
     // Writer API
-    relation = (rel: Tuple) => {
+    next = (rel: Tuple) => {
         if (this._onTuple)
             this._onTuple(rel);
         else
@@ -56,7 +56,7 @@ export default class RelationPipe {
     }
 
     pipeToReceiver(receiver: TupleReceiver) {
-        this.onTuple(rel => receiver.relation(rel));
+        this.onTuple(rel => receiver.next(rel));
         this.onDone(() => receiver.finish());
     }
 }

@@ -161,7 +161,7 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
         const relatedInput = keyed[key];
         if (!relatedInput)
             continue;
-        output.relation(combineTuples(relatedInput, search));
+        output.next(combineTuples(relatedInput, search));
     }
 
     output.finish();

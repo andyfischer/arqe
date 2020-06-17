@@ -27,7 +27,7 @@ export default class API implements StorageProvider {
                 }
 
                 const outRelation = pattern.setVal("file-contents", contents);
-                output.relation(outRelation);
+                output.next(outRelation);
             }
             catch(e) {
                 console.error(e.stack || e)
@@ -50,7 +50,7 @@ export default class API implements StorageProvider {
 
                 for (const item of filename) {
                     const outRelation = pattern.setVal("filename", item);
-                    output.relation(outRelation);
+                    output.next(outRelation);
                 }
             }
             catch(e) {
@@ -74,7 +74,7 @@ export default class API implements StorageProvider {
 
                 for (const item of filename) {
                     const outRelation = pattern.setVal("filename", item);
-                    output.relation(outRelation);
+                    output.next(outRelation);
                 }
             }
             catch(e) {
@@ -97,7 +97,7 @@ export default class API implements StorageProvider {
                 const filename = pattern.getVal("filename");
                 const contents = pattern.getVal("file-contents");
                 await this.handler.writeFile(filename, contents);
-                output.relation(pattern);
+                output.next(pattern);
             }
             catch(e) {
                 console.error(e.stack || e)

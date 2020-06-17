@@ -25,7 +25,7 @@ export default class API implements StorageProvider {
                 }
 
                 const outRelation = pattern.setVal("sum", sum);
-                output.relation(outRelation);
+                output.next(outRelation);
             }
             catch(e) {
                 console.error(e.stack || e)

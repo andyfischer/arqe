@@ -36,7 +36,7 @@ export default class GraphRepl {
         });
 
         this.graph.run(line, {
-            relation: (rel) => {
+            next: (rel) => {
                 if (isFinished)
                     throw new Error('got relation after finish()');
 
@@ -48,7 +48,7 @@ export default class GraphRepl {
                     return;
                 }
 
-                listReceiver.relation(rel);
+                listReceiver.next(rel);
             },
             finish: () => {
                 listReceiver.finish();
