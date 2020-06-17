@@ -8,13 +8,6 @@ export default interface TupleReceiver {
     done: () => void
 }
 
-export function receiveToTupleStream(onRel: (t: Tuple) => void, onDone: () => void): TupleReceiver {
-    return {
-        next: onRel,
-        done: onDone
-    }
-}
-
 export function receiveToNull(): TupleReceiver {
     return {
         next(rel) {  },

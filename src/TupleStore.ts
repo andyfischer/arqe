@@ -2,7 +2,6 @@
 import Tuple from './Tuple'
 import Pattern from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
-import SearchOperation from './SearchOperation'
 import Stream from './Stream'
 import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'

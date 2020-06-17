@@ -33,15 +33,12 @@ export default class UpdateContext {
 
         let rels: Tuple[] = null;
 
-        const search = commandExec.toRelationSearch();
-        runGet(this.graph, search.pattern, {
+        runGet(this.graph, commandExec.pattern, {
             next(t) {
                 if (!t.isCommandMeta())
-                    search.next(t);
+                    commandExec.output.next(t);
             },
-            done() {
-                search.done()
-            }
+            done: commandExec.output.done
         });
 
         if (rels === null)

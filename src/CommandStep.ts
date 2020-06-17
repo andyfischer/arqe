@@ -5,7 +5,6 @@ import Tuple from './Tuple'
 import Pattern from './Pattern'
 import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
-import SearchOperation from './SearchOperation'
 import RelationPipe from './RelationPipe'
 
 export default class CommandStep {
@@ -25,6 +24,7 @@ export default class CommandStep {
         this.pattern = command.toPattern();
     }
 
+    /*
     toRelationSearch(): SearchOperation {
 
         if (!this.output)
@@ -40,4 +40,5 @@ export default class CommandStep {
             done() { output.done() },
         }
     }
+    */
 }
