@@ -5,6 +5,7 @@ export interface TagOptions {
     attr?: string
     tagValue?: string | true
     valueExpr?: string[]
+    nativeVal?: any
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
@@ -21,8 +22,6 @@ export default class PatternTag {
     starValue?: boolean
     optional?: boolean
     identifier?: string
-
-    isFrozen: boolean
 
     constructor(opts: TagOptions) {
         this.attr = opts.attr;

@@ -3,19 +3,19 @@ import Graph from './Graph'
 import Command from './Command'
 import Tuple from './Tuple'
 
-export default interface RelationReceiver {
-    relation: (rel: Tuple) => void
+export default interface TupleReceiver {
+    relation: (t: Tuple) => void
     finish: () => void
 }
 
-export function receiveToTupleStream(onRel: (rel: Tuple) => void, onDone: () => void): RelationReceiver {
+export function receiveToTupleStream(onRel: (t: Tuple) => void, onDone: () => void): TupleReceiver {
     return {
         relation: onRel,
         finish: onDone
     }
 }
 
-export function receiveToNull(): RelationReceiver {
+export function receiveToNull(): TupleReceiver {
     return {
         relation(rel) {  },
         finish() {  }
