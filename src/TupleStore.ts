@@ -13,7 +13,7 @@ import Table from './Table'
 import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import maybeCreateImplicitTable from './maybeCreateImplicitTable'
-import { ReceiverFunc, TupleReceiverFunc } from './TableInterface'
+import { ReceiverFunc, TupleReceiverFunc, ReceiverCombine, TupleReceiverCombine } from './ReceiverFunc'
 
 type SlotReceiverFunc = ReceiverFunc<{slotId: string, tuple: Tuple}>
 type TableSlotReceiverFunc = ReceiverFunc<{table: Table, slotId: string, tuple: Tuple}>
@@ -137,18 +137,22 @@ export default class TupleStore {
         if (!plan.table)
             throw new Error("Internal error, missing table in insert()")
 
-        const slotId = table.nextSlotId.take();
-        table.set(slotId, plan.tuple);
-        output.relation(plan.tuple);
-
         if (!plan.tableName) {
             emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.tuple.stringify());
             output.finish();
             return;
         }
 
-        this.graph.onTupleUpdated(plan.tuple);
-        output.finish();
+        const slotId = table.nextSlotId.take();
+        table.set(slotId, plan.tuple, (error) => {
+            if (!error) {
+                output.relation(plan.tuple);
+
+
+                this.graph.onTupleUpdated(plan.tuple);
+                output.finish();
+            }
+        });
     }
 
     update(plan: QueryPlan) {
@@ -166,12 +170,17 @@ export default class TupleStore {
                 const found = tableSlot.tuple;
 
                 const modified = plan.modificationCallback(found);
-                table.set(slotId, modified);
-                graph.onTupleUpdated(modified);
-                output.relation(modified);
-                hasFoundAny = true;
+                table.set(slotId, modified, (res) => {
+                    if (res === null) {
+                        graph.onTupleUpdated(modified);
+                        output.relation(modified);
+                        hasFoundAny = true;
+                    }
+                });
 
             } else {
+
+                // TODO- This needs to wait until after the set() calls have finished.
 
                 // Check if the plan has 'initializeIfMissing' - this means we must insert the row
                 // if no matches were found.
@@ -190,13 +199,28 @@ export default class TupleStore {
         const graph = this.graph;
 
         this.scan(plan, (tableSlot) => {
+
+            const deletesFinished = new ReceiverCombine<Tuple>(tup => {
+                if (tup === null) {
+                    output.finish();
+                }
+            });
+            const scanFinished = deletesFinished.receive();
+
             if (tableSlot) {
                 const { table, slotId, tuple } = tableSlot;
-                table.delete(slotId);
-                graph.onTupleDeleted(tuple);
-                output.relation(tuple.addTagObj(newTag('deleted')));
+
+                const deleteFinished = deletesFinished.receive();
+                table.delete(slotId, error => {
+                    if (!error) {
+                        graph.onTupleDeleted(tuple);
+                        output.relation(tuple.addTagObj(newTag('deleted')));
+                        deleteFinished(null)
+                    }
+                });
+
             } else {
-                output.finish();
+                scanFinished(null);
             }
         });
     }
