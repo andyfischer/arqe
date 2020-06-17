@@ -2,7 +2,8 @@
 import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
-import { ReceiverFunc, TupleReceiverFunc, SlotReceiverFunc, TupleReceiverCombine } from './ReceiverFunc'
+import TupleReceiver from './TupleReceiver'
+import { Stream } from './TableInterface'
 
 export default class Table {
     name: string
@@ -16,20 +17,20 @@ export default class Table {
         this.pattern = pattern;
     }
 
-    scan(receiver: SlotReceiverFunc) {
+    scan(out: Stream<{slotId: string, tuple: Tuple}>) {
         for (const [slotId, tuple] of this._slots.entries())
-            receiver({slotId, tuple})
+            out.receive({slotId, tuple});
 
-        receiver(null);
+        out.finish();
     }
 
-    set(slotId: string, tuple: Tuple, receiver: TupleReceiverFunc) {
+    set(slotId: string, tuple: Tuple, out: TupleReceiver) {
         this._slots.set(slotId, tuple);
-        receiver(null);
+        out.finish();
     }
 
-    delete(slotId: string, receiver: TupleReceiverFunc) {
+    delete(slotId: string, out: TupleReceiver) {
         this._slots.delete(slotId);
-        receiver(null);
+        out.finish();
     }
 }

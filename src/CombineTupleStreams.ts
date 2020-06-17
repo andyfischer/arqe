@@ -12,9 +12,10 @@ export default class CombineTupleStreams {
 
     receive(): TupleReceiver {
         this.waitingForCount++;
+
         return {
-            relation(t) { this.output.relation(t) },
-            finish() {
+            relation: (t) => { this.output.relation(t) },
+            finish: () => {
                 this.waitingForCount--;
                 if (this.waitingForCount === 0)
                     this.output.finish();

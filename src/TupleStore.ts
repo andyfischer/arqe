@@ -14,9 +14,11 @@ import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import maybeCreateImplicitTable from './maybeCreateImplicitTable'
 import { ReceiverFunc, TupleReceiverFunc, ReceiverCombine, TupleReceiverCombine } from './ReceiverFunc'
+import CombineTupleStreams from './CombineTupleStreams'
 
 type SlotReceiverFunc = ReceiverFunc<{slotId: string, tuple: Tuple}>
 type TableSlotReceiverFunc = ReceiverFunc<{table: Table, slotId: string, tuple: Tuple}>
+import { Stream } from './TableInterface'
 
 function isThenable(result: any) {
     return result.then !== undefined;
@@ -72,7 +74,7 @@ export default class TupleStore {
         });
     }
 
-    scan(plan: QueryPlan, receiver: TableSlotReceiverFunc) {
+    scan(plan: QueryPlan, out: Stream<{table: Table, slotId: string, tuple: Tuple}>) {
         const searchPattern = plan.filterPattern || plan.tuple;
         if (!searchPattern)
             throw new Error('missing filterPattern or tuple');
@@ -80,19 +82,16 @@ export default class TupleStore {
         let pendingCount = plan.searchTables.length;
 
         for (const table of plan.searchTables) {
-            table.scan((slot) => {
-                if (slot === null) {
-                    pendingCount--;
-                    if (pendingCount === 0)
-                        receiver(null);
-                    return;
-                }
-
-                const { slotId, tuple } = slot;
-                if (searchPattern.isSupersetOf(slot.tuple))
-                    receiver({ table, slotId, tuple });
+            table.scan({
+                receive({slotId, tuple}) {
+                    if (searchPattern.isSupersetOf(tuple))
+                        out.receive({ table, slotId, tuple });
+                },
+                finish() { }
             });
         }
+
+        out.finish()
     }
 
     insert(plan: QueryPlan) {
@@ -111,17 +110,19 @@ export default class TupleStore {
 
         // Check if this tuple is already saved.
         let found = false;
-        this.scan(plan, (tableSlot) => {
-            if (!found) {
-                if (tableSlot === null) {
-                    // Not saved, insert
-                    if (!found)
-                        this.insertConfirmedNotExists(plan);
-                } else {
-                    // Already saved - No-op.
+        this.scan(plan, {
+            receive() {
+                // Already saved - No-op.
+                if (!found) {
                     found = true;
                     output.relation(plan.tuple);
                     output.finish();
+                }
+            },
+            finish: () => {
+                if (!found) {
+                    // Not saved, insert
+                    this.insertConfirmedNotExists(plan);
                 }
             }
         });
@@ -144,11 +145,10 @@ export default class TupleStore {
         }
 
         const slotId = table.nextSlotId.take();
-        table.set(slotId, plan.tuple, (error) => {
-            if (!error) {
+        table.set(slotId, plan.tuple, {
+            relation() {},
+            finish: () => {
                 output.relation(plan.tuple);
-
-
                 this.graph.onTupleUpdated(plan.tuple);
                 output.finish();
             }
@@ -156,36 +156,36 @@ export default class TupleStore {
     }
 
     update(plan: QueryPlan) {
-        const { tuple, output } = plan;
+        const { output } = plan;
         const graph = this.graph;
 
-        const changeOperation = tuple;
         let hasFoundAny = false;
 
         // Apply the modificationCallback to every matching slot.
 
-        this.scan(plan, (tableSlot) => {
-            if (tableSlot) {
-                const { slotId, table } = tableSlot;
-                const found = tableSlot.tuple;
+        this.scan(plan, {
+            receive({slotId, table, tuple}) {
+
+                const found = tuple;
 
                 const modified = plan.modificationCallback(found);
-                table.set(slotId, modified, (res) => {
-                    if (res === null) {
+                table.set(slotId, modified, {
+                    relation() {},
+                    finish() {
                         graph.onTupleUpdated(modified);
                         output.relation(modified);
                         hasFoundAny = true;
                     }
                 });
-
-            } else {
+            },
+            finish: () => {
 
                 // TODO- This needs to wait until after the set() calls have finished.
 
                 // Check if the plan has 'initializeIfMissing' - this means we must insert the row
                 // if no matches were found.
                 if (!hasFoundAny && plan.initializeIfMissing) {
-                    plan.tuple = toInitialization(tuple);
+                    plan.tuple = toInitialization(plan.tuple);
                     this.insert(plan);
                 } else {
                     output.finish();
@@ -198,29 +198,29 @@ export default class TupleStore {
         const { output } = plan;
         const graph = this.graph;
 
-        this.scan(plan, (tableSlot) => {
+        const combineDeletes = new CombineTupleStreams({
+            relation(t: Tuple) { },
+            finish() { output.finish() }
+        });
 
-            const deletesFinished = new ReceiverCombine<Tuple>(tup => {
-                if (tup === null) {
-                    output.finish();
-                }
-            });
-            const scanFinished = deletesFinished.receive();
+        const scanFinished = combineDeletes.receive();
 
-            if (tableSlot) {
-                const { table, slotId, tuple } = tableSlot;
+        this.scan(plan, {
+            receive({table, slotId, tuple}) {
 
-                const deleteFinished = deletesFinished.receive();
-                table.delete(slotId, error => {
-                    if (!error) {
+                const onFinishedDelete = combineDeletes.receive();
+
+                table.delete(slotId, {
+                    relation(t) {},
+                    finish() {
                         graph.onTupleDeleted(tuple);
                         output.relation(tuple.addTagObj(newTag('deleted')));
-                        deleteFinished(null)
+                        onFinishedDelete.finish()
                     }
                 });
-
-            } else {
-                scanFinished(null);
+            },
+            finish() {
+                scanFinished.finish();
             }
         });
     }
@@ -228,11 +228,11 @@ export default class TupleStore {
     select(plan: QueryPlan) {
         const { tuple, output } = plan;
 
-        this.scan(plan, (tableSlot) => {
-            if (tableSlot) {
-                const { tuple } = tableSlot;
+        this.scan(plan, {
+            receive({tuple}) {
                 output.relation(tuple);
-            } else {
+            },
+            finish() {
                 output.finish();
             }
         });
