@@ -1,4 +1,4 @@
-import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, Stream, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     readFile: (filename: string) => Promise<any>
@@ -14,7 +14,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: TupleReceiver) {
+    async runSearch(pattern: Pattern, output: Stream) {
         // check for handler/readFile (get fs filename/$filename file-contents)
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("filename")) && (pattern.hasValueForAttr("filename")) && (pattern.hasAttr("file-contents"))) {
@@ -89,7 +89,7 @@ export default class API implements StorageProvider {
         output.done()
     }
 
-    async runSave(pattern: Pattern, output: TupleReceiver) {
+    async runSave(pattern: Pattern, output: Stream) {
         // check for handler/writeFile (set fs filename/$filename file-contents/$contents)
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("fs")) && (pattern.hasAttr("filename")) && (pattern.hasValueForAttr("filename")) && (pattern.hasAttr("file-contents")) && (pattern.hasValueForAttr("file-contents"))) {
@@ -111,7 +111,7 @@ export default class API implements StorageProvider {
         output.done()
     }
 
-    async runDelete(pattern: Pattern, output: TupleReceiver) {
+    async runDelete(pattern: Pattern, output: Stream) {
         emitCommandError(output, "provider code-generation/filesystem-provider doesn't support: delete " + pattern.stringify());
         output.done()
     }

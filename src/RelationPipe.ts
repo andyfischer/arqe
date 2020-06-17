@@ -1,6 +1,6 @@
 
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 
 export default class RelationPipe {
     _onTuple: (rel: Tuple) => void
@@ -55,7 +55,7 @@ export default class RelationPipe {
         this.onDone(() => callback(rels));
     }
 
-    pipeToReceiver(receiver: TupleReceiver) {
+    pipeToReceiver(receiver: Stream) {
         this.onTuple(rel => receiver.next(rel));
         this.onDone(() => receiver.done());
     }

@@ -1,10 +1,10 @@
 
 import Graph from './Graph'
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import { emitCommandError } from './CommandMeta'
 
-export default function findTableForQuery(graph: Graph, tuple: Tuple, out: TupleReceiver) {
+export default function findTableForQuery(graph: Graph, tuple: Tuple, out: Stream) {
     // Check if the query specifies an exact table
 
     if (tuple.hasAttr('table')) {

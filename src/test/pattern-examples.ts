@@ -3,7 +3,7 @@ import Graph from '../Graph'
 import { parsePattern } from '../parseCommand'
 import parseObjectToPattern, { patternToJson } from '../parseObjectToPattern'
 import Tuple from '../Tuple'
-import TupleReceiver from '../TupleReceiver'
+import Stream from '../Stream'
 import { receiveToTupleList } from '../receiveUtils'
 import loadGraphFromLocalDatabase from '../loadGraphFromLocalDatabase'
 
@@ -88,22 +88,22 @@ function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple
     }
 }
 
-function pass(joinWith: Tuple, out: TupleReceiver) {
+function pass(joinWith: Tuple, out: Stream) {
     out.next(joinWith.addNewTag('passed'));
 }
 
-function fail(joinWith: Tuple, out: TupleReceiver, message: string) {
+function fail(joinWith: Tuple, out: Stream, message: string) {
     out.next(joinWith.addNewTag('failed').addNewTag('message', message));
 }
 
-function expectEquals(example: Tuple, expected: any, observed: any, out: TupleReceiver) {
+function expectEquals(example: Tuple, expected: any, observed: any, out: Stream) {
     if (expected === observed)
         pass(example, out);
     else
         fail(example, out, `expected (${expected}) != observed (${observed})`);
 }
 
-function checkPatternRestringify(example: Tuple, out: TupleReceiver) {
+function checkPatternRestringify(example: Tuple, out: Stream) {
     const patternStr = example.getVal("pattern");
     const pattern = parsePattern(patternStr);
 
@@ -137,7 +137,7 @@ function runCheck(session: FuzzTestSession, queryStr: string, verifier: (session
     }
 }
 
-function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple, out: TupleReceiver) => void) {
+function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple, out: Stream) => void) {
     const graph = session.graph;
     const testName = verifier.name;
 

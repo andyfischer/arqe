@@ -1,5 +1,5 @@
 
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import { parseCommandChain } from './parseCommand'
 import CommandChain from './CommandChain'
 import Pattern from './Pattern'
@@ -55,7 +55,7 @@ const validationClasses = [
     SetShouldEmitRelation
 ]
 
-export default function watchAndValidateCommand(commandStr: string, output: TupleReceiver) {
+export default function watchAndValidateCommand(commandStr: string, output: Stream) {
 
     const parsed = parseCommandChain(commandStr);
 

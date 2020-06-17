@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import CommandStep from './CommandStep'
 import CommandChain from './CommandChain'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import RelationPipe from './RelationPipe'
 import Command from './Command'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
@@ -30,7 +30,7 @@ export function singleCommandExecution(graph: Graph, command: Command): CommandS
     return step;
 }
 
-export default function runCommandChain(graph: Graph, chain: CommandChain, output: TupleReceiver) {
+export default function runCommandChain(graph: Graph, chain: CommandChain, output: Stream) {
 
     if (!graph)
         throw new Error('graph is null');

@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import Pattern from './Pattern'
 import { newTag } from './PatternTag'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import makeQueryPlan from './makeQueryPlan'
 import Command from './Command'
@@ -12,7 +12,7 @@ import { runJoinStep } from './runJoin'
 import listenCommand from './listenCommand'
 import countCommand from './countCommand'
 
-export function runGet(graph: Graph, pattern: Pattern, output: TupleReceiver) {
+export function runGet(graph: Graph, pattern: Pattern, output: Stream) {
     const plan = makeQueryPlan(graph, pattern, output);
     if (plan.failed)
         return;

@@ -1,4 +1,4 @@
-import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, Stream, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     readBlock: (x: string, y: string, z: string) => Promise<any>
@@ -15,7 +15,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: TupleReceiver) {
+    async runSearch(pattern: Pattern, output: Stream) {
         // check for handler/readBlock (get mc x/$x y/$y z/$z block/*)
 
         if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForAttr("z")) && (pattern.hasAttr("block"))) {
@@ -44,7 +44,7 @@ export default class API implements StorageProvider {
         output.done()
     }
 
-    async runSave(pattern: Pattern, output: TupleReceiver) {
+    async runSave(pattern: Pattern, output: Stream) {
         // check for handler/setBlock (set mc x/$x y/$y z/$z block/$block)
 
         if ((pattern.tagCount() == 5) && (pattern.hasAttr("mc")) && (pattern.hasAttr("x")) && (pattern.hasValueForAttr("x")) && (pattern.hasAttr("y")) && (pattern.hasValueForAttr("y")) && (pattern.hasAttr("z")) && (pattern.hasValueForAttr("z")) && (pattern.hasAttr("block")) && (pattern.hasValueForAttr("block"))) {
@@ -122,7 +122,7 @@ export default class API implements StorageProvider {
         output.done()
     }
 
-    async runDelete(pattern: Pattern, output: TupleReceiver) {
+    async runDelete(pattern: Pattern, output: Stream) {
         emitCommandError(output, "provider code-generation/minecraft-server-provider doesn't support: delete " + pattern.stringify());
         output.done()
     }

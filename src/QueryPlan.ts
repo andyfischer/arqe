@@ -2,7 +2,7 @@
 import Tuple from './Tuple'
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
 import Table from './Table'
@@ -25,7 +25,7 @@ export default interface QueryPlan {
 
     tuple: Tuple
     filterPattern: Pattern
-    output: TupleReceiver
+    output: Stream
     storageProvider?: StorageProvider
 
     table?: Table

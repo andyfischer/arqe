@@ -1,9 +1,9 @@
 
 import Graph from './Graph'
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 
-export function receiveToTupleList(onDone: (rels: Tuple[]) => void): TupleReceiver {
+export function receiveToTupleList(onDone: (rels: Tuple[]) => void): Stream {
     const list: Tuple[] = [];
     return {
         next(rel) { list.push(rel) },
@@ -13,7 +13,7 @@ export function receiveToTupleList(onDone: (rels: Tuple[]) => void): TupleReceiv
     }
 }
 
-export function receiveToTupleListPromise(): { receiver: TupleReceiver, promise: Promise<Tuple[]> } {
+export function receiveToTupleListPromise(): { receiver: Stream, promise: Promise<Tuple[]> } {
 
     let receiver;
     const promise: Promise<Tuple[]> = new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ export async function runAsync(graph: Graph, command: string) {
     return rels;
 }
 
-export function fallbackReceiver(commandString: string): TupleReceiver {
+export function fallbackReceiver(commandString: string): Stream {
     return {
         next(rel) {
             if (rel.hasAttr('command-meta') && rel.hasAttr('error')) {

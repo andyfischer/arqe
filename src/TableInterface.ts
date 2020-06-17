@@ -1,21 +1,21 @@
 
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 
-export interface Stream<T> {
+export interface GenericStream<T> {
     receive: (val: T) => void
     finish: () => void
 }
 
 export class StreamCombine<T> {
     waitingForCount = 0
-    output: Stream<T>
+    output: GenericStream<T>
 
-    constructor(output: Stream<T>) {
+    constructor(output: GenericStream<T>) {
         this.output = output;
     }
 
-    receive(): Stream<T> {
+    receive(): GenericStream<T> {
         this.waitingForCount++;
 
         return {
@@ -30,8 +30,8 @@ export class StreamCombine<T> {
 }
 
 export default interface TableInterface {
-    scan: (out: Stream<{slotId: string, tuple: Tuple}>) => void
-    set: (slotId: string, tuple: Tuple, out: TupleReceiver) => void
-    delete: (slotId: string, out: TupleReceiver) => void
+    scan: (out: GenericStream<{slotId: string, tuple: Tuple}>) => void
+    set: (slotId: string, tuple: Tuple, out: Stream) => void
+    delete: (slotId: string, out: Stream) => void
 }
 

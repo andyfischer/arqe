@@ -2,7 +2,7 @@
 import Graph from './Graph'
 import PatternTag from './PatternTag'
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
 import QueryPlan, { QueryTag } from './QueryPlan'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
@@ -151,7 +151,7 @@ function toPlanTags(graph: Graph, tuple: Tuple) {
     return planTags;
 }
 
-function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: TupleReceiver) {
+function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
 
     const planTags = toPlanTags(graph, tuple);
     const { initializeIfMissing, modifiesExisting } = getEffects(tuple);
@@ -198,7 +198,7 @@ function validatePlan(plan: QueryPlan) {
     // There was once something here
 }
 
-export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: TupleReceiver) {
+export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
 
     const store = graph.tupleStore;
     tuple = resolveImmediateExpressions(tuple);

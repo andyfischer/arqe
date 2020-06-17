@@ -1,5 +1,5 @@
 
-import { Pattern, TupleReceiver, StorageProvider } from ".."
+import { Pattern, Stream, StorageProvider } from ".."
 import ClientConnection, { connectToServer } from '../socket/ClientConnection'
 
 const connectionByPort: { [port: string]: ClientConnection } = {}
@@ -12,7 +12,7 @@ async function getOrInitConnection(port: string) {
 }
 
 class RemoteProvider implements StorageProvider {
-    async runSearch(pattern: Pattern, output: TupleReceiver) {
+    async runSearch(pattern: Pattern, output: Stream) {
         const port = pattern.getVal("remote");
         const forwarded = pattern.removeAttr("remote");
         const conn = await getOrInitConnection(port);
@@ -26,7 +26,7 @@ class RemoteProvider implements StorageProvider {
         });
     }
 
-    async runSave(pattern: Pattern, output: TupleReceiver) {
+    async runSave(pattern: Pattern, output: Stream) {
         const port = pattern.getVal("remote");
         const forwarded = pattern.removeAttr("remote");
         const conn = await getOrInitConnection(port);

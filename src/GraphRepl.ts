@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
 import printResult from './console/printResult'
 import Tuple from './Tuple'

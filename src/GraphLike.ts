@@ -1,8 +1,8 @@
 
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 
 export default interface GraphLike {
     runSync: (commandStr: string) => Tuple[];
-    run: (commandStr: string, output: TupleReceiver) => void
+    run: (commandStr: string, output: Stream) => void
 }

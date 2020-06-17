@@ -5,7 +5,7 @@ import Tuple from './Tuple'
 import SavedQuery from './SavedQuery'
 import EagerValue from './EagerValue'
 import { UpdateFn } from './UpdateContext'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import runCommandChain from './runCommandChain'
 import UpdateContext from './UpdateContext'
@@ -129,7 +129,7 @@ export default class Graph {
         }
     }
 
-    run(commandStr: string, output?: TupleReceiver) {
+    run(commandStr: string, output?: Stream) {
 
         if (/^ *\#/.exec(commandStr)) {
             // ignore comments
@@ -191,7 +191,7 @@ export default class Graph {
         return callback(cxt);
     }
 
-    get(patternInput: any, receiver: TupleReceiver) {
+    get(patternInput: any, receiver: Stream) {
         let pattern: Pattern;
         if (typeof patternInput === 'string') {
             pattern = parsePattern(patternInput);
@@ -202,7 +202,7 @@ export default class Graph {
         runCommandChain(this, new CommandChain([new Command('get', pattern, {})]), receiver);
     }
 
-    set(patternInput: any, receiver: TupleReceiver) {
+    set(patternInput: any, receiver: Stream) {
         let pattern: Pattern;
         if (typeof patternInput === 'string') {
             pattern = parsePattern(patternInput);

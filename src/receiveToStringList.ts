@@ -1,10 +1,10 @@
 
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import PatternTag from './PatternTag'
 import { patternTagToString } from './stringifyQuery'
 
-export default function receiveToStringList(onDone: (s: string|string[]) => void): TupleReceiver {
+export default function receiveToStringList(onDone: (s: string|string[]) => void): Stream {
 
     let searchPattern = null;
     let actionPerformed = null;

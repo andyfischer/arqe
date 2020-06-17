@@ -2,9 +2,9 @@
 import Graph from './Graph'
 import Tuple from './Tuple'
 import Pattern from './Pattern'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 
-export default interface SearchOperation extends TupleReceiver {
+export default interface SearchOperation extends Stream {
     graph: Graph
     pattern: Pattern;
     subSearchDepth: number
@@ -13,7 +13,7 @@ export default interface SearchOperation extends TupleReceiver {
     done: () => void
 }
 
-export function newTupleSearch(graph: Graph, pattern: Pattern, output: TupleReceiver): SearchOperation {
+export function newTupleSearch(graph: Graph, pattern: Pattern, output: Stream): SearchOperation {
     return {
         graph,
         pattern,

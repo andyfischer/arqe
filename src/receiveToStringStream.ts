@@ -1,9 +1,9 @@
 
 import Tuple from './Tuple'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import stringifyRelationStream from './stringifyRelationStream'
 
-export default function receiveToStringStream(onStr: (s: string) => void): TupleReceiver {
+export default function receiveToStringStream(onStr: (s: string) => void): Stream {
     const stringifier = stringifyRelationStream();
 
     return {

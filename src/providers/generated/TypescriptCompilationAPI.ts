@@ -1,4 +1,4 @@
-import { GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Pattern, Stream, StorageProvider, emitCommandError } from "../.."
 
 interface NativeHandler {
     runTsc: (dir: string) => Promise<any[]>
@@ -11,7 +11,7 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: TupleReceiver) {
+    async runSearch(pattern: Pattern, output: Stream) {
         // check for handler/runTsc (get tsc-compile dir/$dir filename message lineno colno)
 
         if ((pattern.tagCount() == 6) && (pattern.hasAttr("tsc-compile")) && (pattern.hasAttr("dir")) && (pattern.hasValueForAttr("dir")) && (pattern.hasAttr("filename")) && (pattern.hasAttr("message")) && (pattern.hasAttr("lineno")) && (pattern.hasAttr("colno"))) {
@@ -44,12 +44,12 @@ export default class API implements StorageProvider {
         output.done()
     }
 
-    async runSave(pattern: Pattern, output: TupleReceiver) {
+    async runSave(pattern: Pattern, output: Stream) {
         emitCommandError(output, "provider code-generation/tsc-compile doesn't support: set " + pattern.stringify());
         output.done()
     }
 
-    async runDelete(pattern: Pattern, output: TupleReceiver) {
+    async runDelete(pattern: Pattern, output: Stream) {
         emitCommandError(output, "provider code-generation/tsc-compile doesn't support: delete " + pattern.stringify());
         output.done()
     }

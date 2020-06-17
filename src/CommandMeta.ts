@@ -2,10 +2,10 @@
 import Tuple, { tagsToPattern } from './Tuple'
 import Pattern from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import Command from './Command'
 
-export function emitCommandMeta(output: TupleReceiver, fields: any) {
+export function emitCommandMeta(output: Stream, fields: any) {
     const tags = [
         newTag('command-meta')
     ];
@@ -17,7 +17,7 @@ export function emitCommandMeta(output: TupleReceiver, fields: any) {
     output.next(tagsToPattern(tags));
 }
 
-export function emitCommandError(output: TupleReceiver, message: string) {
+export function emitCommandError(output: Stream, message: string) {
 
     const tags = [
         newTag('command-meta'),
@@ -28,15 +28,15 @@ export function emitCommandError(output: TupleReceiver, message: string) {
     output.next(tagsToPattern(tags));
 }
 
-export function emitSearchPatternMeta(pattern: Pattern, output: TupleReceiver) {
+export function emitSearchPatternMeta(pattern: Pattern, output: Stream) {
     output.next(pattern.addTags(['command-meta', 'search-pattern']));
 }
 
-export function emitActionPerformed(output: TupleReceiver) {
+export function emitActionPerformed(output: Stream) {
     emitCommandMeta(output, { 'action-performed': true })
 }
 
-export function emitCommandOutputFlags(command: Command, output: TupleReceiver) {
+export function emitCommandOutputFlags(command: Command, output: Stream) {
     if (command.flags.exists)
         emitCommandMeta(output, { 'output-flag': 'exists' })
     if (command.flags.count)
@@ -47,7 +47,7 @@ export function emitCommandOutputFlags(command: Command, output: TupleReceiver) 
         emitCommandMeta(output, { 'output-flag': 'list' })
 }
 
-export function emitTupleDeleted(pattern: Pattern, output: TupleReceiver) {
+export function emitTupleDeleted(pattern: Pattern, output: Stream) {
     const rel = pattern.addTags(['command-meta', 'deleted']);
     output.next(rel);
 }

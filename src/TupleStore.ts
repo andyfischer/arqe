@@ -3,7 +3,7 @@ import Tuple from './Tuple'
 import Pattern from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
 import SearchOperation from './SearchOperation'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import Graph from './Graph'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import IDSource from './utils/IDSource'
@@ -13,7 +13,7 @@ import Table from './Table'
 import { parsePattern } from './parseCommand'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import maybeCreateImplicitTable from './maybeCreateImplicitTable'
-import { Stream, StreamCombine } from './TableInterface'
+import { GenericStream, StreamCombine } from './TableInterface'
 import { combineStreams } from './StreamUtil'
 
 function isThenable(result: any) {
@@ -70,7 +70,7 @@ export default class TupleStore {
         });
     }
 
-    scan(plan: QueryPlan, out: Stream<{table: Table, slotId: string, tuple: Tuple}>) {
+    scan(plan: QueryPlan, out: GenericStream<{table: Table, slotId: string, tuple: Tuple}>) {
         const searchPattern = plan.filterPattern || plan.tuple;
         if (!searchPattern)
             throw new Error('missing filterPattern or tuple');

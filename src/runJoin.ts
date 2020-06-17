@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
 import Pattern from './Pattern'
 import Tuple, { tagsToPattern } from './Tuple'
@@ -111,7 +111,7 @@ function combineTuples(a: Pattern, b: Pattern) {
     return tagsToPattern(tags);
 }
 
-function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: TupleReceiver) {
+function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: Stream) {
 
     if (!inputSearchPattern)
         throw new Error('missing inputSearchPattern');

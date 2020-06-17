@@ -2,7 +2,7 @@
 export { default as Graph } from './Graph'
 export { default as GraphLike } from './GraphLike'
 export { default as Tuple } from './Tuple'
-export { default as TupleReceiver } from './TupleReceiver'
+export { default as Stream } from './Stream'
 export { default as Pattern } from './Pattern'
 export { default as receiveToTupleList } from './Tuple'
 export { default as runStandardProcess } from './toollib/runStandardProcess'

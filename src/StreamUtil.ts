@@ -1,5 +1,5 @@
 
-import TupleReceiver from './TupleReceiver'
+import Stream from './Stream'
 
 /*
 export function combineStreams({
@@ -10,9 +10,9 @@ export function combineStreams({
 }
 */
 
-type NewReceiverFunc = () => TupleReceiver
+type NewReceiverFunc = () => Stream
 
-export function combineStreams(output: TupleReceiver): NewReceiverFunc {
+export function combineStreams(output: Stream): NewReceiverFunc {
     let waitingForCount = 0;
 
     return () => {

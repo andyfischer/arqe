@@ -1,6 +1,6 @@
 
 import Tuple from '../Tuple'
-import TupleReceiver from '../TupleReceiver'
+import Stream from '../Stream'
 import Pattern from '../Pattern'
 import StorageProvider from '../StorageProvider'
 import Graph from '../Graph'
@@ -12,11 +12,11 @@ export default class ExpireAt implements StorageProvider {
         this.graph = graph;
     }
 
-    async runSearch(pattern: Pattern, output: TupleReceiver) {
+    async runSearch(pattern: Pattern, output: Stream) {
         output.done();
     }
 
-    async runSave(pattern: Pattern, output: TupleReceiver) {
+    async runSave(pattern: Pattern, output: Stream) {
         const target = pattern.removeAttr('expires-at');
         const now = Date.now();
         const expireTime = parseInt(pattern.getVal('expires-at'));

@@ -1,7 +1,7 @@
 
 import WebSocket from '../platform/ws'
 import EventEmitter from 'events'
-import TupleReceiver from '../TupleReceiver'
+import Stream from '../Stream'
 import { parseTuple } from '../parseCommand'
 import IDSource from '../utils/IDSource'
 import GraphLike from '../GraphLike'
@@ -11,7 +11,7 @@ export type RespondFunc = (msg: string) => void
 
 interface PendingQuery {
     query: string
-    output: TupleReceiver
+    output: Stream
 }
 
 type ConnectError = {
@@ -57,7 +57,7 @@ export default class ClientConnection implements GraphLike {
     autoReconnect = false
 
     pendingForConnection: PendingQuery[] = []
-    reqListeners: { [id: string]: TupleReceiver } = {}
+    reqListeners: { [id: string]: Stream } = {}
 
     connectAttemptInProgress = false;
     maxReconnectAttempts = 10;
@@ -162,7 +162,7 @@ export default class ClientConnection implements GraphLike {
         this.ws.close();
     }
 
-    run(commandStr: string, output?: TupleReceiver) {
+    run(commandStr: string, output?: Stream) {
 
         if (typeof commandStr !== 'string')
             throw new Error("expected string for command, saw: " + commandStr);
