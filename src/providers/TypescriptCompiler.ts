@@ -4,7 +4,7 @@ import ChildProcess from 'child_process'
 import Util from 'util'
 const exec = Util.promisify(ChildProcess.exec);
 
-const errorLineRegex = /^([a-zA-Z0-9\.\/_-]+)\(([0-9]+),([0-9]+)\): (.*)$/
+export const errorLineRegex = /^([a-zA-Z0-9\.\/_-]+)\(([0-9]+),([0-9]+)\): (.*)$/
 const errorElaborationRegex = /  (.*)$/
 
 // console.log('regex test: ', errorLineRegex.exec(`fs-refactor/src/__tests__/parseCommand.test.ts(56,35): error TS2339: Property 'tagType' does not exist on type 'PatternTag'.`))
@@ -41,7 +41,7 @@ export default function setup() {
                     continue;
                 }
 
-                console.error('TypescriptCompiler: unrecognized stdout line: ' + line);
+                console.error('TypescriptCompiler: unrecognized stdout line: ' + JSON.stringify(line));
             }
 
             return errorEvents.map(evt => ({

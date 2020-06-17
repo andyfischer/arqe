@@ -2,10 +2,10 @@
 
 const { loadGraphFromLocalDatabase, printConsoleResult } = require('..');
 
-const dir = '.'
-// const dir = '../fs-refactor'
-const replaceFrom = 'setTagValueForType'
-const replaceTo = 'setVal'
+//const dir = '.'
+const dir = '../fd-refactor'
+const replaceFrom = 'relation'
+const replaceTo = 'next'
 
 async function main() {
 
