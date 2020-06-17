@@ -11,6 +11,7 @@ interface PartialQueryPlan {
 }
 
 export default function maybeCreateImplicitTable(store: TupleStore, plan: PartialQueryPlan) {
+    const graph = store.graph;
     if (plan.table)
         return;
 
@@ -25,5 +26,5 @@ export default function maybeCreateImplicitTable(store: TupleStore, plan: Partia
     const tableName = '_' + attrTags.map(tag => tag.attr).join('_');
     const tablePattern = new Tuple(attrTags);
     // console.log(`created new implicit table ${tableName}: ${tablePattern.stringify()}`);
-    plan.table = store.defineInMemoryTable(tableName, tablePattern);
+    plan.table = graph.defineInMemoryTable(tableName, tablePattern);
 }

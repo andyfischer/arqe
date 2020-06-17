@@ -9,7 +9,7 @@ export default function findTableForQuery(graph: Graph, tuple: Tuple, out: Strea
 
     if (tuple.hasAttr('table')) {
         const tableName = tuple.getVal('table');
-        const table = graph.tupleStore.findTable(tableName);
+        const table = graph.findTable(tableName);
         if (!table) {
             emitCommandError(out, "table not found: " + tableName);
             return { failed: true }
@@ -19,7 +19,7 @@ export default function findTableForQuery(graph: Graph, tuple: Tuple, out: Strea
     }
 
     // Check if the pattern matches a defined table
-    const table = graph.tupleStore.tablePatternMap.find(tuple);
+    const table = graph.tablePatternMap.find(tuple);
     // console.log(`looking for table for ${tuple.stringify()}: ${!!table}`)
     if (table)
         return { table }

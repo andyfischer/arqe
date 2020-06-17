@@ -216,7 +216,7 @@ export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: S
     if (table)
         plan.searchTables = [table];
     else
-        plan.searchTables = Array.from(store._tables.values());
+        plan.searchTables = Array.from(graph.tables.values());
 
     findStorageProvider(plan);
     validatePlan(plan);

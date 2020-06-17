@@ -21,7 +21,7 @@ export function runGet(graph: Graph, pattern: Pattern, output: Stream) {
     if (plan.storageProvider) {
         plan.storageProvider.runSearch(plan.tuple, plan.output);
     } else {
-        graph.tupleStore.select(plan);
+        graph.select(plan);
     }
 }
 
@@ -52,7 +52,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
             if (plan.storageProvider) {
                 plan.storageProvider.runSave(plan.tuple, plan.output);
             } else {
-                graph.tupleStore.save(plan);
+                graph.save(plan);
             }
             return;
         }
@@ -72,7 +72,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
             if (plan.storageProvider) {
                 plan.storageProvider.runSave(deletePattern, plan.output);
             } else {
-                graph.tupleStore.save(plan);
+                graph.save(plan);
             }
 
             return;
