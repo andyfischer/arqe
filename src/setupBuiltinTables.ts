@@ -12,8 +12,13 @@ import setupSelfTest from './selftest/SelfTest'
 import setupWorkingFile from './providers/WorkingFile'
 import setupMinecraftServer from './providers/MinecraftServer'
 import setupRemoteProvider from './providers/RemoteProvider'
+import { FsFileContents } from './virtualTables/Filesystem'
+import { parsePattern } from './parseCommand'
 
-export default function getBuiltinViews(graph: Graph): {[name: string]: StorageProvider } {
+export default function setupBuiltinTables(graph: Graph): {[name: string]: StorageProvider } {
+
+    //graph.defineVirtualTable('fs-file-contents', parsePattern('fs filename file-contents'), new FsFileContents());
+
     const views = {
         'remote': setupRemoteProvider(),
         'fs': setupFilesystemProvider(),
@@ -32,3 +37,5 @@ export default function getBuiltinViews(graph: Graph): {[name: string]: StorageP
 
     return views;
 }
+
+

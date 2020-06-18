@@ -203,19 +203,24 @@ export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: S
     tuple = resolveImmediateExpressions(tuple);
 
     const plan: QueryPlan = initialBuildQueryPlan(graph, tuple, output);
-    const { table, failed } = findTableForQuery(graph, plan.filterPattern, output);
+    let table = null;
 
-    if (failed) {
+    try {
+        table = findTableForQuery(graph, plan.filterPattern);
+    } catch (e) {
+        emitCommandError(plan.output, e);
         plan.failed = true;
         return plan;
     }
 
     plan.table = table;
 
-    if (table)
+    if (table) {
         plan.searchTables = [table];
-    else
-        plan.searchTables = Array.from(graph.tables.values());
+    } else {
+        plan.searchTables = Array.from(graph.tables.values())
+            //.filter(table => table.supportsScan);
+    }
 
     findStorageProvider(plan);
     validatePlan(plan);

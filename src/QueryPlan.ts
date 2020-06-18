@@ -5,7 +5,6 @@ import PatternTag from './PatternTag'
 import Stream from './Stream'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
-import Table from './Table'
 import TableInterface from './TableInterface'
 
 export interface QueryTag {

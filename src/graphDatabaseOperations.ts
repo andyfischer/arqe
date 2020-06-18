@@ -7,9 +7,24 @@ import { emitCommandError } from './CommandMeta'
 import { GenericStream, StreamCombine } from './TableInterface'
 import TableInterface from './TableInterface'
 import { combineStreams } from './StreamUtil'
+import Stream from './Stream'
 
 export type ScanOutput = GenericStream<{table: TableInterface, slotId: string, tuple: Tuple}>
 
+export function search(graph: Graph, plan: QueryPlan, out: Stream) {
+    const searchPattern = plan.filterPattern || plan.tuple;
+    if (!searchPattern)
+        throw new Error('missing filterPattern or tuple');
+
+    const combined = combineStreams(out);
+    const startedAllTables = combined();
+
+    for (const table of plan.searchTables) {
+        table.search(searchPattern, combined());
+    }
+
+    startedAllTables.done();
+}
 export function scan(graph: Graph, plan: QueryPlan, out: ScanOutput) {
     const searchPattern = plan.filterPattern || plan.tuple;
     if (!searchPattern)
@@ -21,15 +36,23 @@ export function scan(graph: Graph, plan: QueryPlan, out: ScanOutput) {
     for (const table of plan.searchTables) {
         const tableOut = combined.receive();
 
-        table.scan({
-            receive({slotId, tuple}) {
-                if (searchPattern.isSupersetOf(tuple))
-                    tableOut.receive({ table, slotId, tuple });
-            },
-            finish() {
-                tableOut.finish();
-            }
-        });
+        try {
+            table.scan({
+                receive({slotId, tuple}) {
+                    if (searchPattern.isSupersetOf(tuple))
+                        tableOut.receive({ table, slotId, tuple });
+                },
+                finish() {
+                    tableOut.finish();
+                }
+            });
+        } catch (err) {
+            console.error("unhandled error calling table.scan ", {
+                err,
+                searchPattern: searchPattern.str(),
+                tableName: table.name
+            })
+        }
     }
 
     iteratedTables.finish();
@@ -51,7 +74,7 @@ export function insert(graph: Graph, plan: QueryPlan) {
 
     // Check if this tuple is already saved.
     let found = false;
-    graph.scan(plan, {
+    scan(graph, plan, {
         receive() {
             // Already saved - No-op.
             if (!found) {

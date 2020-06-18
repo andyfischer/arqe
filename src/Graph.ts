@@ -16,7 +16,7 @@ import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import StorageProvider from './StorageProvider'
 import Column from './Column'
-import getBuiltinViews from './getBuiltinViews'
+import setupBuiltinTables from './setupBuiltinTables'
 import parseObjectToPattern from './parseObjectToPattern'
 import CommandChain from './CommandChain'
 import Command from './Command'
@@ -26,10 +26,10 @@ import PatternTag, { newTag } from './PatternTag'
 import { combineStreams } from './StreamUtil'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { GenericStream, StreamCombine } from './TableInterface'
-import Table from './Table'
+import InMemoryTable from './InMemoryTable'
 import TableInterface from './TableInterface'
 import TuplePatternMatcher from './TuplePatternMatcher'
-import { insert, scan, ScanOutput, update, del } from './graphDatabaseOperations'
+import { search, insert, scan, ScanOutput, update, del } from './graphDatabaseOperations'
 
 export default class Graph {
 
@@ -52,7 +52,7 @@ export default class Graph {
     columns: { [name: string]: Column } = {}
 
     constructor() {
-        const builtinViews = getBuiltinViews(this);
+        const builtinViews = setupBuiltinTables(this);
 
         for (const name in builtinViews) {
             const column = this.initColumn(name);
@@ -76,7 +76,16 @@ export default class Graph {
         if (this.tables.has(name))
             throw new Error("table already exists: " + name)
 
-        const table = new Table(name, pattern);
+        const table = new InMemoryTable(name, pattern);
+        this.tables.set(name, table);
+        this.tablePatternMap.add(pattern, table);
+        return table;
+    }
+
+    defineVirtualTable(name: string, pattern: Tuple, table: TableInterface) {
+        if (this.tables.has(name))
+            throw new Error("table already exists: " + name)
+
         this.tables.set(name, table);
         this.tablePatternMap.add(pattern, table);
         return table;
@@ -114,14 +123,7 @@ export default class Graph {
     select(plan: QueryPlan) {
         const { tuple, output } = plan;
 
-        scan(this, plan, {
-            receive({tuple}) {
-                output.next(tuple);
-            },
-            finish() {
-                output.done();
-            }
-        });
+        search(this, plan, plan.output);
     }
 
     save(plan: QueryPlan) {

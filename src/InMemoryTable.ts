@@ -7,6 +7,7 @@ import TableInterface, { GenericStream } from './TableInterface'
 
 export default class Table implements TableInterface {
     name: string
+    supportsScan: true
     pattern: Pattern
 
     nextSlotId: IDSource = new IDSource();
@@ -15,6 +16,14 @@ export default class Table implements TableInterface {
     constructor(name: string, pattern: Pattern) {
         this.name = name;
         this.pattern = pattern;
+    }
+
+    search(pattern: Tuple, out: Stream) {
+        for (const [slotId, tuple] of this._slots.entries())
+            if (pattern.isSupersetOf(tuple))
+                out.next(tuple);
+
+        out.done();
     }
 
     scan(out: GenericStream<{slotId: string, tuple: Tuple}>) {
