@@ -7,6 +7,7 @@ import Fs from 'fs-extra'
 export class FsFileContents implements TableInterface {
     name: 'FsFileContents'
     supportsScan: false
+    schema = 'fs filename file-contents?'
 
     async search(pattern: Tuple, out: Stream) {
         const tag = pattern.getTagObject("filename");
@@ -37,5 +38,29 @@ export class FsFileContents implements TableInterface {
     }
 
     delete(slotId: string, out: Stream) {
+        throw new Error("FsFile delete not supported yet");
+    }
+}
+
+export class FsDirectory {
+    name: 'FsDirectory'
+    schema = 'fs dir filename?'
+    supportsScan: false
+
+    scan(out: GenericStream<{slotId: string, tuple: Tuple}>) {
+        throw new Error("can't scan FsDirectory");
+    }
+
+    async search(pattern: Tuple, out: Stream) {
+    }
+
+    async insert(tuple: Tuple, out: Stream) {
+    }
+    
+    async update(slotId: string, tuple: Tuple, out: Stream) {
+    }
+
+    delete(slotId: string, out: Stream) {
+        throw new Error("FsDirectory delete not supported");
     }
 }
