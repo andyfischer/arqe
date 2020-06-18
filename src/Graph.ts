@@ -29,14 +29,7 @@ import { GenericStream, StreamCombine } from './TableInterface'
 import Table from './Table'
 import TableInterface from './TableInterface'
 import TuplePatternMatcher from './TuplePatternMatcher'
-
-function toInitialization(rel: Tuple) {
-    return rel.remapTags((tag: PatternTag) => {
-        if (tag.valueExpr && tag.valueExpr[0] === 'set')
-            return tag.setValue(tag.valueExpr[1]);
-        return tag;
-    });
-}
+import { insert, scan, ScanOutput, update, del } from './graphDatabaseOperations'
 
 export default class Graph {
 
@@ -102,170 +95,26 @@ export default class Graph {
         });
     }
 
-    scan(plan: QueryPlan, out: GenericStream<{table: Table, slotId: string, tuple: Tuple}>) {
-        const searchPattern = plan.filterPattern || plan.tuple;
-        if (!searchPattern)
-            throw new Error('missing filterPattern or tuple');
-
-        const combined = new StreamCombine<{table, slotId, tuple}>(out);
-        const iteratedTables = combined.receive();
-
-        for (const table of plan.searchTables) {
-            const tableOut = combined.receive();
-
-            table.scan({
-                receive({slotId, tuple}) {
-                    if (searchPattern.isSupersetOf(tuple))
-                        tableOut.receive({ table, slotId, tuple });
-                },
-                finish() {
-                    tableOut.finish();
-                }
-            });
-        }
-
-        iteratedTables.finish();
+    scan(plan: QueryPlan, out: ScanOutput) {
+        scan(this, plan, out);
     }
 
     insert(plan: QueryPlan) {
-        const { output } = plan; 
-
-        // Save as new row
-        plan.tuple = this.resolveExpressionValuesForInsert(plan.tuple);
-
-        for (const tag of plan.tuple.tags) {
-            if (tag.valueExpr) {
-                emitCommandError(output, "insert unhandled expression: " + tag.stringify());
-                output.done();
-                return;
-            }
-        }
-
-        // Check if this tuple is already saved.
-        let found = false;
-        this.scan(plan, {
-            receive() {
-                // Already saved - No-op.
-                if (!found) {
-                    found = true;
-                    output.next(plan.tuple);
-                    output.done();
-                }
-            },
-            finish: () => {
-                if (!found) {
-                    // Not saved, insert
-                    this.insertConfirmedNotExists(plan);
-                }
-            }
-        });
-    }
-
-    insertConfirmedNotExists(plan: QueryPlan) {
-
-        const graph = this;
-        const { output } = plan; 
-
-        // Store a new tuple.
-        const table = plan.table;
-
-        if (!plan.table)
-            throw new Error("Internal error, missing table in insert()")
-
-        if (!plan.tableName) {
-            emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.tuple.stringify());
-            output.done();
-            return;
-        }
-
-        table.insert(plan.tuple, {
-            next: output.next,
-            done: () => {
-                output.next(plan.tuple);
-                graph.onTupleUpdated(plan.tuple);
-                output.done();
-            }
-        });
+        insert(this, plan);
     }
 
     update(plan: QueryPlan) {
-        const { output } = plan;
-        const graph = this;
-
-        let hasFoundAny = false;
-
-        // Scan and apply the modificationCallback to every matching slot.
-
-        const addToResult = combineStreams({
-            next: output.next,
-            done: () => {
-                // Check if the plan has 'initializeIfMissing' - this means we must insert the row
-                // if no matches were found.
-                if (!hasFoundAny && plan.initializeIfMissing) {
-                    plan.tuple = toInitialization(plan.tuple);
-                    this.insert(plan);
-                } else {
-                    output.done();
-                }
-            }
-        });
-
-        const scanStream = addToResult();
-
-        this.scan(plan, {
-            receive({slotId, table, tuple}) {
-                const found = tuple;
-
-                const modified = plan.modificationCallback(found);
-                const setOutput = addToResult();
-
-                table.update(slotId, modified, {
-                    next() {},
-                    done() {
-                        graph.onTupleUpdated(modified);
-                        hasFoundAny = true;
-                        setOutput.next(modified);
-                        setOutput.done();
-                    }
-                });
-            },
-            finish() {
-                scanStream.done();
-            }
-        });
+        update(this, plan);
     }
 
     doDelete(plan: QueryPlan) {
-        const { output } = plan;
-        const graph = this;
-
-        const addToOutput = combineStreams(output);
-
-        const scanFinished = addToOutput();
-
-        this.scan(plan, {
-            receive({table, slotId, tuple}) {
-                const deleteResult = addToOutput();
-
-                table.delete(slotId, {
-                    next: deleteResult.next,
-                    done() {
-                        graph.onTupleDeleted(tuple);
-                        output.next(tuple.addTagObj(newTag('deleted')));
-                        deleteResult.done()
-                    }
-                });
-            },
-            finish() {
-                scanFinished.done();
-            }
-        });
+        del(this, plan);
     }
 
     select(plan: QueryPlan) {
         const { tuple, output } = plan;
 
-        this.scan(plan, {
+        scan(this, plan, {
             receive({tuple}) {
                 output.next(tuple);
             },
