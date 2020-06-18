@@ -219,7 +219,7 @@ export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: S
         plan.searchTables = [table];
     } else {
         plan.searchTables = Array.from(graph.tables.values())
-            //.filter(table => table.supportsScan);
+            .filter(table => table.supportsScan);
     }
 
     findStorageProvider(plan);

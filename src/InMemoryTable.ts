@@ -7,7 +7,7 @@ import TableInterface, { GenericStream } from './TableInterface'
 
 export default class Table implements TableInterface {
     name: string
-    supportsScan: true
+    supportsScan = true
     pattern: Pattern
 
     nextSlotId: IDSource = new IDSource();

@@ -17,11 +17,11 @@ import { parsePattern } from './parseCommand'
 
 export default function setupBuiltinTables(graph: Graph): {[name: string]: StorageProvider } {
 
-    //graph.defineVirtualTable('fs-file-contents', parsePattern('fs filename file-contents'), new FsFileContents());
+    graph.defineVirtualTable('fs-file-contents', parsePattern('fs filename file-contents'), new FsFileContents());
 
     const views = {
         'remote': setupRemoteProvider(),
-        'fs': setupFilesystemProvider(),
+        // 'fs': setupFilesystemProvider(),
         'git': setupGitProvider(),
         'file-changed': setupFileChangeLog(graph),
         'expires-at': new ExpireAtListener(graph),
