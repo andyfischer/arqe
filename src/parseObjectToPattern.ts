@@ -2,7 +2,7 @@
 import Pattern from './Pattern'
 import PatternTag from './PatternTag'
 import { newTagFromObject } from './PatternTag'
-import { tagsToPattern } from './Tuple'
+import { tagsToTuple } from './Tuple'
 
 type PatternJSON = { [key: string]: any }
 
@@ -64,7 +64,7 @@ export default function parseObjectToPattern(obj: PatternJSON): Pattern {
             tags.push(result);
     }
 
-    return tagsToPattern(tags);
+    return tagsToTuple(tags);
 }
 
 function oneTagToKeyValue(tag: PatternTag, out: PatternJSON) {

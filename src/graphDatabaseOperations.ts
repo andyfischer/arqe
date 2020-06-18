@@ -156,7 +156,7 @@ export function del(graph: Graph, plan: QueryPlan) {
 
     const scanFinished = addToOutput();
 
-    this.scan(plan, {
+    scan(graph, plan, {
         receive({table, slotId, tuple}) {
             const deleteResult = addToOutput();
 

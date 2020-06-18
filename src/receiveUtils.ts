@@ -44,7 +44,7 @@ export function fallbackReceiver(commandString: string): Stream {
     return {
         next(rel) {
             if (rel.hasAttr('command-meta') && rel.hasAttr('error')) {
-                console.log(`Uncaught error for command (${commandString}): ${rel.stringifyRelation()}`);
+                console.log(`Uncaught error for command (${commandString}): ${rel.str()}`);
             }
         },
         done() { }

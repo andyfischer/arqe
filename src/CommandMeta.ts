@@ -1,5 +1,5 @@
 
-import Tuple, { tagsToPattern } from './Tuple'
+import Tuple, { tagsToTuple } from './Tuple'
 import Pattern from './Pattern'
 import PatternTag, { newTag } from './PatternTag'
 import Stream from './Stream'
@@ -14,7 +14,7 @@ export function emitCommandMeta(output: Stream, fields: any) {
         tags.push(newTag(k, fields[k]));
     }
 
-    output.next(tagsToPattern(tags));
+    output.next(tagsToTuple(tags));
 }
 
 export function emitCommandError(output: Stream, message: string) {
@@ -25,7 +25,7 @@ export function emitCommandError(output: Stream, message: string) {
         newTag('message', message)
     ];
 
-    output.next(tagsToPattern(tags));
+    output.next(tagsToTuple(tags));
 }
 
 export function emitSearchPatternMeta(pattern: Pattern, output: Stream) {

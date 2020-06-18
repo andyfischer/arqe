@@ -3,7 +3,7 @@ import Graph from './Graph'
 import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
 import Pattern from './Pattern'
-import Tuple, { tagsToPattern } from './Tuple'
+import Tuple, { tagsToTuple } from './Tuple'
 import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { patternTagToString } from './stringifyQuery'
@@ -108,7 +108,7 @@ function combineTuples(a: Pattern, b: Pattern) {
         tags.push(tag);
     }
 
-    return tagsToPattern(tags);
+    return tagsToTuple(tags);
 }
 
 function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: Stream) {

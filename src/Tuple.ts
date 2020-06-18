@@ -126,20 +126,6 @@ export default class Tuple {
         return this.derivedData().hasAnyStars;
     }
 
-    formatRelationRelative(rel: Tuple) {
-        const outTags = [];
-
-        for (const tag of rel.tags) {
-            if (this.derivedData().fixedTagsForAttr.has(tag.attr))
-                continue;
-
-            outTags.push(patternTagToString(tag));
-        }
-
-        const str = outTags.join(' ');
-        return str;
-    }
-
     hasAttr(attr: string) {
         return this.asMap().has(attr);
     }
@@ -275,14 +261,10 @@ export default class Tuple {
         return commandTagsToString(this.tags);
     }
 
-    stringifyRelation() {
-        return this.stringify();
-    }
-
     stringifyToCommand() {
         let commandPrefix = 'set ';
 
-        return commandPrefix + this.stringifyRelation();
+        return commandPrefix + this.str();
     }
 
     isCommandMeta() {
@@ -294,7 +276,7 @@ export default class Tuple {
     }
 }
 
-export function patternFromObject(object: { [k: string]: string }) {
+export function objectToTuple(object: { [k: string]: string }) {
     const tags = [];
 
     for (const key in object) {
@@ -304,18 +286,6 @@ export function patternFromObject(object: { [k: string]: string }) {
     return new Tuple(tags);
 }
 
-export function patternFromMap(map: Map<string,string>) {
-    const tags = []
-    for (const [key,value] of map.entries()) {
-        const tag = new PatternTag({ attr: key, tagValue: value });
-        tags.push(tag);
-    }
-
-    return new Tuple(tags);
-}
-
-export function tagsToPattern(tags: PatternTag[]): Tuple {
+export function tagsToTuple(tags: PatternTag[]): Tuple {
     return new Tuple(tags)
 }
-
-

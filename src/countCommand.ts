@@ -1,6 +1,6 @@
 
 import CommandExecutionParams from './CommandExecutionParams'
-import { patternFromObject } from './Tuple'
+import { objectToTuple } from './Tuple'
 import { combinePipes } from './pipeUtils'
 import { runGet } from './runOneCommand'
 import Pipe from './Pipe'
@@ -21,7 +21,7 @@ export default function countCommand(params: CommandExecutionParams) {
             count += 1;
         },
         done() {
-            output.next(patternFromObject({count: count+''}));
+            output.next(objectToTuple({count: count+''}));
             output.done();
         }
     });

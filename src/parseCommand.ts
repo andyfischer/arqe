@@ -1,7 +1,7 @@
 
 import Command from './Command'
 import CommandChain from './CommandChain'
-import Tuple, { tagsToPattern } from './Tuple'
+import Tuple, { tagsToTuple } from './Tuple'
 import Pattern from './Pattern'
 import PatternTag, { newTagFromObject, TagOptions, FixedTag } from './PatternTag'
 import { parseExpr } from './parseExpr'
@@ -214,7 +214,7 @@ function parseOneCommand(it: TokenIterator): Command {
     // Parse tag args
     parseArgs(it, query);
 
-    const pattern = tagsToPattern(query.tags);
+    const pattern = tagsToTuple(query.tags);
     return new Command(command, pattern, query.flags);
 }
 
@@ -283,7 +283,7 @@ export function parseTuple(str: string): Tuple {
         throw new Error("didn't expect any flags in parseRelation(): " + str)
     }
 
-    return tagsToPattern(query.tags as FixedTag[]);
+    return tagsToTuple(query.tags as FixedTag[]);
 }
 
 export function parseTag(str: string): PatternTag {

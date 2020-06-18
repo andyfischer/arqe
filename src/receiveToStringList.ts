@@ -85,7 +85,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
                     onDone('#null');
                 } else {
                     if (outputExtended) {
-                        onDone('set ' + rels[0].stringifyRelation());
+                        onDone('set ' + rels[0].str());
                     } else {
                         onDone('#exists');
                     }

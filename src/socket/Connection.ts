@@ -43,8 +43,8 @@ export default class Connection extends EventEmitter {
 
                 console.log(`[${id}] ${query}`);
                 this.graph.run(query, {
-                    next: (rel: Tuple) => {
-                        this.send(query, { reqid, rel: rel.stringifyRelation() });
+                    next: (t: Tuple) => {
+                        this.send(query, { reqid, rel: t.str() });
                     },
                     done: () => {
                         if (sentFinish)
