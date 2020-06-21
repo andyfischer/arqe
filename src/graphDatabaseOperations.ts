@@ -133,8 +133,14 @@ export function update(graph: Graph, plan: QueryPlan) {
 
     // Scan and apply the modificationCallback to every matching slot.
 
-    const addToResult = combineStreams({
-        next: output.next,
+    const collectOutput = combineStreams({
+        next: (t:Tuple) => {
+            if (!t.isCommandMeta()) {
+                hasFoundAny = true;
+                graph.onTupleUpdated(t);
+            }
+            output.next(t);
+        },
         done: () => {
             // Check if the plan has 'initializeIfMissing' - this means we must insert the row
             // if no matches were found.
@@ -147,22 +153,31 @@ export function update(graph: Graph, plan: QueryPlan) {
         }
     });
 
-    const scanStream = addToResult();
+    /*
+    const searchPattern = plan.filterPattern || plan.tuple;
+
+    const iterateTables = collectOutput();
+    for (const table of plan.searchTables) {
+        table.updatev2(searchPattern, plan.modificationCallback, collectOutput());
+    }
+    iterateTables.done();
+    */
+
+    const scanStream = collectOutput();
 
     scan(graph, plan, {
         receive({slotId, table, tuple}) {
             const found = tuple;
 
             const modified = plan.modificationCallback(found);
-            const setOutput = addToResult();
+            const outputForItem = collectOutput();
 
             table.update(slotId, modified, {
                 next() {},
                 done() {
-                    graph.onTupleUpdated(modified);
-                    hasFoundAny = true;
-                    setOutput.next(modified);
-                    setOutput.done();
+                    //graph.onTupleUpdated(modified);
+                    outputForItem.next(modified);
+                    outputForItem.done();
                 }
             });
         },

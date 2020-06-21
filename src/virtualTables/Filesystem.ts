@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface from '../TableInterface'
+import TableInterface, { TupleModifier } from '../TableInterface'
 import GenericStream, { StreamCombine } from '../GenericStream'
 import Fs from 'fs-extra'
 
@@ -36,6 +36,10 @@ export class FsFileContents implements TableInterface {
 
     async update(slotId: string, tuple: Tuple, out: Stream) {
         await this.insert(tuple, out);
+    }
+
+    async updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
+        throw new Error("FsFile update not supported yet");
     }
 
     delete(slotId: string, out: Stream) {

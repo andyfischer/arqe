@@ -1,6 +1,5 @@
 
 import Tuple from './Tuple'
-import Pattern from './Pattern'
 import PatternTag from './PatternTag'
 import Stream from './Stream'
 import Schema, { Column, ColumnType } from './Schema'
@@ -21,10 +20,10 @@ export default interface QueryPlan {
     modifiesExisting: boolean
     initializeIfMissing: boolean
     isDelete?: boolean
-    modificationCallback?: (tuple: Tuple) => Pattern
+    modificationCallback?: (tuple: Tuple) => Tuple
 
     tuple: Tuple
-    filterPattern: Pattern
+    filterPattern: Tuple
     output: Stream
     storageProvider?: StorageProvider
 

@@ -3,7 +3,7 @@ import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
 import Stream from './Stream'
-import TableInterface from './TableInterface'
+import TableInterface, { TupleModifier } from './TableInterface'
 import GenericStream, { StreamCombine } from './GenericStream'
 
 export default class Table implements TableInterface {
@@ -42,6 +42,17 @@ export default class Table implements TableInterface {
 
     update(slotId: string, tuple: Tuple, out: Stream) {
         this._slots.set(slotId, tuple);
+        out.done();
+    }
+
+    updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
+        for (const [slotId, tuple] of this._slots.entries()) {
+            if (search.isSupersetOf(tuple)) {
+                const modified = modifier(search);
+                this._slots.set(slotId, modified);
+                out.next(modified);
+            }
+        }
         out.done();
     }
 
