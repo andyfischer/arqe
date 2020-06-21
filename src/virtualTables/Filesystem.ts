@@ -1,7 +1,8 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { GenericStream } from '../TableInterface'
+import TableInterface from '../TableInterface'
+import GenericStream, { StreamCombine } from '../GenericStream'
 import Fs from 'fs-extra'
 
 export class FsFileContents implements TableInterface {

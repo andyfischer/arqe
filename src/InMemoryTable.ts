@@ -3,7 +3,8 @@ import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
 import Stream from './Stream'
-import TableInterface, { GenericStream } from './TableInterface'
+import TableInterface from './TableInterface'
+import GenericStream, { StreamCombine } from './GenericStream'
 
 export default class Table implements TableInterface {
     name: string
