@@ -23,10 +23,6 @@ export class FsFileContents implements TableInterface {
         out.done();
     }
 
-    scan(out: GenericStream<{slotId: string, tuple: Tuple}>) {
-        throw new Error("can't scan FsFileContents");
-    }
-
     async insert(tuple: Tuple, out: Stream) {
         const filename = tuple.getVal("filename");
         const contents = tuple.getVal("file-contents");
@@ -34,20 +30,12 @@ export class FsFileContents implements TableInterface {
         out.done();
     }
 
-    async update(slotId: string, tuple: Tuple, out: Stream) {
-        await this.insert(tuple, out);
-    }
-
     async updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
         throw new Error("FsFile update not supported yet");
     }
 
-    delete(slotId: string, out: Stream) {
-        throw new Error("FsFile delete not supported yet");
-    }
-
     deletev2(search: Tuple, out: Stream) {
-        throw new Error("FsDirectory delete not supported");
+        throw new Error("FsDirectory delete not supported yet");
     }
 }
 
@@ -56,25 +44,14 @@ export class FsDirectory implements TableInterface {
     schema = 'fs dir filename?'
     supportsScan: false
 
-    scan(out: GenericStream<{slotId: string, tuple: Tuple}>) {
-        throw new Error("can't scan FsDirectory");
-    }
-
     async search(pattern: Tuple, out: Stream) {
     }
 
     async insert(tuple: Tuple, out: Stream) {
     }
     
-    async update(slotId: string, tuple: Tuple, out: Stream) {
-    }
-
     async updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
         throw new Error("FsDirectory update not supported yet");
-    }
-
-    delete(slotId: string, out: Stream) {
-        throw new Error("FsDirectory delete not supported");
     }
 
     deletev2(search: Tuple, out: Stream) {
