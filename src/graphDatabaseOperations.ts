@@ -4,12 +4,9 @@ import Graph from './Graph'
 import QueryPlan from './QueryPlan'
 import PatternTag, { newTag } from './PatternTag'
 import { emitCommandError } from './CommandMeta'
-import GenericStream, { StreamCombine } from './GenericStream'
 import TableInterface from './TableInterface'
 import { combineStreams } from './StreamUtil'
 import Stream from './Stream'
-
-export type ScanOutput = GenericStream<{table: TableInterface, slotId: string, tuple: Tuple}>
 
 export function search(graph: Graph, plan: QueryPlan, out: Stream) {
     const searchPattern = plan.filterPattern || plan.tuple;
@@ -24,38 +21,6 @@ export function search(graph: Graph, plan: QueryPlan, out: Stream) {
     }
 
     startedAllTables.done();
-}
-export function scan(graph: Graph, plan: QueryPlan, out: ScanOutput) {
-    const searchPattern = plan.filterPattern || plan.tuple;
-    if (!searchPattern)
-        throw new Error('missing filterPattern or tuple');
-
-    const combined = new StreamCombine<{table, slotId, tuple}>(out);
-    const iteratedTables = combined.receive();
-
-    for (const table of plan.searchTables) {
-        const tableOut = combined.receive();
-
-        try {
-            table.scan({
-                receive({slotId, tuple}) {
-                    if (searchPattern.isSupersetOf(tuple))
-                        tableOut.receive({ table, slotId, tuple });
-                },
-                finish() {
-                    tableOut.finish();
-                }
-            });
-        } catch (err) {
-            console.error("unhandled error calling table.scan ", {
-                err,
-                searchPattern: searchPattern.str(),
-                tableName: table.name
-            })
-        }
-    }
-
-    iteratedTables.finish();
 }
 
 export function insert(graph: Graph, plan: QueryPlan) {

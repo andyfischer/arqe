@@ -29,7 +29,7 @@ import GenericStream, { StreamCombine } from './GenericStream'
 import InMemoryTable from './InMemoryTable'
 import TableInterface from './TableInterface'
 import TuplePatternMatcher from './TuplePatternMatcher'
-import { search, insert, scan, ScanOutput, update, del } from './graphDatabaseOperations'
+import { search, insert, update, del } from './graphDatabaseOperations'
 
 export default class Graph {
 
@@ -102,10 +102,6 @@ export default class Graph {
 
             return tag;
         });
-    }
-
-    scan(plan: QueryPlan, out: ScanOutput) {
-        scan(this, plan, out);
     }
 
     insert(plan: QueryPlan) {
