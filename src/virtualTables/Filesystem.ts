@@ -45,9 +45,13 @@ export class FsFileContents implements TableInterface {
     delete(slotId: string, out: Stream) {
         throw new Error("FsFile delete not supported yet");
     }
+
+    deletev2(search: Tuple, out: Stream) {
+        throw new Error("FsDirectory delete not supported");
+    }
 }
 
-export class FsDirectory {
+export class FsDirectory implements TableInterface {
     name: 'FsDirectory'
     schema = 'fs dir filename?'
     supportsScan: false
@@ -65,7 +69,15 @@ export class FsDirectory {
     async update(slotId: string, tuple: Tuple, out: Stream) {
     }
 
+    async updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
+        throw new Error("FsDirectory update not supported yet");
+    }
+
     delete(slotId: string, out: Stream) {
+        throw new Error("FsDirectory delete not supported");
+    }
+
+    deletev2(search: Tuple, out: Stream) {
         throw new Error("FsDirectory delete not supported");
     }
 }

@@ -155,35 +155,30 @@ export function update(graph: Graph, plan: QueryPlan) {
 
     const searchPattern = plan.filterPattern || plan.tuple;
 
-    const iterateTables = collectOutput();
+    const allTables = collectOutput();
     for (const table of plan.searchTables) {
         table.updatev2(searchPattern, plan.modificationCallback, collectOutput());
     }
-    iterateTables.done();
+    allTables.done();
 }
 
 export function del(graph: Graph, plan: QueryPlan) {
     const { output } = plan;
 
-    const addToOutput = combineStreams(output);
-
-    const scanFinished = addToOutput();
-
-    scan(graph, plan, {
-        receive({table, slotId, tuple}) {
-            const deleteResult = addToOutput();
-
-            table.delete(slotId, {
-                next: deleteResult.next,
-                done() {
-                    graph.onTupleDeleted(tuple);
-                    output.next(tuple.addTagObj(newTag('deleted')));
-                    deleteResult.done()
-                }
-            });
+    const collectOutput = combineStreams({
+        next(t: Tuple) {
+            graph.onTupleDeleted(t);
+            const deletedMessage = t.addTagObj(newTag('deleted'));
+            output.next(deletedMessage);
         },
-        finish() {
-            scanFinished.done();
-        }
+        done: output.done
     });
+
+    const searchPattern = plan.filterPattern || plan.tuple;
+
+    const allTables = collectOutput();
+    for (const table of plan.searchTables) {
+        table.deletev2(searchPattern, collectOutput());
+    }
+    allTables.done();
 }

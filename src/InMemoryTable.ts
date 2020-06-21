@@ -60,4 +60,14 @@ export default class Table implements TableInterface {
         this._slots.delete(slotId);
         out.done();
     }
+
+    deletev2(search: Tuple, out: Stream) {
+        for (const [slotId, tuple] of this._slots.entries()) {
+            if (search.isSupersetOf(tuple)) {
+                this._slots.delete(slotId);
+                out.next(tuple);
+            }
+        }
+        out.done();
+    }
 }
