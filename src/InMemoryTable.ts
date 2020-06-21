@@ -48,7 +48,7 @@ export default class Table implements TableInterface {
     updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
         for (const [slotId, tuple] of this._slots.entries()) {
             if (search.isSupersetOf(tuple)) {
-                const modified = modifier(search);
+                const modified = modifier(tuple);
                 this._slots.set(slotId, modified);
                 out.next(modified);
             }

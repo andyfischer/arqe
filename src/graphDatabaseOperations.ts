@@ -153,7 +153,6 @@ export function update(graph: Graph, plan: QueryPlan) {
         }
     });
 
-    /*
     const searchPattern = plan.filterPattern || plan.tuple;
 
     const iterateTables = collectOutput();
@@ -161,30 +160,6 @@ export function update(graph: Graph, plan: QueryPlan) {
         table.updatev2(searchPattern, plan.modificationCallback, collectOutput());
     }
     iterateTables.done();
-    */
-
-    const scanStream = collectOutput();
-
-    scan(graph, plan, {
-        receive({slotId, table, tuple}) {
-            const found = tuple;
-
-            const modified = plan.modificationCallback(found);
-            const outputForItem = collectOutput();
-
-            table.update(slotId, modified, {
-                next() {},
-                done() {
-                    //graph.onTupleUpdated(modified);
-                    outputForItem.next(modified);
-                    outputForItem.done();
-                }
-            });
-        },
-        finish() {
-            scanStream.done();
-        }
-    });
 }
 
 export function del(graph: Graph, plan: QueryPlan) {
