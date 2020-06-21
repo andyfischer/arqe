@@ -12,7 +12,6 @@ export default interface TableInterface {
     scan: (out: GenericStream<{slotId: string, tuple: Tuple}>) => void
     insert: (tuple: Tuple, out: Stream) => void
     updatev2: (search: Tuple, modifier: TupleModifier, out: Stream) => void
-    delete: (slotId: string, out: Stream) => void
     deletev2: (search: Tuple, out: Stream) => void
 
 }

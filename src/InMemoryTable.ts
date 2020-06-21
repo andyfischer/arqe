@@ -34,9 +34,18 @@ export default class Table implements TableInterface {
         out.finish();
     }
 
-    insert(tuple: Tuple, out: Stream) {
+    insert(insertTuple: Tuple, out: Stream) {
+        // Check if it exists
+        for (const [slotId, tuple] of this._slots.entries()) {
+            if (insertTuple.isSupersetOf(tuple)) {
+                // Already have this
+                out.done();
+                return;
+            }
+        }
+
         const slotId = this.nextSlotId.take();
-        this._slots.set(slotId, tuple);
+        this._slots.set(slotId, insertTuple);
         out.done();
     }
 

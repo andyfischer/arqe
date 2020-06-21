@@ -61,41 +61,6 @@ export function scan(graph: Graph, plan: QueryPlan, out: ScanOutput) {
 export function insert(graph: Graph, plan: QueryPlan) {
     const { output } = plan; 
 
-    // Save as new row
-    plan.tuple = graph.resolveExpressionValuesForInsert(plan.tuple);
-
-    for (const tag of plan.tuple.tags) {
-        if (tag.valueExpr) {
-            emitCommandError(output, "insert unhandled expression: " + tag.stringify());
-            output.done();
-            return;
-        }
-    }
-
-    // Check if this tuple is already saved.
-    let found = false;
-    scan(graph, plan, {
-        receive() {
-            // Already saved - No-op.
-            if (!found) {
-                found = true;
-                output.next(plan.tuple);
-                output.done();
-            }
-        },
-        finish: () => {
-            if (!found) {
-                // Not saved, insert
-                insertConfirmedNotExists(graph, plan);
-            }
-        }
-    });
-}
-
-function insertConfirmedNotExists(graph: Graph, plan: QueryPlan) {
-
-    const { output } = plan; 
-
     // Store a new tuple.
     const table = plan.table;
 
