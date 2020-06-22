@@ -10,6 +10,7 @@ import CommandExecutionParams from './CommandExecutionParams'
 import { runJoinStep } from './runJoin'
 import listenCommand from './listenCommand'
 import countCommand from './countCommand'
+import orderByCommand from './commands/orderBy'
 
 export function runGet(graph: Graph, pattern: Pattern, output: Stream) {
     const plan = makeQueryPlan(graph, pattern, output);
@@ -85,6 +86,11 @@ export default function runOneCommand(params: CommandExecutionParams) {
 
         case 'count': {
             countCommand(params);
+            return;
+        }
+
+        case 'order-by': {
+            orderByCommand(params);
             return;
         }
 

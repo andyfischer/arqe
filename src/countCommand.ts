@@ -12,9 +12,9 @@ export default function countCommand(params: CommandExecutionParams) {
     const combined = new Pipe();
     runGet(params.graph, params.command.pattern, combined);
 
-    params.input.pipeToReceiver(combined);
+    params.input.sendTo(combined);
     
-    combined.pipeToReceiver({
+    combined.sendTo({
         next(rel) {
             if (rel.hasAttr('command-meta'))
                 return;

@@ -1,62 +1,47 @@
 
 import Tuple from './Tuple'
 import Stream from './Stream'
+import { receiveToTupleList } from './receiveUtils'
 
 export default class Pipe {
-    _onTuple: (rel: Tuple) => void
-    _onDone: () => void
+    output?: Stream
 
+    // Backlog data (in case the output isn't connected yet)
     _backlog: Tuple[] = []
-    _wasClosed: boolean
+    _doneCalled: boolean
 
     // Writer API
     next = (rel: Tuple) => {
-        if (this._onTuple)
-            this._onTuple(rel);
+        if (this.output)
+            this.output.next(rel);
         else
             this._backlog.push(rel);
     }
 
     done = () => {
-        if (this._onDone)
-            this._onDone();
+        if (this.output)
+            this.output.done();
         else
-            this._wasClosed = true;
+            this._doneCalled = true;
     }
 
-    isDone() {
-        return false;
+    sendTo(receiver: Stream) {
+        if (this.output)
+            throw new Error("Already have an output stream");
+
+        this.output = receiver;
+
+        // Pass along backlogged data.
+        for (const t of this._backlog)
+            this.output.next(t);
+
+        this._backlog = [];
+
+        if (this._doneCalled)
+            this.output.done();
     }
 
-    // Reader API
-    onTuple(callback: (rel: Tuple) => void) {
-        if (this._onTuple)
-            throw new Error('already have an onRelation callback');
-
-        this._onTuple = callback;
-
-        for (const r of this._backlog)
-            this._onTuple(r);
-    }
-
-    onDone(callback: () => void) {
-        if (this._onDone)
-            throw new Error('already have an onDone callback');
-
-        this._onDone = callback;
-
-        if (this._wasClosed)
-            this._onDone();
-    }
-
-    waitForAll(callback: (rels: Tuple[]) => void) {
-        const rels = [];
-        this.onTuple(rel => { rels.push(rel) });
-        this.onDone(() => callback(rels));
-    }
-
-    pipeToReceiver(receiver: Stream) {
-        this.onTuple(rel => receiver.next(rel));
-        this.onDone(() => receiver.done());
+    waitForAll(callback: (ts: Tuple[]) => void) {
+        this.sendTo(receiveToTupleList(callback));
     }
 }

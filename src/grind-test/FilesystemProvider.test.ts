@@ -4,7 +4,7 @@ import { test } from '.'
 
 test("can read file from fs provider", async ({run}) => {
 
-    const path = Path.join(__dirname, '../../tests/sample-files/file1');
+    const path = Path.join(__dirname, '../test/sample-files/file1');
 
     const result = (await run(`get fs filename(${path}) file-contents/*`))[0]
         .replace(/\n/, '');

@@ -25,8 +25,8 @@ import Pipe from './Pipe'
 
 export function combinePipes(pipe1: Pipe, pipe2: Pipe) {
     const out = new Pipe();
-    pipe1.pipeToReceiver(out);
-    pipe2.pipeToReceiver(out);
+    pipe1.sendTo(out);
+    pipe2.sendTo(out);
     return out;
 }
 

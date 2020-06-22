@@ -18,7 +18,7 @@ const knownCommands = {
     'count': true,
     'delete': true,
     'listen': true,
-    'declare-object': true
+    'order-by': true
 };
 
 export function singleCommandExecution(graph: Graph, command: Command): CommandStep {
@@ -64,7 +64,7 @@ export default function runCommandChain(graph: Graph, chain: CommandChain, outpu
     steps[0].input.done();
 
     // Last pipe sends to output.
-    steps[steps.length - 1].output.pipeToReceiver(output);
+    steps[steps.length - 1].output.sendTo(output);
 
     // Start
     for (const step of steps)
