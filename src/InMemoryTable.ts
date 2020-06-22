@@ -49,12 +49,7 @@ export default class Table implements TableInterface {
         out.done();
     }
 
-    update(slotId: string, tuple: Tuple, out: Stream) {
-        this._slots.set(slotId, tuple);
-        out.done();
-    }
-
-    updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
+    update(search: Tuple, modifier: TupleModifier, out: Stream) {
         for (const [slotId, tuple] of this._slots.entries()) {
             if (search.isSupersetOf(tuple)) {
                 const modified = modifier(tuple);
@@ -65,12 +60,7 @@ export default class Table implements TableInterface {
         out.done();
     }
 
-    delete(slotId: string, out: Stream) {
-        this._slots.delete(slotId);
-        out.done();
-    }
-
-    deletev2(search: Tuple, out: Stream) {
+    delete(search: Tuple, out: Stream) {
         for (const [slotId, tuple] of this._slots.entries()) {
             if (search.isSupersetOf(tuple)) {
                 this._slots.delete(slotId);

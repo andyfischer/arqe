@@ -30,11 +30,11 @@ export class FsFileContents implements TableInterface {
         out.done();
     }
 
-    async updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
+    async update(search: Tuple, modifier: TupleModifier, out: Stream) {
         throw new Error("FsFile update not supported yet");
     }
 
-    deletev2(search: Tuple, out: Stream) {
+    delete(search: Tuple, out: Stream) {
         throw new Error("FsDirectory delete not supported yet");
     }
 }
@@ -50,11 +50,11 @@ export class FsDirectory implements TableInterface {
     async insert(tuple: Tuple, out: Stream) {
     }
     
-    async updatev2(search: Tuple, modifier: TupleModifier, out: Stream) {
+    async update(search: Tuple, modifier: TupleModifier, out: Stream) {
         throw new Error("FsDirectory update not supported yet");
     }
 
-    deletev2(search: Tuple, out: Stream) {
+    delete(search: Tuple, out: Stream) {
         throw new Error("FsDirectory delete not supported");
     }
 }

@@ -9,8 +9,8 @@ export default interface TableInterface {
     supportsScan: boolean
     search: (pattern: Tuple, out: Stream) => void
     insert: (tuple: Tuple, out: Stream) => void
-    updatev2: (search: Tuple, modifier: TupleModifier, out: Stream) => void
-    deletev2: (search: Tuple, out: Stream) => void
+    update: (search: Tuple, modifier: TupleModifier, out: Stream) => void
+    delete: (search: Tuple, out: Stream) => void
 
 }
 

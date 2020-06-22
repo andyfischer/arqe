@@ -87,7 +87,7 @@ export function update(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        table.updatev2(searchPattern, plan.modificationCallback, collectOutput());
+        table.update(searchPattern, plan.modificationCallback, collectOutput());
     }
     allTables.done();
 }
@@ -108,7 +108,7 @@ export function del(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        table.deletev2(searchPattern, collectOutput());
+        table.delete(searchPattern, collectOutput());
     }
     allTables.done();
 }
