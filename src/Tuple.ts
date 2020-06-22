@@ -147,7 +147,10 @@ export default class Tuple {
     }
 
     getVal(attr: string) {
-        return this.asMap().get(attr).tagValue;
+        const tag = this.asMap().get(attr);
+        if (!tag.fixedValue())
+            throw new Error("not a fixed value: " + attr);
+        return tag.tagValue;
     }
 
     getValOptional(attr: string, defaultValue) {

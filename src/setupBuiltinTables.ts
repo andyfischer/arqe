@@ -12,12 +12,12 @@ import setupSelfTest from './selftest/SelfTest'
 import setupWorkingFile from './providers/WorkingFile'
 import setupMinecraftServer from './providers/MinecraftServer'
 import setupRemoteProvider from './providers/RemoteProvider'
-import { FsFileContents } from './virtualTables/Filesystem'
+import { FsFileContents, FsDirectory } from './virtualTables/Filesystem'
 import { parsePattern } from './parseCommand'
 
 export default function setupBuiltinTables(graph: Graph): {[name: string]: StorageProvider } {
 
-    for (const table of [new FsFileContents()]) {
+    for (const table of [new FsFileContents(), new FsDirectory()]) {
         graph.defineVirtualTable(table.name, parsePattern(table.schema), table);
     }
 

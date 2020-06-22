@@ -83,6 +83,8 @@ export default class Graph {
     }
 
     defineVirtualTable(name: string, pattern: Tuple, table: TableInterface) {
+        if (!name)
+            throw new Error("missing 'name'");
         if (this.tables.has(name))
             throw new Error("table already exists: " + name)
 

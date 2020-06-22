@@ -37,6 +37,10 @@ export default class PatternTag {
             this.tagValue = null;
     }
 
+    fixedValue() {
+        return !!this.tagValue;
+    }
+
     str() {
         return patternTagToString(this);
     }

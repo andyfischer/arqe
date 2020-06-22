@@ -17,7 +17,7 @@ export function emitCommandMeta(output: Stream, fields: any) {
     output.next(tagsToTuple(tags));
 }
 
-export function emitCommandError(output: Stream, message: string) {
+export function emitCommandError(output: Stream, message: any) {
 
     const tags = [
         newTag('command-meta'),
