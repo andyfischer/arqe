@@ -1,42 +1,77 @@
 
-# future-data #
+# future-data* #
 
-Experimental project looking at using relational databases in new ways.
+*Note: the name "future-data" is temporary*
 
-This project is highly amorphous and wandering, looking for a useful niche.
-This project is also partially a learning exercise for me, to practice doing database
-implementations. There's probably a lot of ideas in here that have already been 
-done better by smarter people, since databases are such a well-studied field.
+A data orchestration layer. Highly experimental project looking at using a relational database
+style query interface for all areas of application development.
 
-# Motivations #
+# Goals #
 
-This project started by noticing that today, software services have code, and they
-always have a lot of data *around* the code. The 'surrounding' data includes:
+ - Unify and simpify the modern application development process.
+ - Store code as structured relational data.
+ - Unified database for all the metadata around code: configs, feature flags,
+   branching, versioning, a/b traffic splitting, etc.
+ - Remove the "build step" as we know it, instead have a single fluid system that
+   handles staged compilation.
+ - Functional-reactive database with efficient change propogation.
+ - Not a closed system: Easily connect and leverage existing tools, databases and APIs.
+ - Enable amazing developer dashboards and tools.
 
- - Global configuration files.
- - Source control branches. Code & build artifacts associated with branches or sha1s.
- - Environment-based configuration. Feature flags.
- - Datacenter-based configuration.
- - Version rollouts. Blue/green versions. Pinned versions. Canary versions.
- - Per-user configs. Traffic splitting. A/B testing. Canaried feature flags.
+# Goals - Elaboration #
 
-That led to a question: can we make a unified system where all of these different things
-are all represented in one homogenous way?
+More thoughts behind the goals listed above.
 
-So that led to thinking about how all this is multidimensional data. The code is a data
-structure and branches are a dimension - the code can vary across the branch dimension.
-If we have environment-based configuration then the environment is another dimension.
-Altogether, we need maybe 3 to 5 dimensions to handle all of those web-scale things.
-So our ideal system should be able to store data against N dimensions, and some users will
-probably use a standard set of dimensions, whereas other users might want to invent more
-for other purposes.
+# Storing code as data / Unified system for code metadata #
 
-In this world I'm not drawing a significant difference between code & configuration - those
-just get lumped together as 'data'.
+With modern practices, a typical software product is a combination of a few things:
 
-That leads to another topic. A typical software project has two completely different codebases:
-one for building the application, and the application runtime itself. This seems a little
-ridiculous, and maybe we can have one unified system that understands both build-time and run-time
-execution. Also known as staged compilation / multi-stage programming.
+ - The source code
+ - Configuration data
+ - Versioning / deployment state
 
+Each of these pieces of data can vary across multiple dimensions:
 
+ - Source code varies across branches.
+ - Configration varies across environments or branches.
+ - Versioning state has different styles of how it changes, such as canary or blue/green
+   deployments.
+ - Additionally there can be per-user code or configuration changes, also called
+   traffic splitting or A/B testing.
+
+Within that there's some finer-grained breakdowns. Configuration can be divided up
+into "slow-changing" data (such as deployed XML / YAML files) or "fast-changing" (such
+as feature flags / feature toggles).
+
+The old fashioned perspective is to think of just the source code as "the program", and
+everything else is a less significant detail. But increasingly, we're realizing that the
+real "program" is the amalgamation of everything listed above. Especially with the
+popularity of microservices, where versioning / deployment effects become a lot more
+significant, we're finding that the program running on our desk is a distant representation
+of the experience that our users get.
+
+So the problem statement is:
+
+ 1) The boundaries between those various systems is poorly defined. For example it's fuzzy
+    on whether a piece of data should live in code versus configuration.
+ 2) A lot of these systems have similar capabilities, the common thread is that some data
+    varies across some dimensions. But typically those systems are implemented with completely
+    different technologies which leads to a lot of complexity and duplicate effort.
+
+So this project tries to solve the problem by implementing a single database layer that
+stores everything mentioned above. A defining feature in this system is that any piece 
+of data can vary across multiple dimensions. The dimensions might be: branches, environments,
+data centers, canaries, traffic splits.
+
+# Removing the build system as we know it #
+
+Typical software projects have another duplication of effort - completely different
+technologies used for the build process compared to the application runtime. This 
+problem manifests in a few ways:
+
+ - Additional tooling complexity.
+ - Sometimes there are build-time tasks that we want to move to runtime tasks, but
+   with different platforms, this requires a rewrite.
+ - More often, there are run-time tasks that we'd like to move to build-time. An example
+   is React.js client-side rendering, where the user's browser does work for
+   data-to-HTML rendering, even though that task can (usually) be done just as well ahead of time.
