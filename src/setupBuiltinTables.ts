@@ -14,10 +14,11 @@ import setupMinecraftServer from './providers/MinecraftServer'
 import { FsFileContents, FsDirectory } from './virtualTables/Filesystem'
 import { parsePattern } from './parseCommand'
 import { Remote } from './virtualTables/Remote'
+import { Glob } from './virtualTables/Glob'
 
 export default function setupBuiltinTables(graph: Graph): {[name: string]: StorageProvider } {
 
-    const tables = [new FsFileContents(), new FsDirectory(), new Remote()]
+    const tables = [new FsFileContents(), new FsDirectory(), new Remote(), new Glob()]
     for (const table of tables) {
         graph.defineVirtualTable(table.name, parsePattern(table.schema), table);
     }
