@@ -8,7 +8,7 @@ import Command from './Command'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import { runJoinStep } from './runJoin'
 import { newTag } from './PatternTag'
-import makeQueryPlan from './makeQueryPlan'
+import planQuery from './planQuery'
 import runOneCommand from './runOneCommand'
 
 const knownCommands = {

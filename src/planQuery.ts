@@ -10,23 +10,23 @@ import findTableForQuery from './findTableForQuery'
 
 const exprFuncEffects = {
     increment: {
-        modifiesExisting: true,
+        isUpdate: true,
         canInitialize: false
     },
     set: {
-        modifiesExisting: true,
+        isUpdate: true,
         canInitialize: true
     }
 };
 
 function expressionUpdatesExistingValue(expr: string[]) {
     const effects = expr && expr[0] && exprFuncEffects[expr[0]];
-    return effects && effects.modifiesExisting;
+    return effects && effects.isUpdate;
 }
 
 function getEffects(tuple: Tuple) {
 
-    let modifiesExisting = false;
+    let isUpdate = false;
     let canInitializeMissing = true;
 
     for (const tag of tuple.tags) {
@@ -36,17 +36,17 @@ function getEffects(tuple: Tuple) {
         if (!tagEffects)
             continue;
 
-        if (tagEffects.modifiesExisting)
-            modifiesExisting = true;
+        if (tagEffects.isUpdate)
+            isUpdate = true;
 
-        if (tagEffects.modifiesExisting && !tagEffects.canInitialize)
+        if (tagEffects.isUpdate && !tagEffects.canInitialize)
             canInitializeMissing = false;
     }
 
-    let initializeIfMissing = modifiesExisting && canInitializeMissing;
+    let initializeIfMissing = isUpdate && canInitializeMissing;
 
     return {
-        modifiesExisting,
+        isUpdate,
         initializeIfMissing
     }
 }
@@ -154,10 +154,10 @@ function toPlanTags(graph: Graph, tuple: Tuple) {
 function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
 
     const planTags = toPlanTags(graph, tuple);
-    const { initializeIfMissing, modifiesExisting } = getEffects(tuple);
+    const { initializeIfMissing, isUpdate } = getEffects(tuple);
 
     let modificationCallback = null;
-    if (modifiesExisting) {
+    if (isUpdate) {
         modificationCallback = (storedRel: Tuple) => {
             return applyModification(tuple, storedRel);
         }
@@ -171,7 +171,7 @@ function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
         filterPattern: modificationPatternToFilter(tuple),
         singleStar: tuple.derivedData().hasSingleStar,
         doubleStar: tuple.derivedData().hasDoubleStar,
-        modifiesExisting,
+        isUpdate,
         modificationCallback,
         initializeIfMissing,
         isDelete: patternIsDelete(tuple),
@@ -195,10 +195,10 @@ function findStorageProvider(plan: QueryPlan) {
 }
 
 function validatePlan(plan: QueryPlan) {
-    // There was once something here
+    // There was once stuff here
 }
 
-export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
+export default function planQuery(graph: Graph, tuple: Tuple, output: Stream) {
 
     tuple = resolveImmediateExpressions(tuple);
 
@@ -218,6 +218,7 @@ export default function patternToQueryPlan(graph: Graph, tuple: Tuple, output: S
     if (table) {
         plan.searchTables = [table];
     } else {
+        // Scan every table.
         plan.searchTables = Array.from(graph.tables.values())
             .filter(table => table.supportsScan);
     }

@@ -130,7 +130,7 @@ export default class Graph {
 
         if (plan.isDelete) {
             this.doDelete(plan);
-        } else if (plan.modifiesExisting) {
+        } else if (plan.isUpdate) {
             this.update(plan);
         } else {
             this.insert(plan);

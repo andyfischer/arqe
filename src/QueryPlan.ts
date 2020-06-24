@@ -17,7 +17,7 @@ export default interface QueryPlan {
 
     singleStar: boolean
     doubleStar: boolean
-    modifiesExisting: boolean
+    isUpdate: boolean
     initializeIfMissing: boolean
     isDelete?: boolean
     modificationCallback?: (tuple: Tuple) => Tuple

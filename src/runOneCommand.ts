@@ -4,7 +4,7 @@ import Pattern from './Pattern'
 import { newTag } from './PatternTag'
 import Stream from './Stream'
 import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
-import makeQueryPlan from './makeQueryPlan'
+import planQuery from './planQuery'
 import Command from './Command'
 import CommandExecutionParams from './CommandExecutionParams'
 import { runJoinStep } from './runJoin'
@@ -13,7 +13,7 @@ import countCommand from './countCommand'
 import orderByCommand from './commands/orderBy'
 
 export function runGet(graph: Graph, pattern: Pattern, output: Stream) {
-    const plan = makeQueryPlan(graph, pattern, output);
+    const plan = planQuery(graph, pattern, output);
     if (plan.failed)
         return;
 
@@ -46,7 +46,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
         }
         
         case 'set': {
-            const plan = makeQueryPlan(graph, pattern, output);
+            const plan = planQuery(graph, pattern, output);
             if (plan.failed)
                 return;
 
@@ -66,7 +66,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
 
             const deletePattern = pattern.addTagObj(newTag('deleted').setValueExpr(['set']));
 
-            const plan = makeQueryPlan(graph, deletePattern, output);
+            const plan = planQuery(graph, deletePattern, output);
             if (plan.failed)
                 return;
 

@@ -11,18 +11,18 @@ import setupTypescriptCompilation from './providers/TypescriptCompiler'
 import setupSelfTest from './selftest/SelfTest'
 import setupWorkingFile from './providers/WorkingFile'
 import setupMinecraftServer from './providers/MinecraftServer'
-import setupRemoteProvider from './providers/RemoteProvider'
 import { FsFileContents, FsDirectory } from './virtualTables/Filesystem'
 import { parsePattern } from './parseCommand'
+import { Remote } from './virtualTables/Remote'
 
 export default function setupBuiltinTables(graph: Graph): {[name: string]: StorageProvider } {
 
-    for (const table of [new FsFileContents(), new FsDirectory()]) {
+    const tables = [new FsFileContents(), new FsDirectory(), new Remote()]
+    for (const table of tables) {
         graph.defineVirtualTable(table.name, parsePattern(table.schema), table);
     }
 
     const views = {
-        'remote': setupRemoteProvider(),
         'git': setupGitProvider(),
         'file-changed': setupFileChangeLog(graph),
         'expires-at': new ExpireAtListener(graph),

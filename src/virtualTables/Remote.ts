@@ -1,6 +1,8 @@
 
-import { Pattern, Stream, StorageProvider } from ".."
+import Tuple from '../Tuple'
+import { Pattern, Stream } from ".."
 import ClientConnection, { connectToServer } from '../socket/ClientConnection'
+import TableInterface, { TupleModifier } from '../TableInterface'
 
 const connectionByPort: { [port: string]: ClientConnection } = {}
 
@@ -11,7 +13,24 @@ async function getOrInitConnection(port: string) {
     return connectionByPort[port];
 }
 
-class RemoteProvider implements StorageProvider {
+export class Remote implements TableInterface {
+    name = 'Remote'
+    schema = 'remote/$port **'
+    supportsScan = true
+
+    search(pattern: Tuple, out: Stream) {
+    }
+
+    insert(tuple: Tuple, out: Stream) {
+    }
+
+    update(search: Tuple, modifier: TupleModifier, out: Stream) {
+    }
+
+    delete(search: Tuple, out: Stream) {
+    }
+
+    /*
     async runSearch(pattern: Pattern, output: Stream) {
         const port = pattern.getVal("remote");
         const forwarded = pattern.removeAttr("remote");
@@ -39,8 +58,5 @@ class RemoteProvider implements StorageProvider {
             }
         });
     }
-}
-
-export default function setup() {
-    return new RemoteProvider();
+    */
 }
