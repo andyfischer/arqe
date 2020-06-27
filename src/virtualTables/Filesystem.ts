@@ -8,7 +8,7 @@ import { emitCommandError } from '../CommandMeta'
 
 export class FsFileContents implements TableInterface {
     name = 'FsFileContents'
-    supportsScan: false
+    supportsCompleteScan: false
     schema = 'fs filename file-contents?'
 
     search(pattern: Tuple, out: Stream) {
@@ -56,7 +56,7 @@ export class FsFileContents implements TableInterface {
 export class FsDirectory implements TableInterface {
     name = 'FsDirectory'
     schema = 'fs dir filename?'
-    supportsScan: false
+    supportsCompleteScan: false
 
     async search(pattern: Tuple, out: Stream) {
         const dir = pattern.getVal("dir");

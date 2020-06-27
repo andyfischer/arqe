@@ -8,7 +8,7 @@ import GenericStream, { StreamCombine } from './GenericStream'
 
 export default class Table implements TableInterface {
     name: string
-    supportsScan = true
+    supportsCompleteScan = true
     pattern: Pattern
 
     nextSlotId: IDSource = new IDSource();

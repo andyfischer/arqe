@@ -1,10 +1,10 @@
 
 Goals Wednesday:
  - Load every javascript from Bob
-   - glob: ~/bob/app/src/renderPipeline/modifiers/*.ts
-   - Glob table
+   X glob: ~/bob/app/src/renderPipeline/modifiers/*.ts
+   X Glob table
  - Script enhancements
-   - Support a 'script-meta main-query'
+   ? Support a 'script-meta main-query'
  - Parse (or execute?) typescript
  - Create a cache layer
  - Extract 'name', 'markdownDocs' and 'activeForFragments'

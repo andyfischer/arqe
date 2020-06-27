@@ -16,7 +16,7 @@ async function getOrInitConnection(port: string) {
 export class Remote implements TableInterface {
     name = 'Remote'
     schema = 'remote/$port **'
-    supportsScan = true
+    supportsCompleteScan = false
 
     search(pattern: Tuple, out: Stream) {
     }

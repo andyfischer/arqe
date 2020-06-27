@@ -1,5 +1,4 @@
 
-
 import Tuple from '../Tuple'
 import Stream from '../Stream'
 import TableInterface, { TupleModifier } from '../TableInterface'
@@ -10,7 +9,7 @@ import globLib from 'glob'
 
 export class Glob implements TableInterface {
     name = 'Glob'
-    supportsScan: false
+    supportsCompleteScan: false
     schema = 'glob pattern filename?'
 
     search(pattern: Tuple, out: Stream) {

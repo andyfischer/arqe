@@ -6,7 +6,7 @@ export type TupleModifier = (tuple: Tuple) => Tuple
 
 export default interface TableInterface {
     name: string
-    supportsScan: boolean
+    supportsCompleteScan: boolean
     search: (pattern: Tuple, out: Stream) => void
     insert: (tuple: Tuple, out: Stream) => void
     update: (search: Tuple, modifier: TupleModifier, out: Stream) => void

@@ -15,6 +15,7 @@ import WebServer from './socket/WebServer'
 import loadGraphFromLocalDatabase from './loadGraphFromLocalDatabase'
 
 function runFile(graph: Graph, filename: string) {
+    console.log('runFile: ', filename)
     const contents = Fs.readFileSync(filename, 'utf8');
     const commands = parseFile(contents);
     for (const command of commands) {
@@ -24,11 +25,11 @@ function runFile(graph: Graph, filename: string) {
         });
 
         graph.run(command.stringify(), {
-            next(relation) {
-                if (relation.hasAttr('command-meta') && relation.hasAttr('search-pattern'))
+            next(tuple) {
+                if (tuple.hasAttr('command-meta') && tuple.hasAttr('search-pattern'))
                     return;
 
-                listReceiver.next(relation);
+                listReceiver.next(tuple);
             },
             done() {
                 listReceiver.done();
