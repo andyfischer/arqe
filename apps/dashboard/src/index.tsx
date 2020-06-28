@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import EditModelAPI from './generated/EditModelAPI'
-import { GraphLike, startWebApp } from 'ik'
+import { GraphLike, startWebApp } from 'fd'
 import { setupKeyListener } from './actions'
 
 let graph: GraphLike;

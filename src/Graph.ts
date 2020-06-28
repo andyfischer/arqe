@@ -52,12 +52,7 @@ export default class Graph {
     columns: { [name: string]: Column } = {}
 
     constructor() {
-        const builtinViews = setupBuiltinTables(this);
-
-        for (const name in builtinViews) {
-            const column = this.initColumn(name);
-            column.storageProvider = builtinViews[name];
-        }
+        setupBuiltinTables(this);
     }
 
     initColumn(name: string) {

@@ -1,28 +1,72 @@
 
 import Graph from './Graph'
 import StorageProvider from './StorageProvider'
-import setupFilesystemProvider from './providers/Filesystem'
-import { setupGitProvider } from './providers/Git'
-import setupFileChangeLog from './providers/FileChangedLog'
 import ExpireAtListener from './providers/ExpireAtListener'
-import { setupTestMathStorage } from './providers/TestMathStorage'
-import setupTypescriptTree from './providers/TypescriptTree'
-import setupTypescriptCompilation from './providers/TypescriptCompiler'
 import setupSelfTest from './selftest/SelfTest'
-import setupWorkingFile from './providers/WorkingFile'
-import setupMinecraftServer from './providers/MinecraftServer'
-import { FsFileContents, FsDirectory } from './virtualTables/Filesystem'
 import { parsePattern } from './parseCommand'
-import { Remote } from './virtualTables/Remote'
-import { Glob } from './virtualTables/Glob'
+import { isRunningInNode } from './utils'
 
-export default function setupBuiltinTables(graph: Graph): {[name: string]: StorageProvider } {
+type ExecEnv = 'browser' | 'node' | 'any'
 
-    const tables = [new FsFileContents(), new FsDirectory(), new Remote(), new Glob()]
-    for (const table of tables) {
+const tableDefinitions = {
+    tables: [
+    {
+        init: () => {
+            const { FsFileContents } = require('./virtualTables/Filesystem');
+            return new FsFileContents();
+        },
+        execEnv: 'node'
+    }, 
+    {
+        init: () => {
+            const { FsDirectory } = require('./virtualTables/Filesystem');
+            return new FsDirectory();
+        },
+        execEnv: 'node'
+    }, 
+    {
+        init: () => {
+            const { Glob } = require('./virtualTables/Glob');
+            return new Glob();
+        },
+        execEnv: 'node'
+    }, 
+    {
+        init: () => {
+            const { Remote } = require('./virtualTables/Remote');
+            return new Remote();
+        },
+        execEnv: 'any'
+    }, 
+    {
+        init: () => {
+            const { TestMath } = require('./virtualTables/TestMath');
+            return new TestMath();
+        },
+        execEnv: 'any'
+    }, 
+    ],
+}
+
+function currentExecEnv(): ExecEnv {
+    if (isRunningInNode())
+        return 'node'
+    else
+        return 'browser'
+}
+
+export default function setupBuiltinTables(graph: Graph) {
+
+    const execEnv = currentExecEnv();
+    for (const tableDef of tableDefinitions.tables) {
+        if (execEnv === 'browser' && tableDef.execEnv === 'node')
+            continue;
+
+        const table = tableDef.init();
         graph.defineVirtualTable(table.name, parsePattern(table.schema), table);
     }
 
+    /*
     const views = {
         'git': setupGitProvider(),
         'file-changed': setupFileChangeLog(graph),
@@ -33,11 +77,13 @@ export default function setupBuiltinTables(graph: Graph): {[name: string]: Stora
         'self-test-results': setupSelfTest(graph),
         'working-file': setupWorkingFile(),
     }
-
-    if (process.env.WITH_MINECRAFT_SERVER)
+    if (process.env.WITH_MINECRAFT_SERVER) {
+        const setupMinecraftServer = require('./providers/MinecraftServer').default;
         views['mc'] = setupMinecraftServer()
+    }
 
     return views;
+    */
 }
 
 

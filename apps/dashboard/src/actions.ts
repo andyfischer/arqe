@@ -1,5 +1,5 @@
 
-import { GraphLike } from 'ik'
+import { GraphLike } from 'fd'
 import EditModelAPI from './generated/EditModelAPI'
 
 let api: EditModelAPI;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Graph } from 'ik'
+import { Graph } from 'fd'
 import Spreadsheet from './Spreadsheet'
 
 const App: React.FC = () => {

@@ -71,3 +71,7 @@ export async function timedOut(p: Promise<any>, ms: number): Promise<boolean> {
         p.then(() => resolve(false));
     }) as Promise<any>;
 }
+
+export function isRunningInNode() {
+    return (typeof module !== 'undefined' && module.exports);
+}

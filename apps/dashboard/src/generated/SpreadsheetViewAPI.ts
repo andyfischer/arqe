@@ -1,4 +1,4 @@
-import { GraphLike, Tuple, receiveToTupleListPromise } from "ik"
+import { GraphLike, Tuple, receiveToTupleListPromise } from "fd"
 
 export default class API {
     graph: GraphLike
