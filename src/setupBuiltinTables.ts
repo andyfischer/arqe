@@ -1,8 +1,6 @@
 
 import Graph from './Graph'
-import StorageProvider from './StorageProvider'
 import ExpireAtListener from './providers/ExpireAtListener'
-import setupSelfTest from './selftest/SelfTest'
 import { parsePattern } from './parseCommand'
 import { isRunningInNode } from './utils'
 
