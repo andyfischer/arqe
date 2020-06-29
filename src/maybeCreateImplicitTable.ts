@@ -1,13 +1,13 @@
 
 import PatternTag, { newTag } from './PatternTag'
 import Tuple from './Tuple'
-import TableInterface from './TableInterface'
+import TableMount from './TableMount'
 import Graph from './Graph'
 
 interface PartialQueryPlan {
     tuple?: Tuple
     filterPattern?: Tuple
-    table?: TableInterface
+    table?: TableMount
 }
 
 export default function maybeCreateImplicitTable(graph: Graph, plan: PartialQueryPlan) {

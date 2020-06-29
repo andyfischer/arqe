@@ -220,7 +220,7 @@ export default function planQuery(graph: Graph, tuple: Tuple, output: Stream) {
     } else {
         // Scan every table.
         plan.searchTables = Array.from(graph.tables.values())
-            .filter(table => table.supportsCompleteScan);
+            .filter(table => table.storage.supportsCompleteScan);
     }
 
     findStorageProvider(plan);

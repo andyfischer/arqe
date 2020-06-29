@@ -3,11 +3,10 @@ import Graph from './Graph'
 import Tuple from './Tuple'
 import Stream from './Stream'
 import { emitCommandError } from './CommandMeta'
-import TableInterface from './TableInterface'
+import TableMount from './TableMount'
 
-export default function findTableForQuery(graph: Graph, tuple: Tuple): TableInterface {
+export default function findTableForQuery(graph: Graph, tuple: Tuple): TableMount {
     // Check if the query specifies an exact table
-
     if (tuple.hasAttr('table')) {
         const tableName = tuple.getVal('table');
         const table = graph.findTable(tableName);

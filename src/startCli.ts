@@ -58,8 +58,6 @@ export default async function main() {
     let useRemoteServer = false;
     let runRepl = true;
 
-    // always create graph
-
     // load schema with JsonFile
 
     /*

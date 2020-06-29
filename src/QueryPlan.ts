@@ -4,7 +4,7 @@ import PatternTag from './PatternTag'
 import Stream from './Stream'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
-import TableInterface from './TableInterface'
+import TableMount from './TableMount'
 
 export interface QueryTag {
     type: ColumnType
@@ -27,9 +27,9 @@ export default interface QueryPlan {
     output: Stream
     storageProvider?: StorageProvider
 
-    table?: TableInterface
+    table?: TableMount
     tableName?: string
-    searchTables?: TableInterface[]
+    searchTables?: TableMount[]
 
     failed: boolean
 }

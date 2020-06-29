@@ -17,7 +17,7 @@ export function search(graph: Graph, plan: QueryPlan, out: Stream) {
     const startedAllTables = combined();
 
     for (const table of plan.searchTables) {
-        table.search(searchPattern, combined());
+        table.storage.search(searchPattern, combined());
     }
 
     startedAllTables.done();
@@ -38,7 +38,7 @@ export function insert(graph: Graph, plan: QueryPlan) {
         return;
     }
 
-    table.insert(plan.tuple, {
+    table.storage.insert(plan.tuple, {
         next: output.next,
         done: () => {
             output.next(plan.tuple);
@@ -87,7 +87,7 @@ export function update(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        table.update(searchPattern, plan.modificationCallback, collectOutput());
+        table.storage.update(searchPattern, plan.modificationCallback, collectOutput());
     }
     allTables.done();
 }
@@ -108,7 +108,7 @@ export function del(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        table.delete(searchPattern, collectOutput());
+        table.storage.delete(searchPattern, collectOutput());
     }
     allTables.done();
 }

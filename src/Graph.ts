@@ -29,13 +29,16 @@ import GenericStream, { StreamCombine } from './GenericStream'
 import InMemoryTable from './InMemoryTable'
 import TableInterface from './TableInterface'
 import TuplePatternMatcher from './TuplePatternMatcher'
-import { search, insert, update, del } from './graphDatabaseOperations'
+import { search, insert, update, del } from './tableOperations'
+import TableListener from './TableListener'
+import findTableForQuery from './findTableForQuery'
+import TableMount from './TableMount'
 
 export default class Graph {
 
     nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
-    tables = new Map<string, TableInterface>()
-    tablePatternMap = new TuplePatternMatcher<TableInterface>();
+    tables = new Map<string, TableMount>()
+    tablePatternMap = new TuplePatternMatcher<TableMount>();
 
     listeners: GraphListenerMount[] = []
 
@@ -45,6 +48,7 @@ export default class Graph {
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
     storageProvidersV3: StorageProvider[] = []
+    nextListenerId = new IDSource()
 
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void }[] = []
 
@@ -63,7 +67,7 @@ export default class Graph {
         return this.columns[name];
     }
 
-    findTable(name: string): TableInterface {
+    findTable(name: string) {
         return this.tables.get(name) || null;
     }
 
@@ -71,21 +75,23 @@ export default class Graph {
         if (this.tables.has(name))
             throw new Error("table already exists: " + name)
 
-        const table = new InMemoryTable(name, pattern);
-        this.tables.set(name, table);
-        this.tablePatternMap.add(pattern, table);
-        return table;
+        const tableStorage = new InMemoryTable(name, pattern);
+        const mount = new TableMount(name, pattern, tableStorage);
+        this.tables.set(name, mount);
+        this.tablePatternMap.add(pattern, mount);
+        return mount;
     }
 
-    defineVirtualTable(name: string, pattern: Tuple, table: TableInterface) {
+    defineVirtualTable(name: string, pattern: Tuple, storage: TableInterface) {
         if (!name)
             throw new Error("missing 'name'");
         if (this.tables.has(name))
             throw new Error("table already exists: " + name)
 
-        this.tables.set(name, table);
-        this.tablePatternMap.add(pattern, table);
-        return table;
+        const mount = new TableMount(name, pattern, storage);
+        this.tables.set(name, mount);
+        this.tablePatternMap.add(pattern, mount);
+        return mount;
     }
 
     resolveExpressionValuesForInsert(rel: Tuple) {
@@ -154,6 +160,17 @@ export default class Graph {
 
     addListener(pattern: Pattern, listener: GraphListener) {
         this.listeners.push({ pattern, listener });
+    }
+
+    addListenerV2(tuple: Tuple, listener: TableListener) {
+        const table = findTableForQuery(this, tuple);
+        if (!tuple) {
+            throw new Error("didn't find a single table for: " + tuple.str());
+        }
+
+
+        const id = this.nextListenerId.take();
+        return id;
     }
 
     onTupleCreated(rel: Tuple) {
