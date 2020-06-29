@@ -5,7 +5,7 @@ import parseObjectToPattern, { patternToJson } from '../parseObjectToPattern'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
 import { receiveToTupleList } from '../receiveUtils'
-import loadGraphFromLocalDatabase from '../loadGraphFromLocalDatabase'
+import { loadLocalBootstrapConfigs } from '../loadBootstrapConfigs'
 
 class FuzzTestSession {
     graph: Graph
@@ -187,7 +187,8 @@ export default function fuzzTestPatterns(graph: Graph) {
 
 if (require.main === module) {
     require('source-map-support').install();
-    const graph = loadGraphFromLocalDatabase();
+    const graph = new Graph();
+    loadLocalBootstrapConfigs(graph);
     const session = fuzzTestPatterns(graph);
 
     console.log("Finished: ", { passed: session.passed, failed: session.failed });

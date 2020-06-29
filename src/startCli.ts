@@ -7,12 +7,11 @@ import printResult from './console/printResult'
 import Repl from 'repl'
 import { connectToServer } from './socket/ClientConnection'
 import Minimist from 'minimist'
-import loadGraphFromFiles from './loadGraphFromFiles'
 import { parseFile } from './parseCommand'
 import Tuple from './Tuple'
 import { receiveToTupleList, receiveToTupleListPromise } from './receiveUtils'
 import WebServer from './socket/WebServer'
-import loadGraphFromLocalDatabase from './loadGraphFromLocalDatabase'
+import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from './loadBootstrapConfigs'
 
 function runFile(graph: Graph, filename: string) {
     console.log('runFile: ', filename)
@@ -44,26 +43,37 @@ export default async function main() {
     const cliArgs = Minimist(process.argv.slice(2), {
     });
 
-    let graph;
+    // Set up file-path and file-path-ref tables
+    // Set up 'cwd' and 'projectHome' entries
+    // Mount schema.json
+
+    const graph = new Graph();
+
+    if (cliArgs.db) {
+        loadBootstrapConfigs(graph, cliArgs.db);
+    } else {
+        loadLocalBootstrapConfigs(graph);
+    }
+
     let useRemoteServer = false;
     let runRepl = true;
 
+    // always create graph
+
+    // load schema with JsonFile
+
+    /*
     if (cliArgs.connect) {
         console.log('connecting to remote server..')
         const port = process.env.PORT || '42940'
         graph = await connectToServer(port);
     } else {
-        if (cliArgs.server) {
-            graph = loadGraphFromLocalDatabase();
-            const server = new WebServer(graph);
-            await server.start();
-        }
 
-        if (cliArgs.db) {
-            graph = loadGraphFromFiles(cliArgs.db);
-        } else {
-            graph = loadGraphFromLocalDatabase();
-        }
+    }*/
+
+    if (cliArgs.server) {
+        const server = new WebServer(graph);
+        await server.start();
     }
 
     if (cliArgs.c) {

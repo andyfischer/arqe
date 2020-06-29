@@ -20,9 +20,7 @@ export function* yamlToCommands(yamlString: string) {
     }
 }
 
-export default function loadGraphFromFiles(dir: string) {
-    const graph = new Graph();
-
+export default function loadBootstrapConfigs(graph: Graph, dir: string) {
     loadDumpFile(graph, Path.join(dir, 'commands'));
 
     const dirContents = Fs.readdirSync(dir);
@@ -41,4 +39,8 @@ export default function loadGraphFromFiles(dir: string) {
     }
 
     return graph;
+}
+
+export function loadLocalBootstrapConfigs(graph: Graph) {
+    loadBootstrapConfigs(graph, Path.join(__dirname, '../src/db'));
 }
