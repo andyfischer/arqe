@@ -7,6 +7,7 @@ import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } fro
 import QueryPlan, { QueryTag } from './QueryPlan'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import findTableForQuery from './findTableForQuery'
+import { tupleToModification, expressionUpdatesExistingValue } from './TupleModification'
 
 const exprFuncEffects = {
     increment: {
@@ -19,10 +20,6 @@ const exprFuncEffects = {
     }
 };
 
-function expressionUpdatesExistingValue(expr: string[]) {
-    const effects = expr && expr[0] && exprFuncEffects[expr[0]];
-    return effects && effects.isUpdate;
-}
 
 function getEffects(tuple: Tuple) {
 
@@ -157,7 +154,10 @@ function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
     const { initializeIfMissing, isUpdate } = getEffects(tuple);
 
     let modificationCallback = null;
+    let modification = null;
+
     if (isUpdate) {
+        modification = tupleToModification(tuple);
         modificationCallback = (storedRel: Tuple) => {
             return applyModification(tuple, storedRel);
         }
@@ -172,6 +172,7 @@ function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
         singleStar: tuple.derivedData().hasSingleStar,
         doubleStar: tuple.derivedData().hasDoubleStar,
         isUpdate,
+        modification,
         modificationCallback,
         initializeIfMissing,
         isDelete: patternIsDelete(tuple),

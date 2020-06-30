@@ -5,6 +5,7 @@ import Stream from './Stream'
 import Schema, { Column, ColumnType } from './Schema'
 import StorageProvider from './StorageProvider'
 import TableMount from './TableMount'
+import TupleModification from './TupleModification'
 
 export interface QueryTag {
     type: ColumnType
@@ -20,6 +21,7 @@ export default interface QueryPlan {
     isUpdate: boolean
     initializeIfMissing: boolean
     isDelete?: boolean
+    modification: TupleModification
     modificationCallback?: (tuple: Tuple) => Tuple
 
     tuple: Tuple

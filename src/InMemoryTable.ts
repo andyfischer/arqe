@@ -5,6 +5,7 @@ import Tuple from './Tuple'
 import Stream from './Stream'
 import TableInterface, { TupleModifier } from './TableInterface'
 import GenericStream, { StreamCombine } from './GenericStream'
+import TupleModification from './TupleModification'
 
 export default class Table implements TableInterface {
     name: string
@@ -53,6 +54,17 @@ export default class Table implements TableInterface {
         for (const [slotId, tuple] of this._slots.entries()) {
             if (search.isSupersetOf(tuple)) {
                 const modified = modifier(tuple);
+                this._slots.set(slotId, modified);
+                out.next(modified);
+            }
+        }
+        out.done();
+    }
+
+    updatev2(search: Tuple, modifier: TupleModification, out: Stream) {
+        for (const [slotId, tuple] of this._slots.entries()) {
+            if (search.isSupersetOf(tuple)) {
+                const modified = modifier.apply(tuple);
                 this._slots.set(slotId, modified);
                 out.next(modified);
             }
