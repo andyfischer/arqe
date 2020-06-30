@@ -90,31 +90,6 @@ function tagModifiesExistingRelations(tag: PatternTag) {
     return false;
 }
 
-function applyModificationExpr(expr: string[], value: string) {
-    switch (expr[0]) {
-    case 'increment':
-        return parseInt(value, 10) + 1 + '';
-
-    case 'set':
-        return expr[1];
-    }
-}
-
-function applyModification(changeOperation: Tuple, storedRel: Tuple): Tuple {
-
-    storedRel = storedRel.remapTags((tag: PatternTag) => {
-        const modificationTag = changeOperation.getTagObject(tag.attr);
-
-        if (expressionUpdatesExistingValue(modificationTag.valueExpr)) {
-            tag = tag.setValue(applyModificationExpr(modificationTag.valueExpr, tag.tagValue));
-        }
-
-        return tag;
-    });
-
-    return storedRel;
-}
-
 function getImpliedTableName(tuple: Tuple) {
     for (const tag of tuple.tags)
         if (tag.star || tag.doubleStar)
@@ -153,14 +128,10 @@ function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
     const planTags = toPlanTags(graph, tuple);
     const { initializeIfMissing, isUpdate } = getEffects(tuple);
 
-    let modificationCallback = null;
     let modification = null;
 
     if (isUpdate) {
         modification = tupleToModification(tuple);
-        modificationCallback = (storedRel: Tuple) => {
-            return applyModification(tuple, storedRel);
-        }
     }
 
     const tableName = getImpliedTableName(tuple);
@@ -173,7 +144,6 @@ function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
         doubleStar: tuple.derivedData().hasDoubleStar,
         isUpdate,
         modification,
-        modificationCallback,
         initializeIfMissing,
         isDelete: patternIsDelete(tuple),
         tableName,

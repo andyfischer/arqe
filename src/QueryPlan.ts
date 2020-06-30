@@ -22,7 +22,6 @@ export default interface QueryPlan {
     initializeIfMissing: boolean
     isDelete?: boolean
     modification: TupleModification
-    modificationCallback?: (tuple: Tuple) => Tuple
 
     tuple: Tuple
     filterPattern: Tuple
