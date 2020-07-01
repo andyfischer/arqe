@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { TupleModifier } from '../TableInterface'
+import TableInterface, { } from '../TableInterface'
 import GenericStream, { StreamCombine } from '../GenericStream'
 import fs from 'fs'
 import { emitCommandError } from '../CommandMeta'
@@ -38,10 +38,6 @@ export class FsFileContents implements TableInterface {
         });
     }
 
-    update(search: Tuple, modifier: TupleModifier, out: Stream) {
-        throw new Error("FsFile update not supported yet");
-    }
-
     delete(search: Tuple, out: Stream) {
         const filename = search.getVal("filename");
 
@@ -74,10 +70,6 @@ export class FsDirectory implements TableInterface {
     async insert(tuple: Tuple, out: Stream) {
     }
     
-    async update(search: Tuple, modifier: TupleModifier, out: Stream) {
-        throw new Error("FsDirectory update not supported yet");
-    }
-
     delete(search: Tuple, out: Stream) {
         throw new Error("FsDirectory delete not supported");
     }

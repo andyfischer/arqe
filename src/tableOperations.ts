@@ -87,7 +87,7 @@ export function update(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        table.storage.updatev2(searchPattern, plan.modification, collectOutput());
+        table.storage.update(searchPattern, plan.modification, collectOutput());
     }
     allTables.done();
 }

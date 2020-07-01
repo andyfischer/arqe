@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { TupleModifier } from '../TableInterface'
+import TableInterface, { } from '../TableInterface'
 
 export class TestMath implements TableInterface {
     name = 'TestMath'
@@ -19,9 +19,6 @@ export class TestMath implements TableInterface {
     }
 
     insert(tuple: Tuple, out: Stream) {
-        throw new Error("not supported");
-    }
-    update(search: Tuple, modifier: TupleModifier, out: Stream) {
         throw new Error("not supported");
     }
     delete(search: Tuple, out: Stream) {

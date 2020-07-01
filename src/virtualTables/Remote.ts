@@ -2,7 +2,7 @@
 import Tuple from '../Tuple'
 import { Pattern, Stream } from ".."
 import ClientConnection, { connectToServer } from '../socket/ClientConnection'
-import TableInterface, { TupleModifier } from '../TableInterface'
+import TableInterface, { } from '../TableInterface'
 
 const connectionByPort: { [port: string]: ClientConnection } = {}
 
@@ -22,9 +22,6 @@ export class Remote implements TableInterface {
     }
 
     insert(tuple: Tuple, out: Stream) {
-    }
-
-    update(search: Tuple, modifier: TupleModifier, out: Stream) {
     }
 
     delete(search: Tuple, out: Stream) {

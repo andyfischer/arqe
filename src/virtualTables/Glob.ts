@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { TupleModifier } from '../TableInterface'
+import TableInterface, { } from '../TableInterface'
 import GenericStream, { StreamCombine } from '../GenericStream'
 import fs from 'fs'
 import { emitCommandError } from '../CommandMeta'
@@ -33,9 +33,6 @@ export class Glob implements TableInterface {
     }
     insert(pattern: Tuple, out: Stream) {
         throw new Error(`can't insert on glob`);
-    }
-    update(pattern: Tuple, modifier: TupleModifier, out: Stream) {
-        throw new Error(`can't update on glob`);
     }
     delete(pattern: Tuple, out: Stream) {
         throw new Error(`can't delete on glob`);

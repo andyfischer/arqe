@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { TupleModifier } from '../TableInterface'
+import TableInterface, { } from '../TableInterface'
 
 export class Glob implements TableInterface {
     name = 'TableTable'
@@ -12,9 +12,6 @@ export class Glob implements TableInterface {
     }
     insert(pattern: Tuple, out: Stream) {
         throw new Error('insert not supported');
-    }
-    update(pattern: Tuple, modifier: TupleModifier, out: Stream) {
-        throw new Error('update not supported');
     }
     delete(pattern: Tuple, out: Stream) {
         throw new Error('delete not supported');
