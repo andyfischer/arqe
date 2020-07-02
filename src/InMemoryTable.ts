@@ -6,6 +6,7 @@ import Stream from './Stream'
 import TableInterface, { } from './TableInterface'
 import GenericStream, { StreamCombine } from './GenericStream'
 import TupleModification from './TupleModification'
+import TableListener from './TableListener'
 
 export default class Table implements TableInterface {
     name: string
@@ -13,7 +14,9 @@ export default class Table implements TableInterface {
     pattern: Pattern
 
     nextSlotId: IDSource = new IDSource();
-    _slots = new Map<string, Tuple>();
+    slots = new Map<string, Tuple>();
+
+    listeners = new Map<string, TableListener>();
 
     constructor(name: string, pattern: Pattern) {
         this.name = name;
@@ -21,7 +24,7 @@ export default class Table implements TableInterface {
     }
 
     search(pattern: Tuple, out: Stream) {
-        for (const [slotId, tuple] of this._slots.entries())
+        for (const [slotId, tuple] of this.slots.entries())
             if (pattern.isSupersetOf(tuple))
                 out.next(tuple);
 
@@ -29,7 +32,7 @@ export default class Table implements TableInterface {
     }
 
     scan(out: GenericStream<{slotId: string, tuple: Tuple}>) {
-        for (const [slotId, tuple] of this._slots.entries())
+        for (const [slotId, tuple] of this.slots.entries())
             out.receive({slotId, tuple});
 
         out.finish();
@@ -37,7 +40,7 @@ export default class Table implements TableInterface {
 
     insert(insertTuple: Tuple, out: Stream) {
         // Check if it exists
-        for (const [slotId, tuple] of this._slots.entries()) {
+        for (const [slotId, tuple] of this.slots.entries()) {
             if (insertTuple.isSupersetOf(tuple)) {
                 // Already have this
                 out.done();
@@ -46,26 +49,39 @@ export default class Table implements TableInterface {
         }
 
         const slotId = this.nextSlotId.take();
-        this._slots.set(slotId, insertTuple);
+        this.slots.set(slotId, insertTuple);
+
+        for (const listener of this.listeners.values()) {
+            listener.insert(insertTuple);
+        }
+
         out.done();
     }
 
     update(search: Tuple, modifier: TupleModification, out: Stream) {
-        for (const [slotId, tuple] of this._slots.entries()) {
+        for (const [slotId, tuple] of this.slots.entries()) {
             if (search.isSupersetOf(tuple)) {
                 const modified = modifier.apply(tuple);
-                this._slots.set(slotId, modified);
+                this.slots.set(slotId, modified);
                 out.next(modified);
+
+                for (const listener of this.listeners.values()) {
+                    listener.update(tuple, modified);
+                }
             }
         }
         out.done();
     }
 
     delete(search: Tuple, out: Stream) {
-        for (const [slotId, tuple] of this._slots.entries()) {
+        for (const [slotId, tuple] of this.slots.entries()) {
             if (search.isSupersetOf(tuple)) {
-                this._slots.delete(slotId);
+                this.slots.delete(slotId);
                 out.next(tuple);
+
+                for (const listener of this.listeners.values()) {
+                    listener.delete(tuple);
+                }
             }
         }
         out.done();

@@ -39,7 +39,9 @@ export function insert(graph: Graph, plan: QueryPlan) {
     }
 
     table.storage.insert(plan.tuple, {
-        next: output.next,
+        next: t => {
+            output.next(t);
+        },
         done: () => {
             output.next(plan.tuple);
             graph.onTupleUpdated(plan.tuple);
@@ -89,6 +91,7 @@ export function update(graph: Graph, plan: QueryPlan) {
     for (const table of plan.searchTables) {
         table.storage.update(searchPattern, plan.modification, collectOutput());
     }
+
     allTables.done();
 }
 
@@ -108,7 +111,8 @@ export function del(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        table.storage.delete(searchPattern, collectOutput());
+        const tableOut = collectOutput();
+        table.storage.delete(searchPattern, tableOut);
     }
     allTables.done();
 }

@@ -168,8 +168,8 @@ export default class Graph {
             throw new Error("didn't find a single table for: " + tuple.str());
         }
 
-
         const id = this.nextListenerId.take();
+        table.listeners.set(id, listener);
         return id;
     }
 
