@@ -23,6 +23,19 @@ export function search(graph: Graph, plan: QueryPlan, out: Stream) {
     startedAllTables.done();
 }
 
+function resolveExpressionValuesForInsert(graph: Graph, tuple: Tuple) {
+
+    for (let i=0; i < tuple.tags.length; i++) {
+        const tag = tuple.tags[i];
+        if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
+            const id = graph.takeNextUniqueIdForAttr(tag.attr);
+            tuple = tuple.updateTagAtIndex(i, tag => tag.setValue(id));
+        }
+    }
+
+    return tuple;
+}
+
 export function insert(graph: Graph, plan: QueryPlan) {
     const { output } = plan; 
 
@@ -38,13 +51,15 @@ export function insert(graph: Graph, plan: QueryPlan) {
         return;
     }
 
-    table.storage.insert(plan.tuple, {
+    const tuple = resolveExpressionValuesForInsert(graph, plan.tuple);
+
+    table.storage.insert(tuple, {
         next: t => {
             output.next(t);
         },
         done: () => {
-            output.next(plan.tuple);
-            graph.onTupleUpdated(plan.tuple);
+            output.next(tuple);
+            graph.onTupleUpdated(tuple);
             output.done();
         }
     });

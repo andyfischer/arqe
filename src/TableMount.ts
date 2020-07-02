@@ -8,8 +8,6 @@ export default class TableMount {
     schema: Tuple
     storage: TableInterface
 
-    listeners = new Map<string, TableListener>();
-
     constructor(name: string, schema: Tuple, storage: TableInterface) {
         this.name = name;
         this.schema = schema;

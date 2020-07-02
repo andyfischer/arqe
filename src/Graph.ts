@@ -94,17 +94,10 @@ export default class Graph {
         return mount;
     }
 
-    resolveExpressionValuesForInsert(rel: Tuple) {
-        return rel.remapTags((tag: PatternTag) => {
-            if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
-                if (!this.nextUniquePerAttr[tag.attr])
-                    this.nextUniquePerAttr[tag.attr] = new IDSource();
-
-                return tag.setValue(this.nextUniquePerAttr[tag.attr].take());
-            }
-
-            return tag;
-        });
+    takeNextUniqueIdForAttr(attr: string) {
+        if (!this.nextUniquePerAttr[attr])
+            this.nextUniquePerAttr[attr] = new IDSource();
+        return this.nextUniquePerAttr[attr].take();
     }
 
     insert(plan: QueryPlan) {
@@ -169,7 +162,10 @@ export default class Graph {
         }
 
         const id = this.nextListenerId.take();
-        table.listeners.set(id, listener);
+        if (!table.storage.addListener)
+            throw new Error(`${table.storage.name} doesn't support listeners`);
+
+        table.storage.addListener(id, listener);
         return id;
     }
 

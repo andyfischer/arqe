@@ -1,9 +1,9 @@
 
-import CommandExecutionParams from './CommandExecutionParams'
-import { objectToTuple } from './Tuple'
-import { combinePipes } from './pipeUtils'
-import { runGet } from './runOneCommand'
-import Pipe from './Pipe'
+import CommandExecutionParams from '../CommandExecutionParams'
+import { objectToTuple } from '../Tuple'
+import { combinePipes } from '../pipeUtils'
+import { runGet } from '../runOneCommand'
+import Pipe from '../Pipe'
 
 export default function countCommand(params: CommandExecutionParams) {
     const { output } = params;

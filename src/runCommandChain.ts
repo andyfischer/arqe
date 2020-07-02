@@ -18,7 +18,8 @@ const knownCommands = {
     'count': true,
     'delete': true,
     'listen': true,
-    'order-by': true
+    'order-by': true,
+    'watch': true
 };
 
 export function singleCommandExecution(graph: Graph, command: Command): CommandStep {

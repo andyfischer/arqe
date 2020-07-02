@@ -56,6 +56,9 @@ function currentExecEnv(): ExecEnv {
 export default function setupBuiltinTables(graph: Graph) {
 
     const execEnv = currentExecEnv();
+
+    graph.defineInMemoryTable('WatchCommands', parsePattern('watch pattern'));
+
     for (const tableDef of tableDefinitions.tables) {
         if (execEnv === 'browser' && tableDef.execEnv === 'node')
             continue;
