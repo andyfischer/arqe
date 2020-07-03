@@ -1,5 +1,5 @@
 {
-  "name": "future-shell",
+  "name": "arqe",
   "version": "1.0.0",
   "license": "UNLICENSED",
   "main": "dist/index.js",
@@ -7,11 +7,11 @@
     "build": "tsc -p .",
     "test": "jest --watch",
     "tsc-watch": "tsc -w",
-    "start": "tsc-watch --onSuccess ./bin/fd-server",
+    "start": "tsc-watch --onSuccess ./bin/arqe-server",
     "cli": "node dist/startCli.js",
     "local-cli": "node dist/startCli.js --db src/db",
-    "generate-api": "tsc-watch --onSuccess 'bin/fd-code-generator --db src/db'",
-    "generate-api-once": "bin/fd-code-generator --db src/db"
+    "generate-api": "tsc-watch --onSuccess 'bin/arqe-code-generator --db src/db'",
+    "generate-api-once": "bin/arqe-code-generator --db src/db"
   },
   "dependencies": {
     "@typescript-eslint/typescript-estree": "^3.0.0",
