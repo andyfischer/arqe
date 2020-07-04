@@ -10,6 +10,13 @@ const tableDefinitions = {
     tables: [
     {
         init: () => {
+            const { WorkingFile } = require('./virtualTables/WorkingFile');
+            return new WorkingFile();
+        },
+        execEnv: 'all'
+    },
+    {
+        init: () => {
             const { FsFileContents } = require('./virtualTables/Filesystem');
             return new FsFileContents();
         },
@@ -64,6 +71,10 @@ export default function setupBuiltinTables(graph: Graph) {
             continue;
 
         const table = tableDef.init();
+
+        if (!table.schema)
+            throw new Error('missing schema: ' + table);
+
         graph.defineVirtualTable(table.name, parsePattern(table.schema), table);
     }
 

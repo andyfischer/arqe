@@ -3,7 +3,7 @@ import Tuple from './Tuple'
 
 export default class TuplePatternMatcher<V> {
 
-    cases: { pattern: Tuple, value: V}[] = []
+    cases: { pattern: Tuple, value: V }[] = []
 
     add(pattern: Tuple, value: V) {
         this.cases.push({pattern, value});
@@ -19,6 +19,10 @@ export default class TuplePatternMatcher<V> {
         }
 
         return null;
+    }
+
+    stringify() {
+        return `[ ${this.cases.map(c => c.pattern.stringify() + ' => ' + c.value).join(', ')} ]`;
     }
 }
 

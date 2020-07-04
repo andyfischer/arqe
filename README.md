@@ -1,7 +1,7 @@
 
-# future-data* #
+# arqe #
 
-*Note: the name "future-data" is temporary*
+"Awesome relational query engine"
 
 A data orchestration layer. Highly experimental project looking at using a relational database
 style query interface for all areas of application development.

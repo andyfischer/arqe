@@ -304,8 +304,8 @@ export default function parseCommand(str: string): Command {
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
 
-    if (str.startsWith('get get '))
-        throw new Error("command starts with 'get get': " + str);
+    //if (str.startsWith('get get '))
+    //    throw new Error("command starts with 'get get': " + str);
 
     const it = lexStringToIterator(str);
 

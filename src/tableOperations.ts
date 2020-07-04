@@ -8,6 +8,40 @@ import TableInterface from './TableInterface'
 import { combineStreams } from './StreamUtil'
 import Stream from './Stream'
 
+export function searchOne(table: TableInterface, tuple: Tuple, out: Stream) {
+    if (table.search) {
+        table.search(tuple, out);
+        return;
+    }
+
+    if (table.handlers) {
+        const handler = table.handlers.find(tuple.setVal('get', true));
+        if (handler) {
+            handler(tuple, out);
+            return;
+        }
+    }
+
+    emitCommandError(out, "No search handler found on table " + table.name);
+}
+
+export function insertOne(table: TableInterface, tuple: Tuple, out: Stream) {
+    if (table.search) {
+        table.search(tuple, out);
+        return;
+    }
+
+    if (table.handlers) {
+        const handler = table.handlers.find(tuple.setVal('insert', true));
+        if (handler) {
+            handler(tuple, out);
+            return;
+        }
+    }
+
+    emitCommandError(out, "No insert handler found on table " + table.name);
+}
+
 export function search(graph: Graph, plan: QueryPlan, out: Stream) {
     const searchPattern = plan.filterPattern || plan.tuple;
     if (!searchPattern)
@@ -17,7 +51,7 @@ export function search(graph: Graph, plan: QueryPlan, out: Stream) {
     const startedAllTables = combined();
 
     for (const table of plan.searchTables) {
-        table.storage.search(searchPattern, combined());
+        searchOne(table.storage, searchPattern, combined());
     }
 
     startedAllTables.done();
@@ -53,7 +87,7 @@ export function insert(graph: Graph, plan: QueryPlan) {
 
     const tuple = resolveExpressionValuesForInsert(graph, plan.tuple);
 
-    table.storage.insert(tuple, {
+    insertOne(table.storage, tuple, {
         next: t => {
             output.next(t);
         },

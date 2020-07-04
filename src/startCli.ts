@@ -25,8 +25,12 @@ function runFile(graph: Graph, filename: string) {
 
         graph.run(command.stringify(), {
             next(tuple) {
-                if (tuple.hasAttr('command-meta') && tuple.hasAttr('search-pattern'))
-                    return;
+                if (tuple.hasAttr('command-meta')) {
+                    if (tuple.hasAttr('search-pattern'))
+                        return;
+
+                    console.log('# ' + tuple.removeAttr('command-meta').stringify());
+                }
 
                 listReceiver.next(tuple);
             },
