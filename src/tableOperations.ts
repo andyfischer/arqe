@@ -14,6 +14,9 @@ export function selectOne(table: TableInterface, tuple: Tuple, out: Stream) {
         return;
     }
 
+    if (table['search'])
+        throw new Error('table should not have search: ' + table.name)
+
     if (table.handlers) {
         const handler = table.handlers.find(tuple.setVal('get', true));
         if (handler) {
@@ -23,6 +26,7 @@ export function selectOne(table: TableInterface, tuple: Tuple, out: Stream) {
     }
 
     emitCommandError(out, "No select handler found on table " + table.name);
+    out.done();
 }
 
 export function insertOne(table: TableInterface, tuple: Tuple, out: Stream) {
@@ -40,6 +44,7 @@ export function insertOne(table: TableInterface, tuple: Tuple, out: Stream) {
     }
 
     emitCommandError(out, "No insert handler found on table " + table.name);
+    out.done();
 }
 
 export function search(graph: Graph, plan: QueryPlan, out: Stream) {

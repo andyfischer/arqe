@@ -23,7 +23,7 @@ export default class Table implements TableInterface {
         this.pattern = pattern;
     }
 
-    search(pattern: Tuple, out: Stream) {
+    select(pattern: Tuple, out: Stream) {
         for (const [slotId, tuple] of this.slots.entries())
             if (pattern.isSupersetOf(tuple))
                 out.next(tuple);

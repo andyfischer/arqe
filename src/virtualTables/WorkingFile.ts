@@ -15,7 +15,7 @@ interface File {
 
 export class WorkingFile implements TableInterface {
     name = 'WorkingFile'
-    supportsCompleteScan = true
+    supportsCompleteScan = false
     schema = 'working-file filename? contents?'
 
     byId = new Map<string, File>();
