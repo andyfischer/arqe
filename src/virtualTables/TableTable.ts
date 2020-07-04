@@ -8,7 +8,7 @@ export class Glob implements TableInterface {
     supportsCompleteScan: false
     schema = 'table name'
 
-    search(pattern: Tuple, out: Stream) {
+    select(pattern: Tuple, out: Stream) {
     }
     insert(pattern: Tuple, out: Stream) {
         throw new Error('insert not supported');

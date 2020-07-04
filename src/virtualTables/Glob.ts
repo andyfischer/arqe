@@ -12,7 +12,7 @@ export class Glob implements TableInterface {
     supportsCompleteScan: false
     schema = 'glob pattern filename?'
 
-    search(pattern: Tuple, out: Stream) {
+    select(pattern: Tuple, out: Stream) {
 
         const globPattern = pattern.getTagObject('pattern');
         if (!globPattern.fixedValue())

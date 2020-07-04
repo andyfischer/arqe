@@ -12,8 +12,6 @@ export default class TuplePatternMatcher<V> {
     find(tuple: Tuple): V | null {
         for (const { pattern, value } of this.cases) {
 
-            // console.log(`(${pattern.stringify()}).isSupersetOf(${tuple.stringify()}) = ${pattern.isSupersetOf(tuple)}`)
-
             if (pattern.isSupersetOf(tuple))
                 return value;
         }

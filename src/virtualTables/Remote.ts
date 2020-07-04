@@ -18,7 +18,7 @@ export class Remote implements TableInterface {
     schema = 'remote/$port **'
     supportsCompleteScan = false
 
-    search(pattern: Tuple, out: Stream) {
+    select(pattern: Tuple, out: Stream) {
     }
 
     insert(tuple: Tuple, out: Stream) {

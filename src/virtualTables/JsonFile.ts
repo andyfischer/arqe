@@ -15,7 +15,7 @@ export class FsFileContents implements TableInterface {
 
     constructor(graph: Graph, name: string, schema: string, filename: string) {
     }
-    search(pattern: Tuple, out: Stream) {
+    select(pattern: Tuple, out: Stream) {
     }
     insert(tuple: Tuple, out: Stream) {
     }

@@ -21,17 +21,6 @@ export class WorkingFile implements TableInterface {
     byId = new Map<string, File>();
     byFilename = new Map<string, File>();
 
-    constructor() {
-        /*
-        this.handlers.add(parsePattern('get working-file/$id filename? contents?'),
-                          (tuple, out) => this.findById(tuple, out));
-        this.handlers.add(parsePattern('get working-file filename/$x contents?'),
-                          (tuple, out) => this.findById(tuple, out));
-        this.handlers.add(parsePattern('insert working-file/$x filename/$y contents/$z'),
-                          (tuple, out) => this.insertNew(tuple, out));
-                          */
-    }
-
     @handles("get working-file/$id filename? contents?")
     findById(tuple: Tuple, out: Stream) {
         const found = this.byId.get(tuple.getVal('working-file'));
@@ -41,6 +30,7 @@ export class WorkingFile implements TableInterface {
         out.done();
     }
 
+    @handles("get working-file? filename/$x contents?")
     findByFilename(tuple: Tuple, out: Stream) {
         const found = this.byFilename.get(tuple.getVal('filename'));
         if (found) {
@@ -49,6 +39,7 @@ export class WorkingFile implements TableInterface {
         out.done();
     }
 
+    @handles("insert working-file filename contents")
     insertNew(tuple: Tuple, out: Stream) {
         const filename = tuple.getVal('filename');
         const id = tuple.getVal('working-file');
@@ -62,5 +53,13 @@ export class WorkingFile implements TableInterface {
 
         this.byId.set(id, file);
         this.byFilename.set(filename, file);
+    }
+
+    @handles("update working-file/$x contents/(set $y)")
+    updateContents(tuple: Tuple, out: Stream) {
+        const id = tuple.getVal('working-file');
+        const contents = tuple.getVal('contents');
+        const file = this.byId.get(id);
+        file.contents = contents;
     }
 }

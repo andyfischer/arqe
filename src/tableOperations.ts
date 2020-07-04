@@ -8,9 +8,9 @@ import TableInterface from './TableInterface'
 import { combineStreams } from './StreamUtil'
 import Stream from './Stream'
 
-export function searchOne(table: TableInterface, tuple: Tuple, out: Stream) {
-    if (table.search) {
-        table.search(tuple, out);
+export function selectOne(table: TableInterface, tuple: Tuple, out: Stream) {
+    if (table.select) {
+        table.select(tuple, out);
         return;
     }
 
@@ -22,12 +22,12 @@ export function searchOne(table: TableInterface, tuple: Tuple, out: Stream) {
         }
     }
 
-    emitCommandError(out, "No search handler found on table " + table.name);
+    emitCommandError(out, "No select handler found on table " + table.name);
 }
 
 export function insertOne(table: TableInterface, tuple: Tuple, out: Stream) {
-    if (table.search) {
-        table.search(tuple, out);
+    if (table.insert) {
+        table.insert(tuple, out);
         return;
     }
 
@@ -51,7 +51,7 @@ export function search(graph: Graph, plan: QueryPlan, out: Stream) {
     const startedAllTables = combined();
 
     for (const table of plan.searchTables) {
-        searchOne(table.storage, searchPattern, combined());
+        selectOne(table.storage, searchPattern, combined());
     }
 
     startedAllTables.done();

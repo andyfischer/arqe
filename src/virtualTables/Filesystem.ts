@@ -11,7 +11,7 @@ export class FsFileContents implements TableInterface {
     supportsCompleteScan: false
     schema = 'fs filename file-contents?'
 
-    search(pattern: Tuple, out: Stream) {
+    select(pattern: Tuple, out: Stream) {
         const tag = pattern.getTagObject("filename");
         if (!tag.fixedValue())
             throw new Error("filename must be a fixed value");
@@ -54,7 +54,7 @@ export class FsDirectory implements TableInterface {
     schema = 'fs dir filename?'
     supportsCompleteScan: false
 
-    async search(pattern: Tuple, out: Stream) {
+    async select(pattern: Tuple, out: Stream) {
         const dir = pattern.getVal("dir");
         const files = await fs.readdir(dir, (error, files) => {
             if (error) {
