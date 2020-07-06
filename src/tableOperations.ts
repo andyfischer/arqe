@@ -18,9 +18,15 @@ export function selectOne(table: TableInterface, tuple: Tuple, out: Stream) {
         throw new Error('table should not have search: ' + table.name)
 
     if (table.handlers) {
-        const handler = table.handlers.find(tuple.setVal('get', true));
-        if (handler) {
-            handler(tuple, out);
+        const getHandler = table.handlers.find(tuple.setVal('get', true));
+        if (getHandler) {
+            getHandler(tuple, out);
+            return;
+        }
+
+        const selectHandler = table.handlers.find(tuple.setVal('select', true));
+        if (selectHandler) {
+            selectHandler(tuple, out);
             return;
         }
     }
@@ -47,7 +53,7 @@ export function insertOne(table: TableInterface, tuple: Tuple, out: Stream) {
     out.done();
 }
 
-export function search(graph: Graph, plan: QueryPlan, out: Stream) {
+export function select(graph: Graph, plan: QueryPlan, out: Stream) {
     const searchPattern = plan.filterPattern || plan.tuple;
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');

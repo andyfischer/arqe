@@ -1,4 +1,5 @@
 
+/*
 import Graph from './Graph'
 import Tuple from './Tuple'
 import parseCommand from './parseCommand'
@@ -82,3 +83,4 @@ export function runUpdateOnce<T>(graph: Graph, fn: UpdateFn<T>): T {
     const cxt = new UpdateContext(graph);
     return fn(cxt);
 }
+*/

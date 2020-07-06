@@ -1,4 +1,5 @@
 
+/*
 import SavedQuery from './SavedQuery'
 
 export default class SavedQueryWatch {
@@ -19,3 +20,4 @@ export default class SavedQueryWatch {
         return false;
     }
 }
+*/

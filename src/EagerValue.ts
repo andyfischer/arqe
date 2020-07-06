@@ -1,4 +1,4 @@
-
+/*
 import Graph from './Graph'
 import UpdateContext, { UpdateFn } from './UpdateContext'
 
@@ -29,3 +29,4 @@ export default class EagerValue<T> {
         return this.value;
     }
 }
+*/

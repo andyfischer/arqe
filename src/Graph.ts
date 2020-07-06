@@ -2,13 +2,13 @@
 import { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
 import Tuple from './Tuple'
-import SavedQuery from './SavedQuery'
-import EagerValue from './EagerValue'
-import { UpdateFn } from './UpdateContext'
+//import SavedQuery from './SavedQuery'
+//import EagerValue from './EagerValue'
+//import { UpdateFn } from './UpdateContext'
 import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import runCommandChain from './runCommandChain'
-import UpdateContext from './UpdateContext'
+//import UpdateContext from './UpdateContext'
 import IDSource from './utils/IDSource'
 import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
@@ -29,7 +29,6 @@ import GenericStream, { StreamCombine } from './GenericStream'
 import InMemoryTable from './InMemoryTable'
 import TableInterface from './TableInterface'
 import TuplePatternMatcher from './TuplePatternMatcher'
-import { search, insert, update, del } from './tableOperations'
 import TableListener from './TableListener'
 import findTableForQuery from './findTableForQuery'
 import TableMount from './TableMount'
@@ -42,8 +41,8 @@ export default class Graph {
 
     listeners: GraphListenerMount[] = []
 
-    savedQueries: SavedQuery[] = []
-    savedQueryMap: { [queryStr:string]: SavedQuery } = {}
+    //savedQueries: SavedQuery[] = []
+    //savedQueryMap: { [queryStr:string]: SavedQuery } = {}
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
@@ -100,37 +99,7 @@ export default class Graph {
         return this.nextUniquePerAttr[attr].take();
     }
 
-    insert(plan: QueryPlan) {
-        insert(this, plan);
-    }
-
-    update(plan: QueryPlan) {
-        update(this, plan);
-    }
-
-    doDelete(plan: QueryPlan) {
-        del(this, plan);
-    }
-
-    select(plan: QueryPlan) {
-        const { tuple, output } = plan;
-
-        search(this, plan, plan.output);
-    }
-
-    save(plan: QueryPlan) {
-        
-        maybeCreateImplicitTable(this, plan);
-
-        if (plan.isDelete) {
-            this.doDelete(plan);
-        } else if (plan.isUpdate) {
-            this.update(plan);
-        } else {
-            this.insert(plan);
-        }
-    }
-
+    /*
     savedQuery(queryStr: string): SavedQuery {
         if (this.savedQueryMap[queryStr])
             return this.savedQueryMap[queryStr];
@@ -150,6 +119,7 @@ export default class Graph {
         ev.runUpdate();
         return ev;
     }
+    */
 
     addListener(pattern: Pattern, listener: GraphListener) {
         this.listeners.push({ pattern, listener });
@@ -188,6 +158,7 @@ export default class Graph {
             }
         }
 
+        /*
         for (const savedQuery of this.savedQueries) {
             const matches = savedQuery.pattern.isSupersetOf(rel);
 
@@ -197,6 +168,7 @@ export default class Graph {
             savedQuery.changeToken += 1;
             savedQuery.updateConnectedValues();
         }
+        */
     }
 
     onTupleDeleted(rel: Tuple) {
@@ -205,6 +177,7 @@ export default class Graph {
                 entry.listener.onTupleDeleted(rel);
         }
 
+        /*
         for (const savedQuery of this.savedQueries) {
             const matches = savedQuery.pattern.isSupersetOf(rel);
 
@@ -214,6 +187,7 @@ export default class Graph {
             savedQuery.changeToken += 1;
             savedQuery.updateConnectedValues();
         }
+        */
     }
 
     run(commandStr: string, output?: Stream) {
@@ -273,10 +247,12 @@ export default class Graph {
         return rels;
     }
 
+    /*
     runDerived(callback: (cxt: UpdateContext) => void) {
         const cxt = new UpdateContext(this);
         return callback(cxt);
     }
+    */
 
     get(patternInput: any, receiver: Stream) {
         let pattern: Pattern;

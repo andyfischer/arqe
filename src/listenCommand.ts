@@ -3,7 +3,7 @@ import Graph from './Graph'
 import Tuple from './Tuple'
 import { emitTupleDeleted } from './CommandMeta'
 import CommandExecutionParams from './CommandExecutionParams'
-import { runGet } from './runOneCommand'
+import getCommand from './commands/get'
 
 export default function runListen(params: CommandExecutionParams) {
 
@@ -11,7 +11,7 @@ export default function runListen(params: CommandExecutionParams) {
     const pattern = command.pattern;
 
     if (command.flags.get) {
-        runGet(graph, pattern, {
+        getCommand(graph, pattern, {
             next(rel) {
                 if (!rel.isCommandMeta())
                     output.next(rel)

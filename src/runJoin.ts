@@ -8,7 +8,8 @@ import PatternTag from './PatternTag'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { patternTagToString } from './stringifyQuery'
 import CommandExecutionParams from './CommandExecutionParams'
-import { runGet } from './runOneCommand'
+import getCommand from './commands/get'
+
 
 function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
     const identifierTags: PatternTag[] = []
@@ -72,7 +73,7 @@ export function runJoinStep(params: CommandExecutionParams) {
         check();
     });
 
-    runGet(graph, searchPattern, search);
+    getCommand(graph, searchPattern, search);
 
     input.waitForAll((rels) => {
 

@@ -12,20 +12,9 @@ import listenCommand from './listenCommand'
 import countCommand from './commands/count'
 import orderByCommand from './commands/orderBy'
 import watchCommand from './commands/watch'
-
-export function runGet(graph: Graph, pattern: Pattern, output: Stream) {
-    const plan = planQuery(graph, pattern, output);
-    if (plan.failed)
-        return;
-
-    emitSearchPatternMeta(pattern, output);
-
-    if (plan.storageProvider) {
-        plan.storageProvider.runSearch(plan.tuple, plan.output);
-    } else {
-        graph.select(plan);
-    }
-}
+import setCommand from './commands/set'
+import getCommand from './commands/get'
+import { del } from './tableOperations'
 
 export default function runOneCommand(params: CommandExecutionParams) {
     const { graph, command, output } = params;
@@ -42,20 +31,12 @@ export default function runOneCommand(params: CommandExecutionParams) {
             return;
 
         case 'get': {
-            runGet(graph, pattern, output);
+            getCommand(graph, command.pattern, output);
             return;
         }
         
         case 'set': {
-            const plan = planQuery(graph, pattern, output);
-            if (plan.failed)
-                return;
-
-            if (plan.storageProvider) {
-                plan.storageProvider.runSave(plan.tuple, plan.output);
-            } else {
-                graph.save(plan);
-            }
+            setCommand(params);
             return;
         }
 
@@ -74,7 +55,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
             if (plan.storageProvider) {
                 plan.storageProvider.runSave(deletePattern, plan.output);
             } else {
-                graph.save(plan);
+                del(graph, plan);
             }
 
             return;
