@@ -13,10 +13,5 @@ export default function get(graph: Graph, pattern: Tuple, output: Stream) {
         return;
 
     emitSearchPatternMeta(pattern, output);
-
-    if (plan.storageProvider) {
-        plan.storageProvider.runSearch(plan.tuple, plan.output);
-    } else {
-        select(graph, plan, output);
-    }
+    select(graph, plan, output);
 }

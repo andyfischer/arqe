@@ -8,7 +8,7 @@ import TableInterface from './TableInterface'
 import { combineStreams } from './StreamUtil'
 import Stream from './Stream'
 
-export function selectOne(table: TableInterface, tuple: Tuple, out: Stream) {
+export function selectOnTable(table: TableInterface, tuple: Tuple, out: Stream) {
     if (table.select) {
         table.select(tuple, out);
         return;
@@ -35,7 +35,7 @@ export function selectOne(table: TableInterface, tuple: Tuple, out: Stream) {
     out.done();
 }
 
-export function insertOne(table: TableInterface, tuple: Tuple, out: Stream) {
+export function insertOnTable(table: TableInterface, tuple: Tuple, out: Stream) {
     if (table.insert) {
         table.insert(tuple, out);
         return;
@@ -62,7 +62,7 @@ export function select(graph: Graph, plan: QueryPlan, out: Stream) {
     const startedAllTables = combined();
 
     for (const table of plan.searchTables) {
-        selectOne(table.storage, searchPattern, combined());
+        selectOnTable(table.storage, searchPattern, combined());
     }
 
     startedAllTables.done();
@@ -98,7 +98,7 @@ export function insert(graph: Graph, plan: QueryPlan) {
 
     const tuple = resolveExpressionValuesForInsert(graph, plan.tuple);
 
-    insertOne(table.storage, tuple, {
+    insertOnTable(table.storage, tuple, {
         next: t => {
             output.next(t);
         },

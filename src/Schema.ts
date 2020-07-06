@@ -3,7 +3,6 @@ import Tuple from './Tuple'
 import Pattern from './Pattern'
 import SchemaProviderAPI from './generated/SchemaProviderAPI'
 import Graph from './Graph'
-import StorageProvider from './StorageProvider'
 
 export class ColumnType {
     name: string
@@ -22,8 +21,6 @@ export const ValueColumn = new ColumnType('value', 2);
 export class Column {
     name: string
     type: ColumnType = ValueColumn
-
-    storageProvider?: StorageProvider
 
     constructor(name: string) {
         this.name = name;

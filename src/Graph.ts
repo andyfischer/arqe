@@ -14,7 +14,6 @@ import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
-import StorageProvider from './StorageProvider'
 import Column from './Column'
 import setupBuiltinTables from './setupBuiltinTables'
 import parseObjectToPattern from './parseObjectToPattern'
@@ -46,7 +45,7 @@ export default class Graph {
 
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
-    storageProvidersV3: StorageProvider[] = []
+    // storageProvidersV3: StorageProvider[] = []
     nextListenerId = new IDSource()
 
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void }[] = []

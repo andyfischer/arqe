@@ -154,17 +154,6 @@ function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
     return plan;
 }
 
-function findStorageProvider(plan: QueryPlan) {
-
-    // Check if any columns have a storageProvider. First one wins.
-    for (const tag of plan.tags) {
-        if (tag.column.storageProvider) {
-            plan.storageProvider = tag.column.storageProvider;
-            break;
-        }
-    }
-}
-
 function validatePlan(plan: QueryPlan) {
     // There was once stuff here
 }
@@ -194,7 +183,6 @@ export default function planQuery(graph: Graph, tuple: Tuple, output: Stream) {
             .filter(table => table.storage.supportsCompleteScan);
     }
 
-    findStorageProvider(plan);
     validatePlan(plan);
     return plan;
 }

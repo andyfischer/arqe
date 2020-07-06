@@ -1,9 +1,9 @@
 
-import Graph from './Graph'
-import Tuple from './Tuple'
-import { emitTupleDeleted } from './CommandMeta'
-import CommandExecutionParams from './CommandExecutionParams'
-import getCommand from './commands/get'
+import Graph from '../Graph'
+import Tuple from '../Tuple'
+import { emitTupleDeleted } from '../CommandMeta'
+import CommandExecutionParams from '../CommandExecutionParams'
+import getCommand from './get'
 
 export default function runListen(params: CommandExecutionParams) {
 

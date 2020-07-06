@@ -8,7 +8,7 @@ import planQuery from './planQuery'
 import Command from './Command'
 import CommandExecutionParams from './CommandExecutionParams'
 import { runJoinStep } from './runJoin'
-import listenCommand from './listenCommand'
+import listenCommand from './commands/listen'
 import countCommand from './commands/count'
 import orderByCommand from './commands/orderBy'
 import watchCommand from './commands/watch'
@@ -52,12 +52,7 @@ export default function runOneCommand(params: CommandExecutionParams) {
             if (plan.failed)
                 return;
 
-            if (plan.storageProvider) {
-                plan.storageProvider.runSave(deletePattern, plan.output);
-            } else {
-                del(graph, plan);
-            }
-
+            del(graph, plan);
             return;
         }
 

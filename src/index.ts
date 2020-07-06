@@ -7,12 +7,14 @@ export { default as Pattern } from './Pattern'
 export { default as receiveToTupleList } from './Tuple'
 export { default as runStandardProcess } from './toollib/runStandardProcess'
 export { default as startWebApp } from './toollib/startWebApp'
-export { default as StorageProvider } from './StorageProvider'
 export { rewriteDumpFile } from './DumpFile'
 export * from './CommandMeta'
 export * from './receiveUtils'
 export { default as printConsoleResult } from './console/printResult'
 export { parsePattern } from './Pattern'
+
+export interface StorageProvider {
+}
 
 if (require.main === module) {
     require('./startServer.js');

@@ -1,6 +1,5 @@
 
 import Graph from './Graph'
-import ExpireAtListener from './providers/ExpireAtListener'
 import { parsePattern } from './parseCommand'
 import { isRunningInNode } from './utils'
 
