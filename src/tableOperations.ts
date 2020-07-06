@@ -13,21 +13,24 @@ function callNativeHandler(handler: NativeHandler, input: Tuple, out: Stream) {
     const inputObject = input.toObject();
     const result = handler.func(inputObject);
 
-    function toOutputTuple(item) {
-        let out = input;
+    function sendOutput(item) {
+        if (!item)
+            return;
+
+        let updatedTuple = input;
 
         for (const k in item)
-            out = out.setVal(k, item[k]);
+            updatedTuple = updatedTuple.setVal(k, item[k]);
 
-        return out;
+        out.next(updatedTuple);
     }
 
     function finish(result) {
         if (Array.isArray(result)) {
             for (const item of result)
-                out.next(toOutputTuple(item));
+                sendOutput(item);
         } else {
-            out.next(toOutputTuple(result));
+            sendOutput(result);
         }
 
         out.done();

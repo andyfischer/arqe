@@ -21,24 +21,14 @@ export class FsFileContents {
         }
     }
 
-    insert(tuple: Tuple, out: Stream) {
-        const filename = tuple.getVal("filename");
-        const contents = tuple.getVal("file-contents");
-        fs.writeFile(filename, 'utf8', (error) => {
-            if (error)
-                emitCommandError(out, error);
-            out.done();
-        });
+    @handles("insert fs filename/$x file-contents/$y")
+    async saveFile({ filename, 'file-contents': contents }) {
+        await fs.writeFile(filename, contents);
     }
 
-    delete(search: Tuple, out: Stream) {
-        const filename = search.getVal("filename");
-
-        fs.unlink(filename, (error) => {
-            if (error)
-                emitCommandError(out, error);
-            out.done();
-        });
+    @handles("delete fs filename/$x")
+    async delete({ filename }) {
+        await fs.unlink(filename);
     }
 }
 

@@ -1,2 +1,2 @@
 
-get fs filename(README.md) file-contents
+set fs filename(test-file) file-contents/x
