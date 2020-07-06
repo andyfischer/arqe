@@ -50,6 +50,19 @@ export default class Tuple {
 
         return this._asMap;
     }
+
+    toObject() {
+        const obj = {};
+
+        for (const tag of this.tags) {
+            if (!tag.attr)
+                continue;
+
+            obj[tag.attr] = tag.tagValue;
+        }
+
+        return obj;
+    }
     
     byIdentifier() {
         if (!this._byIdentifier) {

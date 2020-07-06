@@ -1,22 +1,17 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { } from '../TableInterface'
-import { handles } from '../annotations'
+import { handles } from '../decorators'
 
-export class TestMath implements TableInterface {
+export class TestMath {
     name = 'TestMath'
     schema = 'test-math sum a b'
     supportsCompleteScan = false
 
     @handles("get test-math a/$a b/$b sum")
-    sum(tuple: Tuple, out: Stream) {
-        const a = tuple.getVal("a");
-        const b = tuple.getVal("b");
-
+    sum({a, b}) {
         const sum = parseInt(a) + parseInt(b) + '';
 
-        out.next(tuple.setVal("sum", sum));
-        out.done();
+        return { sum };
     }
 }

@@ -3,29 +3,22 @@ import Tuple from '../Tuple'
 import Stream from '../Stream'
 import TableInterface, { } from '../TableInterface'
 import GenericStream, { StreamCombine } from '../GenericStream'
-import fs from 'fs'
+import fs from 'fs-extra'
 import { emitCommandError } from '../CommandMeta'
+import { handles } from '../decorators'
+import TuplePatternMatcher from '../TuplePatternMatcher'
+import NativeHandler from '../NativeHandler'
 
-export class FsFileContents implements TableInterface {
+export class FsFileContents {
     name = 'FsFileContents'
     supportsCompleteScan: false
     schema = 'fs filename file-contents?'
 
-    select(pattern: Tuple, out: Stream) {
-        const tag = pattern.getTagObject("filename");
-        if (!tag.fixedValue())
-            throw new Error("filename must be a fixed value");
-
-        const filename = tag.tagValue;
-
-        fs.readFile(filename, 'utf8', (error, contents) => {
-            if (error)
-                emitCommandError(out, error);
-            else
-                out.next(pattern.setVal("file-contents", contents));
-
-            out.done();
-        });
+    @handles("get fs filename/$x file-contents/*")
+    async loadFile({ filename }) {
+        return {
+            'file-contents': await fs.readFile(filename, 'utf8')
+        }
     }
 
     insert(tuple: Tuple, out: Stream) {

@@ -4,13 +4,12 @@ import Stream from './Stream'
 import TupleModification from './TupleModification'
 import TableListener from './TableListener'
 import TuplePatternMatcher from './TuplePatternMatcher'
-
-export type Handler = (tuple: Tuple, out: Stream) => void
+import NativeHandler from './NativeHandler'
 
 export default interface TableInterface {
     name: string
     supportsCompleteScan: boolean
-    handlers?: TuplePatternMatcher<Handler>
+    handlers?: TuplePatternMatcher<NativeHandler>
 
     select?: (pattern: Tuple, out: Stream) => void
     insert?: (tuple: Tuple, out: Stream) => void

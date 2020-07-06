@@ -1,5 +1,5 @@
 
-import Tuple from './Tuple'
+import Tuple, { objectToTuple } from './Tuple'
 import Graph from './Graph'
 import QueryPlan from './QueryPlan'
 import PatternTag, { newTag } from './PatternTag'
@@ -7,6 +7,37 @@ import { emitCommandError } from './CommandMeta'
 import TableInterface from './TableInterface'
 import { combineStreams } from './StreamUtil'
 import Stream from './Stream'
+import NativeHandler from './NativeHandler'
+
+function callNativeHandler(handler: NativeHandler, input: Tuple, out: Stream) {
+    const inputObject = input.toObject();
+    const result = handler.func(inputObject);
+
+    function toOutputTuple(item) {
+        let out = input;
+
+        for (const k in item)
+            out = out.setVal(k, item[k]);
+
+        return out;
+    }
+
+    function finish(result) {
+        if (Array.isArray(result)) {
+            for (const item of result)
+                out.next(toOutputTuple(item));
+        } else {
+            out.next(toOutputTuple(result));
+        }
+
+        out.done();
+    }
+
+    if (result.then)
+        result.then(finish)
+    else
+        finish(result);
+}
 
 export function selectOnTable(table: TableInterface, tuple: Tuple, out: Stream) {
     if (table.select) {
@@ -20,13 +51,13 @@ export function selectOnTable(table: TableInterface, tuple: Tuple, out: Stream) 
     if (table.handlers) {
         const getHandler = table.handlers.find(tuple.setVal('get', true));
         if (getHandler) {
-            getHandler(tuple, out);
+            callNativeHandler(getHandler, tuple, out);
             return;
         }
 
         const selectHandler = table.handlers.find(tuple.setVal('select', true));
         if (selectHandler) {
-            selectHandler(tuple, out);
+            selectHandler.func(tuple, out);
             return;
         }
     }
@@ -44,7 +75,7 @@ export function insertOnTable(table: TableInterface, tuple: Tuple, out: Stream) 
     if (table.handlers) {
         const handler = table.handlers.find(tuple.setVal('insert', true));
         if (handler) {
-            handler(tuple, out);
+            callNativeHandler(handler, tuple, out);
             return;
         }
     }

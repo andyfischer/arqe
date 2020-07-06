@@ -1,11 +1,12 @@
 
 import Stream from '../Stream'
-import TableInterface, { Handler } from '../TableInterface'
+import TableInterface from '../TableInterface'
 import Tuple from '../Tuple'
 import TupleModification from '../TupleModification'
 import TuplePatternMatcher from '../TuplePatternMatcher'
+import NativeHandler from '../NativeHandler'
 import { parsePattern } from '../parseCommand'
-import { handles } from '../annotations'
+import { handles } from '../decorators'
 
 interface File {
     id: string
@@ -13,7 +14,7 @@ interface File {
     contents: string
 }
 
-export class WorkingFile implements TableInterface {
+export class WorkingFile {
     name = 'WorkingFile'
     supportsCompleteScan = false
     schema = 'working-file filename? contents?'
