@@ -1,6 +1,7 @@
 
 import Fs from 'fs'
 import Path from 'path'
+import os from 'os'
 import Graph from './Graph'
 import GraphRepl from './GraphRepl'
 import printResult from './console/printResult'
@@ -14,7 +15,6 @@ import WebServer from './socket/WebServer'
 import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from './loadBootstrapConfigs'
 
 function runFile(graph: Graph, filename: string) {
-    console.log('runFile: ', filename)
     const contents = Fs.readFileSync(filename, 'utf8');
     const commands = parseFile(contents);
     for (const command of commands) {
@@ -64,15 +64,6 @@ export default async function main() {
 
     // load schema with JsonFile
 
-    /*
-    if (cliArgs.connect) {
-        console.log('connecting to remote server..')
-        const port = process.env.PORT || '42940'
-        graph = await connectToServer(port);
-    } else {
-
-    }*/
-
     if (cliArgs.server) {
         const server = new WebServer(graph);
         await server.start();
@@ -106,6 +97,10 @@ export default async function main() {
                 repl.displayPrompt()
             })
         });
+
+        try {
+            repl.setupHistory(Path.join(os.homedir(), '.arqe_history'), () => {});
+        } catch (e) { }
 
         repl.on('exit', () => {
             process.exit(0);
