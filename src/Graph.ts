@@ -2,13 +2,9 @@
 import { parseCommandChain } from './parseCommand'
 import Pattern from './Pattern'
 import Tuple from './Tuple'
-//import SavedQuery from './SavedQuery'
-//import EagerValue from './EagerValue'
-//import { UpdateFn } from './UpdateContext'
 import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import runCommandChain from './runCommandChain'
-//import UpdateContext from './UpdateContext'
 import IDSource from './utils/IDSource'
 import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
@@ -40,12 +36,8 @@ export default class Graph {
 
     listeners: GraphListenerMount[] = []
 
-    //savedQueries: SavedQuery[] = []
-    //savedQueryMap: { [queryStr:string]: SavedQuery } = {}
-
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
-    // storageProvidersV3: StorageProvider[] = []
     nextListenerId = new IDSource()
 
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void }[] = []
@@ -98,28 +90,6 @@ export default class Graph {
         return this.nextUniquePerAttr[attr].take();
     }
 
-    /*
-    savedQuery(queryStr: string): SavedQuery {
-        if (this.savedQueryMap[queryStr])
-            return this.savedQueryMap[queryStr];
-
-        if (this.savedQueries.length == 100)
-            console.log('warning: more than 100 saved queries');
-
-        const query = new SavedQuery(this, this.savedQueries.length, queryStr);
-        this.savedQueries.push(query);
-        this.savedQueryMap[queryStr] = query;
-
-        return query;
-    }
-
-    eagerValue<T>(updateFn: UpdateFn<T>, initialValue?: T): EagerValue<T> {
-        const ev = new EagerValue<T>(this, updateFn, initialValue);
-        ev.runUpdate();
-        return ev;
-    }
-    */
-
     addListener(pattern: Pattern, listener: GraphListener) {
         this.listeners.push({ pattern, listener });
     }
@@ -146,8 +116,6 @@ export default class Graph {
 
     onTupleUpdated(rel: Tuple) {
 
-        // console.log('onRelationUpdated: ' + rel.stringify() + ` (${this.listeners.length} listenrers)`);
-
         for (const entry of this.listeners) {
             if (entry.pattern.isSupersetOf(rel)) {
                 // console.log(' listener isSupersetOf: ' + entry.pattern.stringify())
@@ -156,18 +124,6 @@ export default class Graph {
                 // console.log(' listener does not match: ' + entry.pattern.stringify())
             }
         }
-
-        /*
-        for (const savedQuery of this.savedQueries) {
-            const matches = savedQuery.pattern.isSupersetOf(rel);
-
-            if (!matches)
-                continue;
-
-            savedQuery.changeToken += 1;
-            savedQuery.updateConnectedValues();
-        }
-        */
     }
 
     onTupleDeleted(rel: Tuple) {
@@ -175,18 +131,6 @@ export default class Graph {
             if (entry.pattern.isSupersetOf(rel))
                 entry.listener.onTupleDeleted(rel);
         }
-
-        /*
-        for (const savedQuery of this.savedQueries) {
-            const matches = savedQuery.pattern.isSupersetOf(rel);
-
-            if (!matches)
-                continue;
-
-            savedQuery.changeToken += 1;
-            savedQuery.updateConnectedValues();
-        }
-        */
     }
 
     run(commandStr: string, output?: Stream) {

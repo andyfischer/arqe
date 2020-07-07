@@ -9,7 +9,7 @@
     "tsc-watch": "tsc -w",
     "start": "tsc-watch --onSuccess ./bin/arqe-server",
     "cli": "node dist/startCli.js",
-    "local-cli": "node dist/startCli.js --db src/db",
+    "start-cli": "tsc-watch --onSuccess 'node dist/startCli.js'",
     "generate-api": "tsc-watch --onSuccess 'bin/arqe-code-generator --db src/db'",
     "generate-api-once": "bin/arqe-code-generator --db src/db"
   },

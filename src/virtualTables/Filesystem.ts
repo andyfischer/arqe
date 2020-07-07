@@ -37,23 +37,9 @@ export class FsDirectory implements TableInterface {
     schema = 'fs dir filename?'
     supportsCompleteScan: false
 
-    async select(pattern: Tuple, out: Stream) {
-        const dir = pattern.getVal("dir");
-        const files = await fs.readdir(dir, (error, files) => {
-            if (error) {
-                emitCommandError(out, error);
-            } else {
-                for (const file of files)
-                    out.next(pattern.setVal("filename", file));
-            }
-            out.done();
-        });
-    }
-
-    async insert(tuple: Tuple, out: Stream) {
-    }
-    
-    delete(search: Tuple, out: Stream) {
-        throw new Error("FsDirectory delete not supported");
+    @handles("get fs dir/$d filename")
+    async list({ dir }) {
+        const files = await fs.readdir(dir);
+        return files.map(filename => ({ filename }))
     }
 }
