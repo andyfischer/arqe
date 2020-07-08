@@ -7,40 +7,8 @@ import { emitCommandError } from './CommandMeta'
 import TableStorage from './TableInterface'
 import { combineStreams } from './StreamUtil'
 import Stream from './Stream'
-import NativeHandler from './NativeHandler'
-
-function callNativeHandler(handler: NativeHandler, input: Tuple, out: Stream) {
-    const inputObject = input.toObject();
-    const result = handler.func(inputObject);
-
-    function sendOutput(item) {
-        if (!item)
-            return;
-
-        let updatedTuple = input;
-
-        for (const k in item)
-            updatedTuple = updatedTuple.setVal(k, item[k]);
-
-        out.next(updatedTuple);
-    }
-
-    function finish(result) {
-        if (Array.isArray(result)) {
-            for (const item of result)
-                sendOutput(item);
-        } else {
-            sendOutput(result);
-        }
-
-        out.done();
-    }
-
-    if (result.then)
-        result.then(finish)
-    else
-        finish(result);
-}
+import NativeHandler, { callNativeHandler } from './NativeHandler'
+import { insertPlanned, toInitialization } from './commands/insert'
 
 export function selectOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
     if (table.select) {
@@ -69,24 +37,6 @@ export function selectOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
     out.done();
 }
 
-export function insertOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
-    if (table.insert) {
-        table.insert(tuple, out);
-        return;
-    }
-
-    if (table.handlers) {
-        const handler = table.handlers.find('insert', tuple);
-        if (handler) {
-            callNativeHandler(handler, tuple, out);
-            return;
-        }
-    }
-
-    emitCommandError(out, "No insert handler found on table " + table.name);
-    out.done();
-}
-
 export function select(graph: Graph, plan: QueryPlan, out: Stream) {
     const searchPattern = plan.filterPattern || plan.tuple;
     if (!searchPattern)
@@ -100,56 +50,6 @@ export function select(graph: Graph, plan: QueryPlan, out: Stream) {
     }
 
     startedAllTables.done();
-}
-
-function resolveExpressionValuesForInsert(graph: Graph, tuple: Tuple) {
-
-    for (let i=0; i < tuple.tags.length; i++) {
-        const tag = tuple.tags[i];
-        if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
-            const id = graph.takeNextUniqueIdForAttr(tag.attr);
-            tuple = tuple.updateTagAtIndex(i, tag => tag.setValue(id));
-        }
-    }
-
-    return tuple;
-}
-
-export function insert(graph: Graph, plan: QueryPlan) {
-    const { output } = plan; 
-
-    // Store a new tuple.
-    const table = plan.table;
-
-    if (!plan.table)
-        throw new Error("Internal error, missing table in insert()")
-
-    if (!plan.tableName) {
-        emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.tuple.stringify());
-        output.done();
-        return;
-    }
-
-    const tuple = resolveExpressionValuesForInsert(graph, plan.tuple);
-
-    insertOnTable(table.storage, tuple, {
-        next: t => {
-            output.next(t);
-        },
-        done: () => {
-            output.next(tuple);
-            graph.onTupleUpdated(tuple);
-            output.done();
-        }
-    });
-}
-
-function toInitialization(rel: Tuple) {
-    return rel.remapTags((tag: PatternTag) => {
-        if (tag.valueExpr && tag.valueExpr[0] === 'set')
-            return tag.setValue(tag.valueExpr[1]);
-        return tag;
-    });
 }
 
 export function update(graph: Graph, plan: QueryPlan) {
@@ -172,7 +72,7 @@ export function update(graph: Graph, plan: QueryPlan) {
             // if no matches were found.
             if (!hasFoundAny && plan.initializeIfMissing) {
                 plan.tuple = toInitialization(plan.tuple);
-                insert(graph, plan);
+                insertPlanned(graph, plan);
             } else {
                 output.done();
             }
@@ -210,3 +110,4 @@ export function del(graph: Graph, plan: QueryPlan) {
     }
     allTables.done();
 }
+
