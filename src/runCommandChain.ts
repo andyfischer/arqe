@@ -10,17 +10,9 @@ import { runJoinStep } from './runJoin'
 import { newTag } from './PatternTag'
 import planQuery from './planQuery'
 import runOneCommand from './runOneCommand'
+import { ValidCommands } from './CommandDb'
 
-const knownCommands = {
-    'join': true,
-    'get': true,
-    'set': true,
-    'count': true,
-    'delete': true,
-    'listen': true,
-    'order-by': true,
-    'watch': true
-};
+
 
 export function singleCommandExecution(graph: Graph, command: Command): CommandStep {
     const step = new CommandStep(graph, command);
@@ -42,7 +34,7 @@ export default function runCommandChain(graph: Graph, chain: CommandChain, outpu
 
     // Initial error checking
     for (const command of chain.commands) {
-        if (!knownCommands[command.commandName]) {
+        if (!ValidCommands[command.commandName]) {
             emitCommandError(output, "unrecognized command: " + command.commandName);
             output.done();
             return;

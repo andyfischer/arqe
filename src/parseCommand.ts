@@ -7,6 +7,7 @@ import { lexStringToIterator, TokenIterator, TokenDef, t_ident, t_quoted_string,
     t_space, t_hash, t_double_dot, t_newline, t_bar,
     t_integer, t_dash } from './lexer'
 import { parseOneTag } from './parseTuple'
+import { ValidCommands } from './CommandDb'
 
 interface InProgressQuery {
     tags: PatternTag[]

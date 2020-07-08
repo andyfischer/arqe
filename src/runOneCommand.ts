@@ -13,7 +13,6 @@ import deleteCommand from './commands/delete'
 export default function runOneCommand(params: CommandExecutionParams) {
     const { graph, command, output } = params;
     const commandName = command.commandName;
-    const pattern = command.pattern;
 
     try {
         emitCommandOutputFlags(command, output);
