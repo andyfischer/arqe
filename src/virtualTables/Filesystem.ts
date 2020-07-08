@@ -1,13 +1,7 @@
 
-import Tuple from '../Tuple'
-import Stream from '../Stream'
 import TableStorage, { } from '../TableStorage'
-import GenericStream, { StreamCombine } from '../GenericStream'
 import fs from 'fs-extra'
-import { emitCommandError } from '../CommandMeta'
 import { handles } from '../decorators'
-import TuplePatternMatcher from '../TuplePatternMatcher'
-import NativeHandler from '../NativeHandler'
 
 export class FsFileContents {
     name = 'FsFileContents'
