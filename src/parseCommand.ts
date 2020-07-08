@@ -2,13 +2,10 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import Tuple, { tagsToTuple } from './Tuple'
-import Pattern from './Pattern'
 import PatternTag, { newTagFromObject, TagOptions, FixedTag } from './PatternTag'
-import { parseExpr } from './parseExpr'
-import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
-    t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
-    t_lparen, t_rparen } from './lexer'
+import { lexStringToIterator, TokenIterator, TokenDef, t_ident, t_quoted_string, t_star,
+    t_space, t_hash, t_double_dot, t_newline, t_bar,
+    t_integer, t_dash } from './lexer'
 import { parseOneTag } from './parseTuple'
 
 interface InProgressQuery {
@@ -126,8 +123,8 @@ export default function parseCommand(str: string): Command {
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
 
-    //if (str.startsWith('get get '))
-    //    throw new Error("command starts with 'get get': " + str);
+    if (str.startsWith('get get '))
+        throw new Error("command starts with 'get get': " + str);
 
     const it = lexStringToIterator(str);
 

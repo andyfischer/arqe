@@ -1,9 +1,10 @@
 
 import CommandExecutionParams from '../CommandExecutionParams'
-import { update, del } from '../tableOperations'
+import { update } from '../tableOperations'
 import planQuery from '../planQuery'
 import maybeCreateImplicitTable from '../maybeCreateImplicitTable'
 import { insertPlanned } from './insert'
+import { deletePlanned } from './delete'
 
 export default function set(params: CommandExecutionParams) {
     const { graph, command, output } = params;
@@ -16,7 +17,7 @@ export default function set(params: CommandExecutionParams) {
     maybeCreateImplicitTable(graph, plan);
         
     if (plan.isDelete) {
-        del(graph, plan);
+        deletePlanned(graph, plan);
     } else if (plan.isUpdate) {
         update(graph, plan);
     } else {

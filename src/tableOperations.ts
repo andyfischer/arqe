@@ -89,25 +89,4 @@ export function update(graph: Graph, plan: QueryPlan) {
     allTables.done();
 }
 
-export function del(graph: Graph, plan: QueryPlan) {
-    const { output } = plan;
-
-    const collectOutput = combineStreams({
-        next(t: Tuple) {
-            graph.onTupleDeleted(t);
-            const deletedMessage = t.addTagObj(newTag('deleted'));
-            output.next(deletedMessage);
-        },
-        done: output.done
-    });
-
-    const searchPattern = plan.filterPattern || plan.tuple;
-
-    const allTables = collectOutput();
-    for (const table of plan.searchTables) {
-        const tableOut = collectOutput();
-        table.storage.delete(searchPattern, tableOut);
-    }
-    allTables.done();
-}
 

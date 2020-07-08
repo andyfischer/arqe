@@ -4,7 +4,6 @@ import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
 import Stream from './Stream'
 import TableStorage, { } from './TableInterface'
-import GenericStream, { StreamCombine } from './GenericStream'
 import TupleModification from './TupleModification'
 import TableListener from './TableListener'
 
