@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
-import { parsePattern } from './parseCommand'
 import { isRunningInNode } from './utils'
+import parseTuple from './parseTuple';
 
 type ExecEnv = 'browser' | 'node' | 'any'
 
@@ -63,7 +63,7 @@ export default function setupBuiltinTables(graph: Graph) {
 
     const execEnv = currentExecEnv();
 
-    graph.defineInMemoryTable('WatchCommands', parsePattern('watch pattern'));
+    graph.defineInMemoryTable('WatchCommands', parseTuple('watch pattern'));
 
     for (const tableDef of tableDefinitions.tables) {
         if (execEnv === 'browser' && tableDef.execEnv === 'node')
@@ -74,7 +74,7 @@ export default function setupBuiltinTables(graph: Graph) {
         if (!table.schema)
             throw new Error('missing schema: ' + table);
 
-        graph.defineVirtualTable(table.name, parsePattern(table.schema), table);
+        graph.defineVirtualTable(table.name, parseTuple(table.schema), table);
     }
 
     /*

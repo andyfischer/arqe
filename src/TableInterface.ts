@@ -5,11 +5,12 @@ import TupleModification from './TupleModification'
 import TableListener from './TableListener'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import NativeHandler from './NativeHandler'
+import CommandPatternMatcher from './CommandPatternMatcher'
 
 export default interface TableInterface {
     name: string
     supportsCompleteScan: boolean
-    handlers?: TuplePatternMatcher<NativeHandler>
+    handlers?: CommandPatternMatcher<NativeHandler>
 
     select?: (pattern: Tuple, out: Stream) => void
     insert?: (tuple: Tuple, out: Stream) => void

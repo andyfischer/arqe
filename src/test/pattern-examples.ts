@@ -1,11 +1,11 @@
 
 import Graph from '../Graph'
-import { parsePattern } from '../parseCommand'
 import parseObjectToPattern, { patternToJson } from '../parseObjectToPattern'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
 import { receiveToTupleList } from '../receiveUtils'
 import { loadLocalBootstrapConfigs } from '../loadBootstrapConfigs'
+import parseTuple from '../parseTuple'
 
 class FuzzTestSession {
     graph: Graph
@@ -30,8 +30,8 @@ class FuzzTestSession {
 }
 
 function checkIsSupersetOf(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getVal("pattern"));
-    const isSupersetOf = parsePattern(example.getVal("is-superset-of"));
+    const pattern = parseTuple(example.getVal("pattern"));
+    const isSupersetOf = parseTuple(example.getVal("is-superset-of"));
 
     if (pattern.isSupersetOf(isSupersetOf)) {
         session.markPass();
@@ -41,8 +41,8 @@ function checkIsSupersetOf(session: FuzzTestSession, example: Tuple) {
 }
 
 function checkNotSupersetOf(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getVal("pattern"));
-    const notSupersetOf = parsePattern(example.getValOptional("not-superset-of", ''));
+    const pattern = parseTuple(example.getVal("pattern"));
+    const notSupersetOf = parseTuple(example.getValOptional("not-superset-of", ''));
 
     if (!pattern.isSupersetOf(notSupersetOf)) {
         session.markPass();
@@ -52,7 +52,7 @@ function checkNotSupersetOf(session: FuzzTestSession, example: Tuple) {
 }
 
 function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getVal("pattern"));
+    const pattern = parseTuple(example.getVal("pattern"));
     const jsonStr = example.getVal("equals-from-json");
     const json = JSON.parse(jsonStr);
     const patternFromObject = parseObjectToPattern(json);
@@ -76,7 +76,7 @@ function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
 }
 
 function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple) {
-    const pattern = parsePattern(example.getVal("pattern"));
+    const pattern = parseTuple(example.getVal("pattern"));
     const asObject = patternToJson(pattern);
     const backToPattern = parseObjectToPattern(asObject);
 
@@ -105,7 +105,7 @@ function expectEquals(example: Tuple, expected: any, observed: any, out: Stream)
 
 function checkPatternRestringify(example: Tuple, out: Stream) {
     const patternStr = example.getVal("pattern");
-    const pattern = parsePattern(patternStr);
+    const pattern = parseTuple(patternStr);
 
     // ignore if this pattern has an expression
     for (const tag of pattern.tags)

@@ -4,7 +4,7 @@ import { startFile, startObjectLiteral, Block, formatBlock, startFunctionTypeDef
 import ProviderGeneratorDAO from './generated/ProviderGeneratorDAO'
 import { writeFileSyncIfUnchanged } from '../platform/fs'
 import Pattern from '../Pattern'
-import parseCommand, { parsePattern } from '../parseCommand'
+import parseCommand from '../parseCommand'
 
 function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
     const handlerInterface = file.addInterface('NativeHandler');

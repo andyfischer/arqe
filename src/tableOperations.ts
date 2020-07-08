@@ -52,13 +52,13 @@ export function selectOnTable(table: TableInterface, tuple: Tuple, out: Stream) 
         throw new Error('table should not have search: ' + table.name)
 
     if (table.handlers) {
-        const getHandler = table.handlers.find(tuple.setVal('get', true));
+        const getHandler = table.handlers.find('get', tuple);
         if (getHandler) {
             callNativeHandler(getHandler, tuple, out);
             return;
         }
 
-        const selectHandler = table.handlers.find(tuple.setVal('select', true));
+        const selectHandler = table.handlers.find('select', tuple);
         if (selectHandler) {
             selectHandler.func(tuple, out);
             return;
@@ -76,7 +76,7 @@ export function insertOnTable(table: TableInterface, tuple: Tuple, out: Stream) 
     }
 
     if (table.handlers) {
-        const handler = table.handlers.find(tuple.setVal('insert', true));
+        const handler = table.handlers.find('insert', tuple);
         if (handler) {
             callNativeHandler(handler, tuple, out);
             return;

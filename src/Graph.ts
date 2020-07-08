@@ -8,25 +8,19 @@ import runCommandChain from './runCommandChain'
 import IDSource from './utils/IDSource'
 import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
-import { parsePattern } from './parseCommand'
 import watchAndValidateCommand from './watchAndValidateCommand'
 import Column from './Column'
 import setupBuiltinTables from './setupBuiltinTables'
 import parseObjectToPattern from './parseObjectToPattern'
 import CommandChain from './CommandChain'
 import Command from './Command'
-import QueryPlan, { QueryTag } from './QueryPlan'
-import maybeCreateImplicitTable from './maybeCreateImplicitTable'
-import PatternTag, { newTag } from './PatternTag'
-import { combineStreams } from './StreamUtil'
-import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
-import GenericStream, { StreamCombine } from './GenericStream'
 import InMemoryTable from './InMemoryTable'
 import TableInterface from './TableInterface'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import TableListener from './TableListener'
 import findTableForQuery from './findTableForQuery'
 import TableMount from './TableMount'
+import parseTuple from './parseTuple'
 
 export default class Graph {
 
@@ -200,7 +194,7 @@ export default class Graph {
     get(patternInput: any, receiver: Stream) {
         let pattern: Pattern;
         if (typeof patternInput === 'string') {
-            pattern = parsePattern(patternInput);
+            pattern = parseTuple(patternInput);
         } else {
             pattern = parseObjectToPattern(patternInput);
         }
@@ -211,7 +205,7 @@ export default class Graph {
     set(patternInput: any, receiver: Stream) {
         let pattern: Pattern;
         if (typeof patternInput === 'string') {
-            pattern = parsePattern(patternInput);
+            pattern = parseTuple(patternInput);
         } else {
             pattern = parseObjectToPattern(patternInput);
         }

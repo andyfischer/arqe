@@ -1,5 +1,6 @@
 
-import { parsePattern, parseCommandChain } from '../parseCommand'
+import { parseCommandChain } from '../parseCommand'
+import parseTuple from '../parseTuple';
 
 it('parses correctly', () => {
     const chain = parseCommandChain("get x y | join y z");
@@ -8,7 +9,7 @@ it('parses correctly', () => {
 });
 
 it('parses tag identifiers', () => {
-    const pattern = parsePattern("x [from $a] y [from $b] z/1");
+    const pattern = parseTuple("x [from $a] y [from $b] z/1");
     expect(pattern.tags[0].identifier).toBeFalsy();
     expect(pattern.tags[0].attr).toEqual('x');
     expect(pattern.tags[1].identifier).toEqual('a');

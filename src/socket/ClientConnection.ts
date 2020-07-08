@@ -2,10 +2,10 @@
 import WebSocket from '../platform/ws'
 import EventEmitter from 'events'
 import Stream from '../Stream'
-import { parseTuple } from '../parseCommand'
 import IDSource from '../utils/IDSource'
 import GraphLike from '../GraphLike'
 import { receiveToTupleList, fallbackReceiver } from '../receiveUtils'
+import parseTuple from '../parseTuple'
 
 export type RespondFunc = (msg: string) => void
 

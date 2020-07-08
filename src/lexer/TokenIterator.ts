@@ -39,6 +39,18 @@ export default class TokenIterator {
 
         if (pos >= this.tokens.length) {
             const lastToken = this.tokens[this.tokens.length - 1];
+            if (!lastToken) {
+                return {
+                    startPos: 0,
+                    endPos: 0,
+                    tokenIndex: -1,
+                    length: 0,
+                    lineStart: 0,
+                    columnStart: 0,
+                    leadingIndent: 0,
+                    match: null
+                }
+            }
             return {
                 startPos: lastToken.endPos,
                 endPos: lastToken.endPos,

@@ -1,6 +1,6 @@
 
-import { parsePattern } from '../parseCommand'
 import PatternTag from '../PatternTag'
+import parseTuple from '../parseTuple';
 
 it('PatternTag.setValue works', () => {
     const tag = new PatternTag({ attr: 'a', tagValue: '1' });
@@ -11,14 +11,14 @@ it('PatternTag.setValue works', () => {
 });
 
 it('updateTagAtIndex works', () => {
-    let p = parsePattern('a/1 b/2');
+    let p = parseTuple('a/1 b/2');
     expect(p.stringify()).toEqual('a/1 b/2');
     p = p.updateTagAtIndex(0, tag => tag.setValue('3'));
     expect(p.stringify()).toEqual('a/3 b/2');
 });
 
 it('updateTagOfType works', () => {
-    let p = parsePattern('a/1 b/2');
+    let p = parseTuple('a/1 b/2');
     expect(p.stringify()).toEqual('a/1 b/2');
     p = p.updateTagOfType('b', tag => tag.setValue('3'));
     expect(p.stringify()).toEqual('a/1 b/3');
@@ -27,8 +27,8 @@ it('updateTagOfType works', () => {
 describe('isSupersetOf', () => {
 
     function test(superPattern: string, subPattern: string) {
-        return parsePattern(superPattern).isSupersetOf(
-            parsePattern(subPattern));
+        return parseTuple(superPattern).isSupersetOf(
+            parseTuple(subPattern));
     }
 
     it('works', () => {
