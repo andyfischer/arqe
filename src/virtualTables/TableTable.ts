@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableStorage, { } from '../TableInterface'
+import TableStorage, { } from '../TableStorage'
 
 export class Glob implements TableStorage {
     name = 'TableTable'

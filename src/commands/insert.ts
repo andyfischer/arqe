@@ -4,7 +4,7 @@ import Graph from '../Graph';
 import Tuple from '../Tuple';
 import QueryPlan from '../QueryPlan';
 import { callNativeHandler } from '../NativeHandler';
-import TableStorage from '../TableInterface';
+import TableStorage from '../TableStorage';
 import Stream from '../Stream';
 import planQuery from '../planQuery';
 import PatternTag from '../PatternTag';

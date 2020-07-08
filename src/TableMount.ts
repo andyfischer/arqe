@@ -1,6 +1,6 @@
 
 import Tuple from './Tuple'
-import TableStorage from './TableInterface'
+import TableStorage from './TableStorage'
 import TableListener from './TableListener'
 
 export default class TableMount {

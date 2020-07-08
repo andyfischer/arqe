@@ -2,7 +2,7 @@
 import Tuple from '../Tuple'
 import { Pattern, Stream } from ".."
 import ClientConnection, { connectToServer } from '../socket/ClientConnection'
-import TableStorage, { } from '../TableInterface'
+import TableStorage, { } from '../TableStorage'
 
 const connectionByPort: { [port: string]: ClientConnection } = {}
 

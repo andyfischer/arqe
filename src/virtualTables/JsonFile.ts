@@ -2,7 +2,7 @@
 import Graph from '../Graph'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableStorage, { } from '../TableInterface'
+import TableStorage, { } from '../TableStorage'
 import GenericStream, { StreamCombine } from '../GenericStream'
 import fs from 'fs'
 import { emitCommandError } from '../CommandMeta'
