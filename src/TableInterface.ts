@@ -7,7 +7,7 @@ import TuplePatternMatcher from './TuplePatternMatcher'
 import NativeHandler from './NativeHandler'
 import CommandPatternMatcher from './CommandPatternMatcher'
 
-export default interface TableInterface {
+export default interface TableStorage {
     name: string
     supportsCompleteScan: boolean
     handlers?: CommandPatternMatcher<NativeHandler>

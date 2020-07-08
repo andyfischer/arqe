@@ -15,7 +15,7 @@ import parseObjectToPattern from './parseObjectToPattern'
 import CommandChain from './CommandChain'
 import Command from './Command'
 import InMemoryTable from './InMemoryTable'
-import TableInterface from './TableInterface'
+import TableStorage from './TableInterface'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import TableListener from './TableListener'
 import findTableForQuery from './findTableForQuery'
@@ -66,7 +66,7 @@ export default class Graph {
         return mount;
     }
 
-    defineVirtualTable(name: string, pattern: Tuple, storage: TableInterface) {
+    defineVirtualTable(name: string, pattern: Tuple, storage: TableStorage) {
         if (!name)
             throw new Error("missing 'name'");
         if (this.tables.has(name))

@@ -4,7 +4,7 @@ import Graph from './Graph'
 import QueryPlan from './QueryPlan'
 import PatternTag, { newTag } from './PatternTag'
 import { emitCommandError } from './CommandMeta'
-import TableInterface from './TableInterface'
+import TableStorage from './TableInterface'
 import { combineStreams } from './StreamUtil'
 import Stream from './Stream'
 import NativeHandler from './NativeHandler'
@@ -42,7 +42,7 @@ function callNativeHandler(handler: NativeHandler, input: Tuple, out: Stream) {
         finish(result);
 }
 
-export function selectOnTable(table: TableInterface, tuple: Tuple, out: Stream) {
+export function selectOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
     if (table.select) {
         table.select(tuple, out);
         return;
@@ -69,7 +69,7 @@ export function selectOnTable(table: TableInterface, tuple: Tuple, out: Stream) 
     out.done();
 }
 
-export function insertOnTable(table: TableInterface, tuple: Tuple, out: Stream) {
+export function insertOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
     if (table.insert) {
         table.insert(tuple, out);
         return;

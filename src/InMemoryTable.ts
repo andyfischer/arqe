@@ -3,12 +3,12 @@ import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
 import Stream from './Stream'
-import TableInterface, { } from './TableInterface'
+import TableStorage, { } from './TableInterface'
 import GenericStream, { StreamCombine } from './GenericStream'
 import TupleModification from './TupleModification'
 import TableListener from './TableListener'
 
-export default class Table implements TableInterface {
+export default class Table implements TableStorage {
     name: string
     supportsCompleteScan = true
     pattern: Pattern
@@ -29,13 +29,6 @@ export default class Table implements TableInterface {
                 out.next(tuple);
 
         out.done();
-    }
-
-    scan(out: GenericStream<{slotId: string, tuple: Tuple}>) {
-        for (const [slotId, tuple] of this.slots.entries())
-            out.receive({slotId, tuple});
-
-        out.finish();
     }
 
     insert(insertTuple: Tuple, out: Stream) {

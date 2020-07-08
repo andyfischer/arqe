@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { } from '../TableInterface'
+import TableStorage, { } from '../TableInterface'
 import GenericStream, { StreamCombine } from '../GenericStream'
 import fs from 'fs'
 import { emitCommandError } from '../CommandMeta'

@@ -1,6 +1,6 @@
 import TuplePatternMatcher from "./TuplePatternMatcher"
 import parseCommand from "./parseCommand"
-import AutoInitMap from "./AutoInitMap"
+import AutoInitMap from "./utils/AutoInitMap"
 import Tuple from "./Tuple"
 
 class OneCommandMatcher<T> {

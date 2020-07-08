@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableInterface, { } from '../TableInterface'
+import TableStorage, { } from '../TableInterface'
 import GenericStream, { StreamCombine } from '../GenericStream'
 import fs from 'fs-extra'
 import { emitCommandError } from '../CommandMeta'
@@ -32,7 +32,7 @@ export class FsFileContents {
     }
 }
 
-export class FsDirectory implements TableInterface {
+export class FsDirectory implements TableStorage {
     name = 'FsDirectory'
     schema = 'fs dir filename?'
     supportsCompleteScan: false

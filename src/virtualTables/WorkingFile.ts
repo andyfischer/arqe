@@ -1,6 +1,6 @@
 
 import Stream from '../Stream'
-import TableInterface from '../TableInterface'
+import TableStorage from '../TableInterface'
 import Tuple from '../Tuple'
 import TupleModification from '../TupleModification'
 import TuplePatternMatcher from '../TuplePatternMatcher'
