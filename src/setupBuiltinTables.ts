@@ -2,6 +2,7 @@
 import Graph from './Graph'
 import { isRunningInNode } from './utils'
 import parseTuple from './parseTuple';
+import { decoratedObjToTableMount } from './TableMount';
 
 type ExecEnv = 'browser' | 'node' | 'any'
 
@@ -10,42 +11,42 @@ const tableDefinitions = {
     {
         init: () => {
             const { WorkingFile } = require('./virtualTables/WorkingFile');
-            return new WorkingFile();
+            return decoratedObjToTableMount(new WorkingFile())
         },
         execEnv: 'all'
     },
     {
         init: () => {
             const { FsFileContents } = require('./virtualTables/Filesystem');
-            return new FsFileContents();
+            return decoratedObjToTableMount(new FsFileContents())
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
             const { FsDirectory } = require('./virtualTables/Filesystem');
-            return new FsDirectory();
+            return decoratedObjToTableMount(new FsDirectory());
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
             const { Glob } = require('./virtualTables/Glob');
-            return new Glob();
+            return decoratedObjToTableMount(new Glob());
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
             const { Remote } = require('./virtualTables/Remote');
-            return new Remote();
+            return decoratedObjToTableMount(new Remote());
         },
         execEnv: 'any'
     }, 
     {
         init: () => {
             const { TestMath } = require('./virtualTables/TestMath');
-            return new TestMath();
+            return decoratedObjToTableMount(new TestMath())
         },
         execEnv: 'any'
     }, 
@@ -70,11 +71,7 @@ export default function setupBuiltinTables(graph: Graph) {
             continue;
 
         const table = tableDef.init();
-
-        if (!table.schema)
-            throw new Error('missing schema: ' + table);
-
-        graph.defineVirtualTable(table.name, parseTuple(table.schema), table);
+        graph.addTable(table);
     }
 
     /*

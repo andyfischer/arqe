@@ -1,14 +1,14 @@
 
-import Graph from './Graph'
-import Stream from './Stream'
-import { receiveToTupleList } from './receiveUtils'
-import Pattern from './Pattern'
-import Tuple, { tagsToTuple } from './Tuple'
-import TupleTag from './TupleTag'
-import { emitSearchPatternMeta } from './CommandMeta'
-import { patternTagToString } from './stringifyQuery'
-import CommandExecutionParams from './CommandExecutionParams'
-import getCommand from './commands/get'
+import Graph from '../Graph'
+import Stream from '../Stream'
+import { receiveToTupleList } from '../receiveUtils'
+import Pattern from '../Pattern'
+import Tuple, { tagsToTuple } from '../Tuple'
+import TupleTag from '../TupleTag'
+import { emitSearchPatternMeta } from '../CommandMeta'
+import { patternTagToString } from '../stringifyQuery'
+import CommandExecutionParams from '../CommandExecutionParams'
+import getCommand from './get'
 
 
 function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {

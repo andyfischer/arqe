@@ -1,6 +1,5 @@
 
 import { parseCommandChain } from './parseCommand'
-import Pattern from './Pattern'
 import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
@@ -33,7 +32,7 @@ export default class Graph {
     graphListenerIds = new IDSource()
     nextListenerId = new IDSource()
 
-    relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void }[] = []
+    relationCreatedListeners: { pattern: Tuple, onCreate: (rel: Tuple) => void }[] = []
 
     constructor() {
         setupBuiltinTables(this);
@@ -43,7 +42,7 @@ export default class Graph {
         return this.tables.get(name) || null;
     }
 
-    defineInMemoryTable(name: string, pattern: Pattern) {
+    defineInMemoryTable(name: string, pattern: Tuple) {
         if (this.tables.has(name))
             throw new Error("table already exists: " + name)
 
@@ -66,13 +65,19 @@ export default class Graph {
         return mount;
     }
 
+    addTable(table: TableMount) {
+        this.tables.set(table.name, table);
+        this.tablePatternMap.add(table.schema, table);
+        return table;
+    }
+
     takeNextUniqueIdForAttr(attr: string) {
         if (!this.nextUniquePerAttr[attr])
             this.nextUniquePerAttr[attr] = new IDSource();
         return this.nextUniquePerAttr[attr].take();
     }
 
-    addListener(pattern: Pattern, listener: GraphListener) {
+    addListener(pattern: Tuple, listener: GraphListener) {
         this.listeners.push({ pattern, listener });
     }
 
@@ -180,7 +185,7 @@ export default class Graph {
     */
 
     get(patternInput: any, receiver: Stream) {
-        let pattern: Pattern;
+        let pattern: Tuple;
         if (typeof patternInput === 'string') {
             pattern = parseTuple(patternInput);
         } else {
@@ -191,7 +196,7 @@ export default class Graph {
     }
 
     set(patternInput: any, receiver: Stream) {
-        let pattern: Pattern;
+        let pattern: Tuple;
         if (typeof patternInput === 'string') {
             pattern = parseTuple(patternInput);
         } else {
