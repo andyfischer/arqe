@@ -5,7 +5,7 @@ import SearchOperation from '../SearchOperation'
 import Command from '../Command'
 import { commandTagsToString } from '../stringifyQuery'
 import StorageProvider from '../StorageProvider'
-import PatternTag, { newTag } from '../PatternTag'
+import TupleTag, { newTag } from '../TupleTag'
 import RelationReceiver from '../RelationReceiver'
 
 export default class RawObjectStorage implements StorageProvider {
@@ -26,7 +26,7 @@ export default class RawObjectStorage implements StorageProvider {
 
     *findAllMatches(pattern: Pattern) {
         const variedTag = pattern.getOneTagForType(this.variedType);
-        const otherTags: PatternTag[] = pattern.tags.filter(tag => tag.tagType !== variedTag.tagType);
+        const otherTags: TupleTag[] = pattern.tags.filter(tag => tag.tagType !== variedTag.tagType);
 
         if (variedTag.starValue) {
             for (const key in this.value) {

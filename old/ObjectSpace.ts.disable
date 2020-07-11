@@ -3,7 +3,7 @@ import IDSource from '../utils/IDSource'
 import Graph from '../Graph'
 import GraphListener from '../GraphListenerV3'
 import Relation from '../Relation'
-import PatternTag from '../PatternTag'
+import TupleTag from '../TupleTag'
 import CommandStep from '../CommandStep'
 import Pattern, { patternFromMap } from '../Pattern'
 import RelationReceiver from '../RelationReceiver'
@@ -113,7 +113,7 @@ function findObjectType(graph: Graph, pattern: Pattern) {
     return null;
 }
 
-function runObjectStarSearch(graph: Graph, search: SearchOperation, columnTag: PatternTag, objectSpace: ObjectSpace) {
+function runObjectStarSearch(graph: Graph, search: SearchOperation, columnTag: TupleTag, objectSpace: ObjectSpace) {
 
     const filters = [];
     const attrsToInclude = [];

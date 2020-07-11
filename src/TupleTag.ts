@@ -13,7 +13,7 @@ export interface TagOptions {
     identifier?: string
 }
 
-export default class PatternTag {
+export default class TupleTag {
     attr?: string
     tagValue?: string
     valueExpr?: string[]
@@ -49,12 +49,12 @@ export default class PatternTag {
         return patternTagToString(this);
     }
 
-    copy(): PatternTag {
-        return new PatternTag(this);
+    copy(): TupleTag {
+        return new TupleTag(this);
     }
 
-    setValue(value: string): PatternTag {
-        return new PatternTag({
+    setValue(value: string): TupleTag {
+        return new TupleTag({
             ...this,
             tagValue: value,
             starValue: null,
@@ -62,8 +62,8 @@ export default class PatternTag {
         });
     }
 
-    setValueless(): PatternTag {
-        return new PatternTag({
+    setValueless(): TupleTag {
+        return new TupleTag({
             ...this,
             tagValue: null,
             starValue: null,
@@ -71,8 +71,8 @@ export default class PatternTag {
         });
     }
 
-    setStarValue(): PatternTag {
-        return new PatternTag({
+    setStarValue(): TupleTag {
+        return new TupleTag({
             ...this,
             starValue: true,
             tagValue: null,
@@ -80,26 +80,26 @@ export default class PatternTag {
         });
     }
 
-    setIdentifier(id: string): PatternTag {
-        return new PatternTag({
+    setIdentifier(id: string): TupleTag {
+        return new TupleTag({
             ...this,
             identifier: id
         });
     }
 
-    removeIdentifier(): PatternTag {
+    removeIdentifier(): TupleTag {
         return this.setIdentifier(null);
     }
 
-    setValueExpr(expr: string[]): PatternTag {
-        return new PatternTag({
+    setValueExpr(expr: string[]): TupleTag {
+        return new TupleTag({
             ...this,
             tagValue: null,
             valueExpr: expr
         });
     }
 
-    compareCanonicalSort(rhs: PatternTag): number {
+    compareCanonicalSort(rhs: TupleTag): number {
         if (this.doubleStar !== rhs.doubleStar)
             return boolCompare(this.doubleStar, rhs.doubleStar);
 
@@ -121,7 +121,7 @@ export default class PatternTag {
         return 0;
     }
 
-    equals(rhs: PatternTag): boolean {
+    equals(rhs: TupleTag): boolean {
         return this.compareCanonicalSort(rhs) === 0;
     }
 }
@@ -142,13 +142,13 @@ function boolCompare(a,b) {
     return 0;
 }
 
-export type FixedTag = PatternTag;
+export type FixedTag = TupleTag;
 
-export function newTag(attr: string, tagValue?: string | true): PatternTag {
-    return new PatternTag({ attr, tagValue });
+export function newTag(attr: string, tagValue?: string | true): TupleTag {
+    return new TupleTag({ attr, tagValue });
 }
 
 export function newTagFromObject(obj: TagOptions) {
-    return new PatternTag(obj);
+    return new TupleTag(obj);
 }
 

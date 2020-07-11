@@ -1,6 +1,6 @@
 
 import Pattern from './Pattern'
-import PatternTag from './TupleTag'
+import TupleTag from './TupleTag'
 import { newTagFromObject } from './TupleTag'
 import { tagsToTuple } from './Tuple'
 
@@ -54,7 +54,7 @@ function oneKeyValueToTag(key: string, value: any) {
 }
 
 export default function parseObjectToPattern(obj: PatternJSON): Pattern {
-    let tags: PatternTag[] = [];
+    let tags: TupleTag[] = [];
 
     for (const k in obj) {
         const result = oneKeyValueToTag(k, obj[k]);
@@ -67,7 +67,7 @@ export default function parseObjectToPattern(obj: PatternJSON): Pattern {
     return tagsToTuple(tags);
 }
 
-function oneTagToKeyValue(tag: PatternTag, out: PatternJSON) {
+function oneTagToKeyValue(tag: TupleTag, out: PatternJSON) {
 
     function addOutput(key: string, value: any) {
         if (out[key]) {

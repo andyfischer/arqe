@@ -3,9 +3,9 @@ import Graph, { RespondFunc } from './Graph'
 import Command from './Command'
 import parseCommand from './parseCommand'
 import { parsedCommandToString } from './stringifyQuery'
-import PatternTag from './PatternTag'
+import TupleTag from './TupleTag'
 
-function containsTagType(tags: PatternTag[], tagType: string) {
+function containsTagType(tags: TupleTag[], tagType: string) {
     for (const tag of tags)
         if (tag.tagType === tagType)
             return true;
@@ -15,9 +15,9 @@ function containsTagType(tags: PatternTag[], tagType: string) {
 
 export default class GraphContext {
     graph: Graph
-    contextTags: PatternTag[] = []
-    contextTypeMap: { [typeName: string]: PatternTag } = {}
-    optionalContextTagMap: { [ typeName: string]: PatternTag } = {}
+    contextTags: TupleTag[] = []
+    contextTypeMap: { [typeName: string]: TupleTag } = {}
+    optionalContextTagMap: { [ typeName: string]: TupleTag } = {}
 
     constructor(graph: Graph) {
         this.graph = graph;
@@ -31,7 +31,7 @@ export default class GraphContext {
         this.contextTypeMap = map;
     }
 
-    addOptionalContextTag(tag: PatternTag) {
+    addOptionalContextTag(tag: TupleTag) {
         this.optionalContextTagMap[tag.tagType] = tag;
     }
 

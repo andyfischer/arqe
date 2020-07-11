@@ -1,12 +1,12 @@
 
 import Tuple from './Tuple'
-import PatternTag from './TupleTag'
+import TupleTag from './TupleTag'
 import Stream from './Stream'
 import TableMount from './TableMount'
 import TupleModification from './TupleModification'
 
 export interface QueryTag {
-    tag: PatternTag
+    tag: TupleTag
 }
 
 export default interface QueryPlan {

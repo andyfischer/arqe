@@ -1,9 +1,9 @@
 
-import PatternTag from '../TupleTag'
+import TupleTag from '../TupleTag'
 import parseTuple from '../parseTuple';
 
-it('PatternTag.setValue works', () => {
-    const tag = new PatternTag({ attr: 'a', tagValue: '1' });
+it('TupleTag.setValue works', () => {
+    const tag = new TupleTag({ attr: 'a', tagValue: '1' });
     expect(tag.stringify()).toEqual('a/1');
 
     const tag2 = tag.setValue('3');

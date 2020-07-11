@@ -7,14 +7,14 @@ import CommandExecution from './CommandExecution'
 import { receiveToRelationList } from './RelationReceiver'
 import { runCommandChain } from './ChainedExecution'
 import { parseTag } from './parseCommand'
-import PatternTag from './PatternTag'
+import TupleTag from './TupleTag'
 import CommandChain from './CommandChain'
 
 export class TagAPI {
     api: GraphRelationSyncAPI
-    patternTag: PatternTag
+    patternTag: TupleTag
 
-    constructor(api: GraphRelationSyncAPI, patternTag: PatternTag) {
+    constructor(api: GraphRelationSyncAPI, patternTag: TupleTag) {
         this.api = api;
         this.patternTag = patternTag;
     }

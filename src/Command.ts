@@ -1,7 +1,7 @@
 
 import Pattern from './Pattern'
 import { parsedCommandToString } from './stringifyQuery'
-import PatternTag from './TupleTag'
+import TupleTag from './TupleTag'
 
 type FlagMap = { [flag: string]: any }
 

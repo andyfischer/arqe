@@ -4,7 +4,7 @@ import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
 import Pattern from './Pattern'
 import Tuple, { tagsToTuple } from './Tuple'
-import PatternTag from './TupleTag'
+import TupleTag from './TupleTag'
 import { emitSearchPatternMeta } from './CommandMeta'
 import { patternTagToString } from './stringifyQuery'
 import CommandExecutionParams from './CommandExecutionParams'
@@ -12,7 +12,7 @@ import getCommand from './commands/get'
 
 
 function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
-    const identifierTags: PatternTag[] = []
+    const identifierTags: TupleTag[] = []
     for (const tag of searchPattern.tags)
         if (tag.identifier)
             identifierTags.push(tag);
@@ -125,8 +125,8 @@ function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPatte
     //     1) contains at least one of the same identifiers
     //     2) has the same tag in that identifier
 
-    const correspondingTags: { identifier: string, input: PatternTag, search: PatternTag }[] = [];
-    const unboundTags: PatternTag[] = []
+    const correspondingTags: { identifier: string, input: TupleTag, search: TupleTag }[] = [];
+    const unboundTags: TupleTag[] = []
 
     for (const [identifier, identifierKey] of searchPattern.byIdentifier().entries()) {
         const inputKey = inputSearchPattern.byIdentifier().get(identifier);

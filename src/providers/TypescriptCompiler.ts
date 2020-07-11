@@ -7,7 +7,7 @@ const exec = Util.promisify(ChildProcess.exec);
 export const errorLineRegex = /^([a-zA-Z0-9\.\/_-]+)\(([0-9]+),([0-9]+)\): (.*)$/
 const errorElaborationRegex = /  (.*)$/
 
-// console.log('regex test: ', errorLineRegex.exec(`fs-refactor/src/__tests__/parseCommand.test.ts(56,35): error TS2339: Property 'tagType' does not exist on type 'PatternTag'.`))
+// console.log('regex test: ', errorLineRegex.exec(`fs-refactor/src/__tests__/parseCommand.test.ts(56,35): error TS2339: Property 'tagType' does not exist on type 'TupleTag'.`))
 
 export default function setup() {
     return new TypescriptCompilationAPI({

@@ -1,7 +1,7 @@
 
 import Tuple from './Tuple'
 import Stream from './Stream'
-import PatternTag from './TupleTag'
+import TupleTag from './TupleTag'
 import { patternTagToString } from './stringifyQuery'
 
 export default function receiveToStringList(onDone: (s: string|string[]) => void): Stream {
@@ -18,7 +18,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
 
     function stringifyTuple(rel: Tuple) {
 
-        const tags = rel.tags.filter((tag: PatternTag) => {
+        const tags = rel.tags.filter((tag: TupleTag) => {
             if (searchPattern && !outputExtended
                 && searchPattern.derivedData().fixedTagsForAttr.has(tag.attr))
                 return false;

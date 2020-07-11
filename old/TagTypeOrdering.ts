@@ -1,7 +1,7 @@
 
 import Relation from './Relation'
 import UpdateContext from './UpdateContext'
-import PatternTag from './PatternTag'
+import TupleTag from './TupleTag'
 
 const beforeSection = 1
 const unknownSection = 2
@@ -21,8 +21,8 @@ export default class TagTypeOrdering {
         return a.localeCompare(b);
     }
 
-    sortTags(tags: PatternTag[]) {
-        tags.sort((a: PatternTag, b: PatternTag) => {
+    sortTags(tags: TupleTag[]) {
+        tags.sort((a: TupleTag, b: TupleTag) => {
             return this.compareTagTypes(a.tagType, b.tagType);
         });
 

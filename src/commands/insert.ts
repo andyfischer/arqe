@@ -7,7 +7,7 @@ import { callNativeHandler } from '../NativeHandler';
 import TableStorage from '../TableStorage';
 import Stream from '../Stream';
 import planQuery from '../planQuery';
-import PatternTag from '../TupleTag';
+import TupleTag from '../TupleTag';
 
 export function insertOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
     if (table.insert) {
@@ -70,7 +70,7 @@ export function insertPlanned(graph: Graph, plan: QueryPlan) {
 }
 
 export function toInitialization(rel: Tuple) {
-    return rel.remapTags((tag: PatternTag) => {
+    return rel.remapTags((tag: TupleTag) => {
         if (tag.valueExpr && tag.valueExpr[0] === 'set')
             return tag.setValue(tag.valueExpr[1]);
         return tag;

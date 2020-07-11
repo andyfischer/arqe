@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
-import PatternTag, { newTag } from './TupleTag'
+import TupleTag, { newTag } from './TupleTag'
 import { stringifyExpr } from './parseExpr'
 
 function tagValueNeedsParens(s: string) {
@@ -13,7 +13,7 @@ function tagValueNeedsParens(s: string) {
     return false;
 }
 
-export function patternTagToString(tag: PatternTag) {
+export function patternTagToString(tag: TupleTag) {
     if (tag.star && tag.identifier)
         return '$' + tag.identifier;
 
@@ -79,7 +79,7 @@ export function patternTagToString(tag: PatternTag) {
     return ''
 }
 
-export function commandTagsToString(tags: PatternTag[]) {
+export function commandTagsToString(tags: TupleTag[]) {
     return tags.map(patternTagToString).join(' ');
 }
 
@@ -114,7 +114,7 @@ export function parseAsSet(str: string) {
     return command.pattern.tags;
 }
 
-export function normalizeExactTag(tags: PatternTag[]) {
+export function normalizeExactTag(tags: TupleTag[]) {
     const argStrs = tags.map(arg => arg.attr + '/' + arg.tagValue)
     argStrs.sort();
     return argStrs.join(' ');

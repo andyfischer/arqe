@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import PatternTag from './TupleTag'
+import TupleTag from './TupleTag'
 import Tuple from './Tuple'
 import Stream from './Stream'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
@@ -49,7 +49,7 @@ function getEffects(tuple: Tuple) {
 }
 
 function resolveImmediateExpressions(tuple: Tuple) {
-    return tuple.remapTags((tag: PatternTag) => {
+    return tuple.remapTags((tag: TupleTag) => {
         if (tag.valueExpr && tag.valueExpr[0] === 'seconds-from-now') {
             const seconds = parseInt(tag.valueExpr[1]);
             return tag.setValue(Date.now() + (seconds * 1000) + '');
@@ -72,7 +72,7 @@ function patternIsDelete(tuple: Tuple) {
 }
 
 function modificationPatternToFilter(tuple: Tuple) {
-    return tuple.remapTags((tag: PatternTag) => {
+    return tuple.remapTags((tag: TupleTag) => {
         if (tag.attr === 'deleted')
             return null;
 
@@ -83,7 +83,7 @@ function modificationPatternToFilter(tuple: Tuple) {
     });
 }
 
-function tagModifiesExistingRelations(tag: PatternTag) {
+function tagModifiesExistingRelations(tag: TupleTag) {
     if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
         return true;
 

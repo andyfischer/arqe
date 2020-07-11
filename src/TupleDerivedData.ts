@@ -1,16 +1,16 @@
 
 import Tuple from './Tuple'
-import PatternTag from './TupleTag'
+import TupleTag from './TupleTag'
 
 export default class TupleDerivedData {
 
     hasSingleStar: boolean
     hasDoubleStar: boolean
     hasAnyStars: boolean
-    fixedTags: PatternTag[] = []
-    fixedTagsForAttr = new Map<string,PatternTag>()
+    fixedTags: TupleTag[] = []
+    fixedTagsForAttr = new Map<string,TupleTag>()
 
-    sortedTags: PatternTag[]
+    sortedTags: TupleTag[]
 
     constructor(tuple: Tuple) {
 

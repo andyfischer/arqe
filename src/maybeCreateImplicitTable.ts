@@ -1,5 +1,5 @@
 
-import PatternTag, { newTag } from './TupleTag'
+import TupleTag, { newTag } from './TupleTag'
 import Tuple from './Tuple'
 import TableMount from './TableMount'
 import Graph from './Graph'
@@ -16,7 +16,7 @@ export default function maybeCreateImplicitTable(graph: Graph, plan: PartialQuer
 
     const tuple = plan.filterPattern || plan.tuple;
 
-    const attrTags: PatternTag[] = []
+    const attrTags: TupleTag[] = []
     for (const tag of tuple.tags) {
         if (tag.attr)
             attrTags.push(newTag(tag.attr));

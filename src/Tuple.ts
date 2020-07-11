@@ -3,20 +3,20 @@ import Command from './Command'
 import Graph from './Graph'
 import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
-import PatternTag, { newTag, FixedTag } from './TupleTag'
+import TupleTag, { newTag, FixedTag } from './TupleTag'
 import TupleMatchHelper from './TupleMatchHelper'
 import TupleDerivedData from './TupleDerivedData'
 
 export default class Tuple {
 
-    tags: PatternTag[] = []
+    tags: TupleTag[] = []
 
-    _asMap?: Map<string, PatternTag>
+    _asMap?: Map<string, TupleTag>
     _derivedData?: TupleDerivedData
     _matchHelper?: TupleMatchHelper
-    _byIdentifier?: Map<string, PatternTag>
+    _byIdentifier?: Map<string, TupleTag>
 
-    constructor(tags: PatternTag[]) {
+    constructor(tags: TupleTag[]) {
         if (!Array.isArray(tags))
             throw new Error("expected 'tags' to be an Array");
 
@@ -75,13 +75,13 @@ export default class Tuple {
         return this._byIdentifier;
     }
 
-    remapTags(func: (tag:PatternTag) => PatternTag) {
+    remapTags(func: (tag:TupleTag) => TupleTag) {
         const tags = this.tags.map(func)
             .filter(tag => tag);
         return new Tuple(tags);
     }
 
-    modifyTagsList(func: (tags: PatternTag[]) => PatternTag[]) {
+    modifyTagsList(func: (tags: TupleTag[]) => TupleTag[]) {
         const tags = func(this.tags);
         return new Tuple(tags);
     }
@@ -147,7 +147,7 @@ export default class Tuple {
         return this.asMap().has(attr) && !!this.asMap().get(attr).tagValue;
     }
 
-    getTagObject(attr: string): PatternTag {
+    getTagObject(attr: string): TupleTag {
         return this.asMap().get(attr);
     }
 
@@ -232,14 +232,14 @@ export default class Tuple {
         return -1;
     }
 
-    updateTagOfType(attr: string, update: (t: PatternTag) => PatternTag) {
+    updateTagOfType(attr: string, update: (t: TupleTag) => TupleTag) {
         const index = this.findTagIndexOfType(attr);
         if (index === -1)
             throw new Error('attr not found: ' + attr);
         return this.updateTagAtIndex(index, update);
     }
 
-    updateTagAtIndex(index: number, update: (t: PatternTag) => PatternTag) {
+    updateTagAtIndex(index: number, update: (t: TupleTag) => TupleTag) {
         const tags = this.tags.map(t => t);
         tags[index] = update(tags[index]);
         return new Tuple(tags);
@@ -257,7 +257,7 @@ export default class Tuple {
         return new Tuple(this.tags.concat([parseTag(s)]));
     }
 
-    addTagObj(tag: PatternTag) {
+    addTagObj(tag: TupleTag) {
         return new Tuple(this.tags.concat([tag]));
     }
 
@@ -302,6 +302,6 @@ export function objectToTuple(object: { [k: string]: string | true }) {
     return new Tuple(tags);
 }
 
-export function tagsToTuple(tags: PatternTag[]): Tuple {
+export function tagsToTuple(tags: TupleTag[]): Tuple {
     return new Tuple(tags)
 }

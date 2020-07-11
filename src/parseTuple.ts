@@ -2,7 +2,7 @@ import Command from './Command'
 import CommandChain from './CommandChain'
 import Tuple, { tagsToTuple } from './Tuple'
 import Pattern from './Pattern'
-import PatternTag, { newTagFromObject, TagOptions, FixedTag } from './TupleTag'
+import TupleTag, { newTagFromObject, TagOptions, FixedTag } from './TupleTag'
 import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
     t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
@@ -10,11 +10,11 @@ import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_
     t_lparen, t_rparen } from './lexer'
 
 interface InProgressQuery {
-    tags: PatternTag[]
+    tags: TupleTag[]
     flags: { [flag: string]: any }
 }
 
-export function parseOneTag(it: TokenIterator): PatternTag {
+export function parseOneTag(it: TokenIterator): TupleTag {
 
     let identifier;
 
