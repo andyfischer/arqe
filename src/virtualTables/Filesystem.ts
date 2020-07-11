@@ -26,7 +26,7 @@ export class FsFileContents {
     }
 }
 
-export class FsDirectory implements TableStorage {
+export class FsDirectory {
     name = 'FsDirectory'
     schemaStr = 'fs dir filename?'
     supportsCompleteScan: false

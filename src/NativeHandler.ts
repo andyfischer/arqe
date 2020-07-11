@@ -2,7 +2,7 @@ import Tuple from "./Tuple";
 import Stream from "./Stream";
 
 export default interface NativeHandler {
-    name: string
+    name?: string
     func: any
 }
 

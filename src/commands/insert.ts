@@ -8,19 +8,20 @@ import TableStorage from '../TableStorage';
 import Stream from '../Stream';
 import planQuery from '../planQuery';
 import TupleTag from '../TupleTag';
+import TableMount from '../TableMount';
 
-export function insertOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
+export function insertOnTable(table: TableMount, tuple: Tuple, out: Stream) {
+    /*
     if (table.insert) {
         table.insert(tuple, out);
         return;
     }
+    */
 
-    if (table.handlers) {
-        const handler = table.handlers.find('insert', tuple);
-        if (handler) {
-            callNativeHandler(handler, tuple, out);
-            return;
-        }
+    const handler = table.handlers.find('insert', tuple);
+    if (handler) {
+        callNativeHandler(handler, tuple, out);
+        return;
     }
 
     emitCommandError(out, "No insert handler found on table " + table.name);
@@ -57,7 +58,7 @@ export function insertPlanned(graph: Graph, plan: QueryPlan) {
 
     const tuple = resolveExpressionValuesForInsert(graph, plan.tuple);
 
-    insertOnTable(table.storage, tuple, {
+    insertOnTable(table, tuple, {
         next: t => {
             output.next(t);
         },

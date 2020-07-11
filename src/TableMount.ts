@@ -15,6 +15,7 @@ export default class TableMount {
     name: string
     schema: Tuple
     storage: TableStorage
+    supportsCompleteScan: boolean
 
     handlers = new CommandPatternMatcher<NativeHandler>()
 
@@ -22,6 +23,10 @@ export default class TableMount {
         this.name = name;
         this.schema = schema;
         this.storage = storage;
+    }
+
+    addHandler(commandStr: string, func: NativeHandler) {
+        this.handlers.addCommandStr(commandStr, { func });
     }
 }
 

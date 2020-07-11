@@ -1,10 +1,26 @@
 
 import CommandExecutionParams from '../CommandExecutionParams'
-import { Graph, Tuple } from '..';
+import { Graph, Tuple, Stream, emitCommandError } from '..';
 import QueryPlan from '../QueryPlan';
 import { combineStreams } from '../StreamUtil';
 import { toInitialization, insertPlanned } from './insert';
 import planQuery from '../planQuery';
+import TableMount from '../TableMount';
+import { callNativeHandler } from '../NativeHandler';
+import TupleModification from '../TupleModification';
+
+export function updateOnTable(table: TableMount, searchPattern: Tuple,
+        modification: TupleModification, out: Stream) {
+
+    const handler = table.handlers.find('update', searchPattern);
+    if (handler) {
+        handler.func(searchPattern, modification, out);
+        return;
+    }
+
+    emitCommandError(out, "No insert handler found on table " + table.name);
+    out.done();
+}
 
 export function updatePlanned(graph: Graph, plan: QueryPlan) {
     const { output } = plan;
@@ -37,7 +53,7 @@ export function updatePlanned(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        table.storage.update(searchPattern, plan.modification, collectOutput());
+        updateOnTable(table, searchPattern, plan.modification, collectOutput());
     }
 
     allTables.done();

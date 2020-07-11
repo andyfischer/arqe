@@ -6,6 +6,7 @@ import Stream from './Stream'
 import TableStorage, { } from './TableStorage'
 import TupleModification from './TupleModification'
 import TableListener from './TableListener'
+import TableMount from './TableMount'
 
 export default class Table implements TableStorage {
     name: string
@@ -17,9 +18,17 @@ export default class Table implements TableStorage {
 
     listeners = new Map<string, TableListener>();
 
+    mount: TableMount
+
     constructor(name: string, pattern: Pattern) {
         this.name = name;
         this.pattern = pattern;
+
+        this.mount = new TableMount(name, pattern);
+        this.mount.addHandler('select **', this.select.bind(this));
+        this.mount.addHandler('insert **', this.insert.bind(this));
+        this.mount.addHandler('update **', this.update.bind(this));
+        this.mount.addHandler('delete **', this.delete.bind(this));
     }
 
     select(pattern: Tuple, out: Stream) {

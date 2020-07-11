@@ -46,10 +46,9 @@ export default class Graph {
         if (this.tables.has(name))
             throw new Error("table already exists: " + name)
 
-        const tableStorage = new InMemoryTable(name, pattern);
-        const mount = new TableMount(name, pattern, tableStorage);
-        this.addTable(mount);
-        return mount;
+        const inMemoryTable = new InMemoryTable(name, pattern);
+        this.addTable(inMemoryTable.mount);
+        return inMemoryTable;
     }
 
     defineVirtualTable(name: string, pattern: Tuple, storage: TableStorage) {
@@ -91,10 +90,13 @@ export default class Graph {
         }
 
         const id = this.nextListenerId.take();
+        /*
+        FIXME
         if (!table.storage.addListener)
             throw new Error(`${table.storage.name} doesn't support listeners`);
 
         table.storage.addListener(id, listener);
+        */
         return id;
     }
 

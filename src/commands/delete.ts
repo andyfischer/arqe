@@ -6,17 +6,17 @@ import planQuery from "../planQuery";
 import CommandExecutionParams from '../CommandExecutionParams'
 import TableStorage from "../TableStorage";
 import { callNativeHandler } from "../NativeHandler";
+import TableMount from "../TableMount";
 
-export function deleteOnTable(graph: Graph, tuple: Tuple, table: TableStorage, out: Stream) {
+export function deleteOnTable(graph: Graph, tuple: Tuple, table: TableMount, out: Stream) {
 
-    if (table.handlers) {
-        const handler = table.handlers.find('delete', tuple);
-        if (handler) {
-            callNativeHandler(handler, tuple, out);
-            return;
-        }
+    const handler = table.handlers.find('delete', tuple);
+    if (handler) {
+        callNativeHandler(handler, tuple, out);
+        return;
     }
     
+    /*
     table.delete(tuple, {
         next(t: Tuple) {
             graph.onTupleDeleted(t);
@@ -25,6 +25,7 @@ export function deleteOnTable(graph: Graph, tuple: Tuple, table: TableStorage, o
         },
         done: out.done
     });
+    */
 }
 
 export function deletePlanned(graph: Graph, plan: QueryPlan) {
@@ -35,7 +36,7 @@ export function deletePlanned(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        deleteOnTable(graph, searchPattern, table.storage, collectOutput());
+        deleteOnTable(graph, searchPattern, table, collectOutput());
     }
     allTables.done();
 }
