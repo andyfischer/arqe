@@ -1,5 +1,5 @@
 
-import Graph from '../../Graph'
+import Graph from '../../../Graph'
 import watchFile from '../watchFile'
 
 it('triggers events on file change', async () => {

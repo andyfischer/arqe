@@ -1,10 +1,10 @@
 
 import Path from 'path'
 import WatchFileApi from './generated/WatchFileApi'
-import runStandardProcess from '../toollib/runStandardProcess'
-import getProcessClient from '../toollib/getProcessClient'
-import Graph from '../Graph'
-import GraphLike from '../GraphLike'
+import runStandardProcess from '../../toollib/runStandardProcess'
+import getProcessClient from '../../toollib/getProcessClient'
+import Graph from '../../Graph'
+import GraphLike from '../../GraphLike'
 
 export async function notifyFileChanged(graph: GraphLike, filename: string) {
 

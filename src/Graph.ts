@@ -9,7 +9,6 @@ import IDSource from './utils/IDSource'
 import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import watchAndValidateCommand from './watchAndValidateCommand'
-import Column from './Column'
 import setupBuiltinTables from './setupBuiltinTables'
 import parseObjectToPattern from './parseObjectToPattern'
 import CommandChain from './CommandChain'
@@ -36,19 +35,8 @@ export default class Graph {
 
     relationCreatedListeners: { pattern: Pattern, onCreate: (rel: Tuple) => void }[] = []
 
-    // deprecated:
-    columns: { [name: string]: Column } = {}
-
     constructor() {
         setupBuiltinTables(this);
-    }
-
-    initColumn(name: string) {
-
-        if (!this.columns[name])
-            this.columns[name] = new Column(name);
-
-        return this.columns[name];
     }
 
     findTable(name: string) {

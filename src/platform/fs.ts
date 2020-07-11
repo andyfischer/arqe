@@ -1,6 +1,6 @@
 
 import runningInBrowser from './runningInBrowser'
-import { notifyFileChanged } from '../file-watch/notifyFileChanged'
+import { notifyFileChanged } from '../old/file-watch/notifyFileChanged'
 import getProcessClient from '../toollib/getProcessClient'
 
 let _readFile;

@@ -3,7 +3,7 @@ import Graph from '../Graph'
 import FileChangeLogAPI from './generated/FileChangeLogAPI'
 import logError from '../logError'
 
-import { notifyFileChanged } from '../file-watch/notifyFileChanged'
+import { notifyFileChanged } from '../old/file-watch/notifyFileChanged'
 
 export default function init(graph: Graph) {
     if (typeof graph.run !== 'function')

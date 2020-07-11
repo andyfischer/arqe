@@ -1,8 +1,8 @@
 
 import Path from 'path'
-import Graph from '../Graph'
+import Graph from '../../Graph'
 import WatchFileApi from './generated/WatchFileApi'
-import runStandardProcess from '../toollib/runStandardProcess'
+import runStandardProcess from '../../toollib/runStandardProcess'
 
 export default async function watchFile(graph: Graph, filename: string, callback: (version: string) => void) {
 
