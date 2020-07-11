@@ -2,18 +2,22 @@
 import Graph from './Graph'
 import { isRunningInNode } from './utils'
 import parseTuple from './parseTuple';
-import { decoratedObjToTableMount } from './TableMount';
+import TableMount, { decoratedObjToTableMount } from './TableMount';
 
 type ExecEnv = 'browser' | 'node' | 'any'
 
-const tableDefinitions = {
-    tables: [
+interface TableInitializer {
+    init: () => TableMount,
+    execEnv: ExecEnv
+}
+
+const tableInitializers: TableInitializer[] = [
     {
         init: () => {
             const { WorkingFile } = require('./virtualTables/WorkingFile');
             return decoratedObjToTableMount(new WorkingFile())
         },
-        execEnv: 'all'
+        execEnv: 'any'
     },
     {
         init: () => {
@@ -50,8 +54,7 @@ const tableDefinitions = {
         },
         execEnv: 'any'
     }, 
-    ],
-}
+];
 
 function currentExecEnv(): ExecEnv {
     if (isRunningInNode())
@@ -66,7 +69,7 @@ export default function setupBuiltinTables(graph: Graph) {
 
     graph.defineInMemoryTable('WatchCommands', parseTuple('watch pattern'));
 
-    for (const tableDef of tableDefinitions.tables) {
+    for (const tableDef of tableInitializers) {
         if (execEnv === 'browser' && tableDef.execEnv === 'node')
             continue;
 

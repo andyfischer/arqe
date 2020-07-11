@@ -16,7 +16,7 @@ interface File {
 export class WorkingFile {
     name = 'WorkingFile'
     supportsCompleteScan = false
-    schema = 'working-file filename? contents?'
+    schemaStr = 'working-file filename? contents?'
 
     byId = new Map<string, File>();
     byFilename = new Map<string, File>();

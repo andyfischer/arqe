@@ -48,8 +48,7 @@ export default class Graph {
 
         const tableStorage = new InMemoryTable(name, pattern);
         const mount = new TableMount(name, pattern, tableStorage);
-        this.tables.set(name, mount);
-        this.tablePatternMap.add(pattern, mount);
+        this.addTable(mount);
         return mount;
     }
 
@@ -60,12 +59,16 @@ export default class Graph {
             throw new Error("table already exists: " + name)
 
         const mount = new TableMount(name, pattern, storage);
-        this.tables.set(name, mount);
-        this.tablePatternMap.add(pattern, mount);
+        this.addTable(mount);
         return mount;
     }
 
     addTable(table: TableMount) {
+        if (!table.name)
+            throw new Error("missing 'name'");
+        if (!table.storage)
+            throw new Error("missing 'storage' on: " + table.name);
+
         this.tables.set(table.name, table);
         this.tablePatternMap.add(table.schema, table);
         return table;
@@ -176,13 +179,6 @@ export default class Graph {
 
         return rels;
     }
-
-    /*
-    runDerived(callback: (cxt: UpdateContext) => void) {
-        const cxt = new UpdateContext(this);
-        return callback(cxt);
-    }
-    */
 
     get(patternInput: any, receiver: Stream) {
         let pattern: Tuple;

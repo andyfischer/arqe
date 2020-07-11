@@ -18,7 +18,7 @@ export default class TableMount {
 
     handlers = new CommandPatternMatcher<NativeHandler>()
 
-    constructor(name: string, schema: Tuple, storage: TableStorage) {
+    constructor(name: string, schema: Tuple, storage: TableStorage = {}) {
         this.name = name;
         this.schema = schema;
         this.storage = storage;
@@ -29,7 +29,10 @@ export function decoratedObjToTableMount(obj: DecoratedObject) {
     if (!obj.handlers)
         throw new Error('expected object to have .handlers')
 
-    const mount = new TableMount(obj.name, parseTuple(obj.schemaStr), null);
+    if (!obj.schemaStr)
+        throw new Error('expected object to have .schemaStr')
+
+    const mount = new TableMount(obj.name, parseTuple(obj.schemaStr));
     mount.handlers = obj.handlers;
     return mount;
 }

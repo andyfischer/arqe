@@ -6,7 +6,7 @@ import { handles } from '../decorators'
 export class FsFileContents {
     name = 'FsFileContents'
     supportsCompleteScan: false
-    schema = 'fs filename file-contents?'
+    schemaStr = 'fs filename file-contents?'
 
     @handles("get fs filename/$x file-contents/*")
     async loadFile({ filename }) {
@@ -28,7 +28,7 @@ export class FsFileContents {
 
 export class FsDirectory implements TableStorage {
     name = 'FsDirectory'
-    schema = 'fs dir filename?'
+    schemaStr = 'fs dir filename?'
     supportsCompleteScan: false
 
     @handles("get fs dir/$d filename")

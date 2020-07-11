@@ -9,10 +9,11 @@ import TableStorage from '../TableStorage'
 import { callNativeHandler } from '../NativeHandler'
 import QueryPlan from '../QueryPlan'
 import { combineStreams } from '../StreamUtil'
+import TableMount from '../TableMount'
 
-export function selectOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
-    if (table.select) {
-        table.select(tuple, out);
+export function selectOnTable(table: TableMount, tuple: Tuple, out: Stream) {
+    if (table.storage.select) {
+        table.storage.select(tuple, out);
         return;
     }
 
@@ -46,7 +47,7 @@ export function select(graph: Graph, plan: QueryPlan, out: Stream) {
     const startedAllTables = combined();
 
     for (const table of plan.searchTables) {
-        selectOnTable(table.storage, searchPattern, combined());
+        selectOnTable(table, searchPattern, combined());
     }
 
     startedAllTables.done();

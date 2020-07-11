@@ -5,7 +5,7 @@ import { handles } from '../decorators'
 
 export class TestMath {
     name = 'TestMath'
-    schema = 'test-math sum a b'
+    schemaStr = 'test-math sum a b'
     supportsCompleteScan = false
 
     @handles("get test-math a/$a b/$b sum")

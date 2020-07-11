@@ -11,7 +11,7 @@ import { handles } from '../decorators'
 export class Glob {
     name = 'Glob'
     supportsCompleteScan: false
-    schema = 'glob pattern filename?'
+    schemaStr = 'glob pattern filename?'
 
     @handles("get glob pattern/$p filename")
     globSearch({ pattern }) {

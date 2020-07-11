@@ -8,8 +8,8 @@ import NativeHandler from './NativeHandler'
 import CommandPatternMatcher from './CommandPatternMatcher'
 
 export default interface TableStorage {
-    name: string
-    supportsCompleteScan: boolean
+    name?: string
+    supportsCompleteScan?: boolean
     handlers?: CommandPatternMatcher<NativeHandler>
 
     select?: (pattern: Tuple, out: Stream) => void

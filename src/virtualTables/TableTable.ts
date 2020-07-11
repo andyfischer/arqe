@@ -6,7 +6,7 @@ import TableStorage, { } from '../TableStorage'
 export class Glob implements TableStorage {
     name = 'TableTable'
     supportsCompleteScan: false
-    schema = 'table name'
+    schemaStr = 'table name'
 
     select(pattern: Tuple, out: Stream) {
     }

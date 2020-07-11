@@ -11,7 +11,7 @@ export class FsFileContents implements TableStorage {
     graph: Graph
     supportsCompleteScan: false
     name: string
-    schema: string
+    schemaStr: string
 
     constructor(graph: Graph, name: string, schema: string, filename: string) {
     }
