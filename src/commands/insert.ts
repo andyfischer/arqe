@@ -7,7 +7,7 @@ import { callNativeHandler } from '../NativeHandler';
 import TableStorage from '../TableStorage';
 import Stream from '../Stream';
 import planQuery from '../planQuery';
-import PatternTag from '../PatternTag';
+import PatternTag from '../TupleTag';
 
 export function insertOnTable(table: TableStorage, tuple: Tuple, out: Stream) {
     if (table.insert) {

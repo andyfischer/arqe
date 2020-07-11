@@ -2,7 +2,7 @@
 import Graph from '../../Graph'
 import Command from '../../Command'
 import CommandChain from '../../CommandChain'
-import { newTag } from '../../PatternTag'
+import { newTag } from '../../TupleTag'
 import { parseCommandChain } from '../../parseCommand'
 import { stringifyCommandChain, appendTagInCommand } from '../../stringifyQuery'
 

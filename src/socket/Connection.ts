@@ -3,7 +3,7 @@ import WebSocket from 'ws'
 import Graph from '../Graph'
 import SocketDAO from './generated/SocketDAO'
 import EventEmitter from 'events'
-import logError from '../logError'
+import logError from '../utils/logError'
 import Tuple from '../Tuple'
 
 export default class Connection extends EventEmitter {

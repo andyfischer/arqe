@@ -2,7 +2,7 @@
 import Command from './Command'
 import CommandChain from './CommandChain'
 import parseCommand from './parseCommand'
-import PatternTag, { newTag } from './PatternTag'
+import PatternTag, { newTag } from './TupleTag'
 import { stringifyExpr } from './parseExpr'
 
 function tagValueNeedsParens(s: string) {

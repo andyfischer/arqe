@@ -1,5 +1,5 @@
 
-import PatternTag from '../PatternTag'
+import PatternTag from '../TupleTag'
 
 it("setValue removes star and valueExpr", () => {
     const tag = new PatternTag({ attr: 'a', starValue: true });

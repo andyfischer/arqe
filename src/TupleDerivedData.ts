@@ -1,6 +1,6 @@
 
 import Tuple from './Tuple'
-import PatternTag from './PatternTag'
+import PatternTag from './TupleTag'
 
 export default class TupleDerivedData {
 

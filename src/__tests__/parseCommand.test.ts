@@ -2,7 +2,7 @@
 import parseCommand, { parseCommandChain } from '../parseCommand'
 import { parsedCommandToString, appendTagInCommand } from '../stringifyQuery'
 import Pattern from '../Pattern'
-import { newTagFromObject } from '../PatternTag'
+import { newTagFromObject } from '../TupleTag'
 import { tagsToTuple } from '../Tuple'
 
 it('parses tags with no values', () => {

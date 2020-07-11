@@ -4,7 +4,7 @@ import { parseCommandChain } from './parseCommand'
 import CommandChain from './CommandChain'
 import Pattern from './Pattern'
 import Tuple from './Tuple'
-import { internalError } from './logError'
+import { internalError } from './utils/logError'
 
 interface Validation {
 }

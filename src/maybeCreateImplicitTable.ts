@@ -1,5 +1,5 @@
 
-import PatternTag, { newTag } from './PatternTag'
+import PatternTag, { newTag } from './TupleTag'
 import Tuple from './Tuple'
 import TableMount from './TableMount'
 import Graph from './Graph'

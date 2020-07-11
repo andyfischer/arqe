@@ -8,7 +8,7 @@
 */
 
 import Tuple from './Tuple'
-import PatternTag from './PatternTag'
+import PatternTag from './TupleTag'
 
 function expressionMatches(expr: string[], subExpr: string[]) {
     if (expr.length !== subExpr.length)

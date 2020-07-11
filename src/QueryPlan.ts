@@ -1,14 +1,11 @@
 
 import Tuple from './Tuple'
-import PatternTag from './PatternTag'
+import PatternTag from './TupleTag'
 import Stream from './Stream'
-import Schema, { Column, ColumnType } from './Schema'
 import TableMount from './TableMount'
 import TupleModification from './TupleModification'
 
 export interface QueryTag {
-    type: ColumnType
-    column: Column
     tag: PatternTag
 }
 

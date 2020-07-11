@@ -1,5 +1,5 @@
 
-import PatternTag from '../PatternTag'
+import PatternTag from '../TupleTag'
 import parseTuple from '../parseTuple';
 
 it('PatternTag.setValue works', () => {

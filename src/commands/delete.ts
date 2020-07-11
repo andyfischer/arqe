@@ -1,7 +1,7 @@
 import { combineStreams } from "../StreamUtil";
 import { Graph, Tuple, Stream } from "..";
 import QueryPlan from "../QueryPlan";
-import { newTag } from "../PatternTag";
+import { newTag } from "../TupleTag";
 import planQuery from "../planQuery";
 import CommandExecutionParams from '../CommandExecutionParams'
 import TableStorage from "../TableStorage";

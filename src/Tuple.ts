@@ -3,7 +3,7 @@ import Command from './Command'
 import Graph from './Graph'
 import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
-import PatternTag, { newTag, FixedTag } from './PatternTag'
+import PatternTag, { newTag, FixedTag } from './TupleTag'
 import TupleMatchHelper from './TupleMatchHelper'
 import TupleDerivedData from './TupleDerivedData'
 

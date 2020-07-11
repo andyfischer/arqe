@@ -1,7 +1,7 @@
 
 import Tuple from './Tuple'
 import Stream from './Stream'
-import PatternTag from './PatternTag'
+import PatternTag from './TupleTag'
 import { patternTagToString } from './stringifyQuery'
 
 export default function receiveToStringList(onDone: (s: string|string[]) => void): Stream {

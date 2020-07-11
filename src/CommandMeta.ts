@@ -1,7 +1,7 @@
 
 import Tuple, { tagsToTuple } from './Tuple'
 import Pattern from './Pattern'
-import PatternTag, { newTag } from './PatternTag'
+import PatternTag, { newTag } from './TupleTag'
 import Stream from './Stream'
 import Command from './Command'
 

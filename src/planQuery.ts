@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import PatternTag from './PatternTag'
+import PatternTag from './TupleTag'
 import Tuple from './Tuple'
 import Stream from './Stream'
 import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './Schema'
@@ -111,12 +111,8 @@ function toPlanTags(graph: Graph, tuple: Tuple) {
             continue;
         }
 
-        const column = graph.initColumn(tag.attr);
-        
         planTags.push({
-            tag,
-            column,
-            type: column.type
+            tag
         });
     }
 

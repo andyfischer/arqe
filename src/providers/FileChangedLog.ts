@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
 import FileChangeLogAPI from './generated/FileChangeLogAPI'
-import logError from '../logError'
+import logError from '../utils/logError'
 
 import { notifyFileChanged } from '../old/file-watch/notifyFileChanged'
 
