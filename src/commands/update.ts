@@ -9,23 +9,6 @@ import TableMount from '../TableMount';
 import { callNativeHandler } from '../NativeHandler';
 import TupleModification from '../TupleModification';
 
-export function updateOnTable(table: TableMount, searchPattern: Tuple,
-        modification: TupleModification, out: Stream) {
-
-    const updateTuple = (new Tuple([]))
-        .setNativeVal("search", searchPattern)
-        .setNativeVal("update", modification);
-
-    const handler = table.handlers.find('update', searchPattern);
-    if (handler) {
-        callNativeHandler(handler, updateTuple, out);
-        return;
-    }
-
-    emitCommandError(out, "No insert handler found on table " + table.name);
-    out.done();
-}
-
 export function updatePlanned(graph: Graph, plan: QueryPlan) {
     const { output } = plan;
 
@@ -52,11 +35,13 @@ export function updatePlanned(graph: Graph, plan: QueryPlan) {
         }
     });
 
-    const searchPattern = plan.filterPattern || plan.tuple;
+    // const searchPattern = plan.filterPattern || plan.tuple;
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        updateOnTable(table, searchPattern, plan.modification, collectOutput());
+        const tableOut = collectOutput();
+
+        table.callOrError('update', plan.tuple, tableOut);
     }
 
     allTables.done();

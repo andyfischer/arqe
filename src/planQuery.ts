@@ -71,7 +71,7 @@ function patternIsDelete(tuple: Tuple) {
     return false;
 }
 
-function modificationPatternToFilter(tuple: Tuple) {
+export function modificationPatternToFilter(tuple: Tuple) {
     return tuple.remapTags((tag: TupleTag) => {
         if (tag.attr === 'deleted')
             return null;
@@ -127,6 +127,7 @@ function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
     let modification = null;
 
     if (isUpdate) {
+        // TODO - delete this
         modification = tupleToModification(tuple);
     }
 

@@ -51,22 +51,9 @@ export default class Graph {
         return inMemoryTable.mount;
     }
 
-    defineVirtualTable(name: string, pattern: Tuple, storage: TableStorage) {
-        if (!name)
-            throw new Error("missing 'name'");
-        if (this.tables.has(name))
-            throw new Error("table already exists: " + name)
-
-        const mount = new TableMount(name, pattern, storage);
-        this.addTable(mount);
-        return mount;
-    }
-
     addTable(table: TableMount) {
         if (!table.name)
             throw new Error("missing 'name'");
-        if (!table.storage)
-            throw new Error("missing 'storage' on: " + table.name);
 
         this.tables.set(table.name, table);
         this.tablePatternMap.add(table.schema, table);

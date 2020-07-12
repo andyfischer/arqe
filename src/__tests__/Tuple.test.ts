@@ -59,6 +59,8 @@ describe('isSupersetOf', () => {
 
         expect(test('x/* **', 'x/1')).toEqual(true);
         expect(test('x/* **', 'y/1')).toEqual(false);
+
+        expect(test('**', 'a $x val/*')).toEqual(true);
     });
 
     xit('works with duplicated types', () => {

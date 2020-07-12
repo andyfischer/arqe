@@ -5,6 +5,8 @@ import Tuple from './Tuple'
 import Stream from './Stream'
 import TableListener from './TableListener'
 import TableMount from './TableMount'
+import { tupleToModification } from './TupleModification'
+import { modificationPatternToFilter } from './planQuery'
 
 export default class Table {
     name: string
@@ -23,10 +25,11 @@ export default class Table {
         this.pattern = pattern;
 
         this.mount = new TableMount(name, pattern);
+        this.mount.supportsCompleteScan = true;
         this.mount.addHandler('select **', {func: this.select.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('insert **', {func: this.select.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('update **', {func: this.select.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('delete **', {func: this.select.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('insert **', {func: this.insert.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('update **', {func: this.update.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('delete **', {func: this.delete.bind(this), protocol: 'tuple' });
     }
 
     select(pattern: Tuple, out: Stream) {
@@ -38,7 +41,6 @@ export default class Table {
     }
 
     insert(insertTuple: Tuple, out: Stream) {
-        console.log('InMemoryTable insert: ' + insertTuple.stringify());
         // Check if it exists
         for (const [slotId, tuple] of this.slots.entries()) {
             if (insertTuple.isSupersetOf(tuple)) {
@@ -58,11 +60,13 @@ export default class Table {
         out.done();
     }
 
-    update(update: Tuple, out: Stream) {
-        const search = update.getNativeVal("update");
-        const modifier = update.getNativeVal("modifier");
+    update(updateTuple: Tuple, out: Stream) {
+
+        const filter = modificationPatternToFilter(updateTuple);
+        const modifier = tupleToModification(updateTuple);
+
         for (const [slotId, tuple] of this.slots.entries()) {
-            if (search.isSupersetOf(tuple)) {
+            if (filter.isSupersetOf(tuple)) {
                 const modified = modifier.apply(tuple);
                 this.slots.set(slotId, modified);
                 out.next(modified);

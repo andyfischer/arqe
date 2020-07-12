@@ -17,15 +17,13 @@ interface DecoratedObject {
 export default class TableMount {
     name: string
     schema: Tuple
-    storage: TableStorage
     supportsCompleteScan: boolean
 
     handlers = new CommandPatternMatcher<NativeHandler>()
 
-    constructor(name: string, schema: Tuple, storage: TableStorage = {}) {
+    constructor(name: string, schema: Tuple) {
         this.name = name;
         this.schema = schema;
-        this.storage = storage;
     }
 
     addHandler(commandStr: string, handler: NativeHandler) {
@@ -44,7 +42,7 @@ export default class TableMount {
 
     callOrError(commandName: string, tuple: Tuple, out: Stream) {
         if (!this.call(commandName, tuple, out)) {
-            emitCommandError(out, `Table doesn't support ${commandName} ${tuple.stringify()}`)
+            emitCommandError(out, `Table ${this.name} doesn't support: ${commandName} ${tuple.stringify()}`)
             out.done();
             return;
         }

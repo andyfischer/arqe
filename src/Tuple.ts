@@ -99,7 +99,9 @@ export default class Tuple {
         if (subDerived.hasDoubleStar && !thisDerived.hasDoubleStar)
             return false;
 
-        if (subDerived.hasSingleStar && !thisDerived.hasSingleStar)
+        if (subDerived.hasSingleStar
+                && !thisDerived.hasSingleStar
+                && !thisDerived.hasDoubleStar)
             return false;
 
         // Check each attr
