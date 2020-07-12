@@ -1,9 +1,6 @@
 
 import Stream from '../Stream'
 import Tuple from '../Tuple'
-import TupleModification from '../TupleModification'
-import TuplePatternMatcher from '../TuplePatternMatcher'
-import NativeHandler from '../NativeHandler'
 import { handles } from '../decorators'
 
 interface File {

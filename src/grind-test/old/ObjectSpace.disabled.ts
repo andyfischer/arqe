@@ -1,5 +1,5 @@
 
-import { test } from '.'
+import { test } from '..'
 
 test('can get on an object-space column', async ({run}) => {
     await run('set object-type/ot');

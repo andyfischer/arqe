@@ -3,12 +3,11 @@ import Graph from './Graph'
 import TupleTag from './TupleTag'
 import Tuple from './Tuple'
 import Stream from './Stream'
-import Schema, { Column, ColumnType, ObjectColumn, ValueColumn, ViewColumn } from './old/Schema'
 import QueryPlan, { QueryTag } from './QueryPlan'
-import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
+import { emitCommandError } from './CommandMeta'
 import findTableForQuery from './findTableForQuery'
-import { tupleToModification, expressionUpdatesExistingValue } from './TupleModification'
-import parseTuple from './parseTuple'
+import { expressionUpdatesExistingValue } from './TupleModification'
+import { parsePattern } from './Pattern'
 
 const exprFuncEffects = {
     increment: {
@@ -21,7 +20,7 @@ const exprFuncEffects = {
     }
 };
 
-const doubleStar = parseTuple('**')
+const doubleStar = parsePattern('**');
 
 function getEffects(tuple: Tuple) {
 
@@ -165,7 +164,7 @@ export default function planQuery(graph: Graph, tuple: Tuple, output: Stream) {
     let table = null;
 
     try {
-        table = findTableForQuery(graph, plan.tuple);
+        table = findTableForQuery(graph, tuple);
     } catch (e) {
         emitCommandError(plan.output, e);
         plan.failed = true;
@@ -179,7 +178,7 @@ export default function planQuery(graph: Graph, tuple: Tuple, output: Stream) {
     } else {
         // Scan every table.
         plan.searchTables = Array.from(graph.tables.values())
-            .filter(table => table.hasHandler('select', doubleStar))
+            .filter(table => table.hasHandler('select', doubleStar));
     }
 
     validatePlan(plan);

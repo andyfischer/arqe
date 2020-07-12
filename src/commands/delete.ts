@@ -4,19 +4,11 @@ import QueryPlan from "../QueryPlan";
 import { newTag } from "../TupleTag";
 import planQuery from "../planQuery";
 import CommandExecutionParams from '../CommandExecutionParams'
-import { callNativeHandler } from "../NativeHandler";
 import TableMount from "../TableMount";
 
-export function deleteOnTable(graph: Graph, tuple: Tuple, table: TableMount, out: Stream) {
+function deleteOnTable(graph: Graph, table: TableMount, pattern: Tuple, out: Stream) {
 
-    const handler = table.handlers.find('delete', tuple);
-    if (handler) {
-        callNativeHandler(handler, tuple, out);
-        return;
-    }
-    
-    /*
-    table.delete(tuple, {
+    table.callOrError('delete', pattern, {
         next(t: Tuple) {
             graph.onTupleDeleted(t);
             const deletedMessage = t.addTagObj(newTag('deleted'));
@@ -24,7 +16,6 @@ export function deleteOnTable(graph: Graph, tuple: Tuple, table: TableMount, out
         },
         done: out.done
     });
-    */
 }
 
 export function deletePlanned(graph: Graph, plan: QueryPlan) {
@@ -35,16 +26,8 @@ export function deletePlanned(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        const out = collectOutput();
-
-        table.call('delete', searchPattern, {
-            next(t: Tuple) {
-                graph.onTupleDeleted(t);
-                const deletedMessage = t.addTagObj(newTag('deleted'));
-                out.next(deletedMessage);
-            },
-            done: out.done
-        });
+        const tableOut = collectOutput();
+        deleteOnTable(graph, table, searchPattern, tableOut);
     }
 
     allTables.done();

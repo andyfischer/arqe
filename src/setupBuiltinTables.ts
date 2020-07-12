@@ -21,22 +21,22 @@ const tableInitializers: TableInitializer[] = [
     },
     {
         init: () => {
-            const { FsFileContents } = require('./virtualTables/Filesystem');
-            return decoratedObjToTableMount(new FsFileContents())
+            const { fsFileContents } = require('./virtualTables/Filesystem');
+            return fsFileContents();
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
-            const { FsDirectory } = require('./virtualTables/Filesystem');
-            return decoratedObjToTableMount(new FsDirectory());
+            const { fsDirectory } = require('./virtualTables/Filesystem');
+            return fsDirectory();
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
-            const { Glob } = require('./virtualTables/Glob');
-            return decoratedObjToTableMount(new Glob());
+            const { glob } = require('./virtualTables/Filesystem');
+            return glob();
         },
         execEnv: 'node'
     }, 
@@ -76,25 +76,6 @@ export default function setupBuiltinTables(graph: Graph) {
         const table = tableDef.init();
         graph.addTable(table);
     }
-
-    /*
-    const views = {
-        'git': setupGitProvider(),
-        'file-changed': setupFileChangeLog(graph),
-        'expires-at': new ExpireAtListener(graph),
-        'test-math': setupTestMathStorage(),
-        'typescript-tree': setupTypescriptTree(),
-        'tsc-compile': setupTypescriptCompilation(),
-        'self-test-results': setupSelfTest(graph),
-        'working-file': setupWorkingFile(),
-    }
-    if (process.env.WITH_MINECRAFT_SERVER) {
-        const setupMinecraftServer = require('./providers/MinecraftServer').default;
-        views['mc'] = setupMinecraftServer()
-    }
-
-    return views;
-    */
 }
 
 

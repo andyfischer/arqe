@@ -8,7 +8,7 @@ import { emitCommandError } from './CommandMeta'
 import Stream from './Stream'
 
 interface DecoratedObject {
-    handlers: CommandPatternMatcher<NativeHandler>
+    handlers?: CommandPatternMatcher<NativeHandler>
     name: string
     schemaStr: string
 }
@@ -16,7 +16,6 @@ interface DecoratedObject {
 export default class TableMount {
     name: string
     schema: Tuple
-
     handlers = new CommandPatternMatcher<NativeHandler>()
 
     constructor(name: string, schema: Tuple) {
