@@ -4,7 +4,6 @@ import QueryPlan from "../QueryPlan";
 import { newTag } from "../TupleTag";
 import planQuery from "../planQuery";
 import CommandExecutionParams from '../CommandExecutionParams'
-import TableStorage from "../TableStorage";
 import { callNativeHandler } from "../NativeHandler";
 import TableMount from "../TableMount";
 

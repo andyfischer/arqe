@@ -1,5 +1,4 @@
 
-import TableStorage, { } from '../TableStorage'
 import fs from 'fs-extra'
 import { handles } from '../decorators'
 

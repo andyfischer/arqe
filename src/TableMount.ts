@@ -1,6 +1,5 @@
 
 import Tuple from './Tuple'
-import TableStorage from './TableStorage'
 import CommandPatternMatcher from './CommandPatternMatcher'
 import NativeHandler from './NativeHandler'
 import parseTuple from './parseTuple'
