@@ -1,7 +1,6 @@
 
 import Command, { CommandFlags } from './Command'
 import Graph from './Graph'
-import Tuple from './Tuple'
 import Pattern from './Pattern'
 import Pipe from './Pipe'
 

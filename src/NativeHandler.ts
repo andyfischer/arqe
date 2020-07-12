@@ -49,7 +49,7 @@ export function callNativeHandler(handler: NativeHandler, input: Tuple, out: Str
         case 'js_object':
             return callWithJsObjectProtocol(handler, input, out)
         case 'tuple':
-            handler.func(input, out);
+            return handler.func(input, out);
     }
 
     throw new Error('unrecognized: ' + handler.protocol)

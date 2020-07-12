@@ -3,12 +3,10 @@ import Pattern from './Pattern'
 import IDSource from './utils/IDSource'
 import Tuple from './Tuple'
 import Stream from './Stream'
-import TableStorage, { } from './TableStorage'
-import TupleModification from './TupleModification'
 import TableListener from './TableListener'
 import TableMount from './TableMount'
 
-export default class Table implements TableStorage {
+export default class Table {
     name: string
     supportsCompleteScan = true
     pattern: Pattern
@@ -40,6 +38,7 @@ export default class Table implements TableStorage {
     }
 
     insert(insertTuple: Tuple, out: Stream) {
+        console.log('InMemoryTable insert: ' + insertTuple.stringify());
         // Check if it exists
         for (const [slotId, tuple] of this.slots.entries()) {
             if (insertTuple.isSupersetOf(tuple)) {

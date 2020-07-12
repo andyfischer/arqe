@@ -36,8 +36,18 @@ export function deletePlanned(graph: Graph, plan: QueryPlan) {
 
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
-        deleteOnTable(graph, searchPattern, table, collectOutput());
+        const out = collectOutput();
+
+        table.call('delete', searchPattern, {
+            next(t: Tuple) {
+                graph.onTupleDeleted(t);
+                const deletedMessage = t.addTagObj(newTag('deleted'));
+                out.next(deletedMessage);
+            },
+            done: out.done
+        });
     }
+
     allTables.done();
 }
 

@@ -1,5 +1,5 @@
 
-import { zeroPad } from '../utils/stdlib'
+import { zeroPad } from '../utils'
 
 export function getDateStamp() {
     const now = new Date();

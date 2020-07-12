@@ -11,21 +11,7 @@ import TupleTag from '../TupleTag';
 import TableMount from '../TableMount';
 
 export function insertOnTable(table: TableMount, tuple: Tuple, out: Stream) {
-    /*
-    if (table.insert) {
-        table.insert(tuple, out);
-        return;
-    }
-    */
-
-    const handler = table.handlers.find('insert', tuple);
-    if (handler) {
-        callNativeHandler(handler, tuple, out);
-        return;
-    }
-
-    emitCommandError(out, "No insert handler found on table " + table.name);
-    out.done();
+    table.callOrError('insert', tuple, out);
 }
 
 function resolveExpressionValuesForInsert(graph: Graph, tuple: Tuple) {
