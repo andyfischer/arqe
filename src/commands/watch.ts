@@ -5,7 +5,6 @@ import Tuple, { objectToTuple } from '../Tuple'
 
 function createWatchCommand(graph: Graph, pattern: Tuple) {
     const res = graph.runSync(`set watch((unique)) pattern(${pattern.stringify()})`)[0];
-    console.log('res = ', res.stringify());
 }
 
 export default function watchCommand(params: CommandExecutionParams) {

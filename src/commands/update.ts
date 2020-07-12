@@ -35,8 +35,6 @@ export function updatePlanned(graph: Graph, plan: QueryPlan) {
         }
     });
 
-    // const searchPattern = plan.filterPattern || plan.tuple;
-
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
         const tableOut = collectOutput();

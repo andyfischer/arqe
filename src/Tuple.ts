@@ -3,7 +3,7 @@ import Command from './Command'
 import Graph from './Graph'
 import parseCommand, { parseTag } from './parseCommand'
 import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
-import TupleTag, { newTag, FixedTag } from './TupleTag'
+import TupleTag, { newTag, FixedTag, TagOptions } from './TupleTag'
 import TupleMatchHelper from './TupleMatchHelper'
 import TupleDerivedData from './TupleDerivedData'
 
@@ -289,6 +289,10 @@ export default class Tuple {
 
     addNewTag(tagType: string, tagValue?: string | true) {
         return this.addTagObj(newTag(tagType, tagValue));
+    }
+
+    addNewTag2(opts: TagOptions) {
+        return this.addTagObj(new TupleTag(opts));
     }
 
     addTags(strs: string[]) {
