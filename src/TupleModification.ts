@@ -53,8 +53,8 @@ export function tupleToModification(tuple: Tuple) {
     const mod = new TupleModification();
 
     for (const tag of tuple.tags) {
-        if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr)) {
-            mod.addAttrModification(tag.attr, getCallbackForExpression(tag.valueExpr));
+        if (tag.exprValue && expressionUpdatesExistingValue(tag.exprValue)) {
+            mod.addAttrModification(tag.attr, getCallbackForExpression(tag.exprValue));
         }
     }
 

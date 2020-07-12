@@ -1,12 +1,17 @@
 import Tuple from "./Tuple";
 import Stream from "./Stream";
 
+export type NativeHandlerProtocol =
+    'js_object'
+    | 'tuple';
+
 export default interface NativeHandler {
     name?: string
     func: any
+    protocol: NativeHandlerProtocol 
 }
 
-export function callNativeHandler(handler: NativeHandler, input: Tuple, out: Stream) {
+function callWithJsObjectProtocol(handler: NativeHandler, input: Tuple, out: Stream) {
     const inputObject = input.toObject();
     const result = handler.func(inputObject);
 
@@ -37,5 +42,16 @@ export function callNativeHandler(handler: NativeHandler, input: Tuple, out: Str
         result.then(finish)
     else
         finish(result);
+}
+
+export function callNativeHandler(handler: NativeHandler, input: Tuple, out: Stream) {
+    switch (handler.protocol) {
+        case 'js_object':
+            return callWithJsObjectProtocol(handler, input, out)
+        case 'tuple':
+            handler.func(input, out);
+    }
+
+    throw new Error('unrecognized: ' + handler.protocol)
 }
 

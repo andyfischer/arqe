@@ -18,7 +18,7 @@ class SetShouldEmitRelation {
             return null;
 
         for (const tag of command.commands[0].toPattern().tags) {
-            if (tag.valueExpr)
+            if (tag.exprValue)
                 return null;
         }
 

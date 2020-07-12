@@ -3,7 +3,7 @@ import TupleTag from '../TupleTag'
 import parseTuple from '../parseTuple';
 
 it('TupleTag.setValue works', () => {
-    const tag = new TupleTag({ attr: 'a', tagValue: '1' });
+    const tag = new TupleTag({ attr: 'a', value: '1' });
     expect(tag.stringify()).toEqual('a/1');
 
     const tag2 = tag.setValue('3');

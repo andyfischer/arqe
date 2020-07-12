@@ -53,7 +53,7 @@ export function parseOneTag(it: TokenIterator): TupleTag {
         const optionValue = it.consumeNextUnquotedText();
         return newTagFromObject({
             attr: 'option',
-            tagValue: optionValue,
+            value: optionValue,
             identifier,
         })
     }
@@ -153,8 +153,8 @@ function parseTagValue(it: TokenIterator): TagOptions {
             throw new Error('Expected )');
 
     return {
-        tagValue,
-        valueExpr,
+        value: tagValue,
+        exprValue: valueExpr,
         starValue,
         identifier
     }

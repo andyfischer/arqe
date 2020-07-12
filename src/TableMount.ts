@@ -25,8 +25,8 @@ export default class TableMount {
         this.storage = storage;
     }
 
-    addHandler(commandStr: string, func: NativeHandler) {
-        this.handlers.addCommandStr(commandStr, { func });
+    addHandler(commandStr: string, handler: NativeHandler) {
+        this.handlers.addCommandStr(commandStr, handler);
     }
 }
 

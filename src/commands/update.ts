@@ -12,9 +12,13 @@ import TupleModification from '../TupleModification';
 export function updateOnTable(table: TableMount, searchPattern: Tuple,
         modification: TupleModification, out: Stream) {
 
+    const updateTuple = (new Tuple([]))
+        .setNativeVal("search", searchPattern)
+        .setNativeVal("update", modification);
+
     const handler = table.handlers.find('update', searchPattern);
     if (handler) {
-        handler.func(searchPattern, modification, out);
+        callNativeHandler(handler, updateTuple, out);
         return;
     }
 
@@ -28,7 +32,6 @@ export function updatePlanned(graph: Graph, plan: QueryPlan) {
     let hasFoundAny = false;
 
     // Scan and apply the modificationCallback to every matching slot.
-
     const collectOutput = combineStreams({
         next: (t:Tuple) => {
             if (!t.isCommandMeta()) {

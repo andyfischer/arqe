@@ -32,7 +32,7 @@ function resolveExpressionValuesForInsert(graph: Graph, tuple: Tuple) {
 
     for (let i=0; i < tuple.tags.length; i++) {
         const tag = tuple.tags[i];
-        if (tag.valueExpr && tag.valueExpr[0] === 'unique') {
+        if (tag.exprValue && tag.exprValue[0] === 'unique') {
             const id = graph.takeNextUniqueIdForAttr(tag.attr);
             tuple = tuple.updateTagAtIndex(i, tag => tag.setValue(id));
         }
@@ -72,8 +72,8 @@ export function insertPlanned(graph: Graph, plan: QueryPlan) {
 
 export function toInitialization(rel: Tuple) {
     return rel.remapTags((tag: TupleTag) => {
-        if (tag.valueExpr && tag.valueExpr[0] === 'set')
-            return tag.setValue(tag.valueExpr[1]);
+        if (tag.exprValue && tag.exprValue[0] === 'set')
+            return tag.setValue(tag.exprValue[1]);
         return tag;
     });
 }

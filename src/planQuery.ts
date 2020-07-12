@@ -27,7 +27,7 @@ function getEffects(tuple: Tuple) {
     let canInitializeMissing = true;
 
     for (const tag of tuple.tags) {
-        const expr = tag.valueExpr;
+        const expr = tag.exprValue;
         const tagEffects = expr && expr[0] && exprFuncEffects[expr[0]];
 
         if (!tagEffects)
@@ -50,8 +50,8 @@ function getEffects(tuple: Tuple) {
 
 function resolveImmediateExpressions(tuple: Tuple) {
     return tuple.remapTags((tag: TupleTag) => {
-        if (tag.valueExpr && tag.valueExpr[0] === 'seconds-from-now') {
-            const seconds = parseInt(tag.valueExpr[1]);
+        if (tag.exprValue && tag.exprValue[0] === 'seconds-from-now') {
+            const seconds = parseInt(tag.exprValue[1]);
             return tag.setValue(Date.now() + (seconds * 1000) + '');
         }
 
@@ -64,7 +64,7 @@ function patternIsDelete(tuple: Tuple) {
         return false;
 
     const deletedExpr = tuple.getTagObject('deleted');
-    if (deletedExpr && deletedExpr.valueExpr && deletedExpr.valueExpr[0] === 'set') {
+    if (deletedExpr && deletedExpr.exprValue && deletedExpr.exprValue[0] === 'set') {
         return true;
     }
 
@@ -84,7 +84,7 @@ function modificationPatternToFilter(tuple: Tuple) {
 }
 
 function tagModifiesExistingRelations(tag: TupleTag) {
-    if (tag.valueExpr && expressionUpdatesExistingValue(tag.valueExpr))
+    if (tag.exprValue && expressionUpdatesExistingValue(tag.exprValue))
         return true;
 
     return false;

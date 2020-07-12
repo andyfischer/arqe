@@ -27,10 +27,10 @@ export function patternTagToString(tag: TupleTag) {
         return tag.attr + '/$' + tag.identifier;
     }
 
-    if (tag.tagValue) {
+    if (tag.value) {
 
-        if (typeof tag.tagValue !== 'string')
-            throw new Error(`internal error: tagValue isn't a string: ` + JSON.stringify(tag.tagValue));
+        if (typeof tag.value !== 'string')
+            throw new Error(`internal error: tagValue isn't a string: ` + JSON.stringify(tag.value));
 
         let s = '';
 
@@ -38,7 +38,7 @@ export function patternTagToString(tag: TupleTag) {
             s += `[from \$${tag.identifier}] `;
         }
 
-        const needsParens = tagValueNeedsParens(tag.tagValue);
+        const needsParens = tagValueNeedsParens(tag.value);
 
         if (needsParens) {
             s += tag.attr + '(';
@@ -46,7 +46,7 @@ export function patternTagToString(tag: TupleTag) {
             s += tag.attr + '/';
         }
 
-        s += tag.tagValue;
+        s += tag.value;
 
         if (needsParens)
             s += ')';
@@ -54,8 +54,8 @@ export function patternTagToString(tag: TupleTag) {
         return s;
     }
 
-    if (tag.valueExpr) {
-        return tag.attr + '/' + stringifyExpr(tag.valueExpr)
+    if (tag.exprValue) {
+        return tag.attr + '/' + stringifyExpr(tag.exprValue)
 
     } else if (tag.starValue) {
         return tag.attr + '/*';
@@ -115,7 +115,7 @@ export function parseAsSet(str: string) {
 }
 
 export function normalizeExactTag(tags: TupleTag[]) {
-    const argStrs = tags.map(arg => arg.attr + '/' + arg.tagValue)
+    const argStrs = tags.map(arg => arg.attr + '/' + arg.value)
     argStrs.sort();
     return argStrs.join(' ');
 }

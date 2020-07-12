@@ -24,10 +24,10 @@ function oneKeyValueToTag(key: string, value: any) {
     }
 
     if (typeof value === 'string')
-        return newTagFromObject({attr: key, tagValue: value});
+        return newTagFromObject({attr: key, value: value});
 
     if (typeof value === 'number')
-        return newTagFromObject({attr: key, tagValue: value + ""});
+        return newTagFromObject({attr: key, value: value + ""});
 
     // Parse extended object
     let identifier = null;
@@ -45,7 +45,7 @@ function oneKeyValueToTag(key: string, value: any) {
     return newTagFromObject({
         attr,
         identifier,
-        tagValue: value.value,
+        value: value.value,
         starValue: value.match === '*',
         optional: value.optional
     });
@@ -114,8 +114,8 @@ function oneTagToKeyValue(tag: TupleTag, out: PatternJSON) {
         if (tag.starValue)
             details.match = "*";
 
-        if (tag.tagValue)
-            details.value = tag.tagValue;
+        if (tag.value)
+            details.value = tag.value;
 
         if (tag.optional)
             details.optional = true;
@@ -124,13 +124,13 @@ function oneTagToKeyValue(tag: TupleTag, out: PatternJSON) {
         return;
     }
 
-    if (!tag.tagValue) {
+    if (!tag.value) {
         addOutput(tag.attr, true);
         return
     }
 
-    if (tag.tagValue) {
-        addOutput(tag.attr, tag.tagValue);
+    if (tag.value) {
+        addOutput(tag.attr, tag.value);
         return;
     }
 

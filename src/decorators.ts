@@ -17,7 +17,8 @@ export function handles(commandStr: string) {
 
         const handler: NativeHandler = {
             name: propertyKey,
-            func: target[propertyKey].bind(target)
+            func: target[propertyKey].bind(target),
+            protocol: 'js_object'
         }
 
         target.handlers.addCommandStr(commandStr, handler);

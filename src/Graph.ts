@@ -42,13 +42,13 @@ export default class Graph {
         return this.tables.get(name) || null;
     }
 
-    defineInMemoryTable(name: string, pattern: Tuple) {
+    defineInMemoryTable(name: string, pattern: Tuple): TableMount {
         if (this.tables.has(name))
             throw new Error("table already exists: " + name)
 
         const inMemoryTable = new InMemoryTable(name, pattern);
         this.addTable(inMemoryTable.mount);
-        return inMemoryTable;
+        return inMemoryTable.mount;
     }
 
     defineVirtualTable(name: string, pattern: Tuple, storage: TableStorage) {

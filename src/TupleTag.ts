@@ -3,9 +3,9 @@ import { patternTagToString } from './stringifyQuery'
 
 export interface TagOptions {
     attr?: string
-    tagValue?: string | true
-    valueExpr?: string[]
-    nativeVal?: any
+    value?: string | true
+    exprValue?: string[]
+    nativeValue?: any
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
@@ -15,8 +15,10 @@ export interface TagOptions {
 
 export default class TupleTag {
     attr?: string
-    tagValue?: string
-    valueExpr?: string[]
+    value?: any
+    nativeValue?: any
+    // todo, store exprValue as a nativeValue
+    exprValue?: string[]
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
@@ -25,20 +27,21 @@ export default class TupleTag {
 
     constructor(opts: TagOptions) {
         this.attr = opts.attr;
-        this.tagValue = opts.tagValue as any;
-        this.valueExpr = opts.valueExpr;
+        this.value = opts.value as any;
+        this.exprValue = opts.exprValue;
+        this.nativeValue = opts.nativeValue;
         this.star = opts.star;
         this.doubleStar = opts.doubleStar;
         this.starValue = opts.starValue;
         this.optional = opts.optional;
         this.identifier = opts.identifier;
 
-        if (opts.tagValue === undefined || opts.tagValue === true)
-            this.tagValue = null;
+        if (opts.value === undefined || opts.value === true)
+            this.value = null;
     }
 
     fixedValue() {
-        return !!this.tagValue;
+        return !!this.value;
     }
 
     str() {
@@ -56,18 +59,20 @@ export default class TupleTag {
     setValue(value: string): TupleTag {
         return new TupleTag({
             ...this,
-            tagValue: value,
+            value: value,
             starValue: null,
-            valueExpr: null,
+            exprValue: null,
+            nativeValue: null
         });
     }
 
     setValueless(): TupleTag {
         return new TupleTag({
             ...this,
-            tagValue: null,
+            value: null,
             starValue: null,
-            valueExpr: null,
+            exprValue: null,
+            nativeValue: null
         });
     }
 
@@ -75,9 +80,20 @@ export default class TupleTag {
         return new TupleTag({
             ...this,
             starValue: true,
-            tagValue: null,
-            valueExpr: null
+            value: null,
+            exprValue: null,
+            nativeValue: null
         });
+    }
+
+    setNativeValue(v: any): TupleTag {
+        return new TupleTag({
+            ...this,
+            starValue: true,
+            value: null,
+            exprValue: null,
+            nativeValue: v
+        })
     }
 
     setIdentifier(id: string): TupleTag {
@@ -94,8 +110,9 @@ export default class TupleTag {
     setValueExpr(expr: string[]): TupleTag {
         return new TupleTag({
             ...this,
-            tagValue: null,
-            valueExpr: expr
+            value: null,
+            exprValue: expr,
+            nativeValue: null
         });
     }
 
@@ -115,8 +132,8 @@ export default class TupleTag {
         if (this.optional !== rhs.optional)
             return boolCompare(this.optional, rhs.optional);
 
-        if (this.tagValue !== rhs.tagValue)
-            return stringCompare(this.tagValue, rhs.tagValue);
+        if (this.value !== rhs.value)
+            return stringCompare(this.value, rhs.value);
 
         return 0;
     }
@@ -145,7 +162,7 @@ function boolCompare(a,b) {
 export type FixedTag = TupleTag;
 
 export function newTag(attr: string, tagValue?: string | true): TupleTag {
-    return new TupleTag({ attr, tagValue });
+    return new TupleTag({ attr, value: tagValue });
 }
 
 export function newTagFromObject(obj: TagOptions) {

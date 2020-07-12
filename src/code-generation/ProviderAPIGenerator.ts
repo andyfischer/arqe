@@ -125,8 +125,8 @@ function patternCheckExpression(pattern: Pattern) {
         conditions.push(`pattern.hasAttr("${tag.attr}")`);
         if (tag.identifier) {
             conditions.push(`pattern.hasValueForAttr("${tag.attr}")`);
-        } else if (tag.tagValue) {
-            conditions.push(`pattern.getVal("${tag.attr}") == "${tag.tagValue}"`);
+        } else if (tag.value) {
+            conditions.push(`pattern.getVal("${tag.attr}") == "${tag.value}"`);
         }
     }
 

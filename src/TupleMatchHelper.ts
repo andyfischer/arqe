@@ -48,7 +48,7 @@ export default class TupleMatchHelper {
                 this.countsByAttr[attr].max += 1;
             }
 
-            if (tag.tagValue || tag.valueExpr) {
+            if (tag.value || tag.exprValue) {
                 this.valueTagsByAttr[attr].push(tag);
             }
         }
@@ -59,18 +59,18 @@ export default class TupleMatchHelper {
     }
 
     findMatchingFixedTag(valueTag: TupleTag, tags: TupleTag[]) {
-        if (valueTag.tagValue) {
+        if (valueTag.value) {
             for (const tag of tags) {
-                if (tag.tagValue === valueTag.tagValue)
+                if (tag.value === valueTag.value)
                     return true;
             }
 
             return false;
         }
 
-        if (valueTag.valueExpr) {
+        if (valueTag.exprValue) {
             for (const tag of tags) {
-                if (tag.valueExpr && expressionMatches(valueTag.valueExpr, tag.valueExpr))
+                if (tag.exprValue && expressionMatches(valueTag.exprValue, tag.exprValue))
                     return true;
             }
 

@@ -25,10 +25,10 @@ export default class Table implements TableStorage {
         this.pattern = pattern;
 
         this.mount = new TableMount(name, pattern);
-        this.mount.addHandler('select **', this.select.bind(this));
-        this.mount.addHandler('insert **', this.insert.bind(this));
-        this.mount.addHandler('update **', this.update.bind(this));
-        this.mount.addHandler('delete **', this.delete.bind(this));
+        this.mount.addHandler('select **', {func: this.select.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('insert **', {func: this.select.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('update **', {func: this.select.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('delete **', {func: this.select.bind(this), protocol: 'tuple' });
     }
 
     select(pattern: Tuple, out: Stream) {
@@ -59,7 +59,9 @@ export default class Table implements TableStorage {
         out.done();
     }
 
-    update(search: Tuple, modifier: TupleModification, out: Stream) {
+    update(update: Tuple, out: Stream) {
+        const search = update.getNativeVal("update");
+        const modifier = update.getNativeVal("modifier");
         for (const [slotId, tuple] of this.slots.entries()) {
             if (search.isSupersetOf(tuple)) {
                 const modified = modifier.apply(tuple);

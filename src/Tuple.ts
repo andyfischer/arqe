@@ -58,7 +58,7 @@ export default class Tuple {
             if (!tag.attr)
                 continue;
 
-            obj[tag.attr] = tag.tagValue;
+            obj[tag.attr] = tag.value;
         }
 
         return obj;
@@ -144,7 +144,7 @@ export default class Tuple {
     }
 
     hasValueForAttr(attr: string) {
-        return this.asMap().has(attr) && !!this.asMap().get(attr).tagValue;
+        return this.asMap().has(attr) && !!this.asMap().get(attr).value;
     }
 
     getTagObject(attr: string): TupleTag {
@@ -153,24 +153,31 @@ export default class Tuple {
 
     getTagAsString(attr: string) {
         const tag = this.getTagObject(attr);
-        if (!tag.tagValue)
+        if (!tag.value)
             return attr;
 
-        return attr + '/' + tag.tagValue;
+        return attr + '/' + tag.value;
     }
 
     getVal(attr: string) {
         const tag = this.asMap().get(attr);
         if (!tag.fixedValue())
             throw new Error("not a fixed value: " + attr);
-        return tag.tagValue;
+        return tag.value;
+    }
+
+    getNativeVal(attr: string) {
+        const tag = this.asMap().get(attr);
+        if (!tag.fixedValue())
+            throw new Error("not a fixed value: " + attr);
+        return tag.nativeValue;
     }
 
     getValOptional(attr: string, defaultValue) {
         if (this.asMap().has(attr)) {
             const tag = this.asMap().get(attr);
-            if (!!tag.tagValue)
-                return tag.tagValue;
+            if (!!tag.value)
+                return tag.value;
         }
 
         return defaultValue;
@@ -186,9 +193,26 @@ export default class Tuple {
     setTagValueAtIndex(index: number, value: any) {
         const tags = this.tags.map(t => t);
         tags[index] = tags[index].copy();
-        tags[index].tagValue = value;
+        tags[index].value = value;
 
         return new Tuple(tags);
+    }
+
+    setNativeVal(attr: string, value: any) {
+        let found = false;
+
+        let out = this.remapTags(tag => {
+            if (tag.attr === attr) {
+                found = true;
+                return tag.setNativeValue(value);
+            }
+            return tag;
+        });
+
+        if (!found)
+            out = out.addTagObj(newTag(attr, null).setNativeValue(value));
+
+        return out; 
     }
 
     setVal(attr: string, value: string | true) {

@@ -79,7 +79,7 @@ export default function printAsTable(patterns: Pattern[]): string[] {
         for (const tag of pattern.tags) {
             if (tag.attr) {
                 const column: Column = columns.get(tag.attr);
-                column.items.push(tag.tagValue);
+                column.items.push(tag.value);
             }
         }
     }

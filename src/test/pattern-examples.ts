@@ -109,7 +109,7 @@ function checkPatternRestringify(example: Tuple, out: Stream) {
 
     // ignore if this pattern has an expression
     for (const tag of pattern.tags)
-        if (tag.valueExpr)
+        if (tag.exprValue)
             return;
 
     const observed = pattern.stringify();
