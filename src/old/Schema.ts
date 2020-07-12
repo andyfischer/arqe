@@ -1,8 +1,8 @@
 
-import Tuple from './Tuple'
-import Pattern from './Pattern'
-import SchemaProviderAPI from './generated/SchemaProviderAPI'
-import Graph from './Graph'
+import Tuple from '../Tuple'
+import Pattern from '../Pattern'
+import SchemaProviderAPI from '../generated/SchemaProviderAPI'
+import Graph from '../Graph'
 
 export class ColumnType {
     name: string

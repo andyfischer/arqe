@@ -1,8 +1,8 @@
 
-import Graph from './Graph'
-import Tuple from './Tuple'
-import Command from './Command'
-import parseCommand from './parseCommand'
+import Graph from '../Graph'
+import Tuple from '../Tuple'
+import Command from '../Command'
+import parseCommand from '../parseCommand'
 
 type RecomputeFunc<T> = (rels: Tuple[]) => T
 

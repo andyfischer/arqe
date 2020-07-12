@@ -19,7 +19,6 @@ export default function findTableForQuery(graph: Graph, tuple: Tuple): TableMoun
 
     // Check if the pattern matches a defined table
     const table = graph.tablePatternMap.find(tuple);
-    // console.log(`looking for table for ${tuple.stringify()}: ${!!table}`)
     if (table)
         return table;
 

@@ -1,9 +1,8 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableStorage, { } from '../TableStorage'
 
-export class Glob implements TableStorage {
+export class Glob {
     name = 'TableTable'
     supportsCompleteScan: false
     schemaStr = 'table name'

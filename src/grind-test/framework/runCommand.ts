@@ -1,4 +1,4 @@
-import verifyRespondProtocol from '../../verifyRespondProtocol'
+import verifyRespondProtocol from '../../validation/verifyRespondProtocol'
 import Graph from '../../Graph'
 import { ChaosMode } from './ChaosModes'
 import receiveToStringList from '../../receiveToStringList'

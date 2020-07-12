@@ -2,7 +2,6 @@
 import Tuple from '../Tuple'
 import { Pattern, Stream } from ".."
 import ClientConnection, { connectToServer } from '../socket/ClientConnection'
-import TableStorage, { } from '../TableStorage'
 import { handles } from '../decorators'
 
 const connectionByPort: { [port: string]: ClientConnection } = {}
@@ -14,7 +13,7 @@ async function getOrInitConnection(port: string) {
     return connectionByPort[port];
 }
 
-export class Remote implements TableStorage {
+export class Remote {
     name = 'Remote'
     schemaStr = 'remote/$port **'
     supportsCompleteScan = false
