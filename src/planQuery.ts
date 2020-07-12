@@ -119,36 +119,12 @@ function toPlanTags(graph: Graph, tuple: Tuple) {
     return planTags;
 }
 
-function initialBuildQueryPlan(graph: Graph, tuple: Tuple, output: Stream) {
-
-    const planTags = toPlanTags(graph, tuple);
-    const { initializeIfMissing, isUpdate } = getEffects(tuple);
-
-    let modification = null;
-
-    if (isUpdate) {
-        // TODO - delete this
-        modification = tupleToModification(tuple);
-    }
-
-    const tableName = getImpliedTableName(tuple);
-
-    const plan: QueryPlan = {
-        tags: planTags,
-        tuple,
-        filterPattern: modificationPatternToFilter(tuple),
-        singleStar: tuple.derivedData().hasSingleStar,
-        doubleStar: tuple.derivedData().hasDoubleStar,
-        isUpdate,
-        modification,
-        initializeIfMissing,
-        isDelete: patternIsDelete(tuple),
-        tableName,
-        output,
-        failed: false
-    };
-
-    return plan;
+export function stripDeleteTag(tuple: Tuple) {
+    return tuple.remapTags((tag: TupleTag) => {
+        if (tag.attr === 'deleted')
+            return null;
+        return tag
+    });
 }
 
 function validatePlan(plan: QueryPlan) {
@@ -157,13 +133,37 @@ function validatePlan(plan: QueryPlan) {
 
 export default function planQuery(graph: Graph, tuple: Tuple, output: Stream) {
 
+    const originalTuple = tuple;
     tuple = resolveImmediateExpressions(tuple);
 
-    const plan: QueryPlan = initialBuildQueryPlan(graph, tuple, output);
+    const planTags = toPlanTags(graph, tuple);
+    const { initializeIfMissing, isUpdate } = getEffects(tuple);
+
+    const isDelete = patternIsDelete(tuple);
+    if (isDelete) {
+        tuple = stripDeleteTag(tuple);
+    }
+
+    const tableName = getImpliedTableName(tuple);
+
+    const plan: QueryPlan = {
+        tags: planTags,
+        tuple,
+        originalTuple,
+        singleStar: tuple.derivedData().hasSingleStar,
+        doubleStar: tuple.derivedData().hasDoubleStar,
+        isUpdate,
+        initializeIfMissing,
+        isDelete,
+        tableName,
+        output,
+        failed: false
+    };
+
     let table = null;
 
     try {
-        table = findTableForQuery(graph, plan.filterPattern);
+        table = findTableForQuery(graph, plan.tuple);
     } catch (e) {
         emitCommandError(plan.output, e);
         plan.failed = true;

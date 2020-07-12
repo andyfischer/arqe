@@ -3,7 +3,6 @@ import Tuple from './Tuple'
 import TupleTag from './TupleTag'
 import Stream from './Stream'
 import TableMount from './TableMount'
-import TupleModification from './TupleModification'
 
 export interface QueryTag {
     tag: TupleTag
@@ -17,10 +16,9 @@ export default interface QueryPlan {
     isUpdate: boolean
     isDelete?: boolean
     initializeIfMissing: boolean
-    modification: TupleModification
 
+    originalTuple: Tuple
     tuple: Tuple
-    filterPattern: Tuple
     output: Stream
 
     table?: TableMount

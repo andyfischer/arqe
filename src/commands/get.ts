@@ -16,7 +16,7 @@ export function selectOnTable(table: TableMount, tuple: Tuple, out: Stream) {
 }
 
 export function select(graph: Graph, plan: QueryPlan, out: Stream) {
-    const searchPattern = plan.filterPattern || plan.tuple;
+    const searchPattern = plan.tuple;
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');
 
