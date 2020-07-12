@@ -33,8 +33,6 @@ export function deletePlanned(graph: Graph, plan: QueryPlan) {
     const collectOutput = combineStreams(output);
     const searchPattern = plan.tuple;
 
-    console.log('deleting: ' + searchPattern.stringify())
-
     const allTables = collectOutput();
     for (const table of plan.searchTables) {
         const out = collectOutput();

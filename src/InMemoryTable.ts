@@ -10,14 +10,12 @@ import { modificationPatternToFilter } from './planQuery'
 
 export default class Table {
     name: string
-    supportsCompleteScan = true
     pattern: Pattern
 
     nextSlotId: IDSource = new IDSource();
     slots = new Map<string, Tuple>();
 
     listeners = new Map<string, TableListener>();
-
     mount: TableMount
 
     constructor(name: string, pattern: Pattern) {
@@ -25,7 +23,6 @@ export default class Table {
         this.pattern = pattern;
 
         this.mount = new TableMount(name, pattern);
-        this.mount.supportsCompleteScan = true;
         this.mount.addHandler('select **', {func: this.select.bind(this), protocol: 'tuple' });
         this.mount.addHandler('insert **', {func: this.insert.bind(this), protocol: 'tuple' });
         this.mount.addHandler('update **', {func: this.update.bind(this), protocol: 'tuple' });

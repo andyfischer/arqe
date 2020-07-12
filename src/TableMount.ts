@@ -16,7 +16,6 @@ interface DecoratedObject {
 export default class TableMount {
     name: string
     schema: Tuple
-    supportsCompleteScan: boolean
 
     handlers = new CommandPatternMatcher<NativeHandler>()
 
@@ -27,6 +26,10 @@ export default class TableMount {
 
     addHandler(commandStr: string, handler: NativeHandler) {
         this.handlers.addCommandStr(commandStr, handler);
+    }
+
+    hasHandler(commandName: string, tuple: Tuple) {
+        return !!this.handlers.find(commandName, tuple);
     }
 
     call(commandName: string, tuple: Tuple, out: Stream): boolean {

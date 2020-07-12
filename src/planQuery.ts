@@ -8,6 +8,7 @@ import QueryPlan, { QueryTag } from './QueryPlan'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import findTableForQuery from './findTableForQuery'
 import { tupleToModification, expressionUpdatesExistingValue } from './TupleModification'
+import parseTuple from './parseTuple'
 
 const exprFuncEffects = {
     increment: {
@@ -20,6 +21,7 @@ const exprFuncEffects = {
     }
 };
 
+const doubleStar = parseTuple('**')
 
 function getEffects(tuple: Tuple) {
 
@@ -177,7 +179,7 @@ export default function planQuery(graph: Graph, tuple: Tuple, output: Stream) {
     } else {
         // Scan every table.
         plan.searchTables = Array.from(graph.tables.values())
-            .filter(table => table.supportsCompleteScan);
+            .filter(table => table.hasHandler('select', doubleStar))
     }
 
     validatePlan(plan);
