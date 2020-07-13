@@ -1,6 +1,6 @@
 
 import Tuple from '../Tuple'
-import { Pattern, Stream } from ".."
+import { Stream } from ".."
 import ClientConnection, { connectToServer } from '../socket/ClientConnection'
 import { handles } from '../decorators'
 

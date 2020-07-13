@@ -1,10 +1,33 @@
 
-# arqe #
+# arqe - Awesome Relational Query Engine #
 
-"Awesome relational query engine"
+General purpose engine for providing and using data with a relational-query interface.
 
-A data orchestration layer. Highly experimental project looking at using a relational database
-style query interface for all areas of application development.
+The goal is to improve the process of software development, by putting a unified
+interface on top of many disparate systems, and enabling very good debuggability,
+introspection, and liveness.
+
+The hope is that this approach can enable:
+
+ - Unifying the deployment of code and versioning and configs (feature flags, a/b tests,
+   branching, canaries, etc)
+ - Break down the "build step", instead treat software delivery as a single fluid environment
+   that understands staged compilation.
+
+# Inspirations / Influences #
+
+ - Relational tables over foreign data: [OSQuery](https://osquery.io/), [SQL foreign data wrappers](https://wiki.postgresql.org/wiki/Foreign_data_wrappers), and others.
+ - Codd's relational model of data
+ - [The Third Manifesto](https://www.dcs.warwick.ac.uk/~hugh/TTM/DTATRM.pdf)
+
+# Syntax #
+
+A lot of visitors love to see syntax samples first, so here we go.
+
+
+
+
+
 
 # Goals #
 

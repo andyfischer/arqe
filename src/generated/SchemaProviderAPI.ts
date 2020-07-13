@@ -1,4 +1,4 @@
-import { GraphLike, Tuple, Pattern, Stream, StorageProvider, emitCommandError } from ".."
+import { GraphLike, Tuple, Stream, StorageProvider, emitCommandError } from ".."
 
 interface NativeHandler {
     setObjectColumn: (column: string) => void
@@ -12,12 +12,12 @@ export default class API implements StorageProvider {
         this.handler = handler;
     }
 
-    async runSearch(pattern: Pattern, output: Stream) {
+    async runSearch(pattern: Tuple, output: Stream) {
         emitCommandError(output, "provider code-generation/schema-provider doesn't support: get " + pattern.stringify());
         output.done()
     }
 
-    async runSave(pattern: Pattern, output: Stream) {
+    async runSave(pattern: Tuple, output: Stream) {
         // check for handler/setObjectColumn (set schema column/$column object)
 
         if ((pattern.tagCount() == 3) && (pattern.hasAttr("schema")) && (pattern.hasAttr("column")) && (pattern.hasValueForAttr("column")) && (pattern.hasAttr("object"))) {
@@ -54,7 +54,7 @@ export default class API implements StorageProvider {
         output.done()
     }
 
-    async runDelete(pattern: Pattern, output: Stream) {
+    async runDelete(pattern: Tuple, output: Stream) {
         emitCommandError(output, "provider code-generation/schema-provider doesn't support: delete " + pattern.stringify());
         output.done()
     }
