@@ -51,6 +51,8 @@ function formatExpectedError(expected: string, it: TokenIterator) {
 
 function parseOneCommand(it: TokenIterator): Command {
 
+    const startPos = it.position;
+
     // Parse main command
     it.skipSpaces();
     if (!it.nextIs(t_ident) && !it.nextIs(t_quoted_string))
@@ -64,7 +66,14 @@ function parseOneCommand(it: TokenIterator): Command {
     }
 
     // Parse tag args
-    parseArgs(it, query);
+    try {
+        parseArgs(it, query);
+    } catch (e) {
+        throw new Error(`Parse error on: \n`
+        +`  ${it.spanToString(startPos, it.position)}\n`
+        +`  ${e}`
+        )
+    }
 
     const pattern = tagsToTuple(query.tags);
     return new Command(command, pattern, query.flags);

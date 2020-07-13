@@ -176,4 +176,12 @@ export default class TokenIterator {
             columnEnd: lastToken.columnStart + lastToken.length
         }
     }
+
+    spanToString(startPos: number, endPos: number) {
+
+        const startToken = this.tokens[startPos];
+        const endToken = this.tokens[endPos];
+
+        return this.result.originalStr.slice(startToken.startPos, endToken.endPos);
+    }
 }

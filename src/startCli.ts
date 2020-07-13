@@ -59,7 +59,6 @@ export default async function main() {
         loadLocalBootstrapConfigs(graph);
     }
 
-    let useRemoteServer = false;
     let runRepl = true;
 
     // load schema with JsonFile

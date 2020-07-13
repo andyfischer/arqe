@@ -3,7 +3,7 @@ import { patternTagToString } from './stringifyQuery'
 
 export interface TagOptions {
     attr?: string
-    value?: string | true
+    value?: string | number | true
     exprValue?: string[]
     nativeValue?: any
     star?: boolean

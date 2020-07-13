@@ -29,8 +29,8 @@ export function patternTagToString(tag: TupleTag) {
 
     if (tag.value) {
 
-        if (typeof tag.value !== 'string')
-            throw new Error(`internal error: tagValue isn't a string: ` + JSON.stringify(tag.value));
+        if (typeof tag.value !== 'string' && typeof tag.value !== 'number')
+            throw new Error(`internal error: tag value isn't a string or number: ` + JSON.stringify(tag.value));
 
         let s = '';
 
@@ -38,7 +38,9 @@ export function patternTagToString(tag: TupleTag) {
             s += `[from \$${tag.identifier}] `;
         }
 
-        const needsParens = tagValueNeedsParens(tag.value);
+        const valStr = ''+tag.value;
+
+        const needsParens = tagValueNeedsParens(valStr);
 
         if (needsParens) {
             s += tag.attr + '(';
@@ -46,7 +48,7 @@ export function patternTagToString(tag: TupleTag) {
             s += tag.attr + '/';
         }
 
-        s += tag.value;
+        s += valStr;
 
         if (needsParens)
             s += ')';
