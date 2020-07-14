@@ -19,14 +19,14 @@ export default function setupInMemoryObjectTable(opts: SetupOpts): Result {
     const table = new TableMount(name, opts.primaryKey.addNewTag2({doubleStar: true}));
     const primaryKeyStr = opts.primaryKey.stringify();
 
-    table.addHandler(`select ${primaryKeyStr} attr/$x val?`, {
+    table.addHandler(`select ${primaryKeyStr} attr((one)) value`, {
         protocol: 'js_object',
         func({attr}) {
             return { attr, val: object[attr] }
         }
     });
     
-    table.addHandler(`select ${primaryKeyStr} attr/* val?`, {
+    table.addHandler(`select ${primaryKeyStr} attr value?`, {
         protocol: 'js_object',
         func() {
             const out = [];

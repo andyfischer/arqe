@@ -82,6 +82,13 @@ export default class TupleMatchHelper {
         const subTag = subPattern.asMap().get(attr);
         const subTags = subTag ? [subTag] : [];
 
+        /*
+        if (subTag && subTag.starValue && !this.starValueByAttr[attr]) {
+            console.log(`(${this.tuple.stringify()}) is not a superset of (${subPattern.stringify()})`)
+            return false;
+        }
+        */
+
         // Check min/max counts
         const { min, max } = this.countsByAttr[attr];
 
