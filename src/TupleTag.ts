@@ -44,6 +44,10 @@ export default class TupleTag {
         return !!this.value;
     }
 
+    hasIdentifier() {
+        return !!this.identifier;
+    }
+
     str() {
         return patternTagToString(this);
     }

@@ -60,4 +60,4 @@
   - 'pattern(x/*) equals-from-json({"x":{"match":"*"}})'
   - 'pattern(**) equals-from-json({"**":true})'
   - 'pattern(x) equals-from-json({"x":true})'
-  - 'pattern(x/$xvar) equals-from-json({"$xvar":{"attr":"x","match":"*"}})'
+  - 'pattern(x/$xvar) equals-from-json({"$xvar":{"attr":"x"}})'

@@ -47,5 +47,4 @@ it('parses nested parens inside new style tags', () => {
 
 it('parses unbound attr identifiers', () => {
     const pattern = parseTuple('a x/$b');
-    console.log(pattern);
 });
