@@ -23,7 +23,7 @@ export function patternTagToString(tag: TupleTag) {
     if (tag.doubleStar)
         return '**'
 
-    if (tag.starValue && tag.identifier) {
+    if (tag.attr && tag.value === null && tag.identifier) {
         return tag.attr + '/$' + tag.identifier;
     }
 

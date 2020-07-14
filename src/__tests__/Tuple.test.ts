@@ -63,12 +63,7 @@ describe('isSupersetOf', () => {
         expect(test('**', 'a $x val/*')).toEqual(true);
     });
 
-    xit('works with duplicated types', () => {
-        expect(test('x/1 x/2', 'x/1 x/2')).toEqual(true);
-        expect(test('x/1 x/2', 'x/2 x/1')).toEqual(true);
-        expect(test('x/1 x/*', 'x/2 x/1')).toEqual(true);
-        expect(test('x/2 x/*', 'x/2 x/1')).toEqual(true);
-        expect(test('x/2 x/1', 'x/* x/1')).toEqual(false);
-        expect(test('x/2 x/1', 'x/2 x/2')).toEqual(false);
+  it('handles unbound variables', () => {
+        expect(test('imo/1 attr/$x', 'imo/1 attr/*')).toEqual(false);
     });
 });

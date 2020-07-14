@@ -114,7 +114,7 @@ function parseTagValue(it: TokenIterator): TagOptions {
     } else if (!parenSyntax && it.nextIs(t_dollar) && it.nextIs(t_ident, 1)) {
         it.consume();
         identifier = it.consumeNextUnquotedText();
-        starValue = true;
+        // starValue = true;
     } else if (it.nextIs(t_lparen)) {
         valueExpr = parseExpr(it);
     } else {

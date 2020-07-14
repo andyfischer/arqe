@@ -44,3 +44,8 @@ it('parses nested parens inside new style tags', () => {
     expect(pattern.tags[0].attr).toEqual('tag');
     expect(pattern.tags[0].value).toEqual('nested (expr) here');
 });
+
+it('parses unbound attr identifiers', () => {
+    const pattern = parseTuple('a x/$b');
+    console.log(pattern);
+});

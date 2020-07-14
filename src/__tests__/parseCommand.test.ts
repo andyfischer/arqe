@@ -111,7 +111,6 @@ it('parses unbound variables 2', () => {
     expect(parsed.pattern.tags[0].attr).toEqual('tagtype');
     expect(parsed.pattern.tags[0].identifier).toEqual('a');
     expect(parsed.pattern.tags[0].star).toBeFalsy();
-    expect(parsed.pattern.tags[0].starValue).toEqual(true);
 });
 
 xit('parses quoted tag values', () => {
@@ -149,8 +148,7 @@ it("restringify tests", () => {
 
 it('stringifies tag identifiers', () => {
     expect((tagsToTuple([newTagFromObject({identifier: 'foo', star: true})])).stringify()).toEqual('$foo');
-    expect((tagsToTuple([newTagFromObject({identifier: 'foo', attr: 'type', starValue: true})])).stringify()).toEqual('type/$foo');
-    expect((tagsToTuple([newTagFromObject({identifier: 'foo', attr: 'type'})])).stringify()).toEqual('[from $foo] type');
+    expect((tagsToTuple([newTagFromObject({identifier: 'foo', attr: 'type'})])).stringify()).toEqual('type/$foo');
     expect((tagsToTuple([newTagFromObject({identifier: 'foo', attr: 'type', value: 'value'})])).stringify()).toEqual('[from $foo] type/value');
 });
 
