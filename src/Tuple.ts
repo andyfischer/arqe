@@ -240,15 +240,8 @@ export default class Tuple {
         return out;
     }
 
-    findTagForType(attr: string) {
-        for (let i = 0; i < this.tags.length; i++)
-            if (this.tags[i].attr === attr)
-                return this.tags[i];
-        return null;
-    }
-
-    findTagWithType(attr: string) {
-        return this.findTagForType(attr);
+    findTagForType(attr: string): TupleTag {
+        return this.asMap().get(attr) || null;
     }
 
     findTagIndexOfType(attr: string) {

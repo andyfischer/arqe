@@ -10,11 +10,11 @@ it('handles basic cases', () => {
     expect(test('x/1 y/1', 'x/1 y/1')).toEqual(true);
     expect(test('x/1 y/1', 'x/1')).toEqual(false);
     expect(test('x/1 ', 'x/1 y/1')).toEqual(false);
-    expect(test('x/1 y/*', 'x/1 y/1')).toEqual(true);
+    expect(test('x/1 y', 'x/1 y/1')).toEqual(true);
     expect(test('x/1 y/1', 'x/1 y/*')).toEqual(false);
-    expect(test('x/* y/*', 'x/1 y/1')).toEqual(true);
-    expect(test('x/* y/*', 'x/1 y/*')).toEqual(true);
-    expect(test('x/* y/*', 'x/* y/*')).toEqual(true);
+    expect(test('x y', 'x/1 y/1')).toEqual(true);
+    expect(test('x y', 'x/1 y')).toEqual(true);
+    expect(test('x y', 'x y')).toEqual(true);
     expect(test('**', 'x/* y/*')).toEqual(true);
 
     expect(test('x/1', 'x/1')).toEqual(true);

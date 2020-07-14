@@ -7,12 +7,49 @@ import { emitSearchPatternMeta, emitCommandError } from '../CommandMeta'
 import QueryPlan from '../QueryPlan'
 import { combineStreams } from '../StreamUtil'
 import TableMount from '../TableMount'
+import { callNativeHandler } from '../NativeHandler'
+
+function findForHandlerMatches(pattern: Tuple, tuple: Tuple) {
+    // We can use this handler if we have definite values for each expected attr.
+    for (const tag of pattern.tags) {
+        const found = tuple.findTagForType(tag.attr);
+        if (!found || !found.fixedValue())
+            return false;
+    }
+    return true;
+}
 
 export function selectOnTable(table: TableMount, tuple: Tuple, out: Stream) {
     if (table.call('get', tuple, out))
         return;
 
-    table.callOrError('select', tuple, out);
+    if (table.call('select', tuple, out))
+        return;
+
+    // Check for a compatible 'find-for' handler.
+    for (const { pattern, handler } of table.handlersForCommand('find-for')) {
+        if (findForHandlerMatches(pattern, tuple)) {
+            callNativeHandler(handler, tuple, out);
+            return;
+        }
+    }
+
+    // Use 'find-all' handler if possible.
+    const findAllHandler = table.handlersForCommand('find-all')[0];
+    if (findAllHandler) {
+        callNativeHandler(findAllHandler.handler, tuple, {
+            next(t: Tuple) {
+                if (tuple.isSupersetOf(t))
+                    out.next(t);
+            },
+            done() { out.done() }
+        });
+        return;
+    }
+
+    // Fail
+    emitCommandError(out, `No handler found on table '${table.name}' for command: ${tuple.stringify()}`);
+    out.done();
 }
 
 export function select(graph: Graph, plan: QueryPlan, out: Stream) {

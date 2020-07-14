@@ -31,6 +31,14 @@ export default class TableMount {
         return !!this.handlers.find(commandName, tuple);
     }
 
+    handlersForCommand(commandName: string): { pattern: Tuple, handler: NativeHandler }[] {
+        const matcher = this.handlers.findCommandMatcher(commandName);
+        if (!matcher)
+            return [];
+
+        return matcher.cases.map(c => ({ pattern: c.pattern, handler: c.value }));
+    }
+
     call(commandName: string, tuple: Tuple, out: Stream): boolean {
         const handler = this.handlers.find(commandName, tuple);
         if (!handler) {

@@ -55,3 +55,9 @@ export function callNativeHandler(handler: NativeHandler, input: Tuple, out: Str
     throw new Error('unrecognized: ' + handler.protocol)
 }
 
+export function jsObjectHandler(func): NativeHandler {
+    return {
+        func,
+        protocol: 'js_object'
+    }
+}
