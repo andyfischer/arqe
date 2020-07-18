@@ -35,12 +35,6 @@ export function insertPlanned(graph: Graph, plan: QueryPlan) {
     if (!plan.table)
         throw new Error("Internal error, missing table in insert()")
 
-    if (!plan.tableName) {
-        emitCommandError(output, "internal error, query plan must have 'tableName' for an insert: " + plan.tuple.stringify());
-        output.done();
-        return;
-    }
-
     const tuple = resolveExpressionValuesForInsert(graph, plan.tuple);
 
     insertOnTable(table, tuple, {

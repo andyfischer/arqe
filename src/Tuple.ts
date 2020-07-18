@@ -120,6 +120,19 @@ export default class Tuple {
         return true;
     }
 
+    /*
+     Look at every attr used in this tuple, and returns true if subTuple has a
+     definite value for each attr.
+    */
+    checkDefiniteValuesProvidedBy(subTuple: Tuple) {
+        for (const tag of this.tags) {
+            const subTag = subTuple.findTagForType(tag.attr);
+            if (!subTag || !subTag.fixedValue())
+                return false;
+        }
+        return true;
+    }
+
     equals(rhs: Tuple) {
         if (this === rhs)
             return true;

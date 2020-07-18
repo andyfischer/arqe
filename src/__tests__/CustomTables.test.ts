@@ -4,7 +4,7 @@ import { Graph } from "..";
 import { run } from './utils'
 import { jsObjectHandler } from "../NativeHandler";
 
-it('supports find-for handler', () => {
+it('supports searches with find-for', () => {
     const graph = new Graph();
     const table = new TableMount(name, parseTuple('t x? y?'));
     graph.addTable(table);
@@ -26,7 +26,7 @@ it('supports find-for handler', () => {
     expect(run(graph, "get t x y/4")).toEqual(["t x/3 y/4"]);
 });
 
-it('supports find-all handler', () => {
+it('supports searches with find-all', () => {
     const graph = new Graph();
     const table = new TableMount(name, parseTuple('t x? y?'));
     graph.addTable(table);
@@ -42,4 +42,30 @@ it('supports find-all handler', () => {
 
     // With filter:
     expect(run(graph, "get t x/1 y")).toEqual(["t x/1 y/2"]);
+});
+
+it('supports custom inserts', () => {
+    const graph = new Graph();
+    const table = new TableMount(name, parseTuple('t x? y?'));
+    graph.addTable(table);
+
+    const data = {
+        'a': '1',
+        'b': '2'
+    }
+
+    table.addHandler("find-for x", jsObjectHandler(({ x }) => {
+        return {
+            x,
+            y: data[x]
+        }
+    }));
+
+    table.addHandler('set x y', jsObjectHandler(({x,y}) => {
+        data[x] = y;
+    }))
+
+    expect(run(graph, "get t x/a y")).toEqual(["t x/a y/1"]);
+    expect(run(graph, "set t x/a y/2")).toEqual(["x/a y/2"]);
+    expect(run(graph, "get t x/a y")).toEqual(["t x/a y/2"]);
 });

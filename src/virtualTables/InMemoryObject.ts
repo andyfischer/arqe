@@ -30,12 +30,9 @@ export default function setupInMemoryObjectTable(opts: SetupOpts): Result {
         return out;
     }));
 
-    table.addHandler('insert attr value', {
-        protocol: 'tuple',
-        func: (search: Tuple) => {
-            
-        }
-    });
+    table.addHandler('insert attr value', jsObjectHandler(( { attr, value } ) => {
+        object[attr] = value;
+    }));
 
     return {
         table,

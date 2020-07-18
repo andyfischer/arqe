@@ -1,6 +1,7 @@
 
 import Graph from '../Graph'
 import receiveToStringStream from '../receiveToStringStream'
+import { run } from './utils'
 
 it('listen ** notifies on all changes', () => {
     const graph = new Graph();
@@ -11,15 +12,15 @@ it('listen ** notifies on all changes', () => {
     expect(listenCalls).toEqual([]);
 
     listenCalls = [];
-    graph.run('set a');
+    run(graph, 'set a');
     expect(listenCalls).toEqual(['a']);
 
     listenCalls = [];
-    graph.run('set a/1 b/1');
+    run(graph, 'set a/1 b/1');
     expect(listenCalls).toEqual(['a/1 b/1']);
     
     listenCalls = [];
-    graph.run('set a/1 b/1 val/5');
+    run(graph, 'set a/1 b/1 val/5');
     expect(listenCalls).toEqual(['a/1 b/1 val/5']);
 });
 
