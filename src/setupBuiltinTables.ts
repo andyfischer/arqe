@@ -78,6 +78,7 @@ export default function setupBuiltinTables(graph: Graph) {
         graph.addTable(table);
     }
 
+    /*
     const { object, table } = setupInMemoryObject({
         primaryKey: parseTuple('testobj'),
         initialValue: {
@@ -87,4 +88,5 @@ export default function setupBuiltinTables(graph: Graph) {
     });
 
     graph.addTable(table);
+    */
 }

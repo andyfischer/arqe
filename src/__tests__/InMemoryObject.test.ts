@@ -3,7 +3,7 @@ import setupInMemoryObjectTable from "../virtualTables/InMemoryObject";
 import parseTuple from "../parseTuple";
 import { run } from './utils'
 
-it('can correctly read from InMemoryObject table', () => {
+xit('can correctly read from InMemoryObject table', () => {
     const graph = new Graph();
     const { object, table } = setupInMemoryObjectTable({ primaryKey: parseTuple('imo/1') });
 

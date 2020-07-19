@@ -60,7 +60,8 @@ export function select(graph: Graph, plan: QueryPlan, out: Stream) {
     const startedAllTables = combined();
 
     for (const table of plan.searchTables) {
-        selectOnTable(table, searchPattern, combined());
+        const tableOut = combined();
+        selectOnTable(table, searchPattern, tableOut);
     }
 
     startedAllTables.done();
