@@ -3,7 +3,7 @@ import Graph from './Graph'
 import { isRunningInNode } from './utils'
 import parseTuple from './parseTuple';
 import TableMount, { decoratedObjToTableMount } from './TableMount';
-import setupInMemoryObject from './virtualTables/InMemoryObject'
+import setupInMemoryObject from './tables/InMemoryObject'
 
 type ExecEnv = 'browser' | 'node' | 'any'
 

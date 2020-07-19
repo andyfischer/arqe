@@ -1,12 +1,12 @@
 
-import Pattern from './Pattern'
-import IDSource from './utils/IDSource'
-import Tuple from './Tuple'
-import Stream from './Stream'
-import TableListener from './TableListener'
-import TableMount from './TableMount'
-import { tupleToModification } from './TupleModification'
-import { modificationPatternToFilter } from './planQuery'
+import Pattern from '../Pattern'
+import IDSource from '../utils/IDSource'
+import Tuple from '../Tuple'
+import Stream from '../Stream'
+import TableListener from '../TableListener'
+import TableMount from '../TableMount'
+import { tupleToModification } from '../TupleModification'
+import { modificationPatternToFilter } from '../planQuery'
 
 export default class InMemoryTable {
     name: string

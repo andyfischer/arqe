@@ -1,5 +1,5 @@
 import { dir } from "console"
-import { FsDirectory } from "./virtualTables/Filesystem"
+import { FsDirectory } from "./tables/Filesystem"
 
 interface CommandInfo {
     directTableAccess?: boolean
