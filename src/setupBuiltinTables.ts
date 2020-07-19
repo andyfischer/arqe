@@ -15,42 +15,42 @@ interface TableInitializer {
 const builtinTables: TableInitializer[] = [
     {
         init: () => {
-            const { WorkingFile } = require('./virtualTables/WorkingFile');
+            const { WorkingFile } = require('./tables/WorkingFile');
             return decoratedObjToTableMount(new WorkingFile())
         },
         execEnv: 'any'
     },
     {
         init: () => {
-            const { fsFileContents } = require('./virtualTables/Filesystem');
+            const { fsFileContents } = require('./tables/Filesystem');
             return fsFileContents();
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
-            const { fsDirectory } = require('./virtualTables/Filesystem');
+            const { fsDirectory } = require('./tables/Filesystem');
             return fsDirectory();
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
-            const { glob } = require('./virtualTables/Filesystem');
+            const { glob } = require('./tables/Filesystem');
             return glob();
         },
         execEnv: 'node'
     }, 
     {
         init: () => {
-            const { Remote } = require('./virtualTables/Remote');
+            const { Remote } = require('./tables/Remote');
             return decoratedObjToTableMount(new Remote());
         },
         execEnv: 'any'
     }, 
     {
         init: () => {
-            const { TestMath } = require('./virtualTables/TestMath');
+            const { TestMath } = require('./tables/TestMath');
             return decoratedObjToTableMount(new TestMath())
         },
         execEnv: 'any'
