@@ -32,7 +32,9 @@ it('listen -get ** first sends messages for existing items', () => {
 
     let listenCalls = [];
 
-    graph.run('listen -get **', receiveToStringStream(s => listenCalls.push(s)));
+    //graph.run('listen -get **', receiveToStringStream(s => listenCalls.push(s)));
+    graph.run('get **', receiveToStringStream(s => listenCalls.push(s)));
+    
 
     expect(listenCalls).toEqual([
         'a',

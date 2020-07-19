@@ -26,18 +26,17 @@ export function selectOnTable(table: TableMount, tuple: Tuple, out: Stream) {
     if (table.call('select', tuple, out))
         return;
 
-    // Check for a compatible 'find-for' handler.
-    for (const { pattern, handler } of table.handlersForCommand('find-for')) {
-        if (findForHandlerMatches(pattern, tuple)) {
-            callNativeHandler(handler, tuple, out);
-            return;
-        }
+    // Check for a compatible 'find-with' handler.
+    const findWithHandler = table.handlers.find('find-with', tuple);
+    if (findWithHandler) {
+        callNativeHandler(findWithHandler, tuple, out);
+        return;
     }
 
-    // Use 'find-all' handler if possible.
-    const findAllHandler = table.handlersForCommand('find-all')[0];
-    if (findAllHandler) {
-        callNativeHandler(findAllHandler.handler, tuple, {
+    // Use the 'list-all' handler if provided.
+    const listAllHandler = table.handlers.find('list-all', tuple);
+    if (listAllHandler) {
+        callNativeHandler(listAllHandler, tuple, {
             next(t: Tuple) {
                 if (tuple.isSupersetOf(t))
                     out.next(t);

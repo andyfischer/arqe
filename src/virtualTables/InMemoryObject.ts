@@ -19,11 +19,11 @@ export default function setupInMemoryObjectTable(opts: SetupOpts): Result {
     const name = opts.name || `InMemoryObject(${opts.primaryKey.stringify()})`
     const table = new TableMount(name, opts.primaryKey.addNewTag2({doubleStar: true}));
 
-    table.addHandler(`find-for attr`, jsObjectHandler(({attr}) => {
+    table.addHandler(`find-with attr`, jsObjectHandler(({attr}) => {
         return { attr, value: object[attr] }
     }));
     
-    table.addHandler(`find-all`, jsObjectHandler(() => {
+    table.addHandler(`list-all`, jsObjectHandler(() => {
         const out = [];
         for (const k in object)
             out.push({attr: k, value: object[k]})

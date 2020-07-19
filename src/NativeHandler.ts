@@ -38,7 +38,7 @@ function callWithJsObjectProtocol(handler: NativeHandler, input: Tuple, out: Str
         out.done();
     }
 
-    if (result.then)
+    if (result && result.then)
         result.then(finish)
     else
         finish(result);
@@ -58,6 +58,7 @@ export function callNativeHandler(handler: NativeHandler, input: Tuple, out: Str
 export function jsObjectHandler(func): NativeHandler {
     return {
         func,
+        name: func.name,
         protocol: 'js_object'
     }
 }

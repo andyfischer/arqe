@@ -3,11 +3,9 @@ import Tuple from './Tuple'
 import { patternTagToString } from './stringifyQuery'
 
 export default function stringifyRelationStream() {
-    let searchPattern = null;
+    let searchPattern: Tuple = null;
     let outputCount = false;
     let outputExtended = false;
-    let outputList = false;
-    let sawError = null;
 
     return (rel: Tuple) => {
 
@@ -20,13 +18,11 @@ export default function stringifyRelationStream() {
             if (rel.hasAttr('output-flag')) {
                 if (rel.getVal('output-flag') === 'extended')
                     outputExtended = true;
-                if (rel.getVal('output-flag') === 'list')
-                    outputList = true;
                 return;
             }
 
             if (rel.hasAttr('error')) {
-                return '#error ' + sawError.getTagValue('message');
+                return '#error ' + rel.getVal('message');
             }
 
             if (rel.hasAttr('deleted')) {
@@ -37,7 +33,10 @@ export default function stringifyRelationStream() {
         }
 
         const tags = rel.tags.filter(tag => {
-            if (searchPattern && !outputExtended && searchPattern.fixedTagsForType[tag.attr])
+            if (searchPattern
+                    && !outputExtended
+                    && searchPattern.findTagForType(tag.attr)
+                    && searchPattern.findTagForType(tag.attr).fixedValue())
                 return false;
 
             return true;

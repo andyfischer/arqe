@@ -6,16 +6,16 @@ import { jsObjectHandler } from "../NativeHandler";
 
 it('supports searches with find-for', () => {
     const graph = new Graph();
-    const table = new TableMount(name, parseTuple('t x? y?'));
+    const table = new TableMount('custom1', parseTuple('t x? y?'));
     graph.addTable(table);
-    table.addHandler("find-for x", jsObjectHandler(({ x }) => {
+    table.addHandler("find-with x", jsObjectHandler(({ x }) => {
         return {
             x,
             y: parseInt(x) + 1
         }
     }));
 
-    table.addHandler("find-for y", jsObjectHandler(({ y }) => {
+    table.addHandler("find-with y", jsObjectHandler(({ y }) => {
         return {
             y,
             x: parseInt(y) - 1
@@ -28,10 +28,10 @@ it('supports searches with find-for', () => {
 
 it('supports searches with find-all', () => {
     const graph = new Graph();
-    const table = new TableMount(name, parseTuple('t x? y?'));
+    const table = new TableMount('custom2', parseTuple('t x? y?'));
     graph.addTable(table);
 
-    table.addHandler("find-all", jsObjectHandler(() => {
+    table.addHandler("list-all", jsObjectHandler(() => {
         return [
             { x: '1', y: '2' },
             { x: '5', y: '6' }
@@ -46,7 +46,7 @@ it('supports searches with find-all', () => {
 
 it('supports custom inserts', () => {
     const graph = new Graph();
-    const table = new TableMount(name, parseTuple('t x? y?'));
+    const table = new TableMount('custom3', parseTuple('t x? y?'));
     graph.addTable(table);
 
     const data = {
@@ -54,7 +54,7 @@ it('supports custom inserts', () => {
         'b': '2'
     }
 
-    table.addHandler("find-for x", jsObjectHandler(({ x }) => {
+    table.addHandler("find-with x", jsObjectHandler(({ x }) => {
         return {
             x,
             y: data[x]
@@ -63,9 +63,10 @@ it('supports custom inserts', () => {
 
     table.addHandler('set x y', jsObjectHandler(({x,y}) => {
         data[x] = y;
+        return { x, y };
     }))
 
     expect(run(graph, "get t x/a y")).toEqual(["t x/a y/1"]);
-    expect(run(graph, "set t x/a y/2")).toEqual(["x/a y/2"]);
+    expect(run(graph, "set t x/a y/2")).toEqual(["t x/a y/2"]);
     expect(run(graph, "get t x/a y")).toEqual(["t x/a y/2"]);
 });

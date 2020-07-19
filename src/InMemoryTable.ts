@@ -8,7 +8,7 @@ import TableMount from './TableMount'
 import { tupleToModification } from './TupleModification'
 import { modificationPatternToFilter } from './planQuery'
 
-export default class Table {
+export default class InMemoryTable {
     name: string
     pattern: Pattern
 
@@ -23,10 +23,17 @@ export default class Table {
         this.pattern = pattern;
 
         this.mount = new TableMount(name, pattern);
-        this.mount.addHandler('select **', {func: this.select.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('insert **', {func: this.insert.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('update **', {func: this.update.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('delete **', {func: this.delete.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('list-all', {func: this.findAll.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('insert', {func: this.insert.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('update', {func: this.update.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('delete', {func: this.delete.bind(this), protocol: 'tuple' });
+    }
+
+    findAll(tuple: Tuple, out: Stream) {
+        for (const [slotId, tuple] of this.slots.entries())
+            out.next(tuple);
+
+        out.done();
     }
 
     select(pattern: Tuple, out: Stream) {
