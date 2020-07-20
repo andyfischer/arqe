@@ -75,11 +75,11 @@ export default function printAsTable(patterns: Pattern[]): string[] {
     const outputLines = [];
 
     // Figure out all the columns.
-    for (const pattern of patterns) {
-        for (const tag of pattern.tags) {
+    for (const tuple of patterns) {
+        for (const tag of tuple.tags) {
             if (tag.attr) {
                 const column: Column = columns.get(tag.attr);
-                column.items.push(tag.value);
+                column.items.push(tag.valueToString());
             }
         }
     }
@@ -109,11 +109,13 @@ export default function printAsTable(patterns: Pattern[]): string[] {
     outputLines.push(titleBarEls.join(`${horizLineChar}${crossLineChar}${horizLineChar}`));
 
     // Format every row
-    for (const pattern of patterns) {
+    for (const tuple of patterns) {
         const outputEls = [];
         for (const column of columns.values()) {
-            if (pattern.hasAttr(column.title)) {
-                outputEls.push(column.format(pattern.getValOptional(column.title, '')));
+            if (tuple.hasAttr(column.title)) {
+                const tag = tuple.findTagForType(column.title);
+                const str = tag ? tag.valueToString() : '';
+                outputEls.push(column.format(str));
             }
         }
         outputLines.push(outputEls.join(` ${vertLineChar} `));

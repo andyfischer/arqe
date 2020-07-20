@@ -1,5 +1,6 @@
 import Tuple from "./Tuple";
 import Stream from "./Stream";
+import { emitCommandError } from "./CommandMeta";
 
 export type NativeHandlerProtocol =
     'js_object'
@@ -38,10 +39,16 @@ function callWithJsObjectProtocol(handler: NativeHandler, input: Tuple, out: Str
         out.done();
     }
 
-    if (result && result.then)
-        result.then(finish)
-    else
+    if (result && result.then) {
+        result
+            .then(finish)
+            .catch(err => {
+                emitCommandError(out, err);
+                out.done();
+            })
+    } else {
         finish(result);
+    }
 }
 
 export function callNativeHandler(handler: NativeHandler, input: Tuple, out: Stream) {

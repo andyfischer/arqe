@@ -19,15 +19,13 @@ The hope is that this approach can enable:
  - Relational tables over foreign data: [OSQuery](https://osquery.io/), [SQL foreign data wrappers](https://wiki.postgresql.org/wiki/Foreign_data_wrappers), and others.
  - Codd's relational model of data
  - [The Third Manifesto](https://www.dcs.warwick.ac.uk/~hugh/TTM/DTATRM.pdf)
+ - ["Compilers are databases"](https://www.youtube.com/watch?v=WxyyJyB_Ssc) - Martin Odersky
 
 # Syntax #
 
 A lot of visitors love to see syntax samples first, so here we go.
 
-
-
-
-
+TODO
 
 # Goals #
 

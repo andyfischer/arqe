@@ -48,6 +48,15 @@ export default class TupleTag {
         return !!this.identifier;
     }
 
+    valueToString() {
+        if (this.value == null)
+            return '';
+        const s = '' + this.value;
+        if (s === '[object Object]' && typeof this.value !== 'string')
+            return '<native object>'
+        return s;
+    }
+
     str() {
         return patternTagToString(this);
     }

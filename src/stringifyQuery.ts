@@ -38,7 +38,7 @@ export function patternTagToString(tag: TupleTag) {
             s += `[from \$${tag.identifier}] `;
         }
 
-        const valStr = ''+tag.value;
+        let valStr = '' + tag.value;
 
         const needsParens = tagValueNeedsParens(valStr);
 
