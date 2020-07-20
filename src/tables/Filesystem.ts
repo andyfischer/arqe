@@ -1,7 +1,6 @@
 
 import fs from 'fs-extra'
-import { handles } from '../decorators'
-import { decoratedObjToTableMount } from '../TableMount'
+import { handles, decoratedObjToTableMount } from '../decorators'
 
 import globLib from 'glob'
 

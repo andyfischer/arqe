@@ -2,9 +2,13 @@
 import TuplePatternMatcher from './TuplePatternMatcher'
 import NativeHandler from './NativeHandler'
 import CommandPatternMatcher from './CommandPatternMatcher';
+import TableMount from './TableMount';
+import parseTuple from './parseTuple';
 
-export interface DecoratedObject {
-    handlers?: CommandPatternMatcher<NativeHandler>
+interface DecoratedObject {
+    handlers?: { commandStr: string, handler: NativeHandler }[]
+    name: string
+    schemaStr: string
 }
 
 export function handles(commandStr: string) {
@@ -13,14 +17,34 @@ export function handles(commandStr: string) {
         const target = object as DecoratedObject;
 
         if (!target.handlers)
-            target.handlers = new CommandPatternMatcher<NativeHandler>();
+            target.handlers = [];
 
         const handler: NativeHandler = {
             name: propertyKey,
-            func: target[propertyKey].bind(target),
+            func: target[propertyKey],
             protocol: 'js_object'
         }
 
-        target.handlers.addCommandStr(commandStr, handler);
+        target.handlers.push({ commandStr, handler });
     }
+}
+
+export function decoratedObjToTableMount(obj: DecoratedObject) {
+    if (!obj.handlers)
+        throw new Error('expected object to have .handlers')
+
+    if (!obj.schemaStr)
+        throw new Error('expected object to have .schemaStr')
+
+    const mount = new TableMount(obj.name, parseTuple(obj.schemaStr));
+
+    for (const { commandStr, handler } of obj.handlers) {
+        const func = handler.func.bind(obj);
+        mount.addHandler(commandStr, {
+            ...handler,
+            func,
+        })
+    }
+    
+    return mount;
 }

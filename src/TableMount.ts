@@ -7,11 +7,7 @@ import { callNativeHandler } from "./NativeHandler";
 import { emitCommandError } from './CommandMeta'
 import Stream from './Stream'
 
-interface DecoratedObject {
-    handlers?: CommandPatternMatcher<NativeHandler>
-    name: string
-    schemaStr: string
-}
+
 
 export default class TableMount {
     name: string
@@ -50,14 +46,4 @@ export default class TableMount {
     }
 }
 
-export function decoratedObjToTableMount(obj: DecoratedObject) {
-    if (!obj.handlers)
-        throw new Error('expected object to have .handlers')
 
-    if (!obj.schemaStr)
-        throw new Error('expected object to have .schemaStr')
-
-    const mount = new TableMount(obj.name, parseTuple(obj.schemaStr));
-    mount.handlers = obj.handlers;
-    return mount;
-}

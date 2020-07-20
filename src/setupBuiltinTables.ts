@@ -1,9 +1,8 @@
 
 import Graph from './Graph'
 import { isRunningInNode } from './utils'
-import parseTuple from './parseTuple';
-import TableMount, { decoratedObjToTableMount } from './TableMount';
-import setupInMemoryObject from './tables/InMemoryObject'
+import TableMount from './TableMount';
+import { decoratedObjToTableMount } from './decorators';
 
 type ExecEnv = 'browser' | 'node' | 'any'
 
