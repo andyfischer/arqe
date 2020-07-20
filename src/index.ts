@@ -8,6 +8,8 @@ export { default as startWebApp } from './toollib/startWebApp'
 export { rewriteDumpFile } from './DumpFile'
 export * from './CommandMeta'
 export * from './receiveUtils'
+export * from './decorators'
+export { decoratedObjToTableMount } from './TableMount'
 export { default as printConsoleResult } from './console/printResult'
 export { parsePattern } from './Pattern'
 

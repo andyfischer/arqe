@@ -54,6 +54,9 @@ export default class Graph {
         if (!table.name)
             throw new Error("missing 'name'");
 
+        if (!(table instanceof TableMount))
+            throw new Error('addTable expected TableMount object');
+
         this.tables.set(table.name, table);
         this.tablePatternMap.add(table.schema, table);
         return table;

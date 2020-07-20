@@ -41,6 +41,22 @@ function runFile(graph: Graph, filename: string) {
     }
 }
 
+function requireTables(graph: Graph, moduleName: string) {
+    console.log('loading: ' + moduleName);
+    const { setupTables } = require(moduleName);
+    if (!setupTables)
+        throw new Error(`Module '${moduleName}' didn't export 'setupTables'`);
+
+    const tables = setupTables();
+
+    for (const table of tables)
+        graph.addTable(table);
+}
+
+function loadStandardTables(graph: Graph) {
+    requireTables(graph, '../plugins/eslint');
+}
+
 export default async function main() {
     require('source-map-support').install();
 
@@ -58,6 +74,8 @@ export default async function main() {
     } else {
         loadLocalBootstrapConfigs(graph);
     }
+
+    loadStandardTables(graph);
 
     let runRepl = true;
 
