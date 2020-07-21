@@ -5,7 +5,7 @@ import Tuple, { tagsToTuple } from './Tuple'
 import TupleTag, { newTagFromObject, TagOptions, FixedTag } from './TupleTag'
 import { lexStringToIterator, TokenIterator, TokenDef, t_ident, t_quoted_string, t_star,
     t_space, t_hash, t_double_dot, t_newline, t_bar,
-    t_integer, t_dash } from './lexer'
+    t_integer, t_dash, t_line_comment } from './lexer'
 import { parseOneTag } from './parseTuple'
 import { ValidCommands } from './CommandDb'
 
@@ -175,7 +175,7 @@ export function parseFile(fileContents: string): CommandChain[] {
     const commands: CommandChain[] = [];
 
     while (!it.finished()) {
-        while (it.nextIs(t_space) || it.nextIs(t_newline))
+        while (it.nextIs(t_space) || it.nextIs(t_newline) || it.nextIs(t_line_comment))
             it.consume();
 
         const command = parseOneCommandChain(it);

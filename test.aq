@@ -1,1 +1,7 @@
-get eslint source(var x = y)
+# get eslint source(var x = y)
+
+# get glob pattern(src/**/*.ts)
+
+# get fs filename(src/__tests__/CustomTables.test.ts) file-contents
+
+get glob pattern(src/**/*.ts) filename/$f | join fs filename/$f file-contents
