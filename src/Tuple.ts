@@ -326,6 +326,10 @@ export default class Tuple {
     isCommandError() {
         return this.hasAttr('command-meta') && this.hasAttr('error');
     }
+
+    isCommandSearchPattern() {
+        return this.hasAttr('command-meta') && this.hasAttr('search-pattern');
+    }
 }
 
 export function objectToTuple(object: { [k: string]: string | true }) {
@@ -340,4 +344,8 @@ export function objectToTuple(object: { [k: string]: string | true }) {
 
 export function tagsToTuple(tags: TupleTag[]): Tuple {
     return new Tuple(tags)
+}
+
+export function singleTagToTuple(attr: string, value: any) {
+    return new Tuple([newTag(attr, value)])
 }

@@ -27,3 +27,22 @@ export function combineStreams(output: Stream): NewReceiverFunc {
         }
     }
 }
+
+export function joinNStreams(count: number, joinedOutput: Stream) {
+    let waitingForCount = count;
+
+    const out = [];
+
+    for (let i = 0; i < count; i++) {
+        out.push({
+            next(t) { joinedOutput.next(t) },
+            done() { 
+                waitingForCount--;
+                if (waitingForCount === 0)
+                    joinedOutput.done();
+            }
+        })
+    }
+
+    return out;
+}

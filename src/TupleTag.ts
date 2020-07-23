@@ -174,7 +174,7 @@ function boolCompare(a,b) {
 
 export type FixedTag = TupleTag;
 
-export function newTag(attr: string, tagValue?: string | true): TupleTag {
+export function newTag(attr: string, tagValue?: any): TupleTag {
     return new TupleTag({ attr, value: tagValue });
 }
 

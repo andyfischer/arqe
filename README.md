@@ -1,31 +1,19 @@
 
-# arqe - Awesome Relational Query Engine #
+# arqe - Abstract Relational Query Engine #
 
-General purpose engine for providing and using data with a relational-query interface.
+General purpose engine for making anything available through a relational query interface.
 
-The goal is to improve the process of software development, by putting a unified
-interface on top of many disparate systems, and enabling very good debuggability,
-introspection, and liveness.
+Provides:
+ - A query engine that handles parsing, planning, and execution.
+ - A pretty easy API for mounting your own custom tables into the system.
+ - Standard tables like filesystem mounts and caching.
 
-The hope is that this approach can enable:
-
- - Unifying the deployment of code and versioning and configs (feature flags, a/b tests,
-   branching, canaries, etc)
- - Break down the "build step", instead treat software delivery as a single fluid environment
-   that understands staged compilation.
-
-# Inspirations / Influences #
+# Inspirations and Influences #
 
  - Relational tables over foreign data: [OSQuery](https://osquery.io/), [SQL foreign data wrappers](https://wiki.postgresql.org/wiki/Foreign_data_wrappers), and others.
  - Codd's relational model of data
  - [The Third Manifesto](https://www.dcs.warwick.ac.uk/~hugh/TTM/DTATRM.pdf)
  - ["Compilers are databases"](https://www.youtube.com/watch?v=WxyyJyB_Ssc) - Martin Odersky
-
-# Syntax #
-
-A lot of visitors love to see syntax samples first, so here we go.
-
-TODO
 
 # Goals #
 
@@ -33,17 +21,12 @@ TODO
  - Store code as structured relational data.
  - Unified database for all the metadata around code: configs, feature flags,
    branching, versioning, a/b traffic splitting, etc.
- - Remove the "build step" as we know it, instead have a single fluid system that
-   handles staged compilation.
+ - Eliminate the "build step" as we know it, instead have a single fluid system that
+   understands stages.
  - Functional-reactive database with efficient change propogation.
- - Not a closed system: Easily connect and leverage existing tools, databases and APIs.
  - Enable amazing developer dashboards and tools.
 
-# Goals - Elaboration #
-
-More thoughts behind the goals listed above.
-
-# Storing code as data / Unified system for code metadata #
+### Elaboration on: Unified system for code metadata ###
 
 With modern practices, a typical software product is a combination of a few things:
 
@@ -84,15 +67,17 @@ stores everything mentioned above. A defining feature in this system is that any
 of data can vary across multiple dimensions. The dimensions might be: branches, environments,
 data centers, canaries, traffic splits.
 
-# Removing the build system as we know it #
+# Elaboration on: Removing the build system as we know it #
 
-Typical software projects have another duplication of effort - completely different
-technologies used for the build process compared to the application runtime. This 
-problem manifests in a few ways:
+Typical software projects have another duplication of effort - using completely different
+technologies for the build process compared to the application itself. This means we have
+roughly double the toolset to manage. And, it leads to awkward situations where we might
+want to move a certain task from build-time to runtime, or vice-versa, but it's not as easy as
+it should be.
 
- - Additional tooling complexity.
- - Sometimes there are build-time tasks that we want to move to runtime tasks, but
-   with different platforms, this requires a rewrite.
- - More often, there are run-time tasks that we'd like to move to build-time. An example
-   is React.js client-side rendering, where the user's browser does work for
-   data-to-HTML rendering, even though that task can (usually) be done just as well ahead of time.
+ - If we want the system to be more "live", where we can change anything and see the results
+   quickly, then we need to move tasks from build-time to runtime. Potentially the entire
+   application might need to rebuild while we're running it.
+ - If we want to have good runtime performance, we often need to move tasks from runtime
+   to build-time. A specific example in the web world is taking client-side HTML rendering
+   and moving to happen ahead of time on the server (SSR).

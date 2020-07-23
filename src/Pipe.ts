@@ -2,6 +2,7 @@
 import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
+import { receiveToRelation } from './Relation'
 
 export default class Pipe {
     output?: Stream
@@ -43,5 +44,9 @@ export default class Pipe {
 
     waitForAll(callback: (ts: Tuple[]) => void) {
         this.sendTo(receiveToTupleList(callback));
+    }
+
+    sendRelationTo(out: Stream, attrName: string) {
+        this.sendTo(receiveToRelation(out, attrName));
     }
 }
