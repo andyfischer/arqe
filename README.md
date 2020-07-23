@@ -6,7 +6,11 @@ General purpose engine for making anything available through a relational query 
 Provides:
  - A query engine that handles parsing, planning, and execution.
  - A pretty easy API for mounting your own custom tables into the system.
- - Standard tables like filesystem mounts and caching.
+ - Standard tables for things like accessing the filesystem, network, caching, etc.
+
+Current project status: Not ready to use in any useful way yet.
+
+TODO: Planning to add some brief usage examples here.
 
 # Inspirations and Influences #
 
@@ -81,3 +85,8 @@ it should be.
  - If we want to have good runtime performance, we often need to move tasks from runtime
    to build-time. A specific example in the web world is taking client-side HTML rendering
    and moving to happen ahead of time on the server (SSR).
+
+With Arqe we're hoping to build a single unified system for managing data. For each data query,
+the system could understand whether it can be performed at build-time versus runtime. And 
+since it's a reified attribute, we could add more build stages as needed. Then the system
+knows enough that it can efficiently pregenerate any arbitrary derived data for a certain stage.
