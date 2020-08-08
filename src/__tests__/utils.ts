@@ -2,7 +2,11 @@ import Graph from "../Graph";
 import Tuple from "../Tuple";
 import { receiveToTupleList } from "../receiveUtils";
 
-export function run(graph: Graph, command: string): string[] {
+interface Options {
+    withHeaders?: boolean
+}
+
+export function run(graph: Graph, command: string, opts: Options = {}): string[] {
     let out: Tuple[] = null;
     const receiver = receiveToTupleList(l => { out = l });
 
@@ -16,7 +20,11 @@ export function run(graph: Graph, command: string): string[] {
             throw new Error(t.getVal('message'))
     }
 
-    return (out
-        .filter(t => !t.isCommandMeta())
+    let result = out;
+
+    if (!opts.withHeaders)
+        result = result.filter(t => !t.isCommandMeta())
+
+    return (result
         .map(t => t.stringify()));
 }

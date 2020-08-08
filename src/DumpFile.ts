@@ -2,9 +2,9 @@
 import { readFileSync, writeFileSync } from './platform/fs'
 import Graph from './Graph'
 import parseCommand from './parseCommand'
-import Command from './Command'
+import Query from './Query'
 
-export function rewriteDumpFile(filename: string, callback: (rel: Command) => Command ) {
+export function rewriteDumpFile(filename: string, callback: (rel: Query) => Query ) {
 
     const contents = readFileSync(filename, 'utf8');
     const out = [];
@@ -59,10 +59,12 @@ export function loadDump(graph: Graph, contents: string) {
     }
 }
 
+    /*
 export function saveDumpFile(graph: Graph, filename: string) {
     const contents = (graph.runSyncOld('dump') as string[]).join('\n');
     writeFileSync(filename, contents);
 }
+*/
 
 export function loadFromDumpFile(filename: string): Graph {
     const graph = new Graph();

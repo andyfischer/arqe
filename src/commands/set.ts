@@ -1,20 +1,45 @@
 
 import CommandExecutionParams from '../CommandExecutionParams'
 import planQuery from '../planQuery'
-import maybeCreateImplicitTable from '../maybeCreateImplicitTable'
-import { insertPlanned } from './insert'
-import { deletePlanned } from './delete'
+import { insertOnOneTable } from './insert'
+import { deleteOnOneTable } from './delete'
 import { updatePlanned } from './update'
 import Stream from '../Stream'
 import Tuple from '../Tuple'
 import TableMount from '../TableMount'
-import { emitCommandError } from '../CommandMeta'
+import findPartitionsByTable from '../findPartitionsByTable'
+import { combineStreams } from '../StreamUtil'
+import TupleTag, { newTag } from '../TupleTag'
+import Graph from '../Graph'
+import QueryPlan from '../QueryPlan'
 
-export function setOnTable(table: TableMount, tuple: Tuple, out: Stream) {
-    if (table.call('set', tuple, out))
-        return true;
+function createImplicitTable(graph: Graph, tuple: Tuple) {
+    const attrTags: TupleTag[] = []
+    for (const tag of tuple.tags) {
+        if (tag.attr)
+            attrTags.push(newTag(tag.attr));
+    }
 
-    return false;
+    const tableName = '_' + attrTags.map(tag => tag.attr).join('_');
+    const tablePattern = new Tuple(attrTags);
+    // console.log(`created new implicit table ${tableName}: ${tablePattern.stringify()}`);
+    return graph.defineInMemoryTable(tableName, tablePattern);
+}
+
+function setOnTable(graph: Graph, table: TableMount, tuple: Tuple, plan: QueryPlan, out: Stream) {
+    // Check for a custom 'set' handler
+    if (table.callWithDefiniteValues('set', tuple, out)) {
+        return;
+    }
+
+    if (tuple.queryDerivedData().isDelete) {
+        deleteOnOneTable(graph, table, tuple, out);
+    } else if (tuple.queryDerivedData().isUpdate) {
+        //updateOnOneTable(table, tuple, out);
+        updatePlanned(graph, tuple, plan, out);
+    } else {
+        insertOnOneTable(graph, table, tuple, out);
+    }
 }
 
 export default function set(params: CommandExecutionParams) {
@@ -25,19 +50,20 @@ export default function set(params: CommandExecutionParams) {
     if (plan.failed)
         return;
 
-    maybeCreateImplicitTable(graph, plan);
+    const combinedOut = combineStreams(output);
+    const allTables = combinedOut();
 
-    // Check for a custom 'set' handler
-    if (plan.table) {
-        if (plan.table.call('set', plan.tuple, output))
-            return;
+    let anyFound = false;
+    for (const [table, partitionedTuple] of findPartitionsByTable(graph, plan.tuple)) {
+        const tableOut = combinedOut();
+        anyFound = true;
+        setOnTable(graph, table, partitionedTuple, plan, tableOut);
     }
-        
-    if (plan.isDelete) {
-        deletePlanned(graph, plan);
-    } else if (plan.isUpdate) {
-        updatePlanned(graph, plan);
-    } else {
-        insertPlanned(graph, plan);
+
+    if (!anyFound) {
+        const table = createImplicitTable(graph, plan.tuple);
+        setOnTable(graph, table, plan.tuple, plan, combinedOut());
     }
+
+    allTables.done();
 }

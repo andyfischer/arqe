@@ -1,5 +1,5 @@
-import Command from './Command'
-import CommandChain from './CommandChain'
+import Query from './Query'
+import CompoundQuery from './CompoundQuery'
 import Tuple, { tagsToTuple } from './Tuple'
 import Pattern from './Pattern'
 import TupleTag, { newTagFromObject, TagOptions, FixedTag } from './TupleTag'

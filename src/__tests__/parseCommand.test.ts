@@ -1,6 +1,6 @@
 
 import parseCommand, { parseCommandChain } from '../parseCommand'
-import { parsedCommandToString, appendTagInCommand } from '../stringifyQuery'
+import { appendTagInCommand } from '../stringifyQuery'
 import Pattern from '../Pattern'
 import { newTagFromObject } from '../TupleTag'
 import { tagsToTuple } from '../Tuple'
@@ -121,14 +121,14 @@ xit('parses quoted tag values', () => {
 });
 
 function testRestringify(str: string) {
-    const restringified = parsedCommandToString(parseCommand(str))
+    const restringified = parseCommand(str).stringify();
     expect(restringified).toEqual(str);
 }
 
-describe("parsedCommandToString", () => {
+describe("Command.stringify", () => {
     it("works", () => {
         const parsed = parseCommand('get x y');
-        expect(parsedCommandToString(parsed)).toEqual('get x y');
+        expect(parsed.stringify()).toEqual('get x y');
     });
 });
 
@@ -174,8 +174,8 @@ it('handles multiline commands', () => {
     testRestringify(longCommand);
 
     const chain = parseCommandChain(longCommand);
-    expect(chain.commands.length == 1);
-    expect(chain.commands[0].pattern.tags[1].value).toEqual(`
+    expect(chain.queries.length == 1);
+    expect(chain.queries[0].pattern.tags[1].value).toEqual(`
   function test() {
      const a = 1 + 2;
   }

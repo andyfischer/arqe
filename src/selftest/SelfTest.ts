@@ -1,6 +1,5 @@
 
 import Graph from '../Graph'
-import { parsedCommandToString } from '../stringifyQuery'
 import parseCommand from '../parseCommand'
 
 import SelfTestProvider from './generated/SelfTestProvider'
@@ -14,7 +13,7 @@ interface TestResult {
 
 function oneRestringifyTest(exampleQuery: string) {
     const description = 'restringify: ' + exampleQuery;
-    const restringified = parsedCommandToString(parseCommand(exampleQuery))
+    const restringified = parseCommand(exampleQuery).stringify();
     
     if (restringified === exampleQuery)
         return { description, resultMessage: '', passed: true }

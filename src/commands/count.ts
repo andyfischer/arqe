@@ -1,7 +1,6 @@
 
 import CommandExecutionParams from '../CommandExecutionParams'
 import { objectToTuple } from '../Tuple'
-import { combinePipes } from '../pipeUtils'
 import getCommand from './get'
 import Pipe from '../Pipe'
 

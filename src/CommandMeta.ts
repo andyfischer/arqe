@@ -1,13 +1,15 @@
 
 import Tuple, { tagsToTuple } from './Tuple'
-import Pattern from './Pattern'
-import TupleTag, { newTag } from './TupleTag'
+import TupleTag, { newTag, newSimpleTag } from './TupleTag'
 import Stream from './Stream'
-import Command from './Command'
+import Query from './Query'
+
+const commandMetaTag = newSimpleTag('command-meta')
+const searchPatternTag = newSimpleTag('search-pattern')
 
 export function emitCommandMeta(output: Stream, fields: any) {
     const tags = [
-        newTag('command-meta')
+        commandMetaTag
     ];
 
     for (const k in fields) {
@@ -20,7 +22,7 @@ export function emitCommandMeta(output: Stream, fields: any) {
 export function emitCommandError(output: Stream, message: any) {
 
     const tags = [
-        newTag('command-meta'),
+        commandMetaTag,
         newTag('error'),
         newTag('message', message)
     ];
@@ -28,15 +30,15 @@ export function emitCommandError(output: Stream, message: any) {
     output.next(tagsToTuple(tags));
 }
 
-export function emitSearchPatternMeta(pattern: Pattern, output: Stream) {
-    output.next(pattern.addTags(['command-meta', 'search-pattern']));
+export function emitSearchPatternMeta(pattern: Tuple, output: Stream) {
+    output.next(pattern.addTags([commandMetaTag, searchPatternTag]));
 }
 
 export function emitActionPerformed(output: Stream) {
     emitCommandMeta(output, { 'action-performed': true })
 }
 
-export function emitCommandOutputFlags(command: Command, output: Stream) {
+export function emitCommandOutputFlags(command: Query, output: Stream) {
     if (command.flags.exists)
         emitCommandMeta(output, { 'output-flag': 'exists' })
     if (command.flags.count)
@@ -47,7 +49,7 @@ export function emitCommandOutputFlags(command: Command, output: Stream) {
         emitCommandMeta(output, { 'output-flag': 'list' })
 }
 
-export function emitTupleDeleted(pattern: Pattern, output: Stream) {
-    const rel = pattern.addTags(['command-meta', 'deleted']);
+export function emitTupleDeleted(tuple: Tuple, output: Stream) {
+    const rel = tuple.addTags([commandMetaTag, newSimpleTag('deleted')]);
     output.next(rel);
 }

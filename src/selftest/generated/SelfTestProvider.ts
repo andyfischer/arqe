@@ -1,10 +1,10 @@
-import { GraphLike, Tuple, Stream, StorageProvider, emitCommandError } from "../.."
+import { GraphLike, Tuple, Stream, emitCommandError } from "../.."
 
 interface NativeHandler {
     selfTestResults: () => any[]
 }
 
-export default class API implements StorageProvider {
+export default class API {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {

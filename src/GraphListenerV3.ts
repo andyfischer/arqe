@@ -1,6 +1,4 @@
 
-import Graph from './Graph'
-import Command from './Command'
 import Tuple from './Tuple'
 import Pattern from './Pattern'
 

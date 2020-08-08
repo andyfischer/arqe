@@ -1,7 +1,7 @@
 
 import Graph from '../../Graph'
-import Command from '../../Command'
-import CommandChain from '../../CommandChain'
+import Query from '../../Query'
+import CompoundQuery from '../../CompoundQuery'
 import { newTag } from '../../TupleTag'
 import { parseCommandChain } from '../../parseCommand'
 import { stringifyCommandChain, appendTagInCommand } from '../../stringifyQuery'
@@ -23,17 +23,17 @@ export const ReparseCommand: ChaosMode = {
     }
 }
 
-function withParsed(commandStr: string, callback: (chain: CommandChain) => CommandChain | void): string {
-    const parsed: CommandChain = parseCommandChain(commandStr);
-    const result: CommandChain = callback(parsed) || parsed;
+function withParsed(commandStr: string, callback: (chain: CompoundQuery) => CompoundQuery | void): string {
+    const parsed: CompoundQuery = parseCommandChain(commandStr);
+    const result: CompoundQuery = callback(parsed) || parsed;
     return stringifyCommandChain(result);
 }
 
-function modifyCommand(chain: CommandChain, i: number, callback: (command: Command) => Command) {
-    const modified = callback(chain.commands[i]);
+function modifyCommand(chain: CompoundQuery, i: number, callback: (command: Query) => Query) {
+    const modified = callback(chain.queries[i]);
 
     if (modified)
-        chain.commands[i] = modified;
+        chain.queries[i] = modified;
 }
 
 export const InsertExtraTag: ChaosMode = {
@@ -43,14 +43,14 @@ export const InsertExtraTag: ChaosMode = {
 
         return withParsed(s, chain => {
 
-            for (const command of chain.commands) {
+            for (const command of chain.queries) {
                 // Don't mess with certain relations.
                 const pattern = command.toPattern();
 
                 if (pattern.hasAttr('typeinfo') || pattern.hasAttr('filesystem-mount'))
                     return;
 
-                command.pattern = command.pattern.addTagObj(newTag('extra'));
+                command.pattern = command.pattern.addTag(newTag('extra'));
             }
         });
     }
@@ -64,9 +64,9 @@ export const GetInheritedBranch: ChaosMode = {
     },
     modifyRunCommand(s: string) {
         return withParsed(s, chain => {
-            for (const command of chain.commands) {
+            for (const command of chain.queries) {
                 if (command.commandName === 'get')
-                    command.pattern = command.pattern.addTagObj(newTag('chaosbranch', '123'));
+                    command.pattern = command.pattern.addTag(newTag('chaosbranch', '123'));
             }
         })
     }
@@ -96,7 +96,7 @@ export const ScrambleTagOrder: ChaosMode = {
     shortDescription: 'scramble tag order',
     modifyRunCommand(command: string) {
         return withParsed(command, chain => {
-            for (const command of chain.commands)
+            for (const command of chain.queries)
                 command.pattern = command.pattern.modifyTagsList(tags => shuffle(tags));
         });
     }

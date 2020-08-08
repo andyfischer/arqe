@@ -1,7 +1,7 @@
 
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import CommandExecutionParams from './CommandExecutionParams'
-import { runJoinStep } from './commands/join'
+import runJoinStep from './commands/join'
 import listenCommand from './commands/listen'
 import countCommand from './commands/count'
 import orderByCommand from './commands/orderBy'

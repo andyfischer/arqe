@@ -2,7 +2,8 @@
 import Pattern from './Pattern'
 import TupleTag from './TupleTag'
 import { newTagFromObject } from './TupleTag'
-import { tagsToTuple } from './Tuple'
+import Tuple, { tagsToTuple } from './Tuple'
+import { symValueType } from './internalSymbols'
 
 type PatternJSON = { [key: string]: any }
 
@@ -54,6 +55,9 @@ function oneKeyValueToTag(key: string, value: any) {
 }
 
 export default function parseObjectToPattern(obj: PatternJSON): Pattern {
+    if ((obj as any)[symValueType] !== undefined)
+        throw new Error("parseObjectToPattern called on native type: " + (obj as any)[symValueType])
+
     let tags: TupleTag[] = [];
 
     for (const k in obj) {

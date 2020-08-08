@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
 import Tuple from '../Tuple'
-import Command from '../Command'
+import Query from '../Query'
 import parseCommand from '../parseCommand'
 
 type RecomputeFunc<T> = (rels: Tuple[]) => T
@@ -12,7 +12,7 @@ export default class SavedQueryCache<T> {
     recompute: RecomputeFunc<T>
     stale: boolean = true
     result: any
-    getCommand: Command
+    getCommand: Query
 
     constructor(graph: Graph, tags: string, recompute: RecomputeFunc<T>) {
         this.graph = graph;

@@ -1,12 +1,12 @@
 
 import TuplePatternMatcher from './TuplePatternMatcher'
-import NativeHandler from './NativeHandler'
 import CommandPatternMatcher from './CommandPatternMatcher';
-import TableMount from './TableMount';
+import TableMount, { TupleStreamCallback } from './TableMount';
 import parseTuple from './parseTuple';
+import { unwrapTuple } from './tuple/UnwrapTupleCallback';
 
 interface DecoratedObject {
-    handlers?: { commandStr: string, handler: NativeHandler }[]
+    handlers?: { commandStr: string, callback: any }[]
     name: string
     schemaStr: string
 }
@@ -19,13 +19,10 @@ export function handles(commandStr: string) {
         if (!target.handlers)
             target.handlers = [];
 
-        const handler: NativeHandler = {
-            name: propertyKey,
-            func: target[propertyKey],
-            protocol: 'js_object'
-        }
+        const callback = target[propertyKey];
+        // callback.name = propertyKey;
 
-        target.handlers.push({ commandStr, handler });
+        target.handlers.push({commandStr, callback});
     }
 }
 
@@ -38,12 +35,10 @@ export function decoratedObjToTableMount(obj: DecoratedObject) {
 
     const mount = new TableMount(obj.name, parseTuple(obj.schemaStr));
 
-    for (const { commandStr, handler } of obj.handlers) {
-        const func = handler.func.bind(obj);
-        mount.addHandler(commandStr, {
-            ...handler,
-            func,
-        })
+    for (const { commandStr, callback } of obj.handlers) {
+        const boundCallback = callback.bind(obj);
+        const tupleCallback = unwrapTuple(boundCallback);
+        mount.addHandler(commandStr, tupleCallback);
     }
     
     return mount;

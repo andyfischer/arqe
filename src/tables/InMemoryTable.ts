@@ -5,8 +5,8 @@ import Tuple from '../Tuple'
 import Stream from '../Stream'
 import TableListener from '../TableListener'
 import TableMount from '../TableMount'
-import { tupleToModification } from '../TupleModification'
 import { modificationPatternToFilter } from '../planQuery'
+import { tupleToModification } from '../TupleModification'
 
 export default class InMemoryTable {
     name: string
@@ -23,10 +23,10 @@ export default class InMemoryTable {
         this.pattern = pattern;
 
         this.mount = new TableMount(name, pattern);
-        this.mount.addHandler('list-all', {func: this.findAll.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('insert', {func: this.insert.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('update', {func: this.update.bind(this), protocol: 'tuple' });
-        this.mount.addHandler('delete', {func: this.delete.bind(this), protocol: 'tuple' });
+        this.mount.addHandler('list-all', this.findAll.bind(this));
+        this.mount.addHandler('insert', this.insert.bind(this) );
+        this.mount.addHandler('update', this.update.bind(this) );
+        this.mount.addHandler('delete', this.delete.bind(this) );
     }
 
     findAll(tuple: Tuple, out: Stream) {
@@ -49,6 +49,7 @@ export default class InMemoryTable {
         for (const [slotId, tuple] of this.slots.entries()) {
             if (insertTuple.isSupersetOf(tuple)) {
                 // Already have this
+                out.next(tuple);
                 out.done();
                 return;
             }
@@ -61,6 +62,7 @@ export default class InMemoryTable {
             listener.insert(insertTuple);
         }
 
+        out.next(insertTuple)
         out.done();
     }
 

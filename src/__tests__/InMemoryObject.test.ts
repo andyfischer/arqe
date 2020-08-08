@@ -3,14 +3,15 @@ import setupInMemoryObjectTable from "../tables/InMemoryObject";
 import parseTuple from "../parseTuple";
 import { run } from './utils'
 
-xit('can correctly read from InMemoryObject table', () => {
+it('can correctly read from InMemoryObject table', () => {
     const graph = new Graph();
-    const { object, table } = setupInMemoryObjectTable({ primaryKey: parseTuple('imo/1') });
+    const { map, table } = setupInMemoryObjectTable({ baseKey: parseTuple('imo/1') });
 
-    object.a = '1';
-    object.b = '2';
+    map.set('a', '1')
+    map.set('b', '2');
     graph.addTable(table);
 
-    expect(run(graph, 'get imo/1 attr value')).toEqual(['imo/1 attr/a value/1', 'imo/1 attr/b value/2']);
-    expect(run(graph, 'get imo/1 attr/a')).toEqual(['imo/1 attr/a value/1']);
+    expect(table.schema.stringify()).toEqual('imo/1 key value');
+    expect(run(graph, 'get imo/1 key value')).toEqual(['imo/1 key/a value/1', 'imo/1 key/b value/2']);
+    expect(run(graph, 'get imo/1 key/a')).toEqual(['imo/1 key/a value/1']);
 })

@@ -5,21 +5,31 @@ import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import runCommandChain from './runCommandChain'
 import IDSource from './utils/IDSource'
-import receiveToStringList from './receiveToStringList'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import watchAndValidateCommand from './validation/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
 import parseObjectToPattern from './parseObjectToPattern'
-import CommandChain from './CommandChain'
-import Command from './Command'
+import CompoundQuery from './CompoundQuery'
+import Query from './Query'
 import InMemoryTable from './tables/InMemoryTable'
 import TuplePatternMatcher from './TuplePatternMatcher'
 import TableListener from './TableListener'
-import findTableForQuery from './findTableForQuery'
 import TableMount from './TableMount'
 import parseTuple from './parseTuple'
+import { receiveToRelation } from './Relation'
+import QueryWatch from './QueryWatch'
+import setupInMemoryObjectTable from './tables/InMemoryObject'
+import { setupSingleValueTable } from './tables/SingleValueTable'
+import SavedQuery from './SavedQuery'
+
+interface GraphOptions {
+    context?: 'browser' | 'node'
+    autoinitMemoryTables?: boolean
+}
 
 export default class Graph {
+
+    options: GraphOptions
 
     nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
     tables = new Map<string, TableMount>()
@@ -30,11 +40,20 @@ export default class Graph {
     eagerValueIds = new IDSource()
     graphListenerIds = new IDSource()
     nextListenerId = new IDSource()
+    nextWatchId = new IDSource();
 
     relationCreatedListeners: { pattern: Tuple, onCreate: (rel: Tuple) => void }[] = []
 
-    constructor() {
-        setupBuiltinTables(this);
+    activeWatches = new Map<string, QueryWatch>();
+
+    constructor(options: GraphOptions = {}) {
+        this.options = options;
+        if (this.options.context === undefined)
+            this.options.context = 'node';
+        if (this.options.autoinitMemoryTables === undefined)
+            this.options.autoinitMemoryTables = true;
+
+        setupBuiltinTables(this, this.options.context);
     }
 
     findTable(name: string) {
@@ -62,6 +81,11 @@ export default class Graph {
         return table;
     }
 
+    addTables(tables: TableMount[]) {
+        for (const table of tables)
+            this.addTable(table);
+    }
+
     takeNextUniqueIdForAttr(attr: string) {
         if (!this.nextUniquePerAttr[attr])
             this.nextUniquePerAttr[attr] = new IDSource();
@@ -73,10 +97,12 @@ export default class Graph {
     }
 
     addListenerV2(tuple: Tuple, listener: TableListener) {
+        /*
         const table = findTableForQuery(this, tuple);
         if (!tuple) {
             throw new Error("didn't find a single table for: " + tuple.str());
         }
+        */
 
         const id = this.nextListenerId.take();
         /*
@@ -121,27 +147,13 @@ export default class Graph {
             return;
         }
 
-        if (!output) {
+        if (!output)
             output = fallbackReceiver(commandStr);
-        }
 
         output = watchAndValidateCommand(commandStr, output);
 
         const chain = parseCommandChain(commandStr);
         runCommandChain(this, chain, output);
-    }
-
-    runSyncOld(commandStr: string) {
-        let result = null;
-
-        const receiver = receiveToStringList(r => { result = r; });
-        
-        this.run(commandStr, receiver);
-
-        if (result === null)
-            throw new Error("command didn't have sync response in runSync");
-
-        return result;
     }
 
     runSync(commandStr: string): Tuple[] {
@@ -175,11 +187,13 @@ export default class Graph {
         let pattern: Tuple;
         if (typeof patternInput === 'string') {
             pattern = parseTuple(patternInput);
+        } else if (patternInput instanceof Tuple) {
+            pattern = patternInput;
         } else {
             pattern = parseObjectToPattern(patternInput);
         }
 
-        runCommandChain(this, new CommandChain([new Command('get', pattern, {})]), receiver);
+        runCommandChain(this, new CompoundQuery([new Query('get', pattern, {})]), receiver);
     }
 
     set(patternInput: any, receiver: Stream) {
@@ -190,7 +204,7 @@ export default class Graph {
             pattern = parseObjectToPattern(patternInput);
         }
 
-        runCommandChain(this, new CommandChain([new Command('set', pattern, {})]), receiver);
+        runCommandChain(this, new CompoundQuery([new Query('set', pattern, {})]), receiver);
     }
 
     setAsync(patternInput: any): Promise<Tuple[]> {
@@ -199,6 +213,29 @@ export default class Graph {
         return promise;
     }
 
-    close() { }
-}
+    sendRelationValue(searchPattern: Tuple, out: Stream, attrName: string) {
+        this.get(searchPattern, receiveToRelation(out, attrName));
+    }
 
+    close() { }
+
+    addWatch(watch: QueryWatch) {
+        this.activeWatches.set(watch.id, watch);
+    }
+
+    mountMapBackedTable(name: string, baseKey: Tuple, keyAttr: string, valueAttr: string): Map<any,any> {
+        const { map, table } = setupInMemoryObjectTable({ name, baseKey, keyAttr, valueAttr })
+        this.addTable(table);
+        return map;
+    }
+
+    mountSingleValueTable(name: string, base: Tuple, valueAttr: string) {
+        const { accessor, table } = setupSingleValueTable(name, base, valueAttr);
+        this.addTable(table);
+        return accessor;
+    }
+
+    query(patternStr: string) {
+        return new SavedQuery(this, parseTuple(patternStr));
+    }
+}

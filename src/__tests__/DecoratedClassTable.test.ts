@@ -24,8 +24,7 @@ it(`correctly binds 'this' param`, () => {
     const graph = new Graph();
     graph.addTable(decoratedObjToTableMount(new TestClass()))
 
-    expect(run(graph, 'get x')).toEqual(['x/5'])
+    expect(run(graph, 'get x')).toEqual([ 'x/5' ])
     expect(run(graph, 'set x/2')).toEqual(['x/2'])
-    expect(run(graph, 'get x')).toEqual(['x/2'])
-
+    expect(run(graph, 'get x')).toEqual([ 'x/2' ])
 });

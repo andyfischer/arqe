@@ -6,7 +6,6 @@ import Graph from './Graph'
 import GraphRepl from './GraphRepl'
 import printResult from './console/printResult'
 import Repl from 'repl'
-import { connectToServer } from './socket/ClientConnection'
 import Minimist from 'minimist'
 import { parseFile } from './parseCommand'
 import Tuple from './Tuple'
@@ -55,6 +54,7 @@ function requireTables(graph: Graph, moduleName: string) {
 
 function loadStandardTables(graph: Graph) {
     requireTables(graph, '../plugins/eslint');
+    requireTables(graph, './tables/SocketConnection');
 }
 
 export default async function main() {

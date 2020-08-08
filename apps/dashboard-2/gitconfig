@@ -1,0 +1,20 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+name = Andrew Fischer
+email = andy.fischer@gmail.com
+
+[alias]
+br = !git branch --sort=committerdate --color=always | tail -n15
+
+[color "branch"]
+current = yellow
+local = cyan
+remote = red
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[core]
+	editor = vim

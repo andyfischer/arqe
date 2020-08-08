@@ -17,11 +17,22 @@ export default class AutoInitMap<K,V> {
         }
     }
 
+    getExisting(k: K) {
+        return this.map.get(k);
+    }
+
     set(k: K, v: V) {
         return this.map.set(k,v);
     }
 
     has(k: K) {
         return this.map.has(k);
+    }
+
+    values() {
+        return this.map.values();
+    }
+    entries() {
+        return this.map.entries();
     }
 }

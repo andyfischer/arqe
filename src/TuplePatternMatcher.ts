@@ -19,6 +19,13 @@ export default class TuplePatternMatcher<V> {
         return null;
     }
 
+    *findMulti(tuple: Tuple) {
+        for (const { pattern, value } of this.cases) {
+            if (pattern.isSupersetOf(tuple))
+                yield value;
+        }
+    }
+
     stringify() {
         return `[ ${this.cases.map(c => c.pattern.stringify() + ' => ' + c.value).join(', ')} ]`;
     }

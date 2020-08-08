@@ -7,10 +7,10 @@ import Graph from './Graph'
 interface PartialQueryPlan {
     tuple?: Tuple
     filterPattern?: Tuple
-    table?: TableMount
 }
 
 export default function maybeCreateImplicitTable(graph: Graph, plan: PartialQueryPlan) {
+    /*
     if (plan.table)
         return;
 
@@ -26,4 +26,5 @@ export default function maybeCreateImplicitTable(graph: Graph, plan: PartialQuer
     const tablePattern = new Tuple(attrTags);
     // console.log(`created new implicit table ${tableName}: ${tablePattern.stringify()}`);
     plan.table = graph.defineInMemoryTable(tableName, tablePattern);
+    */
 }

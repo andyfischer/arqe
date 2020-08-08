@@ -1,19 +1,19 @@
 
-import Command, { CommandFlags } from './Command'
+import Query, { QueryFlags } from './Query'
 import Graph from './Graph'
 import Pattern from './Pattern'
 import Pipe from './Pipe'
 
 export default class CommandStep {
     graph: Graph
-    flags: CommandFlags
-    command: Command
+    flags: QueryFlags
+    command: Query
     commandName: string
     pattern: Pattern
     input: Pipe
     output: Pipe
 
-    constructor (graph: Graph, command: Command) {
+    constructor (graph: Graph, command: Query) {
         this.graph = graph;
         this.command = command;
         this.commandName = command.commandName;

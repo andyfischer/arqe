@@ -1,5 +1,5 @@
 
-import { lexStringToIterator, TokenIterator, Token, t_lparen, t_rparen,
+import { lexStringToIterator, TokenIterator, t_lparen, t_rparen,
     t_ident, t_integer, t_slash, t_dollar } from './lexer';
 
 export function parseExpr(it: TokenIterator): string | string[] {

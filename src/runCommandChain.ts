@@ -1,39 +1,25 @@
 
 import Graph from './Graph'
-import CommandStep from './CommandStep'
-import CommandChain from './CommandChain'
+import CompoundQuery from './CompoundQuery'
 import Stream from './Stream'
 import Pipe from './Pipe'
-import Command from './Command'
-import { emitSearchPatternMeta, emitCommandError, emitCommandOutputFlags } from './CommandMeta'
-import { runJoinStep } from './commands/join'
-import { newTag } from './TupleTag'
-import planQuery from './planQuery'
+import CommandExecutionParams from './CommandExecutionParams'
+import { emitCommandError } from './CommandMeta'
 import runOneCommand from './runOneCommand'
 import { ValidCommands } from './CommandDb'
 
-
-
-export function singleCommandExecution(graph: Graph, command: Command): CommandStep {
-    const step = new CommandStep(graph, command);
-    step.input = new Pipe();
-    step.input.done();
-    step.output = new Pipe();
-    return step;
-}
-
-export default function runCommandChain(graph: Graph, chain: CommandChain, output: Stream) {
+export default function runCommandChain(graph: Graph, chain: CompoundQuery, output: Stream) {
 
     if (!graph)
-        throw new Error('graph is null');
+        throw new Error('Graph is null');
 
-    if (chain.commands.length === 0) {
+    if (chain.queries.length === 0) {
         output.done();
         return;
     }
 
     // Initial error checking
-    for (const command of chain.commands) {
+    for (const command of chain.queries) {
         if (!ValidCommands[command.commandName]) {
             emitCommandError(output, "unrecognized command: " + command.commandName);
             output.done();
@@ -41,16 +27,18 @@ export default function runCommandChain(graph: Graph, chain: CommandChain, outpu
         }
     }
 
-    // Set up CommandStep objects with pipe objects. The 'output' of one step is the 'input' of
+    // Set up CommandExecutionParam objects with pipe objects. The 'output' of one step is the 'input' of
     // the next step.
     
-    const steps:CommandStep[] = [];
+    const steps: CommandExecutionParams[] = [];
     
-    for (const command of chain.commands) {
-        const step = new CommandStep(graph, command);
-        step.input = (steps.length === 0) ? new Pipe() : steps[steps.length - 1].output;
-        step.output = new Pipe();
-        steps.push(step);
+    for (const command of chain.queries) {
+        steps.push({
+            graph,
+            command,
+            input: (steps.length === 0) ? new Pipe() : steps[steps.length - 1].output,
+            output: new Pipe()
+        });
     }
 
     // The first input pipe has no data.

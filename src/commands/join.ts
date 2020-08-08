@@ -1,167 +1,159 @@
 
-import Stream from '../Stream'
-import { receiveToTupleList } from '../receiveUtils'
-import Pattern from '../Pattern'
-import { tagsToTuple } from '../Tuple'
-import TupleTag from '../TupleTag'
-import { emitSearchPatternMeta } from '../CommandMeta'
-import { patternTagToString } from '../stringifyQuery'
 import CommandExecutionParams from '../CommandExecutionParams'
-import getCommand from './get'
+import Tuple, { tagsToTuple } from '../Tuple';
+import Stream from '../Stream';
+import { receiveToTupleList } from '../receiveUtils';
+import Relation from '../Relation';
+import { joinNStreams } from '../StreamUtil';
+import AutoInitMap from '../utils/AutoInitMap';
+import TupleTag from '../TupleTag';
+import { emitCommandError, emitSearchPatternMeta } from '../CommandMeta';
 
-function annotateRelationsWithMissingIdentifier(searchPattern: Pattern, rels: Pattern[]) {
-    const identifierTags: TupleTag[] = []
-    for (const tag of searchPattern.tags)
-        if (tag.identifier)
-            identifierTags.push(tag);
+class FoundIdentifier {
+    str: string
+    foundRelCount = 0
+    byRelIndex = new Map<number, TupleTag>()
 
-    rels = rels.map(rel => {
-
-        for (const tag of identifierTags) {
-            if (!rel.byIdentifier().get(tag.identifier)) {
-
-                if (!tag.attr) {
-                    throw new Error("annotateRelationsWithMissingIdentifier doesn't know how "
-                                    +"to handle ident tag: " + searchPattern.stringify());
-                }
-
-                rel = rel.updateTagAtIndex(rel.findTagIndexOfType(tag.attr), t => t.setIdentifier(tag.identifier) )
-            }
-        }
-
-        return rel;
-    });
-
-    return rels;
-}
-
-export function runJoinStep(params: CommandExecutionParams) {
-    const { graph, command, input, output } = params;
-    const searchPattern = command.pattern;
-
-    let triggeredOutput = false;
-
-    let inputRelations: Pattern[] = [];
-    let searchRelations: Pattern[] = [];
-    let inputDone = false;
-    let searchDone = false;
-    let inputSearchPattern: Pattern = null;
-
-    const sendOutput = () => {
-        inputRelations = annotateRelationsWithMissingIdentifier(inputSearchPattern, inputRelations);
-        searchRelations = annotateRelationsWithMissingIdentifier(searchPattern, searchRelations);
-        performJoin(inputSearchPattern, inputRelations, searchPattern, searchRelations, output);
+    constructor(str: string) {
+        this.str = str;
     }
 
-    const check = () => {
-        if (triggeredOutput)
-            return;
-
-        if (inputDone && searchDone) {
-            triggeredOutput = true;
-            sendOutput();
-        }
+    add(relIndex: number, tag: TupleTag) {
+        this.foundRelCount++;
+        this.byRelIndex.set(relIndex, tag);
     }
-
-    const search = receiveToTupleList((rels) => {
-        for (const rel of rels)
-            searchRelations.push(rel);
-
-        searchDone = true;
-        check();
-    });
-
-    getCommand(graph, searchPattern, search);
-
-    input.waitForAll((rels) => {
-
-        for (const rel of rels) {
-            if (rel.hasAttr('command-meta')) {
-                if (rel.hasAttr('search-pattern')) {
-                    inputSearchPattern = rel;
-                }
-                continue;
-            }
-
-            inputRelations.push(rel);
-        }
-
-        inputDone = true;
-        check();
-    });
 }
 
-function combineTuples(a: Pattern, b: Pattern) {
-    const saw = {}
+class JoiningRelation {
+    rel: Relation
+    index: number
+    attrToIdentifier = new Map<string, string>();
+
+    constructor(index: number, rel: Relation) {
+        this.index = index;
+        this.rel = rel;
+    }
+}
+
+function combineTuples(tuples: Tuple[]) {
+    const sawAttr = {}
     const tags = [];
 
-    for (const tag of a.tags) {
-        tags.push(tag);
-        saw[patternTagToString(tag)] = true;
-    }
-
-    for (const tag of b.tags) {
-        const str = patternTagToString(tag);
-        if (saw[str])
-            continue;
-        tags.push(tag);
+    for (const tuple of tuples) {
+        for (const tag of tuple.tags) {
+            if (tag.attr && sawAttr[tag.attr])
+                continue;
+            tags.push(tag);
+            sawAttr[tag.attr] = true;
+        }
     }
 
     return tagsToTuple(tags);
 }
 
-function performJoin(inputSearchPattern: Pattern, inputs: Pattern[], searchPattern: Pattern, searchResults: Pattern[], output: Stream) {
+function joinRelations(origRels: Relation[], out: Stream) {
 
-    if (!inputSearchPattern)
-        throw new Error('missing inputSearchPattern');
+    const rels: JoiningRelation[] = [];
+    for (let index = 0; index < origRels.length; index++) {
+        rels.push(new JoiningRelation(index, origRels[index]))
+    }
 
-    emitSearchPatternMeta(combineTuples(inputSearchPattern, searchPattern), output)
+    // Find identifiers
+    const identifiers = new AutoInitMap<string, FoundIdentifier>(str => new FoundIdentifier(str))
 
-    // For each search result
-    //   Look at all unfilled identifiers in this search result
-    //   Check if there is an input tuple that:
-    //     1) contains at least one of the same identifiers
-    //     2) has the same tag in that identifier
-
-    const correspondingTags: { identifier: string, input: TupleTag, search: TupleTag }[] = [];
-    const unboundTags: TupleTag[] = []
-
-    for (const [identifier, identifierKey] of searchPattern.byIdentifier().entries()) {
-        const inputKey = inputSearchPattern.byIdentifier().get(identifier);
-        if (!inputKey) {
-            unboundTags.push(identifierKey);
-        } else {
-            correspondingTags.push({identifier, search: identifierKey, input: inputKey });
+    for (const rel of rels) {
+        for (const headerTag of rel.rel.header.tags) {
+            if (headerTag.hasIdentifier()) {
+                identifiers.get(headerTag.identifier).add(rel.index, headerTag);
+            }
         }
     }
 
-    function getKeyForInput(pattern: Pattern) {
-        const key = {}
-        for (const correspondingTag of correspondingTags)
-            key[correspondingTag.identifier] = pattern.getValOptional(correspondingTag.input.attr, null);
-
-        return JSON.stringify(key);
-    }
-    
-    function getKeyForSearch(pattern: Pattern) {
-        const key = {}
-        for (const correspondingTag of correspondingTags)
-            key[correspondingTag.identifier] = pattern.getValOptional(correspondingTag.search.attr, null);
-
-        return JSON.stringify(key);
+    // Look at 'common' identifiers that are used in all relations.
+    const commonIdentifiers: FoundIdentifier[] = []
+    for (const found of identifiers.values()) {
+        if (found.foundRelCount === rels.length)
+            commonIdentifiers.push(found);
     }
 
-    const keyed = {}
-    for (const input of inputs)
-        keyed[getKeyForInput(input)] = input;
+    if (commonIdentifiers.length === 0) {
+        emitCommandError(out, "No common identifiers found across incoming relations");
+        out.done();
+        return;
+    }
 
-    for (const search of searchResults) {
-        const key = getKeyForSearch(search);
-        const relatedInput = keyed[key];
-        if (!relatedInput)
+    // Hash all tuples using the identifiers
+    const hashed = new AutoInitMap<string, { tuples: Tuple[] }>(_ => ({ tuples: [] }) );
+
+    for (const rel of rels) {
+        for (let tup of rel.rel.tuples) {
+
+            // Figure out join hash
+            const hash = commonIdentifiers.map((found: FoundIdentifier) => {
+                const attr = found.byRelIndex.get(rel.index).attr;
+                return tup.getVal(attr);
+            }).join(',');
+
+            // Update tuples with identifiers
+            hashed.get(hash).tuples.push(tup);
+        }
+    }
+
+    // Emit header
+    out.next(combineTuples(rels.map(rel => rel.rel.header)));
+
+    // Emit combined tuples
+    for (const hashedTupleList of hashed.values()) {
+
+        // Inner join: Only include this if it found a match in each relation.
+        if (hashedTupleList.tuples.length !== rels.length)
             continue;
-        output.next(combineTuples(relatedInput, search));
+
+        out.next(combineTuples(hashedTupleList.tuples))
     }
 
-    output.done();
+    out.done();
 }
+
+function performJoinWithData(out: Stream): Stream {
+    return receiveToTupleList((tuples: Tuple[]) => {
+        if (tuples.length !== 2)
+            throw new Error('internal error, expected 2-element list in performJoinWithData()');
+
+        const input: Relation = tuples[0].getValOptional('input', null) || tuples[1].getValOptional('input', null);
+        const search: Relation = tuples[0].getValOptional('search', null) || tuples[1].getValOptional('search', null);
+
+        if (!input)
+            throw new Error('internal error: missing "input" relation')
+
+        if (!search)
+            throw new Error('internal error: missing "search" relation')
+
+        if (!input.header) {
+            emitCommandError(out, "Input relation is missing header");
+            out.done();
+            return;
+        }
+
+        if (!search.header) {
+            emitCommandError(out, "Search relation is missing header");
+            out.done();
+            return;
+        }
+
+        joinRelations([input, search], out);
+    })
+}
+
+export default function runJoinStep(params: CommandExecutionParams) {
+
+    const { graph, command, input, output } = params;
+    const searchPattern = command.pattern;
+
+    // Collect two relations: input (piped) & search 
+    const [inputStream, searchOut] = joinNStreams(2, performJoinWithData(output));
+    input.sendRelationTo(inputStream, 'input');
+    graph.sendRelationValue(searchPattern, searchOut, 'search');
+}
+
+

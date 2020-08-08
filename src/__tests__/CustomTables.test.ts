@@ -2,28 +2,34 @@ import TableMount from "../TableMount"
 import parseTuple from "../parseTuple";
 import { Graph } from "..";
 import { run } from './utils'
-import { jsObjectHandler } from "../NativeHandler";
+import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 
 it('supports searches with find-for', () => {
     const graph = new Graph();
     const table = new TableMount('custom1', parseTuple('t x? y?'));
     graph.addTable(table);
-    table.addHandler("find-with x", jsObjectHandler(({ x }) => {
+    table.addHandler("find-with x", unwrapTuple(({ x }) => {
         return {
             x,
             y: parseInt(x) + 1
         }
     }));
 
-    table.addHandler("find-with y", jsObjectHandler(({ y }) => {
+    table.addHandler("find-with y", unwrapTuple(({ y }) => {
         return {
             y,
             x: parseInt(y) - 1
         }
     }));
 
-    expect(run(graph, "get t x/1 y")).toEqual(["t x/1 y/2"]);
-    expect(run(graph, "get t x y/4")).toEqual(["t x/3 y/4"]);
+    expect(run(graph, "get t x/1 y", { withHeaders: true })).toEqual([
+        "t x/1 y command-meta search-pattern",
+        "t x/1 y/2"
+    ]);
+    expect(run(graph, "get t x y/4", { withHeaders: true })).toEqual([
+        "t x y/4 command-meta search-pattern",
+        "t x/3 y/4"
+    ]);
 });
 
 it('supports searches with find-all', () => {
@@ -31,17 +37,23 @@ it('supports searches with find-all', () => {
     const table = new TableMount('custom2', parseTuple('t x? y?'));
     graph.addTable(table);
 
-    table.addHandler("list-all", jsObjectHandler(() => {
+    table.addHandler("list-all", unwrapTuple(() => {
         return [
             { x: '1', y: '2' },
             { x: '5', y: '6' }
         ]
     }));
 
-    expect(run(graph, "get t x y")).toEqual(["t x/1 y/2", "t x/5 y/6"]);
+    expect(run(graph, "get t x y", { withHeaders: true } )).toEqual([
+        "t x y command-meta search-pattern",
+        "t x/1 y/2",
+        "t x/5 y/6"]);
 
     // With filter:
-    expect(run(graph, "get t x/1 y")).toEqual(["t x/1 y/2"]);
+    expect(run(graph, "get t x/1 y", { withHeaders: true } )).toEqual([
+        "t x/1 y command-meta search-pattern",
+        "t x/1 y/2"
+    ]);
 });
 
 it('supports custom inserts', () => {
@@ -54,19 +66,23 @@ it('supports custom inserts', () => {
         'b': '2'
     }
 
-    table.addHandler("find-with x", jsObjectHandler(({ x }) => {
+    table.addHandler("find-with x", unwrapTuple(({ x }) => {
         return {
             x,
             y: data[x]
         }
     }));
 
-    table.addHandler('set x y', jsObjectHandler(({x,y}) => {
+    table.addHandler('set x y', unwrapTuple(({x,y}) => {
         data[x] = y;
         return { x, y };
     }))
 
-    expect(run(graph, "get t x/a y")).toEqual(["t x/a y/1"]);
+    expect(run(graph, "get t x/a y")).toEqual([
+        "t x/a y/1"
+    ]);
     expect(run(graph, "set t x/a y/2")).toEqual(["t x/a y/2"]);
-    expect(run(graph, "get t x/a y")).toEqual(["t x/a y/2"]);
+    expect(run(graph, "get t x/a y")).toEqual([
+        "t x/a y/2"
+    ]);
 });

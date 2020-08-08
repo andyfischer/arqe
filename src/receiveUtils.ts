@@ -2,6 +2,7 @@
 import Graph from './Graph'
 import Tuple from './Tuple'
 import Stream from './Stream'
+import Relation from './Relation';
 
 export function receiveToTupleList(onDone: (rels: Tuple[]) => void): Stream {
     const list: Tuple[] = [];
@@ -42,11 +43,23 @@ export async function runAsync(graph: Graph, command: string) {
 
 export function fallbackReceiver(commandString: string): Stream {
     return {
-        next(rel) {
-            if (rel.hasAttr('command-meta') && rel.hasAttr('error')) {
-                console.log(`Uncaught error for command (${commandString}): ${rel.str()}`);
+        next(t: Tuple) {
+            if (t.hasAttr('command-meta') && t.hasAttr('error')) {
+                console.log(`Uncaught error for command (${commandString}): ${t.str()}`);
             }
         },
         done() { }
+    }
+}
+
+export function receiveToRelation(onDone: (rel: Relation) => void) {
+    const tuples = [];
+    return {
+        next(t: Tuple) {
+            tuples.push(t);
+        },
+        done() {
+            onDone(new Relation(tuples));
+        }
     }
 }

@@ -1,12 +1,12 @@
 
 import Graph from './Graph'
-import Command from './Command'
+import Query from './Query'
 import Pipe from './Pipe'
 import Stream from './Stream'
 
 export default interface CommandRequest {
     graph: Graph
-    command: Command
+    command: Query
     input: Pipe
-    output: Stream
+    output: Pipe
 }

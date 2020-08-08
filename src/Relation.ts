@@ -1,35 +1,76 @@
 import Tuple, { singleTagToTuple } from "./Tuple"
 import Stream from "./Stream"
-import { Graph } from "."
-import get from "./commands/get"
+import { symValueStringify, symValueType } from "./internalSymbols"
+import { newSimpleTag } from "./TupleTag";
 
 export default class Relation {
     header: Tuple
-    tuples: Tuple[] = []
-    errors: Tuple[] = []
+    all: Tuple[] = [];
+    tuples: Tuple[] = [];
+    errors?: Tuple[]
+
+    headerAttrToIndex?: Map<string, number>
+
+    [symValueType] = 'relation'
+
+    constructor(tuples: Tuple[]) {
+        
+        for (const tuple of tuples) {
+            this.all.push(tuple);
+
+            if (tuple.isCommandMeta()) {
+                if (tuple.isCommandError()) {
+                    this.errors = this.errors || [];
+                    this.errors.push(tuple);
+                } else if (tuple.isCommandSearchPattern()) {
+                    this.header = tuple;
+                }
+            } else {
+                this.tuples.push(tuple);
+            }
+        }
+    }
+
+    stringify() {
+        return `[${this.all.map(t => t.stringify()).join(', ')}]`    
+    }
+
+    [symValueStringify]() {
+        return this.stringify();
+    }
+
+    getOrInferHeader() {
+        if (this.header)
+            return this.header.removeAttr('command-meta').removeAttr('search-pattern');
+
+        return new Tuple([newSimpleTag('infer-header-not-supported')])
+    }
+
+    getTuplesSortedByHeader() {
+        const header = this.getOrInferHeader();
+
+        return this.tuples.map(tuple => {
+            const outTags = [];
+            for (const headerTag of header.tags) {
+                outTags.push(tuple.getTag(headerTag.attr) || newSimpleTag(headerTag.attr));
+            }
+            return new Tuple(outTags);
+        })
+    }
 }
 
 export function receiveToRelation(out: Stream, attrName: string): Stream {
-    const relation = new Relation();
+    const tuples = [];
 
     return {
         next(t) {
-            if (t.isCommandMeta()) {
-                if (t.isCommandError())
-                    relation.errors.push(t);
-                else if (t.isCommandSearchPattern())
-                    relation.header = t;
-            } else {
-                relation.tuples.push(t);
-            }
+            tuples.push(t);
         },
         done() {
+            const relation = new Relation(tuples);
             out.next(singleTagToTuple(attrName, relation));
             out.done();
         }
     }
 }
 
-export function getRelation(graph: Graph, searchPattern: Tuple, out: Stream, attrName: string) {
-    get(graph, searchPattern, receiveToRelation(out, attrName));
-}

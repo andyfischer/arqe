@@ -1,6 +1,6 @@
 
-import Command from './Command'
-import CommandChain from './CommandChain'
+import Query from './Query'
+import CompoundQuery from './CompoundQuery'
 import Tuple, { tagsToTuple } from './Tuple'
 import TupleTag, { newTagFromObject, TagOptions, FixedTag } from './TupleTag'
 import { lexStringToIterator, TokenIterator, TokenDef, t_ident, t_quoted_string, t_star,
@@ -49,7 +49,7 @@ function formatExpectedError(expected: string, it: TokenIterator) {
     return `expected ${expected}, saw: "${it.nextText()}" (${it.next().match.name})`
 }
 
-function parseOneCommand(it: TokenIterator): Command {
+function parseOneCommand(it: TokenIterator): Query {
 
     const startPos = it.position;
 
@@ -76,7 +76,7 @@ function parseOneCommand(it: TokenIterator): Command {
     }
 
     const pattern = tagsToTuple(query.tags);
-    return new Command(command, pattern, query.flags);
+    return new Query(command, pattern, query.flags);
 }
 
 function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
@@ -97,14 +97,14 @@ function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
     return false;
 }
 
-function parseOneCommandChain(it: TokenIterator): CommandChain {
+function parseOneCommandChain(it: TokenIterator): CompoundQuery {
 
-    const chain = new CommandChain();
+    const chain = new CompoundQuery();
 
     while (!it.finished()) {
         const command = parseOneCommand(it);
 
-        chain.commands.push(command);
+        chain.queries.push(command);
 
         it.skipSpaces();
 
@@ -128,7 +128,7 @@ export function parseTag(str: string): TupleTag {
     return parseOneTag(it);
 }
 
-export default function parseCommand(str: string): Command {
+export default function parseCommand(str: string): Query {
 
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
@@ -152,7 +152,7 @@ export default function parseCommand(str: string): Command {
     }
 }
 
-export function parseCommandChain(str: string): CommandChain {
+export function parseCommandChain(str: string): CompoundQuery {
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
 
@@ -169,10 +169,10 @@ export function parseCommandChain(str: string): CommandChain {
     }
 }
 
-export function parseFile(fileContents: string): CommandChain[] {
+export function parseFile(fileContents: string): CompoundQuery[] {
     const it = lexStringToIterator(fileContents);
 
-    const commands: CommandChain[] = [];
+    const commands: CompoundQuery[] = [];
 
     while (!it.finished()) {
         while (it.nextIs(t_space) || it.nextIs(t_newline) || it.nextIs(t_line_comment))
@@ -180,7 +180,7 @@ export function parseFile(fileContents: string): CommandChain[] {
 
         const command = parseOneCommandChain(it);
 
-        if (command.commands.length > 0)
+        if (command.queries.length > 0)
             commands.push(command);
     }
 

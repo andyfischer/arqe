@@ -1,20 +1,23 @@
 
-import Command from './Command'
-import Graph from './Graph'
-import parseCommand, { parseTag } from './parseCommand'
-import { normalizeExactTag, patternTagToString, commandTagsToString } from './stringifyQuery'
-import TupleTag, { newTag, FixedTag, TagOptions } from './TupleTag'
+import { parseTag } from './parseCommand'
+import TupleTag, { newSimpleTag, FixedTag, TagOptions } from './TupleTag'
 import TupleMatchHelper from './TupleMatchHelper'
 import TupleDerivedData from './TupleDerivedData'
+import { symValueType } from './internalSymbols'
+import TupleMap from './TupleMap'
+import TupleQueryDerivedData from './tuple/TupleQueryDerivedData'
 
 export default class Tuple {
 
     tags: TupleTag[] = []
 
-    _asMap?: Map<string, TupleTag>
+    _asMap?: TupleMap
     _derivedData?: TupleDerivedData
     _matchHelper?: TupleMatchHelper
     _byIdentifier?: Map<string, TupleTag>
+    _queryDerivedData?: TupleQueryDerivedData
+
+    [symValueType] = 'tuple'
 
     constructor(tags: TupleTag[]) {
         if (!Array.isArray(tags))
@@ -38,17 +41,25 @@ export default class Tuple {
 
     asMap() {
         if (!this._asMap) {
-            this._asMap = new Map();
+            const newMap = new Map();
 
             for (const tag of this.tags) {
                 if (!tag.attr)
                     continue;
 
-                this._asMap.set(tag.attr, tag);
+                newMap.set(tag.attr, tag);
             }
+
+            this._asMap = new TupleMap(newMap);
         }
 
         return this._asMap;
+    }
+
+    queryDerivedData() {
+        if (!this._queryDerivedData)
+            this._queryDerivedData = new TupleQueryDerivedData(this);
+        return this._queryDerivedData;
     }
 
     toObject() {
@@ -126,8 +137,10 @@ export default class Tuple {
     */
     checkDefiniteValuesProvidedBy(subTuple: Tuple) {
         for (const tag of this.tags) {
-            const subTag = subTuple.findTagForType(tag.attr);
-            if (!subTag || !subTag.fixedValue())
+            if (tag.exprValue)
+                return false;
+            const subTag = subTuple.getTag(tag.attr);
+            if (!subTag || !subTag.hasValue())
                 return false;
         }
         return true;
@@ -176,14 +189,14 @@ export default class Tuple {
 
     getVal(attr: string) {
         const tag = this.asMap().get(attr);
-        if (!tag.fixedValue())
+        if (!tag.hasValue())
             throw new Error("not a fixed value: " + attr);
         return tag.value;
     }
 
     getNativeVal(attr: string) {
         const tag = this.asMap().get(attr);
-        if (!tag.fixedValue())
+        if (!tag.hasValue())
             throw new Error("not a fixed value: " + attr);
         return tag.nativeValue;
     }
@@ -198,14 +211,21 @@ export default class Tuple {
         return defaultValue;
     }
 
-    dropTagIndex(index: number) {
+    getValByIdentifierOptional(identifierStr: string, defaultValue) {
+        const tag = this.byIdentifier().get(identifierStr);
+        if (tag && tag.value)
+            return tag.value;
+        return defaultValue;
+    }
+
+    deleteAtIndex(index: number) {
         if (index >= this.tags.length)
             throw new Error('index out of range: ' + index);
 
         return new Tuple(this.tags.slice(0,index).concat(this.tags.slice(index + 1)));
     }
 
-    setTagValueAtIndex(index: number, value: any) {
+    setValueAtIndex(index: number, value: any) {
         const tags = this.tags.map(t => t);
         tags[index] = tags[index].copy();
         tags[index].value = value;
@@ -225,12 +245,15 @@ export default class Tuple {
         });
 
         if (!found)
-            out = out.addTagObj(newTag(attr, null).setNativeValue(value));
+            out = out.addTag(newSimpleTag(attr, null).setNativeValue(value));
 
         return out; 
     }
 
-    setVal(attr: string, value: string | true) {
+    setVal(attr: string, value: any) {
+        if (!attr)
+            throw new Error('setVal missing required: attr')
+
         let found = false;
 
         let out = this.remapTags(tag => {
@@ -248,16 +271,16 @@ export default class Tuple {
         });
 
         if (!found)
-            out = out.addNewTag(attr, value);
+            out = out.addSimpleTag(attr, value);
 
         return out;
     }
 
-    findTagForType(attr: string): TupleTag {
+    getTag(attr: string): TupleTag {
         return this.asMap().get(attr) || null;
     }
 
-    findTagIndexOfType(attr: string) {
+    findTagIndex(attr: string) {
         for (let i = 0; i < this.tags.length; i++)
             if (this.tags[i].attr === attr)
                 return i;
@@ -265,7 +288,7 @@ export default class Tuple {
     }
 
     updateTagOfType(attr: string, update: (t: TupleTag) => TupleTag) {
-        const index = this.findTagIndexOfType(attr);
+        const index = this.findTagIndex(attr);
         if (index === -1)
             throw new Error('attr not found: ' + attr);
         return this.updateTagAtIndex(index, update);
@@ -285,38 +308,35 @@ export default class Tuple {
         return new Tuple(this.tags.filter(tag => typeNames.indexOf(tag.attr) === -1));
     }
 
-    addTagStr(s: string) {
-        return new Tuple(this.tags.concat([parseTag(s)]));
-    }
-
-    addTagObj(tag: TupleTag) {
+    addTag(tag: TupleTag) {
         return new Tuple(this.tags.concat([tag]));
     }
 
-    addNewTag(tagType: string, tagValue?: string | true) {
-        return this.addTagObj(newTag(tagType, tagValue));
+    addTags(tags: TupleTag[]) {
+        return new Tuple(this.tags.concat(tags));
     }
 
-    addNewTag2(opts: TagOptions) {
-        return this.addTagObj(new TupleTag(opts));
+    addSimpleTag(tagType: string, tagValue?: any) {
+        return this.addTag(newSimpleTag(tagType, tagValue));
     }
 
-    addTags(strs: string[]) {
-        return new Tuple(this.tags.concat(strs.map(parseTag)));
+    addNewTag(opts: TagOptions) {
+        return this.addTag(new TupleTag(opts));
     }
 
     str() {
-        return commandTagsToString(this.tags);
+        return this.stringify();
     }
 
     stringify() {
-        return commandTagsToString(this.tags);
+        return this.tags.map(tag => tag.stringify()).join(' ');
     }
 
-    stringifyToCommand() {
-        let commandPrefix = 'set ';
-
-        return commandPrefix + this.str();
+    getAttrToIndexMap() {
+        const map = new Map<string,number>();
+        for (let i = 0; i < this.tags.length; i++)
+            map.set(this.tags[i].attr, i);
+        return map;
     }
 
     isCommandMeta() {
@@ -336,7 +356,7 @@ export function objectToTuple(object: { [k: string]: string | true }) {
     const tags = [];
 
     for (const key in object) {
-        tags.push(newTag(key, object[key]));
+        tags.push(newSimpleTag(key, object[key]));
     }
 
     return new Tuple(tags);
@@ -347,5 +367,5 @@ export function tagsToTuple(tags: TupleTag[]): Tuple {
 }
 
 export function singleTagToTuple(attr: string, value: any) {
-    return new Tuple([newTag(attr, value)])
+    return new Tuple([newSimpleTag(attr, value)])
 }

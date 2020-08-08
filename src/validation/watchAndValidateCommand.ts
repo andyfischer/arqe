@@ -1,7 +1,7 @@
 
 import Stream from '../Stream'
 import { parseCommandChain } from '../parseCommand'
-import CommandChain from '../CommandChain'
+import CompoundQuery from '../CompoundQuery'
 import Pattern from '../Pattern'
 import Tuple from '../Tuple'
 import { internalError } from '../utils/logError'
@@ -10,19 +10,19 @@ interface Validation {
 }
 
 class SetShouldEmitRelation {
-    static maybeCreate(commandStr: string, command: CommandChain) {
-        if (command.commands.length > 1)
+    static maybeCreate(commandStr: string, command: CompoundQuery) {
+        if (command.queries.length > 1)
             return null;
 
-        if (command.commands[0].commandName != 'set')
+        if (command.queries[0].commandName != 'set')
             return null;
 
-        for (const tag of command.commands[0].toPattern().tags) {
+        for (const tag of command.queries[0].toPattern().tags) {
             if (tag.exprValue)
                 return null;
         }
 
-        return new SetShouldEmitRelation(commandStr, command.commands[0].toPattern());
+        return new SetShouldEmitRelation(commandStr, command.queries[0].toPattern());
     }
 
     commandStr: string;
@@ -59,7 +59,7 @@ export default function watchAndValidateCommand(commandStr: string, output: Stre
 
     const parsed = parseCommandChain(commandStr);
 
-    if (parsed.commands.length == 0)
+    if (parsed.queries.length == 0)
         throw new Error('no command found, commandStr = ' + commandStr);
 
     const validations = [];

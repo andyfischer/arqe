@@ -1,11 +1,11 @@
-import { GraphLike, Tuple, Stream, StorageProvider, emitCommandError } from ".."
+import { GraphLike, Tuple, Stream, emitCommandError } from ".."
 
 interface NativeHandler {
     setObjectColumn: (column: string) => void
     setViewColumn: (column: string) => void
 }
 
-export default class API implements StorageProvider {
+export default class API {
     handler: NativeHandler
 
     constructor(handler: NativeHandler) {

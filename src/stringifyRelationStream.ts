@@ -1,10 +1,9 @@
 
 import Tuple from './Tuple'
-import { patternTagToString } from './stringifyQuery'
+import { tagToString } from './TupleTag';
 
 export default function stringifyRelationStream() {
     let searchPattern: Tuple = null;
-    let outputCount = false;
     let outputExtended = false;
 
     return (rel: Tuple) => {
@@ -35,14 +34,14 @@ export default function stringifyRelationStream() {
         const tags = rel.tags.filter(tag => {
             if (searchPattern
                     && !outputExtended
-                    && searchPattern.findTagForType(tag.attr)
-                    && searchPattern.findTagForType(tag.attr).fixedValue())
+                    && searchPattern.getTag(tag.attr)
+                    && searchPattern.getTag(tag.attr).hasValue())
                 return false;
 
             return true;
         });
 
-        const tagStrs = tags.map(patternTagToString);
+        const tagStrs = tags.map(tagToString);
 
         let str = tagStrs.join(' ');
 

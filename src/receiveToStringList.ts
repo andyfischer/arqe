@@ -1,8 +1,7 @@
 
 import Tuple from './Tuple'
 import Stream from './Stream'
-import TupleTag from './TupleTag'
-import { patternTagToString } from './stringifyQuery'
+import TupleTag, { tagToString } from './TupleTag'
 
 export default function receiveToStringList(onDone: (s: string|string[]) => void): Stream {
 
@@ -29,7 +28,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
             return true;
         });
 
-        const tagStrs = tags.map(patternTagToString);
+        const tagStrs = tags.map(tagToString);
         tagStrs.sort();
 
         let str = tagStrs.join(' ');

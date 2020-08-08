@@ -2,7 +2,7 @@
 import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
-import { receiveToRelation } from './Relation'
+import Relation, { receiveToRelation } from './Relation'
 
 export default class Pipe {
     output?: Stream
@@ -48,5 +48,18 @@ export default class Pipe {
 
     sendRelationTo(out: Stream, attrName: string) {
         this.sendTo(receiveToRelation(out, attrName));
+    }
+
+    take() {
+        if (this.output)
+            throw new Error("Can't call .take, pipe is connected to an output")
+
+        const result = this._backlog;
+        this._backlog = [];
+        return result;
+    }
+
+    takeAsRelation() {
+        return new Relation(this.take())
     }
 }

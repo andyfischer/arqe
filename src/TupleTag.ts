@@ -1,5 +1,6 @@
+import { symValueStringify } from "./internalSymbols"
+import { stringifyExpr } from "./parseExpr"
 
-import { patternTagToString } from './stringifyQuery'
 
 export interface TagOptions {
     attr?: string
@@ -40,7 +41,7 @@ export default class TupleTag {
             this.value = null;
     }
 
-    fixedValue() {
+    hasValue() {
         return !!this.value;
     }
 
@@ -58,11 +59,11 @@ export default class TupleTag {
     }
 
     str() {
-        return patternTagToString(this);
+        return tagToString(this);
     }
 
     stringify() {
-        return patternTagToString(this);
+        return tagToString(this);
     }
 
     copy(): TupleTag {
@@ -178,7 +179,103 @@ export function newTag(attr: string, tagValue?: any): TupleTag {
     return new TupleTag({ attr, value: tagValue });
 }
 
+export function newSimpleTag(attr: string, tagValue?: any): TupleTag {
+    if (!attr)
+        throw new Error('missing required: attr')
+    return new TupleTag({ attr, value: tagValue });
+}
+
 export function newTagFromObject(obj: TagOptions) {
     return new TupleTag(obj);
 }
 
+
+function tagValueNeedsParens(s: string) {
+    for (let i = 0; i < s.length; i++)
+        if (s.charAt(i) === ' ' || s.charAt(i) === '*' || s.charAt(i) === '/')
+            return true;
+
+    return false;
+}
+
+function valueToString(value: any): string {
+    if (typeof value === 'string') {
+        return value;
+    }
+
+    if (typeof value === 'number')
+        return ''+value;
+
+    if (typeof value === 'boolean')
+        return ''+value;
+
+    if (value[symValueStringify] !== undefined)
+        return value[symValueStringify](value);
+
+    return '<native>'
+}
+
+export function tagToString(tag: TupleTag) {
+    if (tag.star && tag.identifier)
+        return '$' + tag.identifier;
+
+    if (tag.star)
+        return '*';
+
+    if (tag.doubleStar)
+        return '**'
+
+    if (tag.attr && tag.value === null && tag.identifier) {
+        return tag.attr + '/$' + tag.identifier;
+    }
+
+    if (tag.value) {
+
+        let s = '';
+
+        if (tag.identifier) {
+            s += `[from \$${tag.identifier}] `;
+        }
+
+        let valStr = valueToString(tag.value);
+
+        const needsParens = tagValueNeedsParens(valStr);
+
+        if (needsParens) {
+            s += tag.attr + '(';
+        } else {
+            s += tag.attr + '/';
+        }
+
+        s += valStr;
+
+        if (needsParens)
+            s += ')';
+
+        return s;
+    }
+
+    if (tag.exprValue) {
+        return tag.attr + '/' + stringifyExpr(tag.exprValue)
+
+    } else if (tag.starValue) {
+        return tag.attr + '/*';
+    }
+
+    if (tag.attr) {
+        let s = '';
+        if (tag.identifier) {
+            s += `[from \$${tag.identifier}] `
+        }
+        s += tag.attr;
+
+        if (tag.optional)
+            s += '?';
+
+        return s;
+    }
+    
+    throw new Error('unhandled case in patternTagToString: ' + JSON.stringify(tag));
+
+    return ''
+}

@@ -9,21 +9,9 @@ export interface QueryTag {
 }
 
 export default interface QueryPlan {
-    tags: QueryTag[]
-
-    singleStar: boolean
-    doubleStar: boolean
-    isUpdate: boolean
-    isDelete?: boolean
-    initializeIfMissing: boolean
-
     originalTuple: Tuple
     tuple: Tuple
     output: Stream
-
-    table?: TableMount
-    tableName?: string
-    searchTables?: TableMount[]
 
     failed: boolean
 }

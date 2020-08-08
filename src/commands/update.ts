@@ -5,13 +5,14 @@ import QueryPlan from '../QueryPlan';
 import { combineStreams } from '../StreamUtil';
 import { toInitialization, insertPlanned } from './insert';
 import planQuery from '../planQuery';
+import findPartitionsByTable from '../findPartitionsByTable';
 import TableMount from '../TableMount';
-import { callNativeHandler } from '../NativeHandler';
-import TupleModification from '../TupleModification';
 
-export function updatePlanned(graph: Graph, plan: QueryPlan) {
-    const { output } = plan;
+export function updateOnOneTable(table: TableMount, tuple: Tuple, out: Stream) {
+    table.callWithDefiniteValuesOrError('update', tuple, out);
+}
 
+export function updatePlanned(graph: Graph, tuple: Tuple, plan: QueryPlan, output: Stream) {
     let hasFoundAny = false;
 
     // Scan and apply the modificationCallback to every matching slot.
@@ -24,11 +25,11 @@ export function updatePlanned(graph: Graph, plan: QueryPlan) {
             output.next(t);
         },
         done: () => {
-            // Check if the plan has 'initializeIfMissing' - this means we must insert the row
+            // Check if the tuple has 'initializeIfMissing' - this means we must insert the row
             // if no matches were found.
-            if (!hasFoundAny && plan.initializeIfMissing) {
-                plan.tuple = toInitialization(plan.tuple);
-                insertPlanned(graph, plan);
+            if (!hasFoundAny && tuple.queryDerivedData().initializeIfMissing) {
+                const initTuple = toInitialization(tuple);
+                insertPlanned(graph, initTuple, output);
             } else {
                 output.done();
             }
@@ -36,10 +37,10 @@ export function updatePlanned(graph: Graph, plan: QueryPlan) {
     });
 
     const allTables = collectOutput();
-    for (const table of plan.searchTables) {
-        const tableOut = collectOutput();
 
-        table.callOrError('update', plan.tuple, tableOut);
+    for (const [table, partitionedTuple] of findPartitionsByTable(graph, tuple)) {
+        const tableOut = collectOutput();
+        updateOnOneTable(table, partitionedTuple, tableOut);
     }
 
     allTables.done();
@@ -53,5 +54,5 @@ export default function updateCommand(params: CommandExecutionParams) {
     if (plan.failed)
         return;
 
-    updatePlanned(graph, plan);
+    updatePlanned(graph, plan.tuple, plan, output);
 }

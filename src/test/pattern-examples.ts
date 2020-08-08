@@ -89,11 +89,11 @@ function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple
 }
 
 function pass(joinWith: Tuple, out: Stream) {
-    out.next(joinWith.addNewTag('passed'));
+    out.next(joinWith.addSimpleTag('passed'));
 }
 
 function fail(joinWith: Tuple, out: Stream, message: string) {
-    out.next(joinWith.addNewTag('failed').addNewTag('message', message));
+    out.next(joinWith.addSimpleTag('failed').addSimpleTag('message', message));
 }
 
 function expectEquals(example: Tuple, expected: any, observed: any, out: Stream) {
