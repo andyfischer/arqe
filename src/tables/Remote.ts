@@ -1,43 +1,57 @@
 
-import Tuple from '../Tuple'
-import { Stream } from ".."
-// import ClientConnection, { connectToServer } from '../socket/ClientConnection'
-import { handles } from '../decorators'
-import TableMount from '../TableMount'
-import WebSocket from '../platform/ws'
-
+import setupTableSet from '../setupTableSet'
+import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
+import QueryEvalHelper from '../QueryEvalHelper';
+import Pipe from '../Pipe';
+import Query from '../Query';
+import parseTuple from '../parseTuple';
+import Tuple from '../Tuple';
+import Stream from '../Stream';
+import IDSource from '../utils/IDSource';
+import { Connection } from './SocketConnection'
 
 /*
-async function getOrInitConnection(port: string) {
-    if (!connectionByPort[port])
-        connectionByPort[port] = await connectToServer(port);
+function handleRedirect(input: Tuple, out: Stream) {
+    const patternStr: string = input.getVal('pattern');
+    const evalHelper: QueryEvalHelper = input.getVal('evalHelper');
+    const verb = evalHelper.callVerb;
 
-    return connectionByPort[port];
+    const outputPipe = new Pipe();
+    outputPipe.sendTo(out);
+    evalHelper.runOneCommand({
+        input: evalHelper.cxt.input,
+        output: outputPipe,
+        command: new Query(verb, parseTuple(patternStr), {})
+    });
 }
 */
 
-export function remoteTable(name: string, schema: Tuple) {
-    const mount = new TableMount(name, schema);
+export default function setupTables() {
 
-    // mount.addHandler('get')
+    const connections = {
+    }
+
+    const nextConnId = new IDSource();
+
+    return setupTableSet({
+        'remotetable url': {
+            name: 'NewRemoteTable',
+            'insert remotetable((unique)) url': unwrapTuple(({url}) => {
+                const connId = nextConnId.take();
+                const conn = new Connection(connId, url);
+                connections[connId] = conn;
+                return { remotetable: connId }
+            })
+        },
+        'remotetable query': {
+            name: 'RemoteQuery',
+            'get evalHelper': unwrapTuple(({remotetable, query, evalHelper, inputPipe, outputPipe}) => {
+                const conn = connections[remotetable];
+                if (!conn)
+                    throw new Error("connection not found: " + remotetable)
+
+                return {}
+            })
+        }
+    })
 }
-
-export class Remote {
-    name = 'Remote'
-    schemaStr = 'remote/$port **'
-    supportsCompleteScan = false
-
-    @handles('get remote/xxx')
-    select(pattern: Tuple, out: Stream) {
-    }
-
-    insert(tuple: Tuple, out: Stream) {
-    }
-
-    delete(search: Tuple, out: Stream) {
-    }
-}
-
-/*
-    intercept any command and forward to remote server
-*/

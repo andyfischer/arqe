@@ -88,7 +88,7 @@ export default async function main() {
 
     if (cliArgs.c) {
 
-        const { promise, receiver } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         graph.run(cliArgs.c, receiver);
 
         const rels = await promise;

@@ -2,9 +2,10 @@ import { combineStreams } from "../StreamUtil";
 import { Graph, Tuple, Stream } from "..";
 import TupleTag, { newTag } from "../TupleTag";
 import planQuery from "../planQuery";
-import CommandExecutionParams from '../CommandExecutionParams'
+import CommandExecutionParams from '../CommandParams'
 import TableMount from "../TableMount";
 import findPartitionsByTable from "../findPartitionsByTable";
+import QueryContext from "../QueryContext";
 
 export function stripDeleteTag(tuple: Tuple) {
     return tuple.remapTags((tag: TupleTag) => {
@@ -14,13 +15,13 @@ export function stripDeleteTag(tuple: Tuple) {
     });
 }
 
-export function deleteOnOneTable(graph: Graph, table: TableMount, tuple: Tuple, out: Stream) {
+export function deleteOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
 
     tuple = stripDeleteTag(tuple);
 
-    table.callWithDefiniteValuesOrError('delete', tuple, {
+    table.callWithDefiniteValuesOrError(cxt, 'delete', tuple, {
         next(t: Tuple) {
-            graph.onTupleDeleted(t);
+            cxt.graph.onTupleDeleted(t);
             const deletedMessage = t.addTag(newTag('deleted'));
             out.next(deletedMessage);
         },
@@ -28,27 +29,27 @@ export function deleteOnOneTable(graph: Graph, table: TableMount, tuple: Tuple, 
     });
 }
 
-export function deletePlanned(graph: Graph, searchPattern: Tuple, output: Stream) {
+export function deletePlanned(cxt: QueryContext, searchPattern: Tuple, output: Stream) {
     const collectOutput = combineStreams(output);
 
     const allTables = collectOutput();
-    for (const [table, tablePattern] of findPartitionsByTable(graph, searchPattern)) {
+    for (const [table, tablePattern] of findPartitionsByTable(cxt, searchPattern)) {
         const tableOut = collectOutput();
-        deleteOnOneTable(graph, table, tablePattern, tableOut);
+        deleteOnOneTable(cxt, table, tablePattern, tableOut);
     }
 
     allTables.done();
 }
 
-export default function deleteCommand(params: CommandExecutionParams) {
-    const { graph, command, output } = params;
+export default function deleteCommand(cxt: QueryContext, params: CommandExecutionParams) {
+    const { command, output } = params;
     let { pattern } = command;
 
     const deletePattern = pattern.addTag(newTag('deleted').setValueExpr(['set']));
 
-    const plan = planQuery(graph, deletePattern, output);
+    const plan = planQuery(null, deletePattern, output);
     if (plan.failed)
         return;
 
-    deletePlanned(graph, plan.tuple, output);
+    deletePlanned(cxt, pattern, output);
 }

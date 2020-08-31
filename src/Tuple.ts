@@ -1,13 +1,14 @@
 
-import { parseTag } from './parseCommand'
-import TupleTag, { newSimpleTag, FixedTag, TagOptions } from './TupleTag'
-import TupleMatchHelper from './TupleMatchHelper'
-import TupleDerivedData from './TupleDerivedData'
+import TupleTag, { newSimpleTag, TagOptions } from './TupleTag'
+import TupleMatchHelper from './tuple/TupleMatchHelper'
+import TupleDerivedData from './tuple/TupleDerivedData'
 import { symValueType } from './internalSymbols'
 import TupleMap from './TupleMap'
 import TupleQueryDerivedData from './tuple/TupleQueryDerivedData'
 
 export default class Tuple {
+
+    _s: string
 
     tags: TupleTag[] = []
 
@@ -24,7 +25,15 @@ export default class Tuple {
             throw new Error("expected 'tags' to be an Array");
 
         this.tags = tags;
+
+        // debug only
+        this._s = this.stringify();
+
         Object.freeze(this.tags);
+    }
+
+    isEmpty() {
+        return this.tags.length === 0;
     }
 
     derivedData() {
@@ -131,6 +140,51 @@ export default class Tuple {
         return true;
     }
 
+    overlapCheckSingleAttr(lhsTag: TupleTag, rhs: Tuple) {
+        const rhsTag = rhs.getTag(lhsTag.attr);
+        if (!rhsTag) {
+            // No corresponding tag found on rhs.
+
+            if (lhsTag.optional)
+                return true;
+
+            return rhs.derivedData().hasDoubleStar;
+        }
+
+        // Check if either tag matches all values
+        if (!lhsTag.hasValue() || !rhsTag.hasValue())
+            return true;
+
+        // Both sides have a definite value
+        return lhsTag.value === rhsTag.value;
+    }
+
+    hasOverlap(rhs: Tuple) {
+        // Check each lhs attribute
+        for (const lhsTag of this.tags) {
+            if (!lhsTag.attr)
+                continue;
+            if (!this.overlapCheckSingleAttr(lhsTag, rhs))
+                return false;
+        }
+
+        // Check rhs attributes for any missing on lhs.
+        for (const rhsTag of rhs.tags) {
+            if (!rhsTag.attr)
+                continue;
+
+            if (rhsTag.optional)
+                continue;
+
+            if (!this.hasAttr(rhsTag.attr)
+                    && !this.derivedData().hasDoubleStar) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /*
      Look at every attr used in this tuple, and returns true if subTuple has a
      definite value for each attr.
@@ -189,8 +243,13 @@ export default class Tuple {
 
     getVal(attr: string) {
         const tag = this.asMap().get(attr);
+
+        if (!tag)
+            throw new Error("attr not found: " + attr);
+
         if (!tag.hasValue())
             throw new Error("not a fixed value: " + attr);
+
         return tag.value;
     }
 
@@ -349,6 +408,14 @@ export default class Tuple {
 
     isCommandSearchPattern() {
         return this.hasAttr('command-meta') && this.hasAttr('search-pattern');
+    }
+
+    toProxyObject(): any {
+        return new Proxy({}, {
+            get: (target, prop) => {
+                return this.getValOptional(prop as any, undefined);
+            }
+        });
     }
 }
 

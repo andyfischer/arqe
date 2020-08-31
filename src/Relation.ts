@@ -31,6 +31,14 @@ export default class Relation {
         }
     }
 
+    errorsToErrorObject(): Error | null {
+        if (!this.errors || this.errors.length == 0)
+            return null;
+
+        const firstError = this.errors[0];
+        return new Error(firstError.getVal('message'));
+    }
+
     stringify() {
         return `[${this.all.map(t => t.stringify()).join(', ')}]`    
     }
@@ -59,7 +67,7 @@ export default class Relation {
     }
 }
 
-export function receiveToRelation(out: Stream, attrName: string): Stream {
+export function receiveToRelationInStream(out: Stream, attrName: string): Stream {
     const tuples = [];
 
     return {
@@ -74,3 +82,28 @@ export function receiveToRelation(out: Stream, attrName: string): Stream {
     }
 }
 
+export function receiveToRelationAsync() {
+
+    let stream: Stream;
+
+    const promise: Promise<Relation> = new Promise((resolve, reject) => {
+        const tuples = [];
+
+        stream = {
+            next(t) {
+                tuples.push(t);
+            },
+            done() {
+                const relation = new Relation(tuples);
+                const error = relation.errorsToErrorObject();
+                if (error)
+                    reject(error);
+                else
+                    resolve(relation);
+            }
+
+        }
+    })
+
+    return { stream, promise }
+}

@@ -7,25 +7,10 @@ type ObjectCallback = (obj: any, tuple?: Tuple) => any | any[] | Promise<any> | 
 export function unwrapTuple(callback: ObjectCallback) {
     return (input: Tuple, out: Stream) => {
 
-        const proxyObject = new Proxy({}, {
-            get(target, prop) {
-                return input.getValOptional(prop as any, undefined);
-            }
-        });
-
-        function toTuple(object) {
-
-            let t = input;
-            for (const k in object) {
-                t = t.setVal(k, object[k]);
-            }
-            return t;
-        }
-
         let result;
 
         try {
-            result = callback(proxyObject, input);
+            result = callback(input.toProxyObject(), input);
         } catch (err) {
             emitCommandError(out, err);
             out.done();
@@ -34,6 +19,14 @@ export function unwrapTuple(callback: ObjectCallback) {
         if (!result) {
             out.done();
             return;
+        }
+
+        function toTuple(object) {
+            let t = input;
+            for (const k in object) {
+                t = t.setVal(k, object[k]);
+            }
+            return t;
         }
     
         if (result.then) {

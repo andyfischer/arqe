@@ -24,7 +24,7 @@ it('listen ** notifies on all changes', () => {
     expect(listenCalls).toEqual(['a/1 b/1 val/5']);
 });
 
-it('listen -get ** first sends messages for existing items', () => {
+xit('listen -get ** first sends messages for existing items', () => {
     const graph = new Graph();
     graph.run('set a');
     graph.run('set a b');

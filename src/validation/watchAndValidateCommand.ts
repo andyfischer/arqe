@@ -14,7 +14,7 @@ class SetShouldEmitRelation {
         if (command.queries.length > 1)
             return null;
 
-        if (command.queries[0].commandName != 'set')
+        if (command.queries[0].verb != 'set')
             return null;
 
         for (const tag of command.queries[0].toPattern().tags) {

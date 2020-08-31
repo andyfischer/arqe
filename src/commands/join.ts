@@ -1,5 +1,5 @@
 
-import CommandExecutionParams from '../CommandExecutionParams'
+import CommandParams from '../CommandParams'
 import Tuple, { tagsToTuple } from '../Tuple';
 import Stream from '../Stream';
 import { receiveToTupleList } from '../receiveUtils';
@@ -8,6 +8,7 @@ import { joinNStreams } from '../StreamUtil';
 import AutoInitMap from '../utils/AutoInitMap';
 import TupleTag from '../TupleTag';
 import { emitCommandError, emitSearchPatternMeta } from '../CommandMeta';
+import QueryContext from '../QueryContext';
 
 class FoundIdentifier {
     str: string
@@ -145,15 +146,15 @@ function performJoinWithData(out: Stream): Stream {
     })
 }
 
-export default function runJoinStep(params: CommandExecutionParams) {
+export default function runJoinStep(cxt: QueryContext, params: CommandParams) {
 
-    const { graph, command, input, output } = params;
+    const { command, input, output } = params;
     const searchPattern = command.pattern;
 
     // Collect two relations: input (piped) & search 
     const [inputStream, searchOut] = joinNStreams(2, performJoinWithData(output));
     input.sendRelationTo(inputStream, 'input');
-    graph.sendRelationValue(searchPattern, searchOut, 'search');
+    cxt.graph.sendRelationValue(searchPattern, searchOut, 'search');
 }
 
 

@@ -16,7 +16,7 @@ export function appendTagInCommand(str: string, tag: string) {
 export function parseAsSet(str: string) {
     const command = parseCommand(str);
 
-    if (command.commandName !== 'set')
+    if (command.verb !== 'set')
         throw new Error("Expected 'set' command: " + str);
 
     return command.pattern.tags;

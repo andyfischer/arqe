@@ -1,19 +1,20 @@
 
 import Graph from '../Graph'
-import CommandExecutionParams from '../CommandExecutionParams'
+import CommandParams from '../CommandParams'
 import Tuple, { objectToTuple } from '../Tuple'
+import QueryContext from '../QueryContext';
 
 function createWatchCommand(graph: Graph, pattern: Tuple) {
     const res = graph.runSync(`set watch((unique)) pattern(${pattern.stringify()})`)[0];
 }
 
-export default function watchCommand(params: CommandExecutionParams) {
-    const { graph, output } = params;
+export default function watchCommand(cxt: QueryContext, params: CommandParams) {
+    const { output } = params;
     const pattern = params.command.pattern;
 
     output.next(objectToTuple({ 'command-meta': true, 'watch': true }));
 
-    createWatchCommand(graph, pattern);
+    createWatchCommand(cxt.graph, pattern);
 
     output.done();
 }

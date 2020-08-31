@@ -1,6 +1,6 @@
 import Tuple from './Tuple'
 import Graph from './Graph'
-import Relation, { receiveToRelation } from './Relation';
+import Relation, { receiveToRelationInStream } from './Relation';
 
 export default class SavedQuery {
     graph: Graph
@@ -12,20 +12,6 @@ export default class SavedQuery {
     }
 
     getRelationAsync(): Promise<Relation> {
-        return new Promise((resolve, reject) => {
-
-            const out = receiveToRelation({
-                next(t) {
-                    const relation: Relation = t.getVal('r');
-                    if (relation.errors)
-                        reject(new Error(relation.errors[0].stringify()))
-                    else
-                        resolve(relation);
-                },
-                done() {}
-            }, 'r');
-
-            this.graph.get(this.tuple, out);
-        })
+        return this.graph.getRelationAsync(this.tuple);
     }
 }

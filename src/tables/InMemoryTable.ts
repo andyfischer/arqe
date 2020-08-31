@@ -23,21 +23,23 @@ export default class InMemoryTable {
         this.pattern = pattern;
 
         this.mount = new TableMount(name, pattern);
-        this.mount.addHandler('list-all', this.findAll.bind(this));
-        this.mount.addHandler('insert', this.insert.bind(this) );
-        this.mount.addHandler('update', this.update.bind(this) );
-        this.mount.addHandler('delete', this.delete.bind(this) );
+        this.mount.addHandler('list-all', '', this.findAll.bind(this));
+        this.mount.addHandler('insert', '', this.insert.bind(this) );
+        this.mount.addHandler('update', '', this.update.bind(this) );
+        this.mount.addHandler('delete', '', this.delete.bind(this) );
+        this.mount.addHandler('add-listener', '', this.addListener.bind(this));
+        this.mount.addHandler('remove-listener', '', this.removeListener.bind(this));
     }
 
     findAll(tuple: Tuple, out: Stream) {
-        for (const [slotId, tuple] of this.slots.entries())
+        for (const [_, tuple] of this.slots.entries())
             out.next(tuple);
 
         out.done();
     }
 
     select(pattern: Tuple, out: Stream) {
-        for (const [slotId, tuple] of this.slots.entries())
+        for (const [_, tuple] of this.slots.entries())
             if (pattern.isSupersetOf(tuple))
                 out.next(tuple);
 
@@ -46,7 +48,7 @@ export default class InMemoryTable {
 
     insert(insertTuple: Tuple, out: Stream) {
         // Check if it exists
-        for (const [slotId, tuple] of this.slots.entries()) {
+        for (const [_, tuple] of this.slots.entries()) {
             if (insertTuple.isSupersetOf(tuple)) {
                 // Already have this
                 out.next(tuple);
@@ -97,5 +99,16 @@ export default class InMemoryTable {
             }
         }
         out.done();
+    }
+
+    addListener(input: Tuple, out: Stream) {
+        const id = input.getVal("listenerId");
+        const listener = input.getVal("listenerObj");
+        this.listeners.set(id, listener);
+    }
+
+    removeListener(input: Tuple, out: Stream) {
+        const id = input.getVal("listenerId");
+        this.listeners.delete(id);
     }
 }

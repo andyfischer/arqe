@@ -155,6 +155,10 @@ export default class TupleTag {
     equals(rhs: TupleTag): boolean {
         return this.compareCanonicalSort(rhs) === 0;
     }
+
+    isUniqueExpr() {
+        return this.exprValue && this.exprValue[0] === 'unique';
+    }
 }
 
 function stringCompare(a,b) {

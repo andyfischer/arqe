@@ -1,5 +1,7 @@
 import TableMount, { TupleStreamCallback } from "./TableMount";
 import parseTuple from "./parseTuple";
+import parseCommand from "./parseCommand";
+import Graph from "./Graph";
 
 interface SingleTableDefinition {
     name: string
@@ -23,11 +25,18 @@ export default function setupTableSet(def: TableSetDefinition): TableMount[] {
             if (commandStr === 'name')
                 continue;
 
-            mount.addHandler(commandStr, tableDef[commandStr] as TupleStreamCallback);
+            const command = parseCommand(commandStr);
+            mount.addHandler(command.verb, command.pattern, tableDef[commandStr] as TupleStreamCallback);
         }
 
         mounts.push(mount);
     }
 
     return mounts;
+}
+
+export function graphWithTableSet(def: TableSetDefinition): Graph {
+    const graph = new Graph();
+    graph.addTables(setupTableSet(def));
+    return graph;
 }

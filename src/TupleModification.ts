@@ -19,7 +19,7 @@ const exprFuncEffects = {
     }
 };
 
-export default class TupleModification {
+class TupleModification {
     exactTranslations: ExactTranslation[] = []
 
     attrModifications: Map<string, AttrFunc>

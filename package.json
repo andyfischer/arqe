@@ -56,6 +56,9 @@
     "setupFiles": [
       "./src/__tests__/setup.ts"
     ],
+    "setupFilesAfterEnv": [
+      "./src/__tests__/setupAfterEnv.ts"
+    ],
     "testMatch": [
       "**/src/**/__tests__/**/*.test.(js|ts)",
       "**/src/**/real-world-test/*.test.(js|ts)",

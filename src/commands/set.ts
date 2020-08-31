@@ -1,5 +1,5 @@
 
-import CommandExecutionParams from '../CommandExecutionParams'
+import CommandParams from '../CommandParams'
 import planQuery from '../planQuery'
 import { insertOnOneTable } from './insert'
 import { deleteOnOneTable } from './delete'
@@ -10,10 +10,11 @@ import TableMount from '../TableMount'
 import findPartitionsByTable from '../findPartitionsByTable'
 import { combineStreams } from '../StreamUtil'
 import TupleTag, { newTag } from '../TupleTag'
-import Graph from '../Graph'
 import QueryPlan from '../QueryPlan'
+import { emitCommandError } from '../CommandMeta'
+import QueryContext from '../QueryContext'
 
-function createImplicitTable(graph: Graph, tuple: Tuple) {
+function createImplicitTable(cxt: QueryContext, tuple: Tuple) {
     const attrTags: TupleTag[] = []
     for (const tag of tuple.tags) {
         if (tag.attr)
@@ -22,31 +23,33 @@ function createImplicitTable(graph: Graph, tuple: Tuple) {
 
     const tableName = '_' + attrTags.map(tag => tag.attr).join('_');
     const tablePattern = new Tuple(attrTags);
-    // console.log(`created new implicit table ${tableName}: ${tablePattern.stringify()}`);
-    return graph.defineInMemoryTable(tableName, tablePattern);
+
+    cxt.msg("creating implicit table", { tableName })
+    
+    return cxt.graph.defineInMemoryTable(tableName, tablePattern);
 }
 
-function setOnTable(graph: Graph, table: TableMount, tuple: Tuple, plan: QueryPlan, out: Stream) {
+function setOnTable(cxt: QueryContext, table: TableMount, tuple: Tuple, plan: QueryPlan, out: Stream) {
     // Check for a custom 'set' handler
-    if (table.callWithDefiniteValues('set', tuple, out)) {
+    if (table.callWithDefiniteValues(cxt, 'set', tuple, out)) {
         return;
     }
 
     if (tuple.queryDerivedData().isDelete) {
-        deleteOnOneTable(graph, table, tuple, out);
+        const deletePattern = tuple.removeAttr('deleted');
+        deleteOnOneTable(cxt, table, deletePattern, out);
     } else if (tuple.queryDerivedData().isUpdate) {
-        //updateOnOneTable(table, tuple, out);
-        updatePlanned(graph, tuple, plan, out);
+        updatePlanned(cxt, tuple, plan, out);
     } else {
-        insertOnOneTable(graph, table, tuple, out);
+        insertOnOneTable(cxt, table, tuple, out);
     }
 }
 
-export default function set(params: CommandExecutionParams) {
-    const { graph, command, output } = params;
+export default function set(cxt: QueryContext, params: CommandParams) {
+    const { command, output } = params;
     const { pattern } = command;
 
-    const plan = planQuery(graph, pattern, output);
+    const plan = planQuery(null, pattern, output);
     if (plan.failed)
         return;
 
@@ -54,15 +57,19 @@ export default function set(params: CommandExecutionParams) {
     const allTables = combinedOut();
 
     let anyFound = false;
-    for (const [table, partitionedTuple] of findPartitionsByTable(graph, plan.tuple)) {
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, plan.tuple)) {
         const tableOut = combinedOut();
         anyFound = true;
-        setOnTable(graph, table, partitionedTuple, plan, tableOut);
+        setOnTable(cxt, table, partitionedTuple, plan, tableOut);
     }
 
     if (!anyFound) {
-        const table = createImplicitTable(graph, plan.tuple);
-        setOnTable(graph, table, plan.tuple, plan, combinedOut());
+        if (cxt.graph.options.autoinitMemoryTables) {
+            const table = createImplicitTable(cxt, plan.tuple);
+            setOnTable(cxt, table, plan.tuple, plan, combinedOut());
+        } else {
+            emitCommandError(output, "No table found for: " + pattern.stringify());
+        }
     }
 
     allTables.done();

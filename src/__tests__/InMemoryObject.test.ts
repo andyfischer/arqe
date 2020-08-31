@@ -13,5 +13,5 @@ it('can correctly read from InMemoryObject table', () => {
 
     expect(table.schema.stringify()).toEqual('imo/1 key value');
     expect(run(graph, 'get imo/1 key value')).toEqual(['imo/1 key/a value/1', 'imo/1 key/b value/2']);
-    expect(run(graph, 'get imo/1 key/a')).toEqual(['imo/1 key/a value/1']);
+    expect(run(graph, 'get imo/1 key/a value')).toEqual(['imo/1 key/a value/1']);
 })

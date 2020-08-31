@@ -2,7 +2,7 @@
 import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
-import Relation, { receiveToRelation } from './Relation'
+import Relation, { receiveToRelationInStream } from './Relation'
 
 export default class Pipe {
     output?: Stream
@@ -47,7 +47,7 @@ export default class Pipe {
     }
 
     sendRelationTo(out: Stream, attrName: string) {
-        this.sendTo(receiveToRelation(out, attrName));
+        this.sendTo(receiveToRelationInStream(out, attrName));
     }
 
     take() {

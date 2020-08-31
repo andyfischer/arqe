@@ -1,5 +1,6 @@
 
 import Stream from './Stream'
+import Tuple from './Tuple';
 
 /*
 export function combineStreams({
@@ -45,4 +46,33 @@ export function joinNStreams(count: number, joinedOutput: Stream) {
     }
 
     return out;
+}
+
+export function streamPostFilter(stream: Stream, filter: (t: Tuple) => boolean) {
+    return {
+        next(t: Tuple) {
+            if (filter(t))
+                stream.next(t)
+        },
+        done() {
+            stream.done();
+        }
+    }
+}
+
+export function streamPostModify(stream: Stream, callback: (t: Tuple) => Tuple | null) {
+    return {
+        next(t: Tuple) {
+            const modified = callback(t);
+            if (modified && !modified.isEmpty())
+                stream.next(modified)
+        },
+        done() {
+            stream.done();
+        }
+    }
+}
+
+export function streamPostRemoveAttr(stream: Stream, attr: string) {
+    return streamPostModify(stream, (t: Tuple) => t.remapTags(tag => tag.attr === attr ? null : tag));
 }

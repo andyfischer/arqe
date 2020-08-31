@@ -1,5 +1,5 @@
 
-import Tuple from './Tuple'
+import Tuple from '../Tuple'
 
 export default class TuplePatternMatcher<V> {
 
@@ -19,9 +19,9 @@ export default class TuplePatternMatcher<V> {
         return null;
     }
 
-    *findMulti(tuple: Tuple) {
+    *findOverlapTables(tuple: Tuple) {
         for (const { pattern, value } of this.cases) {
-            if (pattern.isSupersetOf(tuple))
+            if (pattern.hasOverlap(tuple))
                 yield value;
         }
     }

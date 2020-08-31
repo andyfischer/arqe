@@ -14,6 +14,7 @@ export { default as printConsoleResult } from './console/printResult'
 export { parsePattern } from './Pattern'
 export { default as Relation } from './Relation'
 export { default as relationToObject } from './relationToObject'
+export { graphWithTableSet } from './setupTableSet'
 
 if (require.main === module) {
     require('./startServer.js');

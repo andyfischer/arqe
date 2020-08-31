@@ -5,4 +5,3 @@ jest.mock('../utils/logError.ts', () => ({
         fail(message);
     }
 }));
-

@@ -16,14 +16,14 @@ it('handles insert with ((unique))', () => {
     let nextUniqueX = 1;
     const entriesByX = { }
 
-    table.addHandler('insert x((unique)) y', unwrapTuple(({y}) => {
+    table.addHandler('insert', 'x((unique)) y', unwrapTuple(({y}) => {
         const x = nextUniqueX;
         entriesByX[x] = y;
         nextUniqueX += 1;
         return { x, y }
     }));
 
-    table.addHandler('insert x y', unwrapTuple(({x, y}) => {
+    table.addHandler('insert', 'x y', unwrapTuple(({x, y}) => {
         entriesByX[x] = y;
         return { x, y }
     }));
@@ -45,11 +45,11 @@ it('insert((unique)) matches the correct attr', () => {
 
     const inserts = [];
 
-    table.addHandler('insert x((unique)) y z', unwrapTuple(({y, z}) => {
+    table.addHandler('insert', 'x((unique)) y z', unwrapTuple(({y, z}) => {
         inserts.push({ xUnique: true, y, z })
     }));
 
-    table.addHandler('insert x y((unique)) z', unwrapTuple(({x, y, z}) => {
+    table.addHandler('insert', 'x y((unique)) z', unwrapTuple(({x, y, z}) => {
         inserts.push({ yUnique: true, x, z })
     }));
 
@@ -72,8 +72,14 @@ it(`insert((unique)) doesn't trigger if an input is missing`, () => {
     const table = new TableMount('test', parseTuple('t x y?'));
     graph.addTable(table);
 
-    table.addHandler('insert x((unique)) y', unwrapTuple(({y, z}) => {
+    table.addHandler('insert', 'x((unique)) y', unwrapTuple(({y, z}) => {
+        expect('not called').toEqual(true);
     }));
 
-    expect(() => run(graph, 'set t x')).toThrow();
+    expect.assertions(1);
+    try {
+        run(graph, 'set t x')
+    } catch (err) {
+        expect(err.message).toEqual(`Table test doesn't support: insert t x`);
+    }
 });

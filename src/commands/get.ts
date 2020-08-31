@@ -1,44 +1,50 @@
 
-import Graph from '../Graph'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
 import planQuery from '../planQuery'
 import { emitSearchPatternMeta, emitCommandError } from '../CommandMeta'
-import QueryPlan from '../QueryPlan'
 import { combineStreams } from '../StreamUtil'
 import TableMount from '../TableMount'
 import findPartitionsByTable from '../findPartitionsByTable'
+import QueryContext from '../QueryContext'
 
-export function selectOnTable(table: TableMount, tuple: Tuple, out: Stream) {
-    if (table.callWithDefiniteValues('get', tuple, out))
-        return;
+export function getOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
 
-    if (table.callWithDefiniteValues('select', tuple, out))
-        return;
+    cxt.start('getOnOneTable', { tableName: table.name, tuple: tuple.stringify() });
 
-    // Check for a compatible 'find-with' handler.
-    const findWithHandler = table.handlers.find('find-with', tuple);
-    if (findWithHandler) {
-        findWithHandler(tuple, out);
+    cxt.msg(`looking for 'get' handler`);
+    if (table.callWithDefiniteValues(cxt, 'get', tuple, out)) {
+        cxt.msg(`used 'get' handler`);
+        cxt.end('getOnOneTable');
         return;
     }
 
-    // Use the 'list-all' handler if provided.
-    const listAllHandler = table.handlers.find('list-all', tuple);
-    if (listAllHandler) {
-        listAllHandler(tuple, {
+    cxt.msg(`looking for 'find-with' handler`);
+    if (table.callWithDefiniteValues(cxt, 'find-with', tuple, out)) {
+        cxt.msg('used find-with handler');
+        cxt.end('getOnOneTable');
+        return;
+    }
+
+    cxt.msg(`looking for 'list-all' handler`);
+    if (table.callWithDefiniteValues(cxt, 'list-all', tuple, {
             next(t: Tuple) {
                 if (tuple.isSupersetOf(t))
                     out.next(t);
             },
             done() { out.done() }
-        });
+        })) {
+
+        cxt.msg('used list-all handler');
+        cxt.end('getOnOneTable');
         return;
     }
 
     // Fail
+    cxt.msg('no handler found');
     emitCommandError(out, `No handler found on table '${table.name}' for command: ${tuple.stringify()}`);
     out.done();
+    cxt.end('getOnOneTable');
 }
 
 function maybeAnnotateWithIdentifiers(searchPattern: Tuple, out: Stream) {
@@ -75,29 +81,39 @@ function maybeAnnotateWithIdentifiers(searchPattern: Tuple, out: Stream) {
     }
 }
 
-export function select(graph: Graph, plan: QueryPlan, out: Stream) {
-    const searchPattern = plan.tuple;
+function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');
+
+    cxt.start("runGet", { searchPattern: searchPattern.stringify() })
 
     out = maybeAnnotateWithIdentifiers(searchPattern, out);
 
     const combined = combineStreams(out);
     const startedAllTables = combined();
 
-    for (const [table, partitionedTuple] of findPartitionsByTable(graph, searchPattern)) {
+    let foundAnyTables = false;
+
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, searchPattern)) {
         const tableOut = combined();
-        selectOnTable(table, partitionedTuple, tableOut);
+        getOnOneTable(cxt, table, partitionedTuple, tableOut);
+        foundAnyTables = true;
+    }
+
+    if (!foundAnyTables && !cxt.graph.options.autoinitMemoryTables) {
+        cxt.msg('no table found');
+        emitCommandError(out, "No table found for: " + searchPattern.stringify());
     }
 
     startedAllTables.done();
+    cxt.end('runGet');
 }
 
-export default function get(graph: Graph, pattern: Tuple, output: Stream) {
-    const plan = planQuery(graph, pattern, output);
+export default function runGetStep(cxt: QueryContext, pattern: Tuple, output: Stream) {
+    const plan = planQuery(null, pattern, output);
     if (plan.failed)
         return;
 
     emitSearchPatternMeta(pattern, output);
-    select(graph, plan, output);
+    runGet(cxt, plan.tuple, output);
 }

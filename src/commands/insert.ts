@@ -1,4 +1,4 @@
-import CommandExecutionParams from '../CommandExecutionParams'
+import CommandExecutionParams from '../CommandParams'
 import Graph from '../Graph';
 import Tuple from '../Tuple';
 import Stream from '../Stream';
@@ -6,8 +6,9 @@ import planQuery from '../planQuery';
 import TupleTag from '../TupleTag';
 import TableMount from '../TableMount';
 import findPartitionsByTable from '../findPartitionsByTable';
+import QueryContext from '../QueryContext';
 
-export function insertOnOneTable(graph: Graph, table: TableMount, tuple: Tuple, out: Stream) {
+export function insertOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
     const uniqueTag = findUniqueTag(tuple);
 
     if (uniqueTag) {
@@ -15,14 +16,14 @@ export function insertOnOneTable(graph: Graph, table: TableMount, tuple: Tuple, 
             return;
     }
 
-    const resolvedTuple = resolveExpressionValuesForInsert(graph, tuple);
+    const resolvedTuple = resolveExpressionValuesForInsert(cxt.graph, tuple);
 
-    table.callWithDefiniteValuesOrError('insert', resolvedTuple, {
+    table.callWithDefiniteValuesOrError(cxt, 'insert', resolvedTuple, {
         next: t => {
             out.next(t);
         },
         done: () => {
-            graph.onTupleUpdated(resolvedTuple);
+            cxt.graph.onTupleUpdated(resolvedTuple);
             out.done();
         }
     });
@@ -48,9 +49,9 @@ function findUniqueTag(tuple: Tuple) {
     return null;
 }
 
-export function insertPlanned(graph: Graph, tuple: Tuple, out: Stream) {
+export function insertPlanned(cxt: QueryContext, tuple: Tuple, out: Stream) {
     // Store a new tuple.
-    const partitions = Array.from(findPartitionsByTable(graph, tuple));
+    const partitions = Array.from(findPartitionsByTable(cxt, tuple));
 
     if (partitions.length === 0)
         throw new Error("Can't insert, no table found");
@@ -60,7 +61,7 @@ export function insertPlanned(graph: Graph, tuple: Tuple, out: Stream) {
 
     const table = partitions[0][0];
 
-    insertOnOneTable(graph, table, tuple, out);
+    insertOnOneTable(cxt, table, tuple, out);
 }
 
 export function toInitialization(rel: Tuple) {
@@ -71,13 +72,13 @@ export function toInitialization(rel: Tuple) {
     });
 }
 
-export default function insertCommand(params: CommandExecutionParams) {
-    const { graph, command, output } = params;
+export default function insertCommand(cxt: QueryContext, params: CommandExecutionParams) {
+    const { command, output } = params;
     const { pattern } = command;
 
-    const plan = planQuery(graph, pattern, output);
+    const plan = planQuery(null, pattern, output);
     if (plan.failed)
         return;
 
-    insertPlanned(graph, plan.tuple, output);
+    insertPlanned(cxt, plan.tuple, output);
 }

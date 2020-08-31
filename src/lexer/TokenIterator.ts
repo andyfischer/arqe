@@ -124,9 +124,14 @@ export default class TokenIterator {
 
     consumeTextWhile(condition: (next: Token) => boolean) {
         let str = '';
+        let stuckCounter = 0;
 
         while (!this.finished() && condition(this.next())) {
             str += this.consumeNextText();
+            stuckCounter += 1;
+            if (stuckCounter > 10000) {
+                throw new Error("infinite loop in consumeTextWhile?")
+            }
         }
 
         return str;

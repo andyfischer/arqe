@@ -12,12 +12,12 @@ export interface QueryFlags {
 }
 
 export default class Query {
-    commandName: string
+    verb: string
     flags: QueryFlags
     pattern: Pattern
 
-    constructor(commandName: string, pattern: Pattern, flags: FlagMap) {
-        this.commandName = commandName;
+    constructor(verb: string, pattern: Pattern, flags: FlagMap) {
+        this.verb = verb;
         this.pattern = pattern;
         this.flags = flags;
     }
@@ -31,7 +31,7 @@ export default class Query {
     }
 
     stringify() {
-        let str = this.commandName;
+        let str = this.verb;
 
         for (const flag in this.flags) {
             str += ' -' + flag;

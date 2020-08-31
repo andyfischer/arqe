@@ -65,7 +65,7 @@ export const GetInheritedBranch: ChaosMode = {
     modifyRunCommand(s: string) {
         return withParsed(s, chain => {
             for (const command of chain.queries) {
-                if (command.commandName === 'get')
+                if (command.verb === 'get')
                     command.pattern = command.pattern.addTag(newTag('chaosbranch', '123'));
             }
         })

@@ -2,16 +2,17 @@
 import Graph from '../Graph'
 import Tuple from '../Tuple'
 import { emitTupleDeleted } from '../CommandMeta'
-import CommandExecutionParams from '../CommandExecutionParams'
+import CommandParams from '../CommandParams'
 import getCommand from './get'
+import QueryContext from '../QueryContext'
 
-export default function runListen(params: CommandExecutionParams) {
+export default function runListen(cxt: QueryContext, params: CommandParams) {
 
-    const { graph, command, output } = params;
+    const { command, output } = params;
     const pattern = command.pattern;
 
     if (command.flags.get) {
-        getCommand(graph, pattern, {
+        getCommand(cxt, pattern, {
             next(rel) {
                 if (!rel.isCommandMeta())
                     output.next(rel)
@@ -20,7 +21,7 @@ export default function runListen(params: CommandExecutionParams) {
         });
     }
 
-    graph.addListener(pattern, {
+    cxt.graph.addListener(pattern, {
         onTupleUpdated(rel: Tuple) {
             output.next(rel);
         },

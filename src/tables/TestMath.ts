@@ -1,7 +1,7 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import { handles } from '../decorators'
+import { handles, decoratedObjToTableMount } from '../decorators'
 
 export class TestMath {
     name = 'TestMath'
@@ -13,4 +13,10 @@ export class TestMath {
         const sum = parseInt(a) + parseInt(b) + '';
         return { sum };
     }
+}
+
+export default function setupTables() {
+    return [
+        decoratedObjToTableMount(new TestMath())
+    ]
 }

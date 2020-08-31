@@ -1,12 +1,9 @@
-import Query from './Query'
-import CompoundQuery from './CompoundQuery'
 import Tuple, { tagsToTuple } from './Tuple'
-import Pattern from './Pattern'
 import TupleTag, { newTagFromObject, TagOptions, FixedTag } from './TupleTag'
 import { parseExpr } from './parseExpr'
 import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
-    t_equals, t_exclamation, t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
-    t_double_equals, t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
+    t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
+    t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen } from './lexer'
 
 interface InProgressQuery {
@@ -49,15 +46,6 @@ export function parseOneTag(it: TokenIterator): TupleTag {
         });
     }
 
-    if (it.tryConsume(t_dot)) {
-        const optionValue = it.consumeNextUnquotedText();
-        return newTagFromObject({
-            attr: 'option',
-            value: optionValue,
-            identifier,
-        })
-    }
-    
     if (it.tryConsume(t_dollar)) {
         const unboundVar = it.consumeNextUnquotedText();
         return newTagFromObject({
@@ -67,7 +55,10 @@ export function parseOneTag(it: TokenIterator): TupleTag {
         })
     }
 
-    const attr = it.consumeNextUnquotedText();
+    // Attribute
+    let attr = it.consumeNextUnquotedText();
+    while (it.nextIs(t_ident) || it.nextIs(t_dot))
+        attr += it.consumeNextUnquotedText();
 
     if (attr === '/')
         throw new Error("syntax error, attr was '/'");

@@ -3,7 +3,7 @@ import { parseCommandChain } from './parseCommand'
 import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
-import runCommandChain from './runCommandChain'
+import runCompoundQuery from './runCompoundQuery'
 import IDSource from './utils/IDSource'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import watchAndValidateCommand from './validation/watchAndValidateCommand'
@@ -12,19 +12,30 @@ import parseObjectToPattern from './parseObjectToPattern'
 import CompoundQuery from './CompoundQuery'
 import Query from './Query'
 import InMemoryTable from './tables/InMemoryTable'
-import TuplePatternMatcher from './TuplePatternMatcher'
+import TuplePatternMatcher from './tuple/TuplePatternMatcher'
 import TableListener from './TableListener'
 import TableMount from './TableMount'
 import parseTuple from './parseTuple'
-import { receiveToRelation } from './Relation'
+import { receiveToRelationInStream, receiveToRelationAsync } from './Relation'
 import QueryWatch from './QueryWatch'
 import setupInMemoryObjectTable from './tables/InMemoryObject'
 import { setupSingleValueTable } from './tables/SingleValueTable'
 import SavedQuery from './SavedQuery'
+import QueryContext from './QueryContext'
 
 interface GraphOptions {
     context?: 'browser' | 'node'
     autoinitMemoryTables?: boolean
+}
+
+function looseInputToTuple(input: any): Tuple {
+    if (typeof input === 'string') {
+        return parseTuple(input);
+    } else if (input instanceof Tuple) {
+        return input;
+    } else {
+        return parseObjectToPattern(input);
+    }
 }
 
 export default class Graph {
@@ -53,7 +64,7 @@ export default class Graph {
         if (this.options.autoinitMemoryTables === undefined)
             this.options.autoinitMemoryTables = true;
 
-        setupBuiltinTables(this, this.options.context);
+        setupBuiltinTables(this);
     }
 
     findTable(name: string) {
@@ -141,7 +152,6 @@ export default class Graph {
     }
 
     run(commandStr: string, output?: Stream) {
-
         if (/^ *\#/.exec(commandStr)) {
             // ignore comments
             return;
@@ -153,15 +163,16 @@ export default class Graph {
         output = watchAndValidateCommand(commandStr, output);
 
         const chain = parseCommandChain(commandStr);
-        runCommandChain(this, chain, output);
+        runCompoundQuery(this, chain, output);
     }
+
 
     runSync(commandStr: string): Tuple[] {
         return this.runCommandChainSync(commandStr);
     }
 
     runAsync(commandStr: string): Promise<Tuple[]> {
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.run(commandStr, receiver);
         return promise;
     }
@@ -175,7 +186,7 @@ export default class Graph {
             rels = r
         });
 
-        runCommandChain(this, chain, receiver);
+        runCompoundQuery(this, chain, receiver);
 
         if (rels === null)
             throw new Error("command didn't finish synchronously: " + commandStr);
@@ -184,16 +195,8 @@ export default class Graph {
     }
 
     get(patternInput: any, receiver: Stream) {
-        let pattern: Tuple;
-        if (typeof patternInput === 'string') {
-            pattern = parseTuple(patternInput);
-        } else if (patternInput instanceof Tuple) {
-            pattern = patternInput;
-        } else {
-            pattern = parseObjectToPattern(patternInput);
-        }
-
-        runCommandChain(this, new CompoundQuery([new Query('get', pattern, {})]), receiver);
+        const pattern = looseInputToTuple(patternInput);
+        runCompoundQuery(this, new CompoundQuery([new Query('get', pattern, {})]), receiver);
     }
 
     set(patternInput: any, receiver: Stream) {
@@ -204,17 +207,17 @@ export default class Graph {
             pattern = parseObjectToPattern(patternInput);
         }
 
-        runCommandChain(this, new CompoundQuery([new Query('set', pattern, {})]), receiver);
+        runCompoundQuery(this, new CompoundQuery([new Query('set', pattern, {})]), receiver);
     }
 
     setAsync(patternInput: any): Promise<Tuple[]> {
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.set(patternInput, receiver);
         return promise;
     }
 
     sendRelationValue(searchPattern: Tuple, out: Stream, attrName: string) {
-        this.get(searchPattern, receiveToRelation(out, attrName));
+        this.get(searchPattern, receiveToRelationInStream(out, attrName));
     }
 
     close() { }
@@ -229,10 +232,18 @@ export default class Graph {
         return map;
     }
 
-    mountSingleValueTable(name: string, base: Tuple, valueAttr: string) {
+    mountSingleValueTable(name: string, base: Tuple | string, valueAttr: string) {
+        if (typeof base === 'string')
+            base = parseTuple(base);
         const { accessor, table } = setupSingleValueTable(name, base, valueAttr);
         this.addTable(table);
         return accessor;
+    }
+
+    getRelationAsync(patternInput: any) {
+        const { stream, promise } = receiveToRelationAsync();
+        this.get(patternInput, stream);
+        return promise;
     }
 
     query(patternStr: string) {

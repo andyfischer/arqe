@@ -16,7 +16,7 @@ export default class CommandStep {
     constructor (graph: Graph, command: Query) {
         this.graph = graph;
         this.command = command;
-        this.commandName = command.commandName;
+        this.commandName = command.verb;
         this.flags = command.flags;
         this.pattern = command.toPattern();
     }

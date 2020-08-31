@@ -1,9 +1,9 @@
 
-import TuplePatternMatcher from './TuplePatternMatcher'
-import CommandPatternMatcher from './CommandPatternMatcher';
+import TuplePatternMatcher from './tuple/TuplePatternMatcher'
 import TableMount, { TupleStreamCallback } from './TableMount';
 import parseTuple from './parseTuple';
 import { unwrapTuple } from './tuple/UnwrapTupleCallback';
+import parseCommand from './parseCommand';
 
 interface DecoratedObject {
     handlers?: { commandStr: string, callback: any }[]
@@ -38,7 +38,8 @@ export function decoratedObjToTableMount(obj: DecoratedObject) {
     for (const { commandStr, callback } of obj.handlers) {
         const boundCallback = callback.bind(obj);
         const tupleCallback = unwrapTuple(boundCallback);
-        mount.addHandler(commandStr, tupleCallback);
+        const command = parseCommand(commandStr);
+        mount.addHandler(command.verb, command.pattern, tupleCallback);
     }
     
     return mount;

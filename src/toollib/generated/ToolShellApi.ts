@@ -14,7 +14,7 @@ export default class API {
     async listCliInputs(toolname: string): Promise<string[]> {
         const command = `get command-line-tool(${toolname}) cli-input name/*`;
 
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));
@@ -25,7 +25,7 @@ export default class API {
     async getExitStyle(toolname: string): Promise<string> {
         const command = `get command-line-tool(${toolname}) exit-style/*`;
 
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));
@@ -45,7 +45,7 @@ export default class API {
     async cliInputIsRequired(toolname: string, name: string): Promise<boolean> {
         const command = `get command-line-tool(${toolname}) cli-input name/* required`;
 
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));
@@ -56,7 +56,7 @@ export default class API {
     async createToolExecution(): Promise<string> {
         const command = `set cli-tool-execution/(unique)`;
 
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));
@@ -78,7 +78,7 @@ export default class API {
     async setCliInput(execId: string, name: string, value: string) {
         const command = `set ${execId} cli-input(${name}) value/(set ${value})`;
 
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));

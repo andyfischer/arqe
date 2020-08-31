@@ -1,6 +1,6 @@
 
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
-import CommandExecutionParams from './CommandExecutionParams'
+import CommandParams from './CommandParams'
 import runJoinStep from './commands/join'
 import listenCommand from './commands/listen'
 import countCommand from './commands/count'
@@ -9,10 +9,30 @@ import watchCommand from './commands/watch'
 import setCommand from './commands/set'
 import getCommand from './commands/get'
 import deleteCommand from './commands/delete'
+import runJustStep from './commands/just'
+import QueryContext from './QueryContext'
+import singleValue from './commands/single-value'
 
-export default function runOneCommand(params: CommandExecutionParams) {
-    const { graph, command, output } = params;
-    const commandName = command.commandName;
+function handleCommandContextTags(cxt: QueryContext, params: CommandParams) {
+    if (params.command.pattern.hasAttr("debug.dumpTrace")) {
+        cxt.enableDebugDumpTrace = true;
+        params.command.pattern = params.command.pattern.removeAttr("debug.dumpTrace");
+    }
+}
+
+export default function runOneCommand(parentCxt: QueryContext, params: CommandParams) {
+
+    const cxt = new QueryContext(parentCxt.graph);
+
+    handleCommandContextTags(cxt, params);
+
+    const { command, output } = params;
+
+    cxt.callingQuery = command;
+    cxt.input = params.input;
+
+    const commandName = command.verb;
+    cxt.start("runOneCommand", { commandName, query: command.stringify() })
 
     try {
         emitCommandOutputFlags(command, output);
@@ -20,56 +40,66 @@ export default function runOneCommand(params: CommandExecutionParams) {
         switch (commandName) {
 
         case 'join':
-            runJoinStep(params);
-            return;
+            runJoinStep(cxt, params);
+            break;
+
+        case 'just':
+            runJustStep(params);
+            break;
 
         case 'get': {
-            getCommand(graph, command.pattern, output);
-            return;
+            getCommand(cxt, command.pattern, output);
+            break;
         }
         
         case 'set': {
-            setCommand(params);
-            return;
-        }
-
-        case 'declare-object': {
-            return;
+            setCommand(cxt, params);
+            break;
         }
 
         case 'delete': {
-            deleteCommand(params);
-            return;
+            deleteCommand(cxt, params);
+            break;
         }
 
         case 'listen': {
-            listenCommand(params);
-            return;
+            listenCommand(cxt, params);
+            break;
         }
 
         case 'count': {
-            countCommand(params);
-            return;
+            countCommand(cxt, params);
+            break;
         }
 
         case 'order-by': {
             orderByCommand(params);
-            return;
+            break;
         }
 
         case 'watch': {
-            watchCommand(params);
-            return;
+            watchCommand(cxt, params);
+            break;
+        }
+
+        case 'single-value': {
+            singleValue(cxt, params);
+            break;
+        }
+
+        default: {
+            emitCommandError(output, "unrecognized command: " + commandName);
+            output.done();
         }
 
         }
 
-        emitCommandError(output, "unrecognized command: " + commandName);
-        output.done();
 
     } catch (err) {
         console.log(err.stack || err);
         emitCommandError(output, "internal error: " + (err.stack || err));
         output.done();
     }
+
+    cxt.end('runOneCommand');
 }

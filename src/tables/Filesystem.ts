@@ -5,7 +5,21 @@ import globLib from 'glob'
 import setupTableSet from '../setupTableSet'
 import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
 
-export function setupTables() {
+async function callGlob(pattern: string, options): Promise<{filename: string}[]> {
+    return new Promise((resolve, reject) => {
+        // console.log('calling globLib', pattern, JSON.stringify(options))
+        globLib(pattern, options, (err, files) => {
+            // console.log('globLib returned: ' + files)
+            if (err) {
+                reject(err);
+            } else {
+                resolve(files.map(filename => ({filename})));
+            }
+        });
+    })
+}
+
+export default function setupTables() {
     return setupTableSet({
         'fs filename file-contents?': {
             name: 'FsFile',
@@ -28,18 +42,17 @@ export function setupTables() {
                 return files.map(filename => ({ filename }))
             })
         },
-        'glob pattern filename?': {
+        'glob pattern cwd? filename?': {
             name: 'Glob',
+            'find-with pattern cwd': unwrapTuple(({ pattern, cwd }) => {
+                if (!pattern)
+                    throw new Error('missing pattern')
+                return callGlob(pattern, { cwd });
+            }),
             'find-with pattern': unwrapTuple(({ pattern }) => {
-                return new Promise((resolve, reject) => {
-                    globLib(pattern, {}, (err, files) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(files.map(filename => ({filename})));
-                        }
-                    });
-                })
+                if (!pattern)
+                    throw new Error('missing pattern')
+                return callGlob(pattern, {});
             })
         }
     });

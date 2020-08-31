@@ -23,3 +23,10 @@ it('updateTagOfType works', () => {
     p = p.updateTagOfType('b', tag => tag.setValue('3'));
     expect(p.stringify()).toEqual('a/1 b/3');
 });
+
+it('isEmpty works', () => {
+    let p = parseTuple('a b');
+    expect(p.isEmpty()).toEqual(false);
+    p = p.remapTags(tag => null)
+    expect(p.isEmpty()).toEqual(true);
+})

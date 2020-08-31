@@ -5,7 +5,7 @@ import WebSocket from '../platform/ws'
 import parseTuple from "../parseTuple";
 import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 
-class Connection {
+export class Connection {
     socketId: string
     url: string
     webSocket: WebSocket
@@ -38,24 +38,24 @@ export function setupTables(): TableMount[] {
     const nextConnId = new IDSource();
     const connections = new Map<string, Connection>();
 
-    socketConnections.addHandler('insert socketId((unique)) url', unwrapTuple(({ url }) => {
+    socketConnections.addHandler('insert', 'socketId((unique)) url', unwrapTuple(({ url }) => {
         const id = nextConnId.take();
         const connection = new Connection(id, url);
         connections.set(id, connection);
         return { 'socketId': id }
     }));
 
-    socketConnections.addHandler('find-with socketId', unwrapTuple(({ socketId }) => {
+    socketConnections.addHandler('find-with', 'socketId', unwrapTuple(({ socketId }) => {
         return connections.get(socketId);
     }));
 
-    socketConnections.addHandler('list-all', unwrapTuple(() => {
+    socketConnections.addHandler('list-all', '', unwrapTuple(() => {
         return connections.values();
     }));
 
     const socketMessage = new TableMount('SocketMessage', parseTuple('socket messageId message? response?'));
 
-    socketMessage.addHandler('insert socketId messageId((unique)) message', unwrapTuple(({socketId, message}) => {
+    socketMessage.addHandler('insert', 'socketId messageId((unique)) message', unwrapTuple(({socketId, message}) => {
         const socket = connections.get(socketId);
         if (!socket)
             throw new Error('socket not found');

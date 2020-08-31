@@ -7,21 +7,21 @@ import { tagsToTuple } from '../Tuple'
 
 it('parses tags with no values', () => {
     const parsed = parseCommand('test a');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('a')
     expect(parsed.pattern.tags[0].value).toEqual(null)
 });
 
 it('parses tags with values', () => {
     const parsed = parseCommand('test a/1');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('a')
     expect(parsed.pattern.tags[0].value).toEqual('1')
 });
 
 it('parses multiple tags', () => {
     const parsed = parseCommand('test a b c');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('a')
     expect(parsed.pattern.tags[1].attr).toEqual('b')
     expect(parsed.pattern.tags[2].attr).toEqual('c')
@@ -37,14 +37,14 @@ it('parses tag types with dashes', () => {
 
 it('parses tags with stars', () => {
     const parsed = parseCommand('test a/*');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('a')
     expect(parsed.pattern.tags[0].starValue).toEqual(true)
 });
 
 it('parses tags with stars 2', () => {
     const parsed = parseCommand('test a/* c');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('a')
     expect(parsed.pattern.tags[0].starValue).toEqual(true)
     expect(parsed.pattern.tags[1].attr).toEqual('c')
@@ -52,54 +52,46 @@ it('parses tags with stars 2', () => {
 
 it('ignores extra spaces', () => {
     const parsed = parseCommand('test   a');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('a')
 });
 
 it('parses star', () => {
     const parsed = parseCommand('test *');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].star).toEqual(true)
 });
 
 it('parses doubleStar', () => {
     const parsed = parseCommand('test **');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].doubleStar).toEqual(true)
 });
 
-it('parses option syntax', () => {
-    const parsed = parseCommand('test .foo');
-    expect(parsed.commandName).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('option')
-    expect(parsed.pattern.tags[0].value).toEqual('foo')
-});
-
-
 it('parses flags', () => {
     const parsed = parseCommand('test -a 1');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.flags).toEqual({a: true})
     expect(parsed.pattern.tags[0].attr).toEqual('1');
 });
 
 it('parses multiple flags', () => {
     const parsed = parseCommand('test -a -b -c 1');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.flags).toEqual({a: true, b: true, c: true})
     expect(parsed.pattern.tags[0].attr).toEqual('1');
 });
 
 it('parses multicharacter flag', () => {
     const parsed = parseCommand('test -list 1');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.flags.list).toEqual(true);
     expect(parsed.pattern.tags[0].attr).toEqual('1');
 });
 
 it('parses unbound variables', () => {
     const parsed = parseCommand('test $a');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toBeFalsy();
     expect(parsed.pattern.tags[0].identifier).toEqual('a');
     expect(parsed.pattern.tags[0].star).toEqual(true);
@@ -107,7 +99,7 @@ it('parses unbound variables', () => {
 
 it('parses unbound variables 2', () => {
     const parsed = parseCommand('test tagtype/$a');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('tagtype');
     expect(parsed.pattern.tags[0].identifier).toEqual('a');
     expect(parsed.pattern.tags[0].star).toBeFalsy();
@@ -115,7 +107,7 @@ it('parses unbound variables 2', () => {
 
 xit('parses quoted tag values', () => {
     const parsed = parseCommand('test tagtype/"string value"');
-    expect(parsed.commandName).toEqual('test')
+    expect(parsed.verb).toEqual('test')
     expect(parsed.pattern.tags[0].attr).toEqual('tagtype');
     expect(parsed.pattern.tags[0].value).toEqual('string value');
 });

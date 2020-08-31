@@ -16,7 +16,7 @@ export default class QueryWatch {
 
     start(out: Stream) {
         for (const singleQuery of this.query.queries) {
-            if (singleQuery.commandName === 'get' || singleQuery.commandName === 'join') {
+            if (singleQuery.verb === 'get' || singleQuery.verb === 'join') {
                 const pattern = singleQuery.pattern;
                 this.initOneTableWatch(pattern, out);
             }
@@ -24,9 +24,11 @@ export default class QueryWatch {
     }
 
     initOneTableWatch(pattern: Tuple, out: Stream) {
+        /*
         for (const [table, partitionedTuple] of findPartitionsByTable(this.graph, pattern)) {
             table.addWatch(partitionedTuple, this.id, this, out);
         }
+        */
     }
     
     initWatches() {

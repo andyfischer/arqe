@@ -16,7 +16,7 @@ export default class API {
         const execId = this.execId;
         const command = `get ${execId} cli-input(${name}) value/*`;
 
-        const { receiver, promise } = receiveToTupleListPromise();
+        const [ receiver, promise ] = receiveToTupleListPromise();
         this.graph.run(command, receiver)
         const rels: Tuple[] = (await promise)
             .filter(rel => !rel.hasAttr("command-meta"));

@@ -1,5 +1,4 @@
 import { dir } from "console"
-import { FsDirectory } from "./tables/Filesystem"
 
 interface CommandInfo {
     directTableAccess?: boolean
@@ -30,5 +29,7 @@ export const ValidCommands: { [name: string]: CommandInfo } = {
     'count': {},
     'listen': {},
     'order-by': {},
-    'watch': {}
+    'watch': {},
+    'just': {},
+    'single-value': {}
 };

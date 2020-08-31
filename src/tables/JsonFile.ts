@@ -2,7 +2,6 @@
 import Graph from '../Graph'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import GenericStream, { StreamCombine } from '../GenericStream'
 import fs from 'fs'
 import { emitCommandError } from '../CommandMeta'
 

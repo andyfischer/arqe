@@ -17,7 +17,7 @@ it('mountSingleValueTable works', () => {
     expect(run(graph, "get a b")).toEqual(["a b/5"])
 })
 
-xit('can search multiple tables with the same pattern', () => {
+it('can search multiple tables with the same pattern', () => {
     const a1 = graph.mountSingleValueTable("b", parseTuple("a/1"), "b");
     const a2 = graph.mountSingleValueTable("b", parseTuple("a/2"), "b");
 

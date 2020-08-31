@@ -25,14 +25,14 @@ export default function setupInMemoryObjectTable(opts: SetupOpts): Result {
     const schema = opts.baseKey.addSimpleTag(keyAttr).addSimpleTag(valueAttr);
     const table = new TableMount(name, schema);
 
-    table.addHandler(`find-with ${keyAttr}`, (search, out: Stream) => {
+    table.addHandler(`find-with`, `${keyAttr}`, (search, out: Stream) => {
         const key = search.getVal(keyAttr);
         const found = search.setVal(valueAttr, map.get(key));
         out.next(found);
         out.done();
     });
     
-    table.addHandler(`list-all`, (search, out: Stream) => {
+    table.addHandler(`list-all`, '', (search, out: Stream) => {
         for (const [ k, v ] of map.entries()) {
             const found = search.setVal(keyAttr, k).setVal(valueAttr, v);
             out.next(found);
@@ -40,7 +40,7 @@ export default function setupInMemoryObjectTable(opts: SetupOpts): Result {
         out.done();
     });
 
-    table.addHandler(`insert ${keyAttr} ${valueAttr}`, (tuple: Tuple, out: Stream) => {
+    table.addHandler(`insert`, `${keyAttr} ${valueAttr}`, (tuple: Tuple, out: Stream) => {
         map.set(keyAttr, tuple.getVal(keyAttr));
         out.done();
     });

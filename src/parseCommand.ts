@@ -2,12 +2,11 @@
 import Query from './Query'
 import CompoundQuery from './CompoundQuery'
 import Tuple, { tagsToTuple } from './Tuple'
-import TupleTag, { newTagFromObject, TagOptions, FixedTag } from './TupleTag'
+import TupleTag from './TupleTag'
 import { lexStringToIterator, TokenIterator, TokenDef, t_ident, t_quoted_string, t_star,
     t_space, t_hash, t_double_dot, t_newline, t_bar,
     t_integer, t_dash, t_line_comment } from './lexer'
 import { parseOneTag } from './parseTuple'
-import { ValidCommands } from './CommandDb'
 
 interface InProgressQuery {
     tags: TupleTag[]

@@ -1,5 +1,5 @@
 
-import CommandExecutionParams from '../CommandExecutionParams'
+import CommandParams from '../CommandParams'
 import { Graph, Tuple, Stream, emitCommandError } from '..';
 import QueryPlan from '../QueryPlan';
 import { combineStreams } from '../StreamUtil';
@@ -7,12 +7,13 @@ import { toInitialization, insertPlanned } from './insert';
 import planQuery from '../planQuery';
 import findPartitionsByTable from '../findPartitionsByTable';
 import TableMount from '../TableMount';
+import QueryContext from '../QueryContext';
 
-export function updateOnOneTable(table: TableMount, tuple: Tuple, out: Stream) {
-    table.callWithDefiniteValuesOrError('update', tuple, out);
+export function updateOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
+    table.callWithDefiniteValuesOrError(cxt, 'update', tuple, out);
 }
 
-export function updatePlanned(graph: Graph, tuple: Tuple, plan: QueryPlan, output: Stream) {
+export function updatePlanned(cxt: QueryContext, tuple: Tuple, plan: QueryPlan, output: Stream) {
     let hasFoundAny = false;
 
     // Scan and apply the modificationCallback to every matching slot.
@@ -20,7 +21,7 @@ export function updatePlanned(graph: Graph, tuple: Tuple, plan: QueryPlan, outpu
         next: (t:Tuple) => {
             if (!t.isCommandMeta()) {
                 hasFoundAny = true;
-                graph.onTupleUpdated(t);
+                cxt.graph.onTupleUpdated(t);
             }
             output.next(t);
         },
@@ -29,7 +30,7 @@ export function updatePlanned(graph: Graph, tuple: Tuple, plan: QueryPlan, outpu
             // if no matches were found.
             if (!hasFoundAny && tuple.queryDerivedData().initializeIfMissing) {
                 const initTuple = toInitialization(tuple);
-                insertPlanned(graph, initTuple, output);
+                insertPlanned(cxt, initTuple, output);
             } else {
                 output.done();
             }
@@ -38,21 +39,21 @@ export function updatePlanned(graph: Graph, tuple: Tuple, plan: QueryPlan, outpu
 
     const allTables = collectOutput();
 
-    for (const [table, partitionedTuple] of findPartitionsByTable(graph, tuple)) {
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
         const tableOut = collectOutput();
-        updateOnOneTable(table, partitionedTuple, tableOut);
+        updateOnOneTable(cxt, table, partitionedTuple, tableOut);
     }
 
     allTables.done();
 }
 
-export default function updateCommand(params: CommandExecutionParams) {
-    const { graph, command, output } = params;
+export default function updateCommand(cxt: QueryContext, params: CommandParams) {
+    const { command, output } = params;
     const { pattern } = command;
 
-    const plan = planQuery(graph, pattern, output);
+    const plan = planQuery(null, pattern, output);
     if (plan.failed)
         return;
 
-    updatePlanned(graph, plan.tuple, plan, output);
+    updatePlanned(cxt, plan.tuple, plan, output);
 }

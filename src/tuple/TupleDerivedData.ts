@@ -1,6 +1,6 @@
 
-import Tuple from './Tuple'
-import TupleTag from './TupleTag'
+import Tuple from '../Tuple'
+import TupleTag from '../TupleTag'
 
 export default class TupleDerivedData {
 
