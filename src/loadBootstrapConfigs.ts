@@ -1,7 +1,7 @@
 
 import Fs from 'fs'
 import Path from 'path'
-import { loadDumpFile } from './DumpFile'
+import { loadDumpFile } from './node/DumpFile'
 import Graph from './Graph'
 import Yaml from 'yaml'
 

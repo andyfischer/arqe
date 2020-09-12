@@ -1,27 +1,25 @@
 
-import { parseCommandChain } from './parseCommand'
 import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
-import runCompoundQuery from './runCompoundQuery'
 import IDSource from './utils/IDSource'
 import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import watchAndValidateCommand from './validation/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
 import parseObjectToPattern from './parseObjectToPattern'
-import CompoundQuery from './CompoundQuery'
-import Query from './Query'
 import InMemoryTable from './tables/InMemoryTable'
 import TuplePatternMatcher from './tuple/TuplePatternMatcher'
 import TableListener from './TableListener'
 import TableMount from './TableMount'
 import parseTuple from './parseTuple'
 import { receiveToRelationInStream, receiveToRelationAsync } from './Relation'
-import QueryWatch from './QueryWatch'
 import setupInMemoryObjectTable from './tables/InMemoryObject'
 import { setupSingleValueTable } from './tables/SingleValueTable'
 import SavedQuery from './SavedQuery'
-import QueryContext from './QueryContext'
+import { parseProgram } from './parseProgram'
+import QueryV2, { runQueryV2 } from './QueryV2'
+import { string } from 'prop-types'
+import LiveQuery from './LiveQuery'
 
 interface GraphOptions {
     context?: 'browser' | 'node'
@@ -52,10 +50,14 @@ export default class Graph {
     graphListenerIds = new IDSource()
     nextListenerId = new IDSource()
     nextWatchId = new IDSource();
+    nextMountId = new IDSource('mount-');
+    nextLiveQueryId = new IDSource('lq-');
 
     relationCreatedListeners: { pattern: Tuple, onCreate: (rel: Tuple) => void }[] = []
 
-    activeWatches = new Map<string, QueryWatch>();
+    liveQueries = new Map<string, LiveQuery>()
+    pendingChangeEvents = new Map<string, true>();
+    _isFlushingChangeEvents = false;
 
     constructor(options: GraphOptions = {}) {
         this.options = options;
@@ -87,6 +89,10 @@ export default class Graph {
         if (!(table instanceof TableMount))
             throw new Error('addTable expected TableMount object');
 
+        if (table.mountId)
+            throw new Error("table already has mountId - mounted twice?");
+
+        table.mountId = this.nextMountId.take();
         this.tables.set(table.name, table);
         this.tablePatternMap.add(table.schema, table);
         return table;
@@ -162,13 +168,25 @@ export default class Graph {
 
         output = watchAndValidateCommand(commandStr, output);
 
-        const chain = parseCommandChain(commandStr);
-        runCompoundQuery(this, chain, output);
+        const query = parseProgram(commandStr);
+        runQueryV2(this, query, output);
     }
 
-
     runSync(commandStr: string): Tuple[] {
-        return this.runCommandChainSync(commandStr);
+        const query = parseProgram(commandStr);
+
+        let rels: Tuple[] = null;
+
+        const receiver = receiveToTupleList(r => {
+            rels = r
+        });
+
+        runQueryV2(this, query, receiver);
+
+        if (rels === null)
+            throw new Error("command didn't finish synchronously: " + commandStr);
+
+        return rels;
     }
 
     runAsync(commandStr: string): Promise<Tuple[]> {
@@ -177,29 +195,17 @@ export default class Graph {
         return promise;
     }
 
-    runCommandChainSync(commandStr: string): Tuple[] {
-        const chain = parseCommandChain(commandStr);
-
-        let rels: Tuple[] = null;
-
-        const receiver = receiveToTupleList(r => {
-            rels = r
-        });
-
-        runCompoundQuery(this, chain, receiver);
-
-        if (rels === null)
-            throw new Error("command didn't finish synchronously: " + commandStr);
-
-        return rels;
-    }
-
-    get(patternInput: any, receiver: Stream) {
+    get(patternInput: any, out: Stream) {
         const pattern = looseInputToTuple(patternInput);
-        runCompoundQuery(this, new CompoundQuery([new Query('get', pattern, {})]), receiver);
+
+        const query = new QueryV2();
+        const term = query.addTerm('get', pattern);
+        query.setOutput(term);
+
+        runQueryV2(this, query, out);
     }
 
-    set(patternInput: any, receiver: Stream) {
+    set(patternInput: any, out: Stream) {
         let pattern: Tuple;
         if (typeof patternInput === 'string') {
             pattern = parseTuple(patternInput);
@@ -207,7 +213,11 @@ export default class Graph {
             pattern = parseObjectToPattern(patternInput);
         }
 
-        runCompoundQuery(this, new CompoundQuery([new Query('set', pattern, {})]), receiver);
+        const query = new QueryV2();
+        const term = query.addTerm('set', pattern);
+        query.setOutput(term);
+
+        runQueryV2(this, query, out);
     }
 
     setAsync(patternInput: any): Promise<Tuple[]> {
@@ -221,10 +231,6 @@ export default class Graph {
     }
 
     close() { }
-
-    addWatch(watch: QueryWatch) {
-        this.activeWatches.set(watch.id, watch);
-    }
 
     mountMapBackedTable(name: string, baseKey: Tuple, keyAttr: string, valueAttr: string): Map<any,any> {
         const { map, table } = setupInMemoryObjectTable({ name, baseKey, keyAttr, valueAttr })
@@ -241,12 +247,40 @@ export default class Graph {
     }
 
     getRelationAsync(patternInput: any) {
-        const { stream, promise } = receiveToRelationAsync();
+        const [ stream, promise ] = receiveToRelationAsync();
         this.get(patternInput, stream);
         return promise;
     }
 
     query(patternStr: string) {
         return new SavedQuery(this, parseTuple(patternStr));
+    }
+
+    pushChangeEvent(liveQueryId: string) {
+        if (this._isFlushingChangeEvents)
+            throw new Error("don't push change event while flushPendingChangeEvents is running");
+
+        this.pendingChangeEvents.set(liveQueryId, true);
+    }
+
+    flushPendingChangeEvents() {
+        if (this._isFlushingChangeEvents)
+            return;
+
+        this._isFlushingChangeEvents = true;
+        try {
+            for (const queryId of this.pendingChangeEvents.keys()) {
+                const liveQuery:LiveQuery = this.liveQueries.get(queryId);
+                liveQuery.events.emit('change');
+            }
+            this.pendingChangeEvents.clear();
+        } finally {
+            this._isFlushingChangeEvents = false;
+        }
+    }
+
+    newLiveQuery(queryStr: string) {
+        const query = parseProgram(queryStr);
+        return new LiveQuery(this, query);
     }
 }

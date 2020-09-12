@@ -6,7 +6,6 @@ export { default as TupleTag } from './TupleTag'
 export { default as Stream } from './Stream'
 export { default as runStandardProcess } from './toollib/runStandardProcess'
 export { default as startWebApp } from './toollib/startWebApp'
-export { rewriteDumpFile } from './DumpFile'
 export * from './CommandMeta'
 export * from './receiveUtils'
 export * from './decorators'
@@ -15,7 +14,3 @@ export { parsePattern } from './Pattern'
 export { default as Relation } from './Relation'
 export { default as relationToObject } from './relationToObject'
 export { graphWithTableSet } from './setupTableSet'
-
-if (require.main === module) {
-    require('./startServer.js');
-}

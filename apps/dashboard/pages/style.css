@@ -1,0 +1,5 @@
+
+body {
+    background: var(--body-bg);
+    color: var(--default-primary-color);
+}

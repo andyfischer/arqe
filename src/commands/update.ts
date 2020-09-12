@@ -4,7 +4,6 @@ import { Graph, Tuple, Stream, emitCommandError } from '..';
 import QueryPlan from '../QueryPlan';
 import { combineStreams } from '../StreamUtil';
 import { toInitialization, insertPlanned } from './insert';
-import planQuery from '../planQuery';
 import findPartitionsByTable from '../findPartitionsByTable';
 import TableMount from '../TableMount';
 import QueryContext from '../QueryContext';
@@ -13,7 +12,7 @@ export function updateOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tu
     table.callWithDefiniteValuesOrError(cxt, 'update', tuple, out);
 }
 
-export function updatePlanned(cxt: QueryContext, tuple: Tuple, plan: QueryPlan, output: Stream) {
+export function updatePlanned(cxt: QueryContext, tuple: Tuple, output: Stream) {
     let hasFoundAny = false;
 
     // Scan and apply the modificationCallback to every matching slot.
@@ -48,12 +47,7 @@ export function updatePlanned(cxt: QueryContext, tuple: Tuple, plan: QueryPlan, 
 }
 
 export default function updateCommand(cxt: QueryContext, params: CommandParams) {
-    const { command, output } = params;
-    const { pattern } = command;
+    const { tuple, output } = params;
 
-    const plan = planQuery(null, pattern, output);
-    if (plan.failed)
-        return;
-
-    updatePlanned(cxt, plan.tuple, plan, output);
+    updatePlanned(cxt, tuple, output);
 }

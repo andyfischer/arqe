@@ -8,11 +8,10 @@ import QueryContext from '../QueryContext'
 
 export default function runListen(cxt: QueryContext, params: CommandParams) {
 
-    const { command, output } = params;
-    const pattern = command.pattern;
+    const { tuple, flags, output } = params;
 
-    if (command.flags.get) {
-        getCommand(cxt, pattern, {
+    if (flags.get) {
+        getCommand(cxt, tuple, {
             next(rel) {
                 if (!rel.isCommandMeta())
                     output.next(rel)
@@ -21,7 +20,7 @@ export default function runListen(cxt: QueryContext, params: CommandParams) {
         });
     }
 
-    cxt.graph.addListener(pattern, {
+    cxt.graph.addListener(tuple, {
         onTupleUpdated(rel: Tuple) {
             output.next(rel);
         },

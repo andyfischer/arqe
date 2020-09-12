@@ -1,10 +1,10 @@
 
-import Query from './Query'
+import ParsedQuery from './ParsedQuery'
 
 export default class CompoundQuery {
-    queries: Query[];
+    queries: ParsedQuery[];
 
-    constructor(commands: Query[] = []) {
+    constructor(commands: ParsedQuery[] = []) {
         this.queries = commands;
     }
 

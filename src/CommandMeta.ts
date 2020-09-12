@@ -2,7 +2,7 @@
 import Tuple, { tagsToTuple } from './Tuple'
 import TupleTag, { newTag, newSimpleTag } from './TupleTag'
 import Stream from './Stream'
-import Query from './Query'
+import ParsedQuery, { QueryFlags } from './ParsedQuery'
 
 const commandMetaTag = newSimpleTag('command-meta')
 const searchPatternTag = newSimpleTag('search-pattern')
@@ -38,14 +38,14 @@ export function emitActionPerformed(output: Stream) {
     emitCommandMeta(output, { 'action-performed': true })
 }
 
-export function emitCommandOutputFlags(command: Query, output: Stream) {
-    if (command.flags.exists)
+export function emitCommandOutputFlags(flags: QueryFlags, output: Stream) {
+    if (flags.exists)
         emitCommandMeta(output, { 'output-flag': 'exists' })
-    if (command.flags.count)
+    if (flags.count)
         emitCommandMeta(output, { 'output-flag': 'count' })
-    if (command.flags.x)
+    if (flags.x)
         emitCommandMeta(output, { 'output-flag': 'extended' })
-    if (command.flags.list)
+    if (flags.list)
         emitCommandMeta(output, { 'output-flag': 'list' })
 }
 

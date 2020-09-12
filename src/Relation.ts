@@ -51,7 +51,10 @@ export default class Relation {
         if (this.header)
             return this.header.removeAttr('command-meta').removeAttr('search-pattern');
 
-        return new Tuple([newSimpleTag('infer-header-not-supported')])
+        if (this.tuples.length === 0)
+            return new Tuple([]);
+
+        return new Tuple([newSimpleTag('error'), newSimpleTag('infer-header-not-supported')])
     }
 
     getTuplesSortedByHeader() {
@@ -82,7 +85,30 @@ export function receiveToRelationInStream(out: Stream, attrName: string): Stream
     }
 }
 
-export function receiveToRelationAsync() {
+export function receiveToRelationSync(): [Stream, () => Relation] {
+    const tuples = [];
+    let isDone = false;
+
+    const stream: Stream = {
+        next(t) {
+            tuples.push(t);
+        },
+        done() {
+            isDone = true;
+        }
+    }
+
+    const get = () => {
+        if (!isDone)
+            throw new Error("receiveToRelationSync - stream isn't finished");
+
+        return new Relation(tuples);
+    }
+
+    return [ stream, get ];
+}
+
+export function receiveToRelationAsync(): [ Stream, Promise<Relation> ] {
 
     let stream: Stream;
 
@@ -101,9 +127,8 @@ export function receiveToRelationAsync() {
                 else
                     resolve(relation);
             }
-
         }
     })
 
-    return { stream, promise }
+    return [ stream, promise ]
 }

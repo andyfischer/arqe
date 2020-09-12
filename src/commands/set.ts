@@ -1,6 +1,5 @@
 
 import CommandParams from '../CommandParams'
-import planQuery from '../planQuery'
 import { insertOnOneTable } from './insert'
 import { deleteOnOneTable } from './delete'
 import { updatePlanned } from './update'
@@ -29,46 +28,41 @@ function createImplicitTable(cxt: QueryContext, tuple: Tuple) {
     return cxt.graph.defineInMemoryTable(tableName, tablePattern);
 }
 
-function setOnTable(cxt: QueryContext, table: TableMount, tuple: Tuple, plan: QueryPlan, out: Stream) {
+function setOnTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
     // Check for a custom 'set' handler
     if (table.callWithDefiniteValues(cxt, 'set', tuple, out)) {
-        return;
-    }
-
-    if (tuple.queryDerivedData().isDelete) {
+        // Done
+    } else if (tuple.queryDerivedData().isDelete) {
         const deletePattern = tuple.removeAttr('deleted');
         deleteOnOneTable(cxt, table, deletePattern, out);
     } else if (tuple.queryDerivedData().isUpdate) {
-        updatePlanned(cxt, tuple, plan, out);
+        updatePlanned(cxt, tuple, out);
     } else {
         insertOnOneTable(cxt, table, tuple, out);
     }
+
+    table.pushChangeEvent(cxt);
 }
 
 export default function set(cxt: QueryContext, params: CommandParams) {
-    const { command, output } = params;
-    const { pattern } = command;
-
-    const plan = planQuery(null, pattern, output);
-    if (plan.failed)
-        return;
+    const { tuple, output } = params;
 
     const combinedOut = combineStreams(output);
     const allTables = combinedOut();
 
     let anyFound = false;
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, plan.tuple)) {
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
         const tableOut = combinedOut();
         anyFound = true;
-        setOnTable(cxt, table, partitionedTuple, plan, tableOut);
+        setOnTable(cxt, table, partitionedTuple, tableOut);
     }
 
     if (!anyFound) {
         if (cxt.graph.options.autoinitMemoryTables) {
-            const table = createImplicitTable(cxt, plan.tuple);
-            setOnTable(cxt, table, plan.tuple, plan, combinedOut());
+            const table = createImplicitTable(cxt, tuple);
+            setOnTable(cxt, table, tuple, combinedOut());
         } else {
-            emitCommandError(output, "No table found for: " + pattern.stringify());
+            emitCommandError(output, "No table found for: " + tuple.stringify());
         }
     }
 

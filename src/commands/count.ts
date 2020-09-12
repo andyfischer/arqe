@@ -1,16 +1,16 @@
 
 import CommandExecutionParams from '../CommandParams'
 import { objectToTuple } from '../Tuple'
-import getCommand from './get'
+import { runGet } from './get'
 import Pipe from '../Pipe'
 import QueryContext from '../QueryContext';
 
 export default function countCommand(cxt: QueryContext, params: CommandExecutionParams) {
-    const { command, output } = params;
+    const { tuple, output } = params;
     let count = 0;
 
     const combined = new Pipe();
-    getCommand(cxt, command.pattern, combined);
+    runGet(cxt, tuple, combined);
 
     params.input.sendTo(combined);
     

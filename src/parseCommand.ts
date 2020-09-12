@@ -1,5 +1,5 @@
 
-import Query from './Query'
+import ParsedQuery from './ParsedQuery'
 import CompoundQuery from './CompoundQuery'
 import Tuple, { tagsToTuple } from './Tuple'
 import TupleTag from './TupleTag'
@@ -48,7 +48,7 @@ function formatExpectedError(expected: string, it: TokenIterator) {
     return `expected ${expected}, saw: "${it.nextText()}" (${it.next().match.name})`
 }
 
-function parseOneCommand(it: TokenIterator): Query {
+export function parseOneCommand(it: TokenIterator): ParsedQuery {
 
     const startPos = it.position;
 
@@ -75,7 +75,7 @@ function parseOneCommand(it: TokenIterator): Query {
     }
 
     const pattern = tagsToTuple(query.tags);
-    return new Query(command, pattern, query.flags);
+    return new ParsedQuery(command, pattern, query.flags);
 }
 
 function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
@@ -127,7 +127,7 @@ export function parseTag(str: string): TupleTag {
     return parseOneTag(it);
 }
 
-export default function parseCommand(str: string): Query {
+export default function parseCommand(str: string): ParsedQuery {
 
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
@@ -147,23 +147,6 @@ export default function parseCommand(str: string): Query {
         return command;
     } catch (e) {
         console.error('Error trying to parse: ' + str);
-        throw e;
-    }
-}
-
-export function parseCommandChain(str: string): CompoundQuery {
-    if (typeof str !== 'string')
-        throw new Error('expected string, saw: ' + str);
-
-    if (str.startsWith('get get '))
-        throw new Error("command starts with 'get get': " + str);
-
-    try {
-        const it = lexStringToIterator(str);
-        const chain = parseOneCommandChain(it);
-        return chain;
-    } catch (e) {
-        console.log(`Uncaught exception in parseCommandChain for command (${str}): ` + (e.stack || e))
         throw e;
     }
 }

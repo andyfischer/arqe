@@ -1,12 +1,12 @@
 import Graph from "./Graph";
-import Query from "./Query";
+import ParsedQuery from "./ParsedQuery";
 import Pipe from "./Pipe";
 
 export default class QueryContext {
     graph: Graph
 
     input: Pipe
-    callingQuery: Query
+    verb: string
 
     enableDebugDumpTrace = false;
     depth = 0

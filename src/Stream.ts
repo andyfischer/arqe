@@ -1,6 +1,6 @@
 
 import Graph from './Graph'
-import Query from './Query'
+import ParsedQuery from './ParsedQuery'
 import Tuple from './Tuple'
 
 export default interface Stream {

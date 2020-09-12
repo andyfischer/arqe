@@ -48,6 +48,19 @@ export function joinNStreams(count: number, joinedOutput: Stream) {
     return out;
 }
 
+export function joinNStreams_v2(count: number, joinedOutput: Stream): Stream {
+    let waitingForCount = count;
+
+    return {
+        next(t) { joinedOutput.next(t) },
+        done() { 
+            waitingForCount--;
+            if (waitingForCount === 0)
+                joinedOutput.done();
+        }
+    }
+}
+
 export function streamPostFilter(stream: Stream, filter: (t: Tuple) => boolean) {
     return {
         next(t: Tuple) {

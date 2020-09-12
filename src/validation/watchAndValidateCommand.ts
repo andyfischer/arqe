@@ -1,6 +1,5 @@
 
 import Stream from '../Stream'
-import { parseCommandChain } from '../parseCommand'
 import CompoundQuery from '../CompoundQuery'
 import Pattern from '../Pattern'
 import Tuple from '../Tuple'
@@ -57,18 +56,20 @@ const validationClasses = [
 
 export default function watchAndValidateCommand(commandStr: string, output: Stream) {
 
+    const validations = [];
+    /*
     const parsed = parseCommandChain(commandStr);
 
     if (parsed.queries.length == 0)
         throw new Error('no command found, commandStr = ' + commandStr);
 
-    const validations = [];
 
     for (const clss of validationClasses) {
         const validation = clss.maybeCreate(commandStr, parsed);
         if (validation)
             validations.push(validation);
     }
+    */
 
     let sentFinish = false;
     let finishStackTrace = null;

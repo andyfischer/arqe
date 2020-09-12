@@ -1,5 +1,6 @@
 
 import Tuple from './Tuple'
+import TupleTag from './TupleTag'
 
 interface ExactTranslation {
     from: Tuple
@@ -64,4 +65,23 @@ export function tupleToModification(tuple: Tuple) {
 export function expressionUpdatesExistingValue(expr: string[]) {
     const effects = expr && expr[0] && exprFuncEffects[expr[0]];
     return effects && effects.isUpdate;
+}
+
+function tagModifiesExistingRelations(tag: TupleTag) {
+    if (tag.exprValue && expressionUpdatesExistingValue(tag.exprValue))
+        return true;
+
+    return false;
+}
+
+export function modificationPatternToFilter(tuple: Tuple) {
+    return tuple.remapTags((tag: TupleTag) => {
+        if (tag.attr === 'deleted')
+            return null;
+
+        if (tagModifiesExistingRelations(tag))
+            return tag.setStarValue()
+        else
+            return tag;
+    });
 }

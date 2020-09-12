@@ -72,13 +72,16 @@ function joinRelations(origRels: Relation[], out: Stream) {
 
     // Look at 'common' identifiers that are used in all relations.
     const commonIdentifiers: FoundIdentifier[] = []
+
     for (const found of identifiers.values()) {
         if (found.foundRelCount === rels.length)
             commonIdentifiers.push(found);
     }
 
     if (commonIdentifiers.length === 0) {
-        emitCommandError(out, "No common identifiers found across incoming relations");
+        emitCommandError(out, `No common identifiers found across incoming relations`
+                         +` (left = ${origRels[0].header.stringify()})`
+                         +` (right = ${origRels[1].header.stringify()})`);
         out.done();
         return;
     }
@@ -148,8 +151,8 @@ function performJoinWithData(out: Stream): Stream {
 
 export default function runJoinStep(cxt: QueryContext, params: CommandParams) {
 
-    const { command, input, output } = params;
-    const searchPattern = command.pattern;
+    const { input, output } = params;
+    const searchPattern = params.tuple;
 
     // Collect two relations: input (piped) & search 
     const [inputStream, searchOut] = joinNStreams(2, performJoinWithData(output));

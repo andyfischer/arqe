@@ -1,4 +1,6 @@
 
+import Tuple from './Tuple'
+import TupleTag from './TupleTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
 import CommandParams from './CommandParams'
 import runJoinStep from './commands/join'
@@ -12,32 +14,46 @@ import deleteCommand from './commands/delete'
 import runJustStep from './commands/just'
 import QueryContext from './QueryContext'
 import singleValue from './commands/single-value'
+import runQueryCommand from './commands/run-query'
+import renameCommand from './commands/rename'
+import { graphWithTableSet } from './setupTableSet'
 
 function handleCommandContextTags(cxt: QueryContext, params: CommandParams) {
-    if (params.command.pattern.hasAttr("debug.dumpTrace")) {
+    if (params.tuple.hasAttr("debug.dumpTrace")) {
         cxt.enableDebugDumpTrace = true;
-        params.command.pattern = params.command.pattern.removeAttr("debug.dumpTrace");
+        params.tuple = params.tuple.removeAttr("debug.dumpTrace");
     }
+}
+
+function resolveImmediateExpressions(tuple: Tuple) {
+    return tuple.remapTags((tag: TupleTag) => {
+        if (tag.exprValue && tag.exprValue[0] === 'seconds-from-now') {
+            const seconds = parseInt(tag.exprValue[1]);
+            return tag.setValue(Date.now() + (seconds * 1000) + '');
+        }
+
+        return tag;
+    });
 }
 
 export default function runOneCommand(parentCxt: QueryContext, params: CommandParams) {
 
     const cxt = new QueryContext(parentCxt.graph);
+    cxt.start("runOneCommand", { verb: params.verb, tuple: params.tuple.stringify() })
+
+    const { flags, verb, output } = params;
+    const originalTuple = params.tuple;
+    params.tuple = resolveImmediateExpressions(originalTuple);
+    cxt.verb = verb;
 
     handleCommandContextTags(cxt, params);
 
-    const { command, output } = params;
-
-    cxt.callingQuery = command;
     cxt.input = params.input;
 
-    const commandName = command.verb;
-    cxt.start("runOneCommand", { commandName, query: command.stringify() })
-
     try {
-        emitCommandOutputFlags(command, output);
+        emitCommandOutputFlags(flags, output);
 
-        switch (commandName) {
+        switch (verb) {
 
         case 'join':
             runJoinStep(cxt, params);
@@ -48,7 +64,7 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
             break;
 
         case 'get': {
-            getCommand(cxt, command.pattern, output);
+            getCommand(cxt, params.tuple, output);
             break;
         }
         
@@ -87,13 +103,22 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
             break;
         }
 
+        case 'run-query': {
+            runQueryCommand(cxt, params);
+            break;
+        }
+
+        case 'rename': {
+            renameCommand(cxt, params);
+            break;
+        }
+
         default: {
-            emitCommandError(output, "unrecognized command: " + commandName);
+            emitCommandError(output, "unrecognized verb: " + verb);
             output.done();
         }
 
         }
-
 
     } catch (err) {
         console.log(err.stack || err);

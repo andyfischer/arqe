@@ -17,14 +17,6 @@ it('supports file reading', async () => {
     expect(result.tuples[0].getVal('file-contents')).toEqual('this is file one\n');
 })
 
-it('supports file saving', () => {
-
-})
-
-it('supports file deleting', () => {
-
-})
-
 it('supports globs', async () => {
     const dir = path.join(__dirname, 'sampleFiles')
 

@@ -1,7 +1,6 @@
 import { combineStreams } from "../StreamUtil";
 import { Graph, Tuple, Stream } from "..";
 import TupleTag, { newTag } from "../TupleTag";
-import planQuery from "../planQuery";
 import CommandExecutionParams from '../CommandParams'
 import TableMount from "../TableMount";
 import findPartitionsByTable from "../findPartitionsByTable";
@@ -36,20 +35,17 @@ export function deletePlanned(cxt: QueryContext, searchPattern: Tuple, output: S
     for (const [table, tablePattern] of findPartitionsByTable(cxt, searchPattern)) {
         const tableOut = collectOutput();
         deleteOnOneTable(cxt, table, tablePattern, tableOut);
+
+        table.pushChangeEvent(cxt);
     }
 
     allTables.done();
 }
 
 export default function deleteCommand(cxt: QueryContext, params: CommandExecutionParams) {
-    const { command, output } = params;
-    let { pattern } = command;
+    const { tuple, output } = params;
 
-    const deletePattern = pattern.addTag(newTag('deleted').setValueExpr(['set']));
+    const deletePattern = tuple.addTag(newTag('deleted').setValueExpr(['set']));
 
-    const plan = planQuery(null, deletePattern, output);
-    if (plan.failed)
-        return;
-
-    deletePlanned(cxt, pattern, output);
+    deletePlanned(cxt, tuple, output);
 }

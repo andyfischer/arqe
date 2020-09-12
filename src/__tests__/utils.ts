@@ -28,3 +28,10 @@ export function run(graph: Graph, command: string, opts: Options = {}): string[]
     return (result
         .map(t => t.stringify()));
 }
+
+export function preset(graph: Graph, tuples: string[]) {
+    for (const t of tuples) {
+        graph.run(`set ${t}`);
+    }
+
+}

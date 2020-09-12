@@ -1,5 +1,5 @@
 
-import parseCommand, { parseCommandChain } from '../parseCommand'
+import parseCommand from '../parseCommand'
 import { appendTagInCommand } from '../stringifyQuery'
 import Pattern from '../Pattern'
 import { newTagFromObject } from '../TupleTag'
@@ -152,25 +152,5 @@ it('handles paren sections', () => {
 
 it('stringifies expressions', () => {
     testRestringify('set a/(increment)');
-});
-
-it('handles multiline commands', () => {
-    const longCommand = 
-`get javascript-ast text(
-  function test() {
-     const a = 1 + 2;
-  }
-)`
-    ;
-
-    testRestringify(longCommand);
-
-    const chain = parseCommandChain(longCommand);
-    expect(chain.queries.length == 1);
-    expect(chain.queries[0].pattern.tags[1].value).toEqual(`
-  function test() {
-     const a = 1 + 2;
-  }
-`);
 });
 

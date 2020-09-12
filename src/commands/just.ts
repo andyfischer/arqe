@@ -4,9 +4,7 @@ import Tuple from '../Tuple';
 import TupleTag from '../TupleTag';
 
 export default function runJustStep(params: CommandExecutionParams) {
-    const { command, input, output } = params;
-
-    const pattern = command.pattern;
+    const { tuple, input, output } = params;
 
     input.sendTo({
         next(t: Tuple) {
@@ -16,7 +14,7 @@ export default function runJustStep(params: CommandExecutionParams) {
             }
 
             const modified = t.remapTags((tag: TupleTag) => {
-                if (tag.attr && pattern.hasAttr(tag.attr)) {
+                if (tag.attr && tuple.hasAttr(tag.attr)) {
                     return tag;
                 } else {
                     return null;

@@ -3,7 +3,7 @@ import Tuple from "../Tuple";
 import Stream from "../Stream";
 import QueryEvalHelper from "../QueryEvalHelper";
 import Pipe from "../Pipe";
-import Query from "../Query";
+import ParsedQuery from "../ParsedQuery";
 import parseTuple from "../parseTuple";
 
 function handleRedirect(input: Tuple, out: Stream) {
@@ -13,10 +13,16 @@ function handleRedirect(input: Tuple, out: Stream) {
 
     const outputPipe = new Pipe();
     outputPipe.sendTo(out);
+    const pattern = parseTuple(patternStr);
+    const nestedInput = new Pipe();
+    nestedInput.done();
+
     evalHelper.runOneCommand({
-        input: evalHelper.cxt.input,
+        verb,
+        tuple: pattern,
+        input: nestedInput,
         output: outputPipe,
-        command: new Query(verb, parseTuple(patternStr), {})
+        flags: {}
     });
 }
 

@@ -3,7 +3,7 @@ import setupTableSet from '../setupTableSet'
 import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
 import QueryEvalHelper from '../QueryEvalHelper';
 import Pipe from '../Pipe';
-import Query from '../Query';
+import ParsedQuery from '../ParsedQuery';
 import parseTuple from '../parseTuple';
 import Tuple from '../Tuple';
 import Stream from '../Stream';

@@ -1,9 +1,8 @@
 
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import planQuery from '../planQuery'
 import { emitSearchPatternMeta, emitCommandError } from '../CommandMeta'
-import { combineStreams } from '../StreamUtil'
+import { combineStreams, joinNStreams_v2 } from '../StreamUtil'
 import TableMount from '../TableMount'
 import findPartitionsByTable from '../findPartitionsByTable'
 import QueryContext from '../QueryContext'
@@ -81,7 +80,7 @@ function maybeAnnotateWithIdentifiers(searchPattern: Tuple, out: Stream) {
     }
 }
 
-function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
+export function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');
 
@@ -109,11 +108,14 @@ function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
     cxt.end('runGet');
 }
 
-export default function runGetStep(cxt: QueryContext, pattern: Tuple, output: Stream) {
-    const plan = planQuery(null, pattern, output);
-    if (plan.failed)
-        return;
+export default function runGetStep(cxt: QueryContext, tuple: Tuple, out: Stream) {
+    // input passthrough
+    // console.log(cxt.input.output);
 
-    emitSearchPatternMeta(pattern, output);
-    runGet(cxt, plan.tuple, output);
+    const combined = joinNStreams_v2(2, out);
+
+    cxt.input.sendTo(combined);
+
+    emitSearchPatternMeta(tuple, combined);
+    runGet(cxt, tuple, combined);
 }

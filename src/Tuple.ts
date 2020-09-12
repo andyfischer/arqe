@@ -419,7 +419,7 @@ export default class Tuple {
     }
 }
 
-export function objectToTuple(object: { [k: string]: string | true }) {
+export function objectToTuple(object: { [k: string]: any }) {
     const tags = [];
 
     for (const key in object) {

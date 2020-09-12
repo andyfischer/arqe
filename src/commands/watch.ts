@@ -9,12 +9,11 @@ function createWatchCommand(graph: Graph, pattern: Tuple) {
 }
 
 export default function watchCommand(cxt: QueryContext, params: CommandParams) {
-    const { output } = params;
-    const pattern = params.command.pattern;
+    const { tuple, output } = params;
 
     output.next(objectToTuple({ 'command-meta': true, 'watch': true }));
 
-    createWatchCommand(cxt.graph, pattern);
+    createWatchCommand(cxt.graph, tuple);
 
     output.done();
 }

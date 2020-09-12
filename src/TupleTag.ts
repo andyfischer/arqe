@@ -70,6 +70,13 @@ export default class TupleTag {
         return new TupleTag(this);
     }
 
+    setAttr(attr: string): TupleTag {
+        return new TupleTag({
+            ...this,
+            attr
+        });
+    }
+
     setValue(value: string): TupleTag {
         return new TupleTag({
             ...this,

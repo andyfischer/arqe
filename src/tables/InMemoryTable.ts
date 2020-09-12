@@ -3,10 +3,8 @@ import Pattern from '../Pattern'
 import IDSource from '../utils/IDSource'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import TableListener from '../TableListener'
 import TableMount from '../TableMount'
-import { modificationPatternToFilter } from '../planQuery'
-import { tupleToModification } from '../TupleModification'
+import { tupleToModification, modificationPatternToFilter } from '../TupleModification'
 
 export default class InMemoryTable {
     name: string
@@ -15,7 +13,7 @@ export default class InMemoryTable {
     nextSlotId: IDSource = new IDSource();
     slots = new Map<string, Tuple>();
 
-    listeners = new Map<string, TableListener>();
+    listeners = new Map<string, true>();
     mount: TableMount
 
     constructor(name: string, pattern: Pattern) {
@@ -60,10 +58,6 @@ export default class InMemoryTable {
         const slotId = this.nextSlotId.take();
         this.slots.set(slotId, insertTuple);
 
-        for (const listener of this.listeners.values()) {
-            listener.insert(insertTuple);
-        }
-
         out.next(insertTuple)
         out.done();
     }
@@ -78,10 +72,6 @@ export default class InMemoryTable {
                 const modified = modifier.apply(tuple);
                 this.slots.set(slotId, modified);
                 out.next(modified);
-
-                for (const listener of this.listeners.values()) {
-                    listener.update(tuple, modified);
-                }
             }
         }
         out.done();
@@ -92,23 +82,18 @@ export default class InMemoryTable {
             if (search.isSupersetOf(tuple)) {
                 this.slots.delete(slotId);
                 out.next(tuple);
-
-                for (const listener of this.listeners.values()) {
-                    listener.delete(tuple);
-                }
             }
         }
         out.done();
     }
 
     addListener(input: Tuple, out: Stream) {
-        const id = input.getVal("listenerId");
-        const listener = input.getVal("listenerObj");
-        this.listeners.set(id, listener);
+        const id = input.getVal("id");
+        this.listeners.set(id, true);
     }
 
     removeListener(input: Tuple, out: Stream) {
-        const id = input.getVal("listenerId");
+        const id = input.getVal("id");
         this.listeners.delete(id);
     }
 }

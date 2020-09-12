@@ -31,5 +31,7 @@ export const ValidCommands: { [name: string]: CommandInfo } = {
     'order-by': {},
     'watch': {},
     'just': {},
-    'single-value': {}
+    'single-value': {},
+    'run-query': {},
+    'rename': {}
 };

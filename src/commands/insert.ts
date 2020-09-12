@@ -2,7 +2,6 @@ import CommandExecutionParams from '../CommandParams'
 import Graph from '../Graph';
 import Tuple from '../Tuple';
 import Stream from '../Stream';
-import planQuery from '../planQuery';
 import TupleTag from '../TupleTag';
 import TableMount from '../TableMount';
 import findPartitionsByTable from '../findPartitionsByTable';
@@ -73,12 +72,7 @@ export function toInitialization(rel: Tuple) {
 }
 
 export default function insertCommand(cxt: QueryContext, params: CommandExecutionParams) {
-    const { command, output } = params;
-    const { pattern } = command;
+    const { tuple, output } = params;
 
-    const plan = planQuery(null, pattern, output);
-    if (plan.failed)
-        return;
-
-    insertPlanned(cxt, plan.tuple, output);
+    insertPlanned(cxt, tuple, output);
 }

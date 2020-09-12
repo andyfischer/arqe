@@ -7,6 +7,7 @@
     "build": "tsc -p .",
     "test": "jest --watch",
     "tsc-watch": "tsc -w",
+    "dev": "tsc-watch --onSuccess ./bin/arqe-server",
     "start": "tsc-watch --onSuccess ./bin/arqe-server",
     "cli": "node dist/startCli.js",
     "start-cli": "tsc-watch --onSuccess 'node dist/startCli.js'",
@@ -55,9 +56,6 @@
     },
     "setupFiles": [
       "./src/__tests__/setup.ts"
-    ],
-    "setupFilesAfterEnv": [
-      "./src/__tests__/setupAfterEnv.ts"
     ],
     "testMatch": [
       "**/src/**/__tests__/**/*.test.(js|ts)",
