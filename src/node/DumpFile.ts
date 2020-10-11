@@ -2,9 +2,9 @@
 import { readFileSync, writeFileSync } from '../platform/fs'
 import Graph from '../Graph'
 import parseCommand from '../parseCommand'
-import ParsedQuery from '../ParsedQuery'
+import Command from '../Command'
 
-export function rewriteDumpFile(filename: string, callback: (rel: ParsedQuery) => ParsedQuery ) {
+export function rewriteDumpFile(filename: string, callback: (rel: Command) => Command ) {
 
     const contents = readFileSync(filename, 'utf8');
     const out = [];

@@ -1,7 +1,8 @@
 
 import Tuple from './Tuple'
 import Stream from './Stream'
-import TupleTag, { tagToString } from './TupleTag'
+import TupleTag from './TupleTag'
+import tagToString from './stringFormat/tagToString'
 
 export default function receiveToStringList(onDone: (s: string|string[]) => void): Stream {
 

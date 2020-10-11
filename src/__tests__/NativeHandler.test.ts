@@ -1,5 +1,5 @@
-import Pipe from "../Pipe"
-import parseTuple from "../parseTuple";
+import Pipe from "../utils/Pipe"
+import parseTuple from "../stringFormat/parseTuple";
 import Tuple from "../Tuple";
 
 xit('disabled', () => {

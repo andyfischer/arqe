@@ -1,12 +1,11 @@
 
-import ParsedQuery from './ParsedQuery'
-import CompoundQuery from './CompoundQuery'
-import Tuple, { tagsToTuple } from './Tuple'
+import Command from './Command'
+import Tuple, { newTuple } from './Tuple'
 import TupleTag from './TupleTag'
 import { lexStringToIterator, TokenIterator, TokenDef, t_ident, t_quoted_string, t_star,
     t_space, t_hash, t_double_dot, t_newline, t_bar,
     t_integer, t_dash, t_line_comment } from './lexer'
-import { parseOneTag } from './parseTuple'
+import parseOneTag from './stringFormat/parseOneTag'
 
 interface InProgressQuery {
     tags: TupleTag[]
@@ -48,7 +47,7 @@ function formatExpectedError(expected: string, it: TokenIterator) {
     return `expected ${expected}, saw: "${it.nextText()}" (${it.next().match.name})`
 }
 
-export function parseOneCommand(it: TokenIterator): ParsedQuery {
+export function parseOneCommand(it: TokenIterator): Command {
 
     const startPos = it.position;
 
@@ -74,8 +73,8 @@ export function parseOneCommand(it: TokenIterator): ParsedQuery {
         )
     }
 
-    const pattern = tagsToTuple(query.tags);
-    return new ParsedQuery(command, pattern, query.flags);
+    const pattern = newTuple(query.tags);
+    return new Command(command, pattern, query.flags);
 }
 
 function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
@@ -96,38 +95,12 @@ function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
     return false;
 }
 
-function parseOneCommandChain(it: TokenIterator): CompoundQuery {
-
-    const chain = new CompoundQuery();
-
-    while (!it.finished()) {
-        const command = parseOneCommand(it);
-
-        chain.queries.push(command);
-
-        it.skipSpaces();
-
-        if (lookaheadPastNewlinesFor(it, t_bar)) {
-            it.consumeWhitespace();
-        }
-
-        if (it.finished())
-            break;
-
-        if (!it.tryConsume(t_bar))
-            break;
-    }
-
-    return chain;
-}
-
-
 export function parseTag(str: string): TupleTag {
     const it = lexStringToIterator(str);
     return parseOneTag(it);
 }
 
-export default function parseCommand(str: string): ParsedQuery {
+export default function parseCommand(str: string): Command {
 
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
@@ -151,20 +124,7 @@ export default function parseCommand(str: string): ParsedQuery {
     }
 }
 
-export function parseFile(fileContents: string): CompoundQuery[] {
-    const it = lexStringToIterator(fileContents);
-
-    const commands: CompoundQuery[] = [];
-
-    while (!it.finished()) {
-        while (it.nextIs(t_space) || it.nextIs(t_newline) || it.nextIs(t_line_comment))
-            it.consume();
-
-        const command = parseOneCommandChain(it);
-
-        if (command.queries.length > 0)
-            commands.push(command);
-    }
-
-    return commands;
+export function parsePattern(query: string) {
+    const parsed = parseCommand('get ' + query);
+    return parsed.tuple;
 }

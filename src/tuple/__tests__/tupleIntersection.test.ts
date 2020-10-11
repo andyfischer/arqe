@@ -1,4 +1,4 @@
-import parseTuple from "../../parseTuple";
+import parseTuple from "../../stringFormat/parseTuple";
 import tupleIntersection from "../tupleIntersection";
 
 function testTupleIntersection(lhsStr: string, rhsStr: string) {

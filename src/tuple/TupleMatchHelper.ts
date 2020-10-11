@@ -60,6 +60,7 @@ export default class TupleMatchHelper {
 
     findMatchingFixedTag(valueTag: TupleTag, tags: TupleTag[]) {
         if (valueTag.value) {
+
             for (const tag of tags) {
                 if (tag.value === valueTag.value)
                     return true;

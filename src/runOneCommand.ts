@@ -1,22 +1,25 @@
 
-import Tuple from './Tuple'
-import TupleTag from './TupleTag'
-import { emitCommandError, emitCommandOutputFlags } from './CommandMeta'
+import Tuple, { newTuple } from './Tuple'
+import TupleTag, { newTag } from './TupleTag'
+import { emitCommandError, emitCommandOutputFlags } from './CommandUtils'
+import findPartitionsByTable from './findPartitionsByTable'
 import CommandParams from './CommandParams'
-import runJoinStep from './commands/join'
-import listenCommand from './commands/listen'
-import countCommand from './commands/count'
-import orderByCommand from './commands/orderBy'
-import watchCommand from './commands/watch'
-import setCommand from './commands/set'
-import getCommand from './commands/get'
-import deleteCommand from './commands/delete'
-import runJustStep from './commands/just'
+import runJoinStep from './verbs/join'
+import countCommand from './verbs/count'
+import orderByCommand from './verbs/orderBy'
+import watchCommand from './verbs/watch'
+import setCommand from './verbs/set'
+import getCommand from './verbs/get'
+import sendCommand from './verbs/send'
+import deleteCommand from './verbs/delete'
+import runJustStep from './verbs/just'
 import QueryContext from './QueryContext'
-import singleValue from './commands/single-value'
-import runQueryCommand from './commands/run-query'
-import renameCommand from './commands/rename'
-import { graphWithTableSet } from './setupTableSet'
+import singleValue from './verbs/single-value'
+import runQueryCommand from './verbs/run-query'
+import renameCommand from './verbs/rename'
+import traceCommand from './verbs/trace'
+import envCommand from './verbs/env'
+import { streamPostRemoveAttr } from './StreamUtil';
 
 function handleCommandContextTags(cxt: QueryContext, params: CommandParams) {
     if (params.tuple.hasAttr("debug.dumpTrace")) {
@@ -36,9 +39,29 @@ function resolveImmediateExpressions(tuple: Tuple) {
     });
 }
 
+export type VerbCallback = (cxt: QueryContext, params: CommandParams) => void
+
+export const builtinVerbs: { [name: string]: VerbCallback } = {
+    join: runJoinStep,
+    just: (cxt, params) => runJustStep(params),
+    get: (cxt, params) => getCommand(cxt, params.tuple, params.output),
+    set: (cxt, params) => setCommand(cxt, params),
+    send: (cxt, params) => sendCommand(cxt, params),
+    delete: (cxt, params) => deleteCommand(cxt, params),
+    count: (cxt, params) => countCommand(cxt, params),
+    'order-by': (cxt, params) => orderByCommand(params),
+    watch: (cxt, params) => watchCommand(cxt, params),
+    'single-value': (cxt, params) => singleValue(cxt, params),
+    'run-query': (cxt, params) => runQueryCommand(cxt, params),
+    rename: (cxt, params) => renameCommand(cxt, params),
+    trace: (cxt, params) => traceCommand(cxt, params),
+    env: (cxt, params) => envCommand(cxt, params),
+}
+
 export default function runOneCommand(parentCxt: QueryContext, params: CommandParams) {
 
-    const cxt = new QueryContext(parentCxt.graph);
+
+    const cxt = parentCxt.newChild();
     cxt.start("runOneCommand", { verb: params.verb, tuple: params.tuple.stringify() })
 
     const { flags, verb, output } = params;
@@ -49,76 +72,42 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
     handleCommandContextTags(cxt, params);
 
     cxt.input = params.input;
+    emitCommandOutputFlags(flags, output);
+
+    if (verb === 'trace')
+        parentCxt.traceEnabled = true;
+
+    if (cxt.traceEnabled) {
+        for (const [table, partitionedTuple] of findPartitionsByTable(cxt, params.tuple)) {
+            output.next(newTuple([newTag('trace'), newTag('matching-table'),
+                                 newTag('table-name', table.name),
+                                 newTag('partitioned-tuple', partitionedTuple)]));
+        }
+    }
 
     try {
-        emitCommandOutputFlags(flags, output);
-
-        switch (verb) {
-
-        case 'join':
-            runJoinStep(cxt, params);
-            break;
-
-        case 'just':
-            runJustStep(params);
-            break;
-
-        case 'get': {
-            getCommand(cxt, params.tuple, output);
-            break;
-        }
-        
-        case 'set': {
-            setCommand(cxt, params);
-            break;
+        if (cxt.graph.definedVerbs[verb]) {
+            cxt.graph.definedVerbs[verb](cxt, params);
+            cxt.end('runOneCommand');
+            return;
         }
 
-        case 'delete': {
-            deleteCommand(cxt, params);
-            break;
+        if (builtinVerbs[verb]) {
+            builtinVerbs[verb](cxt, params);
+            cxt.end('runOneCommand');
+            return;
         }
 
-        case 'listen': {
-            listenCommand(cxt, params);
-            break;
-        }
+        // Fall back to send-based commands.
+        params.tuple = newTuple([newTag('verb', verb), newTag('args', params.tuple)]);
+        params.output = streamPostRemoveAttr(params.output, 'verb');
+        params.output = streamPostRemoveAttr(params.output, 'args');
+        builtinVerbs['send'](cxt, params);
 
-        case 'count': {
-            countCommand(cxt, params);
-            break;
-        }
+        return;
 
-        case 'order-by': {
-            orderByCommand(params);
-            break;
-        }
-
-        case 'watch': {
-            watchCommand(cxt, params);
-            break;
-        }
-
-        case 'single-value': {
-            singleValue(cxt, params);
-            break;
-        }
-
-        case 'run-query': {
-            runQueryCommand(cxt, params);
-            break;
-        }
-
-        case 'rename': {
-            renameCommand(cxt, params);
-            break;
-        }
-
-        default: {
-            emitCommandError(output, "unrecognized verb: " + verb);
-            output.done();
-        }
-
-        }
+        emitCommandError(output, "unrecognized verb: " + verb);
+        output.done();
 
     } catch (err) {
         console.log(err.stack || err);

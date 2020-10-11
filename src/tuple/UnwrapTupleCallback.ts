@@ -1,6 +1,6 @@
 import Tuple from '../Tuple'
 import Stream from '../Stream'
-import { emitCommandError } from '../CommandMeta'
+import { emitCommandError } from '../CommandUtils'
 
 type ObjectCallback = (obj: any, tuple?: Tuple) => any | any[] | Promise<any> | Promise<any[]> | void
 

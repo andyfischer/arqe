@@ -21,7 +21,7 @@
 
 */
 
-import Pipe from './Pipe'
+import Pipe from './utils/Pipe'
 
 export function combinePipes(pipe1: Pipe, pipe2: Pipe) {
     const out = new Pipe();
@@ -30,6 +30,3 @@ export function combinePipes(pipe1: Pipe, pipe2: Pipe) {
     return out;
 }
 
-export function deduplicate(pipe: Pipe) {
-    // Very simple approach
-}

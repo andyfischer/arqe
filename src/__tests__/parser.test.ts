@@ -1,5 +1,5 @@
 
-import parseTuple from '../parseTuple';
+import parseTuple from '../stringFormat/parseTuple';
 
 it('parses tag identifiers', () => {
     const pattern = parseTuple("x [from $a] y [from $b] z/1");

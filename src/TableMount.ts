@@ -1,13 +1,15 @@
 
 import Tuple from './Tuple'
-import { emitCommandError } from './CommandMeta'
+import { emitCommandError } from './CommandUtils'
 import Stream from './Stream'
 import { TupleTag } from '.';
-import parseTuple from './parseTuple';
+import parseTuple from './stringFormat/parseTuple';
 import QueryEvalHelper from './QueryEvalHelper';
 import QueryContext from './QueryContext';
 import { streamPostRemoveAttr } from './StreamUtil';
 import AutoInitMap from "./utils/AutoInitMap"
+import { LiveQueryId } from './LiveQuery'
+import { isUniqueTag, isEnvTag } from './knownTags'
 
 export type TupleStreamCallback = (input: Tuple, out: Stream) => void
 
@@ -19,45 +21,55 @@ export type MountId = string;
 
 function getDefiniteValueTags(tuple: Tuple) {
     return tuple.tags.filter((tag: TupleTag) => {
-        if (tag.isUniqueExpr())
+        if (isUniqueTag(tag))
+            return false;
+        if (isEnvTag(tag))
             return false;
         return !!tag.attr;
     })
 }
 
-function getUniqueExprTags(tuple: Tuple) {
-    return tuple.tags.filter((tag: TupleTag) => tag.isUniqueExpr());
+function getTagsWithUnique(tuple: Tuple) {
+    return tuple.tags.filter((tag: TupleTag) => isUniqueTag(tag));
 }
 
-interface HandlerFlags {
-    needsEvalHelper?: boolean
-    needsInputStream?: boolean
-    needsOutputStream?: boolean
+interface PreCallStep {
+    injectEvalHelper?: boolean
+    injectInputStream?: boolean
+    injectOutputStream?: boolean
+    injectFromEnv?: string
 }
 
 function mountCommandHandler(input: Tuple) {
-    const flags:HandlerFlags = {};
+    const steps: PreCallStep[] = [];
 
     if (input.hasAttr(contextEvalHelper)) {
-        flags.needsEvalHelper = true;
+        steps.push({injectEvalHelper: true});
         input = input.removeAttr(contextEvalHelper);
     }
     
     if (input.hasAttr(contextInputStream)) {
-        flags.needsInputStream = true;
+        steps.push({injectInputStream: true});
         input = input.removeAttr(contextInputStream);
     }
 
     if (input.hasAttr(contextOutputStream)) {
-        flags.needsOutputStream = true;
+        steps.push({injectOutputStream: true});
         input = input.removeAttr(contextOutputStream);
+    }
+
+    for (const tag of input.tags) {
+        if (isEnvTag(tag)) {
+            steps.push({injectFromEnv: tag.attr});
+            input = input.removeAttr(tag.attr);
+        }
     }
 
     return {
         input,
-        flags,
+        steps,
         definiteValues: getDefiniteValueTags(input),
-        uniqueExprs: getUniqueExprTags(input)
+        tagsWithUnique: getTagsWithUnique(input)
     }
 }
 
@@ -65,23 +77,23 @@ class Handler {
     verb: string
     inputPattern: Tuple
     definiteValues: TupleTag[]
-    uniqueExprs: TupleTag[]
+    tagsWithUnique: TupleTag[]
 
-    flags: HandlerFlags
+    steps: PreCallStep[]
     callback: TupleStreamCallback
 
     constructor(verb: string, originalInput: Tuple, callback: TupleStreamCallback) {
 
-        const { input, flags, definiteValues, uniqueExprs } = mountCommandHandler(originalInput);
+        const { input, steps, definiteValues, tagsWithUnique } = mountCommandHandler(originalInput);
 
         if (input.hasAttr("evalHelper"))
             throw new Error("internal error: CommandEntry should not see 'evalHelper' attr");
 
         this.verb = verb;
         this.inputPattern = input;
-        this.flags = flags;
+        this.steps = steps;
         this.definiteValues = definiteValues;
-        this.uniqueExprs = uniqueExprs;
+        this.tagsWithUnique = tagsWithUnique;
         this.callback = callback;
     }
 
@@ -117,6 +129,14 @@ function insertEvalHelperTag(cxt: QueryContext, tuple: Tuple) {
     return tuple.setVal(contextEvalHelper, helper);
 }
 
+interface Listener {
+    /* Query-fixed means that this listener is statically based on the query, and has
+       the same lifetime. 'Dynamic' means that the listener is based on a dynamic value
+       (from 'run-query') */
+
+    type: 'queryFixed' | 'dynamic'
+}
+
 export default class TableMount {
     mountId: MountId
     name: string
@@ -126,7 +146,7 @@ export default class TableMount {
     allEntries: Handler[] = []
     byVerb: AutoInitMap<string, HandlersByVerb>
 
-    listeners = new Map<string, true>()
+    listeners = new Map<LiveQueryId, Listener>()
 
     constructor(name: string, schema: Tuple) {
         this.name = name;
@@ -165,7 +185,7 @@ export default class TableMount {
     }
 
     callInsertUnique(uniqueTag: TupleTag, tuple: Tuple, out: Stream): boolean {
-        // Find a matching entry that has ((unique)) for this tag.
+        // Find a matching entry that has (unique) for this tag.
         const entry = this.findWithUnique('insert', uniqueTag, tuple);
 
         if (!entry)
@@ -180,22 +200,42 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        if (handler.flags.needsEvalHelper) {
-            out = streamPostRemoveAttr(out, contextEvalHelper);
-            tuple = insertEvalHelperTag(cxt, tuple);
+        for (const step of handler.steps) {
+            if (step.injectEvalHelper) {
+                out = streamPostRemoveAttr(out, contextEvalHelper);
+                tuple = insertEvalHelperTag(cxt, tuple);
+            }
+
+            if (step.injectInputStream) {
+                out = streamPostRemoveAttr(out, contextInputStream);
+                tuple = tuple.setVal(contextInputStream, cxt.input);
+            }
+            
+            if (step.injectOutputStream) {
+                out = streamPostRemoveAttr(out, contextOutputStream);
+                tuple = tuple.setVal(contextOutputStream, out);
+            }
+
+            if (step.injectFromEnv) {
+                out = streamPostRemoveAttr(out, step.injectFromEnv);
+                tuple = tuple.setVal(step.injectFromEnv, cxt.getEnv(step.injectFromEnv));
+            }
         }
 
-        if (handler.flags.needsInputStream) {
-            out = streamPostRemoveAttr(out, contextInputStream);
-            tuple = tuple.setVal(contextInputStream, cxt.input);
-        }
-        
-        if (handler.flags.needsOutputStream) {
-            out = streamPostRemoveAttr(out, contextOutputStream);
-            tuple = tuple.setVal(contextOutputStream, out);
+        try {
+            const result: any = handler.callback(tuple, out);
+
+            if (result && result.then) {
+                result.catch(err => {
+                    emitCommandError(out, err.message);
+                    out.done();
+                });
+            }
+        } catch (err) {
+            emitCommandError(out, err.message);
+            out.done();
         }
 
-        handler.callback(tuple, out);
         return true;
     }
 
@@ -224,10 +264,10 @@ export default class TableMount {
 
     findWithUnique(verb: string, uniqueTag: TupleTag, tuple: Tuple) {
         for (const entry of this.entriesByVerb(verb)) {
-            if (entry.uniqueExprs.length !== 1)
+            if (entry.tagsWithUnique.length !== 1)
                 continue;
 
-            if (entry.uniqueExprs[0].attr !== uniqueTag.attr)
+            if (entry.tagsWithUnique[0].attr !== uniqueTag.attr)
                 continue;
 
             if (!entry.checkHasDefiniteValues(tuple))
@@ -240,9 +280,8 @@ export default class TableMount {
     }
 
     findWithDefiniteValues(cxt: QueryContext, verb: string, tuple: Tuple) {
-        cxt.start('findWithDefiniteValues');
         for (const entry of this.entriesByVerb(verb)) {
-            if (entry.uniqueExprs.length > 0)
+            if (entry.tagsWithUnique.length > 0)
                 continue;
 
             if (entry.checkHasDefiniteValues(tuple)) {
@@ -251,7 +290,6 @@ export default class TableMount {
             }
         }
 
-        cxt.end('findWithDefiniteValues');
         return null;
     }
 

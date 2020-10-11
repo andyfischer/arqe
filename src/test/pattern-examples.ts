@@ -1,11 +1,11 @@
 
 import Graph from '../Graph'
-import parseObjectToPattern, { patternToJson } from '../parseObjectToPattern'
+import parseJsonToTuple, { tupleToJson } from '../objectToTuple'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
 import { receiveToTupleList } from '../receiveUtils'
-import { loadLocalBootstrapConfigs } from '../loadBootstrapConfigs'
-import parseTuple from '../parseTuple'
+import { loadLocalBootstrapConfigs } from '../node/loadBootstrapConfigs'
+import parseTuple from '../stringFormat/parseTuple'
 
 class FuzzTestSession {
     graph: Graph
@@ -55,7 +55,7 @@ function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
     const pattern = parseTuple(example.getVal("pattern"));
     const jsonStr = example.getVal("equals-from-json");
     const json = JSON.parse(jsonStr);
-    const patternFromObject = parseObjectToPattern(json);
+    const patternFromObject = parseJsonToTuple(json);
 
     if (pattern.equals(patternFromObject)) {
         session.markPass();
@@ -64,7 +64,7 @@ function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
                     `Expected: (${pattern.stringify()}) to equal (${patternFromObject.stringify()})`);
     }
 
-    const patternToObject = patternToJson(pattern);
+    const patternToObject = tupleToJson(pattern);
     const patternToObjectStr = JSON.stringify(patternToObject)
 
     if (patternToObjectStr === jsonStr) {
@@ -77,8 +77,8 @@ function checkEqualsFromJson(session: FuzzTestSession, example: Tuple) {
 
 function checkPatternToObjectConversion(session: FuzzTestSession, example: Tuple) {
     const pattern = parseTuple(example.getVal("pattern"));
-    const asObject = patternToJson(pattern);
-    const backToPattern = parseObjectToPattern(asObject);
+    const asObject = tupleToJson(pattern);
+    const backToPattern = parseJsonToTuple(asObject);
 
     if (pattern.equals(backToPattern)) {
         session.markPass();

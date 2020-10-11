@@ -2,7 +2,6 @@
 import fs from 'fs-extra'
 
 import globLib from 'glob'
-import setupTableSet from '../setupTableSet'
 import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
 
 async function callGlob(pattern: string, options): Promise<{filename: string}[]> {
@@ -19,8 +18,8 @@ async function callGlob(pattern: string, options): Promise<{filename: string}[]>
     })
 }
 
-export default function setupTables() {
-    return setupTableSet({
+export default function getDef() {
+    return {
         'fs filename file-contents?': {
             name: 'FsFile',
             "find-with filename": unwrapTuple(async ({ filename }) => {
@@ -55,5 +54,5 @@ export default function setupTables() {
                 return callGlob(pattern, {});
             })
         }
-    });
+    };
 }

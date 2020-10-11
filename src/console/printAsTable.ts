@@ -1,5 +1,5 @@
 
-import Pattern from '../Pattern'
+import Tuple from '../Tuple'
 
 class LazyMap<K,V> {
     m = new Map<K,V>()
@@ -69,7 +69,7 @@ const horizLineChar = '\u2501'
 const vertLineChar = '\u2503'
 const crossLineChar = '\u254b'
 
-export default function printAsTable(patterns: Pattern[]): string[] {
+export default function printAsTable(patterns: Tuple[]): string[] {
 
     const columns = new LazyMap<string,Column>(title => new Column(title));
     const outputLines = [];

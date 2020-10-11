@@ -1,6 +1,6 @@
 
 import Graph from '../../Graph'
-import runStandardProcess from '../../toollib/runStandardProcess'
+import runStandardProcess from '../../node/runStandardProcess'
 import API from './TestEventHandlerAPI'
 
 runStandardProcess('test-event-listener', async (graph: Graph) => {

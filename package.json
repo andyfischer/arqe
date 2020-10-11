@@ -1,8 +1,14 @@
 {
   "name": "arqe",
-  "version": "1.0.0",
-  "license": "UNLICENSED",
+  "version": "0.0.2",
+  "license": "MIT",
+  "description": "Abstract relational query engine",
+  "repository": "https://github.com/andyfischer/arqe",
   "main": "dist/index.js",
+  "files": [
+      "dist",
+      "README.md"
+  ],
   "scripts": {
     "build": "tsc -p .",
     "test": "jest --watch",
@@ -15,7 +21,6 @@
     "generate-api-once": "bin/arqe-code-generator --db src/db"
   },
   "dependencies": {
-    "@typescript-eslint/typescript-estree": "^3.0.0",
     "bent": "^1.5.13",
     "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
@@ -23,18 +28,14 @@
     "fast-glob": "^3.0.4",
     "fs-extra": "^8.0.1",
     "glob": "^7.1.6",
-    "ink": "^2.2.0",
-    "ink-spinner": "^3.0.1",
-    "ink-text-input": "^3.2.0",
     "minimist": "^1.2.0",
     "prop-types": "^15.7.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.12.0",
     "source-map-support": "^0.5.12",
     "ws": "^7.2.0",
     "yaml": "^1.10.0"
   },
   "devDependencies": {
+    "@typescript-eslint/typescript-estree": "^3.0.0",
     "@types/jest": "^24.0.15",
     "@types/node": "^12.0.3",
     "concurrently": "^5.0.0",

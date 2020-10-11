@@ -1,18 +1,41 @@
 import Graph from "./Graph";
-import ParsedQuery from "./ParsedQuery";
-import Pipe from "./Pipe";
+import Command from "./Command";
+import Pipe from "./utils/Pipe";
+import LiveQuery, { LiveQueryId } from './LiveQuery'
+import Tuple from './Tuple'
 
 export default class QueryContext {
     graph: Graph
+    parent?: QueryContext
+
+    env?: Tuple
+
+    watchingQueries = new Map<LiveQueryId, LiveQuery>()
 
     input: Pipe
     verb: string
 
+    traceEnabled = false;
     enableDebugDumpTrace = false;
     depth = 0
 
-    constructor(graph: Graph) {
+    constructor(graph: Graph, parent?: QueryContext) {
         this.graph = graph;
+        this.parent = parent;
+        this.traceEnabled = parent && parent.traceEnabled;
+    }
+
+    newChild() {
+        return new QueryContext(this.graph, this);
+    }
+
+    *eachWatchingQuery(): Iterable<LiveQuery> {
+        for (const query of this.watchingQueries.values()) {
+            yield query;
+        }
+
+        if (this.parent)
+            yield* this.parent.eachWatchingQuery();
     }
 
     _print(msg) {
@@ -41,5 +64,15 @@ export default class QueryContext {
             this.depth -= 1;
             this._print(`end: ${id}`);
         }
+    }
+
+    getEnv(attr: string) {
+        if (this.env && this.env.hasAttr(attr))
+            return this.env.get(attr);
+
+        if (this.parent)
+            return this.parent.getEnv(attr);
+
+        return null;
     }
 }

@@ -1,5 +1,5 @@
 import { Graph } from "..";
-import parseTuple from "../parseTuple";
+import parseTuple from "../stringFormat/parseTuple";
 import { run } from "./utils";
 
 let graph: Graph;

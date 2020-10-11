@@ -13,7 +13,7 @@ export default function *findPartitionsByTable(cxt: QueryContext, tuple: Tuple):
     // Check if the query specifies an exact table
     if (tuple.hasAttr('table')) {
         const tableName = tuple.getVal('table');
-        const table = graph.findTable(tableName);
+        const table = graph.findTableByName(tableName);
         if (!table)
             throw new Error("table not found: " + tableName);
 

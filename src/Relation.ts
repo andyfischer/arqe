@@ -43,6 +43,10 @@ export default class Relation {
         return `[${this.all.map(t => t.stringify()).join(', ')}]`    
     }
 
+    stringifyBody() {
+        return `[${this.tuples.map(t => t.stringify()).join(', ')}]`    
+    }
+
     [symValueStringify]() {
         return this.stringify();
     }
@@ -108,6 +112,23 @@ export function receiveToRelationSync(): [Stream, () => Relation] {
     return [ stream, get ];
 }
 
+export function receiveToRelationCallback(callback: (Relation) => void): Stream {
+
+    const tuples = [];
+
+    const stream: Stream = {
+        next(t) {
+            tuples.push(t);
+        },
+        done() {
+            const rel = new Relation(tuples);
+            callback(rel);
+        }
+    }
+
+    return stream;
+}
+
 export function receiveToRelationAsync(): [ Stream, Promise<Relation> ] {
 
     let stream: Stream;
@@ -131,4 +152,24 @@ export function receiveToRelationAsync(): [ Stream, Promise<Relation> ] {
     })
 
     return [ stream, promise ]
+}
+
+export function relationToJsonable(rel: Relation) {
+    return {
+        type: 'relation',
+        tuples: rel.tuples.map(t => t.stringify())
+    }
+}
+
+export function jsonableToRelation(json: any): Relation {
+    if (json.type !== 'relation') {
+        throw new Error("jsonableToRelation: object doesn't have type = relation");
+    }
+
+    const tuples = json.tuples;
+    return new Relation(tuples);
+}
+
+export function isRelation(val: any) {
+    return val && (val[symValueType] === 'relation');
 }

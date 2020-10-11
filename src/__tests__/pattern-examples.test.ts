@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
 import patternFuzzTest from '../test/pattern-examples'
-import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from '../loadBootstrapConfigs'
+import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from '../node/loadBootstrapConfigs'
 
 it("patterns fuzz-test", () => {
     const graph = new Graph();

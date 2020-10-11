@@ -3,6 +3,7 @@ import useLiveRelation, { useLiveRelationList } from "./useLiveRelation";
 import colorScheme from './ColorScheme'
 import TextPrompt from './components/TextPrompt'
 import QueryView from "./components/QueryView";
+import Label from "./components/Label";
 
 function TopMenubar() {
     return <div className="top-menubar">
@@ -37,6 +38,9 @@ function component({ document_item, type, style }) {
 
     if (type === 'prompt')
         return <TextPrompt key={itemKey} path={itemKey} />
+
+    if (type === 'label')
+        return <Label key={itemKey} path={itemKey} />
 
     return <div>unrecognized type: {type}</div>
 }

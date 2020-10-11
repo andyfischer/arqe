@@ -1,15 +1,10 @@
 
-import CompoundQuery from './CompoundQuery'
 import parseCommand from './parseCommand'
 import TupleTag, { newTag } from './TupleTag'
 
-export function stringifyCommandChain(chain: CompoundQuery) {
-    return chain.queries.map(command => command.stringify()).join(' | ');
-}
-
 export function appendTagInCommand(str: string, tag: string) {
     const parsed = parseCommand(str);
-    parsed.pattern = parsed.pattern.addTag(newTag(tag));
+    parsed.tuple = parsed.tuple.addTag(newTag(tag));
     return parsed.stringify();
 }
 
@@ -19,7 +14,7 @@ export function parseAsSet(str: string) {
     if (command.verb !== 'set')
         throw new Error("Expected 'set' command: " + str);
 
-    return command.pattern.tags;
+    return command.tuple.tags;
 }
 
 export function normalizeExactTag(tags: TupleTag[]) {

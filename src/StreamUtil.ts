@@ -2,15 +2,6 @@
 import Stream from './Stream'
 import Tuple from './Tuple';
 
-/*
-export function combineStreams({
-    output: TupleReceiver,
-    whenDone: () => {}
-}): TupleReceiver {
-
-}
-*/
-
 type NewReceiverFunc = () => Stream
 
 export function combineStreams(output: Stream): NewReceiverFunc {
@@ -73,7 +64,7 @@ export function streamPostFilter(stream: Stream, filter: (t: Tuple) => boolean) 
     }
 }
 
-export function streamPostModify(stream: Stream, callback: (t: Tuple) => Tuple | null) {
+export function streamPostModify(stream: Stream, callback: (t: Tuple) => Tuple | null): Stream {
     return {
         next(t: Tuple) {
             const modified = callback(t);
@@ -86,6 +77,6 @@ export function streamPostModify(stream: Stream, callback: (t: Tuple) => Tuple |
     }
 }
 
-export function streamPostRemoveAttr(stream: Stream, attr: string) {
+export function streamPostRemoveAttr(stream: Stream, attr: string): Stream {
     return streamPostModify(stream, (t: Tuple) => t.remapTags(tag => tag.attr === attr ? null : tag));
 }

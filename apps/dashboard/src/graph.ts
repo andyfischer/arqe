@@ -4,7 +4,7 @@ import { Graph } from 'arqe';
 function initializeGraph() {
   const graph = new Graph({ context: 'browser' });
 
-  graph.runSync('set sidebar-item((unique)) title(New Query) link(New Query)');
+  graph.runSync('set sidebar-item((unique)) title() link()');
 
   graph.runSync('set test-data name(Alice) balance(1.0)');
   graph.runSync('set test-data name(Bob) balance(7.0)');
@@ -20,6 +20,9 @@ function initializeGraph() {
 
   graph.runSync('set document_item/3 type/prompt style ');
   graph.runSync('set document_item/3 value(sample value) ');
+
+  graph.runSync('set document_item/4 type/label style');
+  graph.runSync('set document_item/4 query(get document_item/3 value)');
 
   return graph;
 }

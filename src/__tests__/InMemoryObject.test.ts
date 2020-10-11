@@ -1,6 +1,6 @@
 import Graph from "../Graph";
 import setupInMemoryObjectTable from "../tables/InMemoryObject";
-import parseTuple from "../parseTuple";
+import parseTuple from "../stringFormat/parseTuple";
 import { run } from './utils'
 
 it('can correctly read from InMemoryObject table', () => {

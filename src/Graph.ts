@@ -3,27 +3,27 @@ import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import IDSource from './utils/IDSource'
-import GraphListener, { GraphListenerMount } from './GraphListenerV3'
 import watchAndValidateCommand from './validation/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
-import parseObjectToPattern from './parseObjectToPattern'
+import parseJsonToTuple from './objectToTuple'
 import InMemoryTable from './tables/InMemoryTable'
 import TuplePatternMatcher from './tuple/TuplePatternMatcher'
-import TableListener from './TableListener'
-import TableMount from './TableMount'
-import parseTuple from './parseTuple'
+import TableMount, { MountId } from './TableMount'
+import parseTuple from './stringFormat/parseTuple'
 import { receiveToRelationInStream, receiveToRelationAsync } from './Relation'
 import setupInMemoryObjectTable from './tables/InMemoryObject'
 import { setupSingleValueTable } from './tables/SingleValueTable'
-import SavedQuery from './SavedQuery'
-import { parseProgram } from './parseProgram'
-import QueryV2, { runQueryV2 } from './QueryV2'
-import { string } from 'prop-types'
+import Query, { runQueryV2 } from './Query'
 import LiveQuery from './LiveQuery'
+import QueryContext from './QueryContext'
+import { VerbCallback } from './runOneCommand'
+import { QueryLike, toQuery } from './coerce'
+import setupTableSetV2, { TableSetDefinition } from './setupTableSetV2'
 
 interface GraphOptions {
     context?: 'browser' | 'node'
     autoinitMemoryTables?: boolean
+    provide?: TableSetDefinition
 }
 
 function looseInputToTuple(input: any): Tuple {
@@ -32,7 +32,7 @@ function looseInputToTuple(input: any): Tuple {
     } else if (input instanceof Tuple) {
         return input;
     } else {
-        return parseObjectToPattern(input);
+        return parseJsonToTuple(input);
     }
 }
 
@@ -41,23 +41,21 @@ export default class Graph {
     options: GraphOptions
 
     nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
-    tables = new Map<string, TableMount>()
+
+    tablesByName = new Map<string, TableMount>()
+    tablesById = new Map<MountId, TableMount>()
+
     tablePatternMap = new TuplePatternMatcher<TableMount>();
 
-    listeners: GraphListenerMount[] = []
-
-    eagerValueIds = new IDSource()
-    graphListenerIds = new IDSource()
-    nextListenerId = new IDSource()
-    nextWatchId = new IDSource();
     nextMountId = new IDSource('mount-');
     nextLiveQueryId = new IDSource('lq-');
-
-    relationCreatedListeners: { pattern: Tuple, onCreate: (rel: Tuple) => void }[] = []
+    nextAnonTableNameId = new IDSource();
 
     liveQueries = new Map<string, LiveQuery>()
     pendingChangeEvents = new Map<string, true>();
     _isFlushingChangeEvents = false;
+
+    definedVerbs: { [name: string]: VerbCallback } = {}
 
     constructor(options: GraphOptions = {}) {
         this.options = options;
@@ -67,24 +65,25 @@ export default class Graph {
             this.options.autoinitMemoryTables = true;
 
         setupBuiltinTables(this);
-    }
 
-    findTable(name: string) {
-        return this.tables.get(name) || null;
+        if (options.provide) {
+            this.addTables(setupTableSetV2(options.provide));
+        }
     }
 
     defineInMemoryTable(name: string, pattern: Tuple): TableMount {
-        if (this.tables.has(name))
-            throw new Error("table already exists: " + name)
-
         const inMemoryTable = new InMemoryTable(name, pattern);
         this.addTable(inMemoryTable.mount);
         return inMemoryTable.mount;
     }
 
+    findTableByName(name: string) {
+        return this.tablesByName.get(name) || null;
+    }
+
     addTable(table: TableMount) {
         if (!table.name)
-            throw new Error("missing 'name'");
+            table.name = this.getAnonymousTableName(table.schema);
 
         if (!(table instanceof TableMount))
             throw new Error('addTable expected TableMount object');
@@ -93,7 +92,8 @@ export default class Graph {
             throw new Error("table already has mountId - mounted twice?");
 
         table.mountId = this.nextMountId.take();
-        this.tables.set(table.name, table);
+        this.tablesByName.set(table.name, table);
+        this.tablesById.set(table.mountId, table);
         this.tablePatternMap.add(table.schema, table);
         return table;
     }
@@ -103,77 +103,30 @@ export default class Graph {
             this.addTable(table);
     }
 
+    getAnonymousTableName(schema: Tuple) {
+        return '_' + schema.tags.map(tag => tag.attr || '').join('_') + this.nextAnonTableNameId.take();
+    }
+
     takeNextUniqueIdForAttr(attr: string) {
         if (!this.nextUniquePerAttr[attr])
             this.nextUniquePerAttr[attr] = new IDSource();
         return this.nextUniquePerAttr[attr].take();
     }
 
-    addListener(pattern: Tuple, listener: GraphListener) {
-        this.listeners.push({ pattern, listener });
-    }
+    run(queryLike: QueryLike, output?: Stream, env?: Tuple) {
+        // output = watchAndValidateCommand(commandStr, output);
 
-    addListenerV2(tuple: Tuple, listener: TableListener) {
-        /*
-        const table = findTableForQuery(this, tuple);
-        if (!tuple) {
-            throw new Error("didn't find a single table for: " + tuple.str());
-        }
-        */
-
-        const id = this.nextListenerId.take();
-        /*
-        FIXME
-        if (!table.storage.addListener)
-            throw new Error(`${table.storage.name} doesn't support listeners`);
-
-        table.storage.addListener(id, listener);
-        */
-        return id;
-    }
-
-    onTupleCreated(rel: Tuple) {
-        for (const { pattern, onCreate } of this.relationCreatedListeners)
-            if (rel.isSupersetOf(pattern))
-                onCreate(rel);
-    }
-
-    onTupleUpdated(rel: Tuple) {
-
-        for (const entry of this.listeners) {
-            if (entry.pattern.isSupersetOf(rel)) {
-                // console.log(' listener isSupersetOf: ' + entry.pattern.stringify())
-                entry.listener.onTupleUpdated(rel);
-            } else {
-                // console.log(' listener does not match: ' + entry.pattern.stringify())
-            }
-        }
-    }
-
-    onTupleDeleted(rel: Tuple) {
-        for (const entry of this.listeners) {
-            if (entry.pattern.isSupersetOf(rel))
-                entry.listener.onTupleDeleted(rel);
-        }
-    }
-
-    run(commandStr: string, output?: Stream) {
-        if (/^ *\#/.exec(commandStr)) {
-            // ignore comments
-            return;
-        }
-
+        const query = toQuery(queryLike);
         if (!output)
-            output = fallbackReceiver(commandStr);
+            output = fallbackReceiver(query);
 
-        output = watchAndValidateCommand(commandStr, output);
-
-        const query = parseProgram(commandStr);
-        runQueryV2(this, query, output);
+        const cxt = new QueryContext(this);
+        cxt.env = env;
+        runQueryV2(cxt, query, output);
     }
 
-    runSync(commandStr: string): Tuple[] {
-        const query = parseProgram(commandStr);
+    runSync(queryLike: QueryLike): Tuple[] {
+        const query = toQuery(queryLike);
 
         let rels: Tuple[] = null;
 
@@ -181,28 +134,30 @@ export default class Graph {
             rels = r
         });
 
-        runQueryV2(this, query, receiver);
+        const cxt = new QueryContext(this);
+        runQueryV2(cxt, query, receiver);
 
         if (rels === null)
-            throw new Error("command didn't finish synchronously: " + commandStr);
+            throw new Error("command didn't finish synchronously: " + query.stringify());
 
         return rels;
     }
 
-    runAsync(commandStr: string): Promise<Tuple[]> {
+    runAsync(queryLike: QueryLike): Promise<Tuple[]> {
         const [ receiver, promise ] = receiveToTupleListPromise();
-        this.run(commandStr, receiver);
+        this.run(toQuery(queryLike), receiver);
         return promise;
     }
 
     get(patternInput: any, out: Stream) {
         const pattern = looseInputToTuple(patternInput);
 
-        const query = new QueryV2();
+        const query = new Query();
         const term = query.addTerm('get', pattern);
         query.setOutput(term);
 
-        runQueryV2(this, query, out);
+        const cxt = new QueryContext(this);
+        runQueryV2(cxt, query, out);
     }
 
     set(patternInput: any, out: Stream) {
@@ -210,14 +165,15 @@ export default class Graph {
         if (typeof patternInput === 'string') {
             pattern = parseTuple(patternInput);
         } else {
-            pattern = parseObjectToPattern(patternInput);
+            pattern = parseJsonToTuple(patternInput);
         }
 
-        const query = new QueryV2();
+        const query = new Query();
         const term = query.addTerm('set', pattern);
         query.setOutput(term);
 
-        runQueryV2(this, query, out);
+        const cxt = new QueryContext(this);
+        runQueryV2(cxt, query, out);
     }
 
     setAsync(patternInput: any): Promise<Tuple[]> {
@@ -252,10 +208,6 @@ export default class Graph {
         return promise;
     }
 
-    query(patternStr: string) {
-        return new SavedQuery(this, parseTuple(patternStr));
-    }
-
     pushChangeEvent(liveQueryId: string) {
         if (this._isFlushingChangeEvents)
             throw new Error("don't push change event while flushPendingChangeEvents is running");
@@ -279,8 +231,25 @@ export default class Graph {
         }
     }
 
-    newLiveQuery(queryStr: string) {
-        const query = parseProgram(queryStr);
+    newLiveQuery(queryLike: QueryLike) {
+        const query = toQuery(queryLike);
         return new LiveQuery(this, query);
+    }
+
+    stringifyTables() {
+        const out = ['['];
+        for (const table of this.tablesByName.values())
+             out.push(`${table.mountId}: (${table.schema.stringify()})`);
+
+        out.push(']');
+        return out.join('\n');
+    }
+
+    defineVerb(name: string, callback: VerbCallback) {
+        this.definedVerbs[name] = callback;
+    }
+
+    provide(def: TableSetDefinition) {
+        this.addTables(setupTableSetV2(def));
     }
 }

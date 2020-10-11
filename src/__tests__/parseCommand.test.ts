@@ -1,115 +1,114 @@
 
 import parseCommand from '../parseCommand'
 import { appendTagInCommand } from '../stringifyQuery'
-import Pattern from '../Pattern'
 import { newTagFromObject } from '../TupleTag'
-import { tagsToTuple } from '../Tuple'
+import { newTuple } from '../Tuple'
 
 it('parses tags with no values', () => {
     const parsed = parseCommand('test a');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('a')
-    expect(parsed.pattern.tags[0].value).toEqual(null)
+    expect(parsed.tuple.tags[0].attr).toEqual('a')
+    expect(parsed.tuple.tags[0].value).toEqual(null)
 });
 
 it('parses tags with values', () => {
     const parsed = parseCommand('test a/1');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('a')
-    expect(parsed.pattern.tags[0].value).toEqual('1')
+    expect(parsed.tuple.tags[0].attr).toEqual('a')
+    expect(parsed.tuple.tags[0].value).toEqual('1')
 });
 
 it('parses multiple tags', () => {
     const parsed = parseCommand('test a b c');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('a')
-    expect(parsed.pattern.tags[1].attr).toEqual('b')
-    expect(parsed.pattern.tags[2].attr).toEqual('c')
+    expect(parsed.tuple.tags[0].attr).toEqual('a')
+    expect(parsed.tuple.tags[1].attr).toEqual('b')
+    expect(parsed.tuple.tags[2].attr).toEqual('c')
 });
 
 it('parses tag types with dashes', () => {
     const parsed = parseCommand('test tag-type');
-    expect(parsed.pattern.tags[0].attr).toEqual('tag-type');
+    expect(parsed.tuple.tags[0].attr).toEqual('tag-type');
     const parsed2 = parseCommand('test tag-type/123');
-    expect(parsed2.pattern.tags[0].attr).toEqual('tag-type');
-    expect(parsed2.pattern.tags[0].value).toEqual('123');
+    expect(parsed2.tuple.tags[0].attr).toEqual('tag-type');
+    expect(parsed2.tuple.tags[0].value).toEqual('123');
 });
 
 it('parses tags with stars', () => {
     const parsed = parseCommand('test a/*');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('a')
-    expect(parsed.pattern.tags[0].starValue).toEqual(true)
+    expect(parsed.tuple.tags[0].attr).toEqual('a')
+    expect(parsed.tuple.tags[0].starValue).toEqual(true)
 });
 
 it('parses tags with stars 2', () => {
     const parsed = parseCommand('test a/* c');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('a')
-    expect(parsed.pattern.tags[0].starValue).toEqual(true)
-    expect(parsed.pattern.tags[1].attr).toEqual('c')
+    expect(parsed.tuple.tags[0].attr).toEqual('a')
+    expect(parsed.tuple.tags[0].starValue).toEqual(true)
+    expect(parsed.tuple.tags[1].attr).toEqual('c')
 });
 
 it('ignores extra spaces', () => {
     const parsed = parseCommand('test   a');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('a')
+    expect(parsed.tuple.tags[0].attr).toEqual('a')
 });
 
 it('parses star', () => {
     const parsed = parseCommand('test *');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].star).toEqual(true)
+    expect(parsed.tuple.tags[0].star).toEqual(true)
 });
 
 it('parses doubleStar', () => {
     const parsed = parseCommand('test **');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].doubleStar).toEqual(true)
+    expect(parsed.tuple.tags[0].doubleStar).toEqual(true)
 });
 
 it('parses flags', () => {
     const parsed = parseCommand('test -a 1');
     expect(parsed.verb).toEqual('test')
     expect(parsed.flags).toEqual({a: true})
-    expect(parsed.pattern.tags[0].attr).toEqual('1');
+    expect(parsed.tuple.tags[0].attr).toEqual('1');
 });
 
 it('parses multiple flags', () => {
     const parsed = parseCommand('test -a -b -c 1');
     expect(parsed.verb).toEqual('test')
     expect(parsed.flags).toEqual({a: true, b: true, c: true})
-    expect(parsed.pattern.tags[0].attr).toEqual('1');
+    expect(parsed.tuple.tags[0].attr).toEqual('1');
 });
 
 it('parses multicharacter flag', () => {
     const parsed = parseCommand('test -list 1');
     expect(parsed.verb).toEqual('test')
     expect(parsed.flags.list).toEqual(true);
-    expect(parsed.pattern.tags[0].attr).toEqual('1');
+    expect(parsed.tuple.tags[0].attr).toEqual('1');
 });
 
 it('parses unbound variables', () => {
     const parsed = parseCommand('test $a');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toBeFalsy();
-    expect(parsed.pattern.tags[0].identifier).toEqual('a');
-    expect(parsed.pattern.tags[0].star).toEqual(true);
+    expect(parsed.tuple.tags[0].attr).toBeFalsy();
+    expect(parsed.tuple.tags[0].identifier).toEqual('a');
+    expect(parsed.tuple.tags[0].star).toEqual(true);
 });
 
 it('parses unbound variables 2', () => {
     const parsed = parseCommand('test tagtype/$a');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('tagtype');
-    expect(parsed.pattern.tags[0].identifier).toEqual('a');
-    expect(parsed.pattern.tags[0].star).toBeFalsy();
+    expect(parsed.tuple.tags[0].attr).toEqual('tagtype');
+    expect(parsed.tuple.tags[0].identifier).toEqual('a');
+    expect(parsed.tuple.tags[0].star).toBeFalsy();
 });
 
 xit('parses quoted tag values', () => {
     const parsed = parseCommand('test tagtype/"string value"');
     expect(parsed.verb).toEqual('test')
-    expect(parsed.pattern.tags[0].attr).toEqual('tagtype');
-    expect(parsed.pattern.tags[0].value).toEqual('string value');
+    expect(parsed.tuple.tags[0].attr).toEqual('tagtype');
+    expect(parsed.tuple.tags[0].value).toEqual('string value');
 });
 
 function testRestringify(str: string) {
@@ -139,15 +138,9 @@ it("restringify tests", () => {
 });
 
 it('stringifies tag identifiers', () => {
-    expect((tagsToTuple([newTagFromObject({identifier: 'foo', star: true})])).stringify()).toEqual('$foo');
-    expect((tagsToTuple([newTagFromObject({identifier: 'foo', attr: 'type'})])).stringify()).toEqual('type/$foo');
-    expect((tagsToTuple([newTagFromObject({identifier: 'foo', attr: 'type', value: 'value'})])).stringify()).toEqual('[from $foo] type/value');
-});
-
-it('handles paren sections', () => {
-    testRestringify('get tag(string value)');
-    testRestringify(`get message(can't use dir(*))`);
-    testRestringify(`git branch(* branch_name)`);
+    expect((newTuple([newTagFromObject({identifier: 'foo', star: true})])).stringify()).toEqual('$foo');
+    expect((newTuple([newTagFromObject({identifier: 'foo', attr: 'type'})])).stringify()).toEqual('type/$foo');
+    expect((newTuple([newTagFromObject({identifier: 'foo', attr: 'type', value: 'value'})])).stringify()).toEqual('[from $foo] type/value');
 });
 
 it('stringifies expressions', () => {

@@ -1,9 +1,5 @@
 
 import Graph from '../../Graph'
-import ParsedQuery from '../../ParsedQuery'
-import CompoundQuery from '../../CompoundQuery'
-import { newTag } from '../../TupleTag'
-import { appendTagInCommand } from '../../stringifyQuery'
 
 export interface ChaosMode {
     name: string

@@ -1,5 +1,3 @@
-import { dir } from "console"
-
 interface CommandInfo {
     directTableAccess?: boolean
 }
@@ -12,6 +10,9 @@ export const ValidCommands: { [name: string]: CommandInfo } = {
         directTableAccess: true
     },
     'set': {
+        directTableAccess: true
+    },
+    'send': {
         directTableAccess: true
     },
     'select': {

@@ -1,14 +1,13 @@
 
-import Graph from './Graph'
-import ParsedQuery from './ParsedQuery'
-import Pipe from './Pipe'
+import Pipe from './utils/Pipe'
+import Stream from './Stream'
 import Tuple from './Tuple'
-import { QueryFlags } from './ParsedQuery'
+import { CommandFlags } from './Command'
 
 export default interface CommandParams {
     verb: string
     tuple: Tuple
-    flags: QueryFlags
+    flags: CommandFlags
     input: Pipe
-    output: Pipe
+    output: Stream
 }

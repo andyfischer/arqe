@@ -1,7 +1,7 @@
 
 import runningInBrowser from './runningInBrowser'
 //import { notifyFileChanged } from '../old/file-watch/notifyFileChanged'
-import getProcessClient from '../toollib/getProcessClient'
+//import getProcessClient from '../node/getProcessClient'
 
 let _readFile;
 let _readFileSync;
@@ -43,9 +43,11 @@ export function writeFileSyncIfUnchanged(filename: string, contents: string) {
 
     Fs.writeFileSync(filename, contents);
 
+    /*
     getProcessClient()
     //.then(graph => notifyFileChanged(graph, filename))
     .catch(console.error)
+    */
 
     return true;
 }

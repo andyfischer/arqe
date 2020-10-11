@@ -3,7 +3,7 @@ import Graph from '../Graph'
 import Tuple from '../Tuple'
 import Stream from '../Stream'
 import fs from 'fs'
-import { emitCommandError } from '../CommandMeta'
+import { emitCommandError } from '../CommandUtils'
 
 export class FsFileContents {
     graph: Graph

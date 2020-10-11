@@ -2,7 +2,7 @@ import Tuple from "../Tuple";
 import TableMount from "../TableMount";
 import IDSource from "../utils/IDSource";
 import WebSocket from '../platform/ws'
-import parseTuple from "../parseTuple";
+import parseTuple from "../stringFormat/parseTuple";
 import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 
 export class Connection {

@@ -23,7 +23,7 @@ export default class Context {
 
     constructor(str: string) {
         if (typeof str !== 'string')
-            throw new Error('expected string');
+            throw new Error('expected string, saw: ' + str);
 
         this.str = str;
     }

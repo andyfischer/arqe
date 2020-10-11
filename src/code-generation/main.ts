@@ -6,9 +6,9 @@ import { generateTextAsCode } from './TextAsCode'
 //import watchFile from '../old/file-watch/watchFile'
 //import { notifyFileChanged } from '../old/file-watch/notifyFileChanged'
 import Minimist from 'minimist'
-import runStandardProcess from '../toollib/runStandardProcess'
+import runStandardProcess from '../node/runStandardProcess'
 import { runProviderGenerator } from './ProviderAPIGenerator'
-import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from '../loadBootstrapConfigs'
+import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from '../node/loadBootstrapConfigs'
 
 function runGenerationForTarget(dataSource: Graph, api: CodeGenerationDAO, target) {
     const strategy = api.codeGenerationTargetStrategy(target);

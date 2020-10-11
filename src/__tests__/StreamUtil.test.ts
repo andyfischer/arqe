@@ -1,6 +1,6 @@
-import Pipe from "../Pipe"
+import Pipe from "../utils/Pipe"
 import { streamPostRemoveAttr, streamPostModify } from "../StreamUtil";
-import parseTuple from "../parseTuple";
+import parseTuple from "../stringFormat/parseTuple";
 import { stringify } from "querystring";
 
 it("streamPostRemoveAttr works", () => {

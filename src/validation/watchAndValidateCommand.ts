@@ -1,13 +1,11 @@
 
 import Stream from '../Stream'
-import CompoundQuery from '../CompoundQuery'
-import Pattern from '../Pattern'
-import Tuple from '../Tuple'
 import { internalError } from '../utils/logError'
 
 interface Validation {
 }
 
+/*
 class SetShouldEmitRelation {
     static maybeCreate(commandStr: string, command: CompoundQuery) {
         if (command.queries.length > 1)
@@ -25,11 +23,11 @@ class SetShouldEmitRelation {
     }
 
     commandStr: string;
-    pattern: Pattern;
+    pattern: Tuple;
     sawRelation: boolean = false;
     commandErrored: boolean = false;
 
-    constructor(commandStr: string, pattern: Pattern) {
+    constructor(commandStr: string, pattern: Tuple) {
         this.commandStr = commandStr;
         this.pattern = pattern;
     }
@@ -53,6 +51,7 @@ class SetShouldEmitRelation {
 const validationClasses = [
     SetShouldEmitRelation
 ]
+*/
 
 export default function watchAndValidateCommand(commandStr: string, output: Stream) {
 

@@ -3,7 +3,7 @@ import Graph from '../Graph'
 import { startFile, startObjectLiteral, Block, formatBlock, startFunctionTypeDef } from './JavascriptAst'
 import ProviderGeneratorDAO from './generated/ProviderGeneratorDAO'
 import { writeFileSyncIfUnchanged } from '../platform/fs'
-import Pattern from '../Pattern'
+import Tuple from '../Tuple'
 import parseCommand from '../parseCommand'
 
 function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
@@ -45,7 +45,7 @@ function createHandlerInterface(api: ProviderGeneratorDAO, file: Block) {
 function createFileAst(api: ProviderGeneratorDAO, target: string) {
     const file = startFile();
     const importPath = api.getIkImport(target);
-    file.addImport('{ GraphLike, Tuple, Pattern, TupleReceiver, StorageProvider, emitCommandError }', importPath);
+    file.addImport('{ GraphLike, Tuple, TupleReceiver, StorageProvider, emitCommandError }', importPath);
 
     createHandlerInterface(api, file);
 
@@ -109,7 +109,7 @@ function createFileAst(api: ProviderGeneratorDAO, target: string) {
     return file;
 }
 
-function patternCheckExpression(pattern: Pattern) {
+function patternCheckExpression(pattern: Tuple) {
     const conditions = [];
 
     if (pattern.derivedData().hasDoubleStar) {
@@ -133,7 +133,7 @@ function patternCheckExpression(pattern: Pattern) {
     return conditions.map(c => `(${c})`).join(' && ');
 }
 
-function pullOutVarsFromPattern(pattern: Pattern, block: Block) {
+function pullOutVarsFromPattern(pattern: Tuple, block: Block) {
 
     const vars: string[] = [];
 
@@ -156,7 +156,7 @@ function* iterateWithFirstLast(list: any[]) {
 function addPatternCheck(api: ProviderGeneratorDAO, block: Block, handler: string) {
     const query = api.handlerQuery(handler);
     const command = parseCommand(query);
-    const pattern = command.pattern;
+    const pattern = command.tuple;
 
     block.addComment(`check for ${handler} (${query})`);
 

@@ -1,6 +1,6 @@
 
 import TupleTag from '../TupleTag'
-import parseTuple from '../parseTuple';
+import parseTuple from '../stringFormat/parseTuple';
 
 it('TupleTag.setValue works', () => {
     const tag = new TupleTag({ attr: 'a', value: '1' });

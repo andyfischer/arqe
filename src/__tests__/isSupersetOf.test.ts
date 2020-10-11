@@ -1,5 +1,5 @@
 
-import parseTuple from '../parseTuple';
+import parseTuple from '../stringFormat/parseTuple';
 
 function test(superPattern: string, subPattern: string) {
     return parseTuple(superPattern).isSupersetOf(

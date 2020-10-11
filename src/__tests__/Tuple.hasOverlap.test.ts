@@ -1,6 +1,5 @@
-import parseTuple from "../parseTuple";
+import parseTuple from "../stringFormat/parseTuple";
 import { Tuple } from "..";
-
 
 function propCheck(lhs: Tuple, rhs: Tuple) {
     if (lhs.hasOverlap(rhs) !== rhs.hasOverlap(lhs)) {

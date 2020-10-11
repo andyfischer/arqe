@@ -1,21 +1,29 @@
 
 import Graph from '../Graph'
-import QueryV2, { runQueryV2 } from '../QueryV2'
-import Pipe from '../Pipe'
-import parseTuple from '../parseTuple'
+import Query, { runQueryV2 } from '../Query'
+import Pipe from '../utils/Pipe'
+import parseTuple from '../stringFormat/parseTuple'
+import QueryContext from '../QueryContext'
+
+let graph: Graph;
+let cxt: QueryContext;
+
+beforeEach(() => {
+    graph = new Graph();
+    cxt = new QueryContext(graph);
+});
 
 it("can run a single term", () => {
-    const query = new QueryV2();
+    const query = new Query();
     const t = query.addTerm('get', parseTuple('a b'))
     query.setOutput(t);
 
-    const graph = new Graph();
     graph.run("set a b/x");
     graph.run("set a b/y");
 
     const out = new Pipe();
 
-    runQueryV2(graph, query, out);
+    runQueryV2(cxt, query, out);
     expect(out.take().map(t => t.stringify())).toEqual([
         'a b command-meta search-pattern',
         'a b/x',
@@ -24,14 +32,13 @@ it("can run a single term", () => {
 });
 
 it("can run chained terms", () => {
-    const query = new QueryV2();
+    const query = new Query();
 
     const t1 = query.addTerm('get', parseTuple('a b/$b'))
     const t2 = query.addTerm('join', parseTuple('b/$b c'))
     query.connectAsInput(t1, t2);
     query.setOutput(t2);
     
-    const graph = new Graph();
     graph.run("set a/1 b/x");
     graph.run("set a/2 b/y");
     graph.run("set b/x c/x");
@@ -39,7 +46,7 @@ it("can run chained terms", () => {
 
     const out = new Pipe();
 
-    runQueryV2(graph, query, out);
+    runQueryV2(cxt, query, out);
     expect(out.take().map(t => t.stringify())).toEqual([
         'a b/$b command-meta search-pattern c',
         'a/1 [from $b] b/x c/x',

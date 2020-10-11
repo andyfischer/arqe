@@ -1,7 +1,7 @@
 import Graph from "../Graph"
 import { run } from './utils'
-import parseTuple from "../parseTuple";
-import Pipe from "../Pipe";
+import parseTuple from "../stringFormat/parseTuple";
+import Pipe from "../utils/Pipe";
 
 it('get accepts a Tuple as input', () => {
     const graph = new Graph();
