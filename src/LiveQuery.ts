@@ -7,8 +7,9 @@ import QueryContext from './QueryContext';
 import findPartitionsByTable from './findPartitionsByTable';
 import { EventEmitter } from 'events';
 import Stream from './Stream';
-import Relation, { receiveToRelationSync, receiveToRelationAsync,
-    receiveToRelationCallback} from './Relation';
+import Relation from './Relation'
+import { receiveToRelationSync, receiveToRelationAsync,
+    receiveToRelationCallback} from './receiveUtils';
 import { toQuery, QueryLike } from './coerce'
 
 export type LiveQueryId = string;

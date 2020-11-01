@@ -1,5 +1,5 @@
 
-import runningInBrowser from './runningInBrowser'
+import runningInBrowser from '../utils/runningInBrowser'
 //import { notifyFileChanged } from '../old/file-watch/notifyFileChanged'
 //import getProcessClient from '../node/getProcessClient'
 

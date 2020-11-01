@@ -1,12 +1,12 @@
 import Graph from "../Graph";
-import setupTableSetV2, { defineVerbV2 } from "../setupTableSetV2";
+import setupTableSetV2, { defineVerbV2 } from "../setupTableSet";
 import { run as _run } from './utils'
 
 let graph;
 const run = (str, opts?) => _run(graph, str, opts);
 
 beforeEach(() => {
-    graph = new Graph({autoinitMemoryTables: false});
+    graph = new Graph();
 });
 
 it('can define a simple table', () => {

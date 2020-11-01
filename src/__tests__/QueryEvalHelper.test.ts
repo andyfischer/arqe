@@ -1,5 +1,5 @@
 import Graph from "../Graph"
-import setupTableSet from "../setupTableSetV2";
+import setupTableSet from "../setupTableSet";
 import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 import { run } from "./utils";
 import QueryEvalHelper from "../QueryEvalHelper";

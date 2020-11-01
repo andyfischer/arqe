@@ -4,154 +4,98 @@ import { symValueStringify, symValueType } from "./internalSymbols"
 import { newSimpleTag } from "./TupleTag";
 
 export default class Relation {
-    header: Tuple
-    all: Tuple[] = [];
-    tuples: Tuple[] = [];
-    errors?: Tuple[]
-
-    headerAttrToIndex?: Map<string, number>
+    tuples: Tuple[]
+    cache: Map<string, any>
 
     [symValueType] = 'relation'
 
     constructor(tuples: Tuple[]) {
-        
-        for (const tuple of tuples) {
-            this.all.push(tuple);
+        this.tuples = tuples;
+    }
 
-            if (tuple.isCommandMeta()) {
-                if (tuple.isCommandError()) {
-                    this.errors = this.errors || [];
-                    this.errors.push(tuple);
-                } else if (tuple.isCommandSearchPattern()) {
-                    this.header = tuple;
-                }
-            } else {
-                this.tuples.push(tuple);
-            }
+    usingCache(key: string, builder: (rel: Relation) => any) {
+        if (!this.cache)
+            this.cache = new Map();
+
+        if (!this.cache.has(key)) {
+            const result = builder(this);
+            this.cache.set(key, result);
+            return result;
         }
+
+        return this.cache.get(key);
+    }
+
+    append(tuples: Tuple[]) {
+        return new Relation(this.tuples.concat(tuples));
+    }
+
+    *body() {
+        for (const tuple of this.tuples) {
+            if (!tuple.isCommandMeta())
+                yield tuple;
+        }
+    }
+
+    bodyArray() {
+        return Array.from(this.body())
+    }
+
+    *errors() {
+        for (const tuple of this.tuples) {
+            if (tuple.isCommandError())
+                yield tuple;
+        }
+    }
+
+    header(): Tuple {
+        return this.usingCache('header', (rel) => {
+            if (rel.tuples.length === 0)
+                return new Tuple([]);
+
+            for (const tuple of rel.tuples) {
+                if (tuple.isCommandSearchPattern())
+                    return tuple.removeAttr('command-meta').removeAttr('search-pattern');
+            }
+
+            return new Tuple([newSimpleTag('error'), newSimpleTag('infer-header-not-supported')])
+        });
     }
 
     errorsToErrorObject(): Error | null {
-        if (!this.errors || this.errors.length == 0)
-            return null;
+        for (const error of this.errors()) {
+            return new Error(error.getVal('message'));
+        }
 
-        const firstError = this.errors[0];
-        return new Error(firstError.getVal('message'));
+        return null;
+    }
+
+    *withAttr(attr: string) {
+        for (const tuple of this.tuples) {
+            if (tuple.hasAttr(attr))
+                yield tuple;
+        }
+    }
+
+    oneWithAttr(attr: string) {
+        for (const it of this.withAttr(attr))
+            return it;
+    }
+
+    oneValue(attr: string) {
+        const t = this.oneWithAttr(attr);
+        if (!t)
+            return null;
+        return t.getVal(attr);
     }
 
     stringify() {
-        return `[${this.all.map(t => t.stringify()).join(', ')}]`    
+        return `Relation[${this.tuples.map(t => t.stringify()).join(', ')}]`;
     }
 
     stringifyBody() {
-        return `[${this.tuples.map(t => t.stringify()).join(', ')}]`    
+        return `[${Array.from(this.body()).map(t => t.stringify()).join(', ')}]`;
     }
-
-    [symValueStringify]() {
-        return this.stringify();
-    }
-
-    getOrInferHeader() {
-        if (this.header)
-            return this.header.removeAttr('command-meta').removeAttr('search-pattern');
-
-        if (this.tuples.length === 0)
-            return new Tuple([]);
-
-        return new Tuple([newSimpleTag('error'), newSimpleTag('infer-header-not-supported')])
-    }
-
-    getTuplesSortedByHeader() {
-        const header = this.getOrInferHeader();
-
-        return this.tuples.map(tuple => {
-            const outTags = [];
-            for (const headerTag of header.tags) {
-                outTags.push(tuple.getTag(headerTag.attr) || newSimpleTag(headerTag.attr));
-            }
-            return new Tuple(outTags);
-        })
-    }
-}
-
-export function receiveToRelationInStream(out: Stream, attrName: string): Stream {
-    const tuples = [];
-
-    return {
-        next(t) {
-            tuples.push(t);
-        },
-        done() {
-            const relation = new Relation(tuples);
-            out.next(singleTagToTuple(attrName, relation));
-            out.done();
-        }
-    }
-}
-
-export function receiveToRelationSync(): [Stream, () => Relation] {
-    const tuples = [];
-    let isDone = false;
-
-    const stream: Stream = {
-        next(t) {
-            tuples.push(t);
-        },
-        done() {
-            isDone = true;
-        }
-    }
-
-    const get = () => {
-        if (!isDone)
-            throw new Error("receiveToRelationSync - stream isn't finished");
-
-        return new Relation(tuples);
-    }
-
-    return [ stream, get ];
-}
-
-export function receiveToRelationCallback(callback: (Relation) => void): Stream {
-
-    const tuples = [];
-
-    const stream: Stream = {
-        next(t) {
-            tuples.push(t);
-        },
-        done() {
-            const rel = new Relation(tuples);
-            callback(rel);
-        }
-    }
-
-    return stream;
-}
-
-export function receiveToRelationAsync(): [ Stream, Promise<Relation> ] {
-
-    let stream: Stream;
-
-    const promise: Promise<Relation> = new Promise((resolve, reject) => {
-        const tuples = [];
-
-        stream = {
-            next(t) {
-                tuples.push(t);
-            },
-            done() {
-                const relation = new Relation(tuples);
-                const error = relation.errorsToErrorObject();
-                if (error)
-                    reject(error);
-                else
-                    resolve(relation);
-            }
-        }
-    })
-
-    return [ stream, promise ]
 }
 
 export function relationToJsonable(rel: Relation) {

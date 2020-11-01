@@ -1,17 +1,19 @@
 
 import Fs from 'fs'
 import Path from 'path'
-import os from 'os'
 
-import Graph from '../Graph'
 import GraphRepl from '../GraphRepl'
 import printResult from '../console/printResult'
-import Repl from 'repl'
 import Minimist from 'minimist'
 import Tuple from '../Tuple'
 import { receiveToTupleList, receiveToTupleListPromise } from '../receiveUtils'
+import { processGraph } from '../platformExports'
+import Graph from '../Graph'
+import loadWatchedTableModule from './loadWatchedTableModule'
+import startRepl from './startRepl'
+
 // import WebServer from './node/socket/WebServer'
-import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from './loadBootstrapConfigs'
+// import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from './loadBootstrapConfigs'
 
 function runFile(graph: Graph, filename: string) {
     const contents = Fs.readFileSync(filename, 'utf8');
@@ -56,8 +58,16 @@ function requireTables(graph: Graph, moduleName: string) {
 }
 
 function loadStandardTables(graph: Graph) {
-    requireTables(graph, '../plugins/eslint');
-    requireTables(graph, './tables/SocketConnection');
+    loadWatchedTableModule(graph, Path.join(__dirname, 'standardTables.js'));
+}
+
+function autoloadNearbyTables(graph: Graph) {
+    for (const filename of ['dist/tables.js']) {
+        if (Fs.existsSync(filename)) {
+            console.log('autoloading: ' + filename);
+            loadWatchedTableModule(graph, filename);
+        }
+    }
 }
 
 export default async function main() {
@@ -70,15 +80,19 @@ export default async function main() {
     // Set up 'cwd' and 'projectHome' entries
     // Mount schema.json
 
-    const graph = new Graph();
+    const graph = processGraph();
 
+    /*
     if (cliArgs.db) {
         loadBootstrapConfigs(graph, cliArgs.db);
     } else {
         loadLocalBootstrapConfigs(graph);
     }
+    */
+
 
     loadStandardTables(graph);
+    autoloadNearbyTables(graph);
 
     let runRepl = true;
 
@@ -110,22 +124,7 @@ export default async function main() {
     }
 
     if (runRepl) {
-        const graphRepl = new GraphRepl(graph);
-
-        const repl = Repl.start({
-            prompt: '~ ',
-            eval: line => graphRepl.eval(line, () => {
-                repl.displayPrompt()
-            })
-        });
-
-        try {
-            repl.setupHistory(Path.join(os.homedir(), '.arqe_history'), () => {});
-        } catch (e) { }
-
-        repl.on('exit', () => {
-            process.exit(0);
-        });
+        startRepl(graph);
     }
 }
 

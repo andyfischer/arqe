@@ -10,7 +10,7 @@ import InMemoryTable from './tables/InMemoryTable'
 import TuplePatternMatcher from './tuple/TuplePatternMatcher'
 import TableMount, { MountId } from './TableMount'
 import parseTuple from './stringFormat/parseTuple'
-import { receiveToRelationInStream, receiveToRelationAsync } from './Relation'
+import { receiveToRelationInStream, receiveToRelationAsync } from './receiveUtils'
 import setupInMemoryObjectTable from './tables/InMemoryObject'
 import { setupSingleValueTable } from './tables/SingleValueTable'
 import Query, { runQueryV2 } from './Query'
@@ -18,11 +18,10 @@ import LiveQuery from './LiveQuery'
 import QueryContext from './QueryContext'
 import { VerbCallback } from './runOneCommand'
 import { QueryLike, toQuery } from './coerce'
-import setupTableSetV2, { TableSetDefinition } from './setupTableSetV2'
+import setupTableSet, { TableSetDefinition } from './setupTableSet'
 
 interface GraphOptions {
     context?: 'browser' | 'node'
-    autoinitMemoryTables?: boolean
     provide?: TableSetDefinition
 }
 
@@ -61,13 +60,11 @@ export default class Graph {
         this.options = options;
         if (this.options.context === undefined)
             this.options.context = 'node';
-        if (this.options.autoinitMemoryTables === undefined)
-            this.options.autoinitMemoryTables = true;
 
         setupBuiltinTables(this);
 
         if (options.provide) {
-            this.addTables(setupTableSetV2(options.provide));
+            this.addTables(setupTableSet(options.provide));
         }
     }
 
@@ -101,6 +98,31 @@ export default class Graph {
     addTables(tables: TableMount[]) {
         for (const table of tables)
             this.addTable(table);
+    }
+
+    removeTables(tables: TableMount[]) {
+        const idsToRemove = new Map<MountId,boolean>();
+
+        for (const table of tables) {
+            if (!table.mountId)
+                throw new Error('table has no mountId (not mounted?): ' + table.name);
+
+            idsToRemove.set(table.mountId, true)
+        }
+
+        for (const [ name, table ] of this.tablesByName.entries()) {
+            if (idsToRemove.get(table.mountId))
+                this.tablesByName.delete(name);
+        }
+
+        for (const [ id, table ] of this.tablesById.entries()) {
+            if (idsToRemove.get(id))
+                this.tablesById.delete(id);
+        }
+
+        this.tablePatternMap.filterEntries((entry: { pattern: Tuple, value: TableMount }) => {
+            return !idsToRemove.get(entry.value.mountId);
+        });
     }
 
     getAnonymousTableName(schema: Tuple) {
@@ -249,7 +271,9 @@ export default class Graph {
         this.definedVerbs[name] = callback;
     }
 
-    provide(def: TableSetDefinition) {
-        this.addTables(setupTableSetV2(def));
+    provide(def: TableSetDefinition): TableMount[] {
+        const mounts = setupTableSet(def);
+        this.addTables(mounts);
+        return mounts;
     }
 }

@@ -9,6 +9,10 @@ export default class TuplePatternMatcher<V> {
         this.cases.push({pattern, value});
     }
 
+    filterEntries(fn: ({pattern: Tuple, value: V}) => boolean) {
+        this.cases = this.cases.filter(fn);
+    }
+
     find(tuple: Tuple): V | null {
         for (const { pattern, value } of this.cases) {
 

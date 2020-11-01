@@ -4,7 +4,13 @@ import { run, preset } from '../../__tests__/utils'
 let graph: Graph = null;
 
 beforeEach(() => {
-    graph = new Graph();
+    graph = new Graph({
+        provide: {
+            'a b': 'memory',
+            'a': 'memory',
+            'a c': 'memory',
+        }
+    });
 });
 
 it("works", () => {

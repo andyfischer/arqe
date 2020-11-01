@@ -7,10 +7,15 @@ import OutputStream from "./OutputStream";
 import TuplePatternMatcher from "./tuple/TuplePatternMatcher";
 import Tuple from "./Tuple";
 import Stream from "./Stream";
+import { TupleLike } from './coerce'
+import InMemoryTable from './tables/InMemoryTable'
+import { toTuple } from './coerce'
 
 type TableCallback = (input: Tuple, out: OutputStream) => void | Promise<void>
 
-interface SingleTableDefinition {
+type SingleTableDefinition = string | SingleTableDefinitionObj
+
+interface SingleTableDefinitionObj {
     name?: string
     [commandStr: string]: string | TableCallback
 }
@@ -26,8 +31,24 @@ function toTupleStreamCallback(tableCallback: TableCallback): TupleStreamCallbac
     }
 }
 
-export function setupTable(schema: string, tableDef: SingleTableDefinition) {
-    const mount = new TableMount(tableDef.name, parseTuple(schema));
+function setupTableFromTemplate(schema: Tuple, template: string) {
+    if (template === 'memory') {
+        const table = new InMemoryTable(null, schema);
+        return table.mount;
+    } else {
+        throw new Error("template definition not recognized: " + template);
+    }
+}
+
+export function setupTable(schemaStr: string, tableDef: SingleTableDefinition): TableMount {
+
+    const schema = toTuple(schemaStr);
+
+    if (typeof tableDef === 'string') {
+        return setupTableFromTemplate(schema, tableDef);
+    }
+
+    const mount = new TableMount(tableDef.name, schema);
 
     for (const commandStr in tableDef) {
         if (commandStr === 'name')
@@ -41,7 +62,7 @@ export function setupTable(schema: string, tableDef: SingleTableDefinition) {
     return mount;
 }
 
-export default function setupTableSetV2(def: TableSetDefinition): TableMount[] {
+export default function setupTableSet(def: TableSetDefinition): TableMount[] {
 
     const mounts: TableMount[] = [];
 
@@ -57,6 +78,6 @@ export default function setupTableSetV2(def: TableSetDefinition): TableMount[] {
 export function defineVerbV2(graph: Graph, name: string, inputScheme: string, callback: TableCallback) {
     graph.addTable(setupTable(`verb[${name}] ` + inputScheme, {
         name: 'verb_' + name,
-        'send': callback
+        'run': callback
     }));
 }

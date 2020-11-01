@@ -10,7 +10,7 @@ import QueryContext from '../QueryContext';
 import { combineStreams } from '../StreamUtil'
 import { emitCommandError } from '../CommandUtils'
 
-export default function sendCommand(cxt: QueryContext, params: CommandExecutionParams) {
+export default function runCommand(cxt: QueryContext, params: CommandExecutionParams) {
     const { tuple, output } = params;
     const combinedOut = combineStreams(output);
     const allTables = combinedOut();
@@ -20,8 +20,8 @@ export default function sendCommand(cxt: QueryContext, params: CommandExecutionP
         const tableOut = combinedOut();
         foundCount += 1;
 
-        if (!table.callWithDefiniteValues(cxt, 'send', partitionedTuple, tableOut)) {
-            emitCommandError(output, "Table doesn't have a 'send' handler: " + table.name);
+        if (!table.callWithDefiniteValues(cxt, 'run', partitionedTuple, tableOut)) {
+            emitCommandError(output, "Table doesn't have a 'run' handler: " + table.name);
         }
     }
 

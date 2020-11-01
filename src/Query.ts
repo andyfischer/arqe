@@ -24,6 +24,7 @@ interface RunPhase {
     terms: TermId[]
 }
 
+// future: build this on Relation
 export default class Query {
     queryId: string
     terms = new Map<TermId, Term>()
@@ -51,6 +52,22 @@ export default class Query {
         return id;
     }
 
+    addTermFromTuple(tupleLike: TupleLike) {
+        let tuple = toTuple(tupleLike);
+        let verb: string;
+
+        if (tuple.hasAttr('verb')) {
+            verb = tuple.getValue('verb');
+            tuple = tuple.removeAttr('verb');
+        } else {
+            verb = tuple.tags[0].attr;
+            tuple = tuple.removeTagAtIndex(0);
+        }
+
+        const term = this.addTerm(verb, tuple);
+        this.setOutput(term);
+    }
+
     connectAsInput(input: TermId, consumer: TermId) {
         this.terms.get(consumer).stdinFrom = input;
     }
@@ -69,13 +86,16 @@ export default class Query {
 }
 
 export function queryFromOneTuple(tuple: Tuple) {
-    const command = tuple.tags[0].attr;
-    const strippedTuple = tuple.removeTagAtIndex(0);
 
     const q = new Query();
-    const term = q.addTerm(command, strippedTuple);
-    q.setOutput(term);
+    q.addTermFromTuple(tuple);
+    return q;
+}
 
+export function queryFromTupleArray(tuples: Tuple[]) {
+    const q = new Query();
+    for (const t of tuples)
+        q.addTermFromTuple(t);
     return q;
 }
 

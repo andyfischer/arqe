@@ -31,6 +31,8 @@ function setOnTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Str
     // Check for a custom 'set' handler
     if (table.callWithDefiniteValues(cxt, 'set', tuple, out)) {
         // Done
+    } else if (table.callWithDefiniteValues(cxt, 'save', tuple, out)) {
+        // Also done
     } else if (tuple.queryDerivedData().isDelete) {
         const deletePattern = tuple.removeAttr('deleted');
         deleteOnOneTable(cxt, table, deletePattern, out);
@@ -57,12 +59,7 @@ export default function set(cxt: QueryContext, params: CommandParams) {
     }
 
     if (!anyFound) {
-        if (cxt.graph.options.autoinitMemoryTables) {
-            const table = createImplicitTable(cxt, tuple);
-            setOnTable(cxt, table, tuple, combinedOut());
-        } else {
-            emitCommandError(output, "No table found for: " + tuple.stringify());
-        }
+        emitCommandError(output, "No table found for: " + tuple.stringify());
     }
 
     allTables.done();

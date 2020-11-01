@@ -1,6 +1,6 @@
 
 import Graph from "../Graph";
-import setupTableSetV2 from "../setupTableSetV2";
+import setupTableSetV2 from "../setupTableSet";
 import { run as _run } from './utils'
 
 let graph;
@@ -10,25 +10,25 @@ beforeEach(() => {
     graph = new Graph();
 });
 
-it("send command works", () => {
+it("run verb works", () => {
     const inboxA = [];
     const inboxB = [];
 
     graph.addTables(setupTableSetV2({
         'inbox a': {
-            send: (input, out) => {
+            run: (input, out) => {
                 inboxA.push(input);
                 out.done();
             }
         },
         'inbox b': {
-            send: (input, out) => {
+            run: (input, out) => {
                 inboxB.push(input);
                 out.done();
             }
         },
     }));
 
-    run('send inbox a/123')
+    run('run inbox a/123')
     expect(inboxA.map(t => t.stringify())).toEqual(['inbox a/123']);
 });

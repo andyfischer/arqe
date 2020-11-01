@@ -4,7 +4,10 @@ import { run } from "./utils";
 let graph: Graph;
 
 beforeEach(() => {
-    graph = new Graph();
+    graph = new Graph({provide: {
+        'a b c': 'memory',
+        'a b': 'memory',
+    }});
 })
 
 it('strips attrs', () => {

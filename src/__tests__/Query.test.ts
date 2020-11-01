@@ -9,7 +9,12 @@ let graph: Graph;
 let cxt: QueryContext;
 
 beforeEach(() => {
-    graph = new Graph();
+    graph = new Graph({
+        provide: {
+            'a b': 'memory',
+            'b c': 'memory'
+        }
+    });
     cxt = new QueryContext(graph);
 });
 
@@ -48,8 +53,9 @@ it("can run chained terms", () => {
 
     runQueryV2(cxt, query, out);
     expect(out.take().map(t => t.stringify())).toEqual([
-        'a b/$b command-meta search-pattern c',
+        'a b/$b c command-meta search-pattern',
         'a/1 [from $b] b/x c/x',
         'a/2 [from $b] b/y c/y'
     ])
 });
+

@@ -2,7 +2,8 @@
 import Tuple from '../Tuple'
 import Stream from '../Stream'
 import { receiveToTupleList } from '../receiveUtils'
-import Relation, { receiveToRelationInStream } from '../Relation'
+import Relation from '../Relation'
+import { receiveToRelationInStream } from '../receiveUtils'
 
 export default class Pipe {
     output?: Stream

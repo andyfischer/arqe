@@ -226,6 +226,11 @@ export default class Tuple {
         return this.asMap().has(attr);
     }
 
+    has(attr: string) {
+        const tag = this.asMap().get(attr);
+        return tag && tag.hasValue();
+    }
+
     hasValueForAttr(attr: string) {
         return this.asMap().has(attr) && !!this.asMap().get(attr).value;
     }
@@ -258,6 +263,10 @@ export default class Tuple {
         return this.get(attr);
     }
 
+    getValue(attr: string) {
+        return this.get(attr);
+    }
+
     getNativeVal(attr: string) {
         const tag = this.asMap().get(attr);
         if (!tag.hasValue())
@@ -265,7 +274,7 @@ export default class Tuple {
         return tag.nativeValue;
     }
 
-    getValOptional(attr: string, defaultValue) {
+    getOptional(attr: string, defaultValue) {
         if (this.asMap().has(attr)) {
             const tag = this.asMap().get(attr);
             if (!!tag.value)
@@ -273,6 +282,11 @@ export default class Tuple {
         }
 
         return defaultValue;
+    }
+
+    getValOptional(attr: string, defaultValue) {
+        // todo- delete
+        return this.getOptional(attr, defaultValue);
     }
 
     getValByIdentifierOptional(identifierStr: string, defaultValue) {

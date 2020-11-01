@@ -5,7 +5,12 @@ import Graph from '../Graph'
 let graph: Graph;
 
 beforeEach(() => {
-    graph = new Graph();
+    graph = new Graph({
+        provide: {
+            'a': 'memory',
+            'b': 'memory',
+        }
+    });
 })
 
 it('empty count', () => {

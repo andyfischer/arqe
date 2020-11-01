@@ -4,7 +4,11 @@ import Graph from '../Graph'
 import { run } from './utils';
 
 it("handles indirect queries", () =>{
-    const graph = new Graph();
+    const graph = new Graph({
+        provide: {
+            'a b': 'memory'
+        }
+    });
     graph.provide(setupNestedQueryTable());
 
     run(graph, "set a b/1");

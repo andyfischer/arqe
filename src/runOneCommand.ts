@@ -10,7 +10,7 @@ import orderByCommand from './verbs/orderBy'
 import watchCommand from './verbs/watch'
 import setCommand from './verbs/set'
 import getCommand from './verbs/get'
-import sendCommand from './verbs/send'
+import runCommand from './verbs/run'
 import deleteCommand from './verbs/delete'
 import runJustStep from './verbs/just'
 import QueryContext from './QueryContext'
@@ -19,7 +19,9 @@ import runQueryCommand from './verbs/run-query'
 import renameCommand from './verbs/rename'
 import traceCommand from './verbs/trace'
 import envCommand from './verbs/env'
-import { streamPostRemoveAttr } from './StreamUtil';
+import { toRelation } from './coerce'
+import { compileTupleModificationStream } from './compilation/TupleModificationFunc'
+import Relation from './Relation'
 
 function handleCommandContextTags(cxt: QueryContext, params: CommandParams) {
     if (params.tuple.hasAttr("debug.dumpTrace")) {
@@ -46,7 +48,7 @@ export const builtinVerbs: { [name: string]: VerbCallback } = {
     just: (cxt, params) => runJustStep(params),
     get: (cxt, params) => getCommand(cxt, params.tuple, params.output),
     set: (cxt, params) => setCommand(cxt, params),
-    send: (cxt, params) => sendCommand(cxt, params),
+    run: (cxt, params) => runCommand(cxt, params),
     delete: (cxt, params) => deleteCommand(cxt, params),
     count: (cxt, params) => countCommand(cxt, params),
     'order-by': (cxt, params) => orderByCommand(params),
@@ -58,8 +60,9 @@ export const builtinVerbs: { [name: string]: VerbCallback } = {
     env: (cxt, params) => envCommand(cxt, params),
 }
 
-export default function runOneCommand(parentCxt: QueryContext, params: CommandParams) {
+let removeVerbArgs: Relation;
 
+export default function runOneCommand(parentCxt: QueryContext, params: CommandParams) {
 
     const cxt = parentCxt.newChild();
     cxt.start("runOneCommand", { verb: params.verb, tuple: params.tuple.stringify() })
@@ -86,6 +89,8 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
     }
 
     try {
+        // console.log('runOneCommand', params.tuple.stringify())
+
         if (cxt.graph.definedVerbs[verb]) {
             cxt.graph.definedVerbs[verb](cxt, params);
             cxt.end('runOneCommand');
@@ -98,11 +103,13 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
             return;
         }
 
-        // Fall back to send-based commands.
+        // Fall back to run-based commands.
+        if (!removeVerbArgs)
+            removeVerbArgs = toRelation([{'remove-attr': 'verb'}, {'remove-attr': 'args'}]);
+
         params.tuple = newTuple([newTag('verb', verb), newTag('args', params.tuple)]);
-        params.output = streamPostRemoveAttr(params.output, 'verb');
-        params.output = streamPostRemoveAttr(params.output, 'args');
-        builtinVerbs['send'](cxt, params);
+        params.output = compileTupleModificationStream(removeVerbArgs, params.output);
+        builtinVerbs['run'](cxt, params);
 
         return;
 

@@ -4,7 +4,7 @@ import QueryContext from './QueryContext'
 import { runGet } from './verbs/get'
 import { joinNStreams_v2 } from './StreamUtil'
 import Stream from './Stream'
-import Tuple, { newTuple } from './Tuple'
+import Tuple, { newTuple, isTuple } from './Tuple'
 import { newTag, newSimpleTag } from './TupleTag'
 import { CommandFlags } from './Command'
 
@@ -23,15 +23,29 @@ export function emitCommandMeta(output: Stream, fields: any) {
     output.next(newTuple(tags));
 }
 
-export function emitCommandError(output: Stream, message: any) {
+export function errorToTuple(err: any) {
+    if (isTuple(err))
+        return err;
 
     const tags = [
-        commandMetaTag,
         newTag('error'),
-        newTag('message', message)
+        newTag('message', err.message !== undefined ? err.message : ''+err)
     ];
 
-    output.next(newTuple(tags));
+    if (err.stack)
+        tags.push(newTag('stack', err.stack));
+
+    return newTuple(tags);
+}
+
+export function emitCommandError(output: Stream, err: any) {
+
+    let t = errorToTuple(err);
+
+    if (!t.has('command-meta'))
+        t = t.addSimpleTag('command-meta');
+
+    output.next(t);
 }
 
 export function emitSearchPatternMeta(pattern: Tuple, output: Stream) {

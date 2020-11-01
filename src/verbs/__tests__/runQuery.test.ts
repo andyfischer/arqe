@@ -5,7 +5,14 @@ import { run, preset } from '../../__tests__/utils'
 let graph: Graph = null;
 
 beforeEach(() => {
-    graph = new Graph();
+    graph = new Graph({
+        provide: {
+            'a value': 'memory',
+            'query1 query': 'memory',
+            'a is_even value': 'memory',
+            'named-query query': 'memory',
+        }
+    });
 });
 
 it("works with search field", () => {

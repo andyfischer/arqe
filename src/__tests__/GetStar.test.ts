@@ -5,7 +5,15 @@ import { Graph } from '..';
 let graph;
 
 beforeEach(() => {
-    graph = new Graph();
+    graph = new Graph({
+        provide: {
+            multitest: 'memory',
+            'a b': 'memory',
+            'a b c': 'memory',
+            'a b c d': 'memory',
+            'touchpoint output var from': 'memory',
+        }
+    });
 })
 
 it('get * works on no results', () => {
@@ -20,23 +28,23 @@ it('get * works on single result', () => {
 });
 
 it('get * works on multiple results result', () => {
-    run(graph, 'set multitest2/1');
-    run(graph, 'set multitest2/2');
-    run(graph, 'set multitest2/3');
-    expect(run(graph, 'get multitest2/*')).toEqual(['multitest2/1', 'multitest2/2', 'multitest2/3']);
+    run(graph, 'set multitest/1');
+    run(graph, 'set multitest/2');
+    run(graph, 'set multitest/3');
+    expect(run(graph, 'get multitest/*')).toEqual(['multitest/1', 'multitest/2', 'multitest/3']);
 });
 
 it('get * works with additions and deletions', () => {
-    run(graph, 'set multitest3/1');
-    run(graph, 'set multitest3/2');
-    run(graph, 'set multitest3/3');
-    expect(run(graph, 'get multitest3/*')).toEqual(['multitest3/1', 'multitest3/2', 'multitest3/3']);
+    run(graph, 'set multitest/1');
+    run(graph, 'set multitest/2');
+    run(graph, 'set multitest/3');
+    expect(run(graph, 'get multitest/*')).toEqual(['multitest/1', 'multitest/2', 'multitest/3']);
 
-    run(graph, 'set multitest3/4');
-    expect(run(graph, 'get multitest3/*')).toEqual(['multitest3/1', 'multitest3/2', 'multitest3/3', 'multitest3/4']);
+    run(graph, 'set multitest/4');
+    expect(run(graph, 'get multitest/*')).toEqual(['multitest/1', 'multitest/2', 'multitest/3', 'multitest/4']);
 
-    run(graph, 'delete multitest3/2');
-    expect(run(graph, 'get multitest3/*')).toEqual(['multitest3/1', 'multitest3/3', 'multitest3/4']);
+    run(graph, 'delete multitest/2');
+    expect(run(graph, 'get multitest/*')).toEqual(['multitest/1', 'multitest/3', 'multitest/4']);
 });
 
 it('get works with different tag order', () => {
@@ -50,17 +58,17 @@ it('get works with different tag order', () => {
 })
 
 it('get * works with fixed valueless tags', () => {
-    run(graph, 'set a/1 tc23 c')
-    expect(run(graph, 'get a/* tc23')).toEqual([]);
-    expect(run(graph, 'get a/* tc23 c')).toEqual(['a/1 tc23 c']);
-    expect(run(graph, 'get a/* tc23 c d')).toEqual([]);
+    run(graph, 'set a/1 b c')
+    expect(run(graph, 'get a/* b')).toEqual([]);
+    expect(run(graph, 'get a/* b c')).toEqual(['a/1 b c']);
+    expect(run(graph, 'get a/* b c d')).toEqual([]);
 });
 
 it('get * works with fixed valueless tags 2', () => {
-    run(graph, 'set a/1 tc24 c')
-    run(graph, 'set a/2 tc24 c')
-    expect(run(graph, 'get a/* tc24 c')).toEqual([
-        'a/1 tc24 c',
-        'a/2 tc24 c'
+    run(graph, 'set a/1 b c')
+    run(graph, 'set a/2 b c')
+    expect(run(graph, 'get a/* b c')).toEqual([
+        'a/1 b c',
+        'a/2 b c'
     ]);
 });

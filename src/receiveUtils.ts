@@ -1,9 +1,10 @@
 
 import Graph from './Graph'
-import Tuple from './Tuple'
+import Tuple, { singleTagToTuple } from "./Tuple"
 import Stream from './Stream'
 import Relation from './Relation';
 import Query from './Query'
+import { QueryLike } from './coerce'
 
 export function receiveToTupleList(onDone: (rels: Tuple[]) => void): Stream {
     const list: Tuple[] = [];
@@ -118,4 +119,90 @@ export function receiveToSingleValue(attrName: string): [SingleValueAccessor, St
     }
 
     return [ accessor, stream ]
+}
+
+export function receiveToRelationInStream(out: Stream, attrName: string): Stream {
+    const tuples = [];
+
+    return {
+        next(t) {
+            tuples.push(t);
+        },
+        done() {
+            const relation = new Relation(tuples);
+            out.next(singleTagToTuple(attrName, relation));
+            out.done();
+        }
+    }
+}
+
+export function receiveToRelationSync(): [Stream, () => Relation] {
+    const tuples = [];
+    let isDone = false;
+
+    const stream: Stream = {
+        next(t) {
+            tuples.push(t);
+        },
+        done() {
+            isDone = true;
+        }
+    }
+
+    const get = () => {
+        if (!isDone)
+            throw new Error("receiveToRelationSync - stream isn't finished");
+
+        return new Relation(tuples);
+    }
+
+    return [ stream, get ];
+}
+
+export function receiveToRelationCallback(callback: (Relation) => void): Stream {
+
+    const tuples = [];
+
+    const stream: Stream = {
+        next(t) {
+            tuples.push(t);
+        },
+        done() {
+            const rel = new Relation(tuples);
+            callback(rel);
+        }
+    }
+
+    return stream;
+}
+
+export function receiveToRelationAsync(): [ Stream, Promise<Relation> ] {
+
+    let stream: Stream;
+
+    const promise: Promise<Relation> = new Promise((resolve, reject) => {
+        const tuples = [];
+
+        stream = {
+            next(t) {
+                tuples.push(t);
+            },
+            done() {
+                const relation = new Relation(tuples);
+                const error = relation.errorsToErrorObject();
+                if (error)
+                    reject(error);
+                else
+                    resolve(relation);
+            }
+        }
+    })
+
+    return [ stream, promise ]
+}
+
+export async function getRelationAsync(query: QueryLike, run: (query: QueryLike, output: Stream) => void): Promise<Relation> {
+    const [ stream, promise ] = receiveToRelationAsync();
+    run(query, stream);
+    return await promise;
 }

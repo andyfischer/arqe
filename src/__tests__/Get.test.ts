@@ -8,7 +8,12 @@ test('empty get works', () => {
 });
 
 it("passes through rows from input", () => {
-    const graph = new Graph();
+    const graph = new Graph({
+        provide: {
+            'a v': 'memory',
+            'b v': 'memory'
+        }
+    });
     run(graph, "set a v/1");
     run(graph, "set a v/2");
     run(graph, "set b v/3");

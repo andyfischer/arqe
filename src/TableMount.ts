@@ -1,8 +1,8 @@
 
-import Tuple from './Tuple'
+import Tuple, { newTuple } from './Tuple'
 import { emitCommandError } from './CommandUtils'
 import Stream from './Stream'
-import { TupleTag } from '.';
+import TupleTag, { newTag } from './TupleTag';
 import parseTuple from './stringFormat/parseTuple';
 import QueryEvalHelper from './QueryEvalHelper';
 import QueryContext from './QueryContext';
@@ -10,12 +10,16 @@ import { streamPostRemoveAttr } from './StreamUtil';
 import AutoInitMap from "./utils/AutoInitMap"
 import { LiveQueryId } from './LiveQuery'
 import { isUniqueTag, isEnvTag } from './knownTags'
+import { compileTupleModificationStream } from './compilation/TupleModificationFunc'
+import Relation from './Relation'
+import { QueryLike } from './coerce'
 
 export type TupleStreamCallback = (input: Tuple, out: Stream) => void
 
 const contextInputStream = 'context.inputStream'
 const contextOutputStream = 'context.outputStream'
 const contextEvalHelper = 'context.evalHelper'
+const contextSubquery = 'context.subquery'
 
 export type MountId = string;
 
@@ -38,38 +42,51 @@ interface PreCallStep {
     injectInputStream?: boolean
     injectOutputStream?: boolean
     injectFromEnv?: string
+    injectSubquery?: boolean
 }
 
-function mountCommandHandler(input: Tuple) {
+function mountCommandHandler(mountInput: Tuple) {
     const steps: PreCallStep[] = [];
+    const postResultModify: Tuple[] = [];
 
-    if (input.hasAttr(contextEvalHelper)) {
+    if (mountInput.hasAttr(contextEvalHelper)) {
         steps.push({injectEvalHelper: true});
-        input = input.removeAttr(contextEvalHelper);
+        mountInput = mountInput.removeAttr(contextEvalHelper);
+        postResultModify.push(newTuple(newTag('remove-attr', contextEvalHelper)));
     }
     
-    if (input.hasAttr(contextInputStream)) {
+    if (mountInput.hasAttr(contextInputStream)) {
         steps.push({injectInputStream: true});
-        input = input.removeAttr(contextInputStream);
+        mountInput = mountInput.removeAttr(contextInputStream);
+        postResultModify.push(newTuple(newTag('remove-attr', contextInputStream)));
     }
 
-    if (input.hasAttr(contextOutputStream)) {
+    if (mountInput.hasAttr(contextOutputStream)) {
         steps.push({injectOutputStream: true});
-        input = input.removeAttr(contextOutputStream);
+        mountInput = mountInput.removeAttr(contextOutputStream);
+        postResultModify.push(newTuple(newTag('remove-attr', contextOutputStream)));
+    }
+    
+    if (mountInput.hasAttr(contextSubquery)) {
+        steps.push({injectSubquery: true});
+        mountInput = mountInput.removeAttr(contextSubquery);
+        postResultModify.push(newTuple(newTag('remove-attr', contextSubquery)));
     }
 
-    for (const tag of input.tags) {
+    for (const tag of mountInput.tags) {
         if (isEnvTag(tag)) {
             steps.push({injectFromEnv: tag.attr});
-            input = input.removeAttr(tag.attr);
+            mountInput = mountInput.removeAttr(tag.attr);
+            postResultModify.push(newTuple(newTag('remove-attr', tag.attr)));
         }
     }
 
     return {
-        input,
+        input: mountInput,
         steps,
-        definiteValues: getDefiniteValueTags(input),
-        tagsWithUnique: getTagsWithUnique(input)
+        definiteValues: getDefiniteValueTags(mountInput),
+        tagsWithUnique: getTagsWithUnique(mountInput),
+        postResultModify
     }
 }
 
@@ -81,10 +98,11 @@ class Handler {
 
     steps: PreCallStep[]
     callback: TupleStreamCallback
+    postResultModify: Relation
 
     constructor(verb: string, originalInput: Tuple, callback: TupleStreamCallback) {
 
-        const { input, steps, definiteValues, tagsWithUnique } = mountCommandHandler(originalInput);
+        const { input, steps, definiteValues, tagsWithUnique, postResultModify } = mountCommandHandler(originalInput);
 
         if (input.hasAttr("evalHelper"))
             throw new Error("internal error: CommandEntry should not see 'evalHelper' attr");
@@ -95,6 +113,7 @@ class Handler {
         this.definiteValues = definiteValues;
         this.tagsWithUnique = tagsWithUnique;
         this.callback = callback;
+        this.postResultModify = new Relation(postResultModify);
     }
 
     checkHasDefiniteValues(tuple: Tuple) {
@@ -200,25 +219,27 @@ export default class TableMount {
         if (!handler)
             return false;
 
+        out = compileTupleModificationStream(handler.postResultModify, out);
+
         for (const step of handler.steps) {
             if (step.injectEvalHelper) {
-                out = streamPostRemoveAttr(out, contextEvalHelper);
                 tuple = insertEvalHelperTag(cxt, tuple);
             }
 
             if (step.injectInputStream) {
-                out = streamPostRemoveAttr(out, contextInputStream);
                 tuple = tuple.setVal(contextInputStream, cxt.input);
             }
             
             if (step.injectOutputStream) {
-                out = streamPostRemoveAttr(out, contextOutputStream);
                 tuple = tuple.setVal(contextOutputStream, out);
             }
 
             if (step.injectFromEnv) {
-                out = streamPostRemoveAttr(out, step.injectFromEnv);
                 tuple = tuple.setVal(step.injectFromEnv, cxt.getEnv(step.injectFromEnv));
+            }
+
+            if (step.injectSubquery) {
+                tuple = tuple.setVal(contextSubquery, (query: QueryLike, out: Stream) => cxt.makeSubquery(query, out));
             }
         }
 
@@ -227,12 +248,12 @@ export default class TableMount {
 
             if (result && result.then) {
                 result.catch(err => {
-                    emitCommandError(out, err.message);
+                    emitCommandError(out, err);
                     out.done();
                 });
             }
         } catch (err) {
-            emitCommandError(out, err.message);
+            emitCommandError(out, err);
             out.done();
         }
 

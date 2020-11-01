@@ -1,5 +1,6 @@
 import tagToString from './stringFormat/tagToString'
 import Tuple from './Tuple'
+import { symValueType } from './internalSymbols'
 
 export interface TagOptions {
     attr?: string
@@ -24,6 +25,8 @@ export default class TupleTag {
     starValue?: boolean
     optional?: boolean
     identifier?: string
+
+    [symValueType] = 'tag'
 
     constructor(opts: TagOptions) {
         this.attr = opts.attr;

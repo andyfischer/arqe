@@ -3,13 +3,20 @@ import Graph from '../Graph'
 import LiveQuery from '../LiveQuery'
 import Query from '../Query';
 import { run, preset } from './utils';
-import { receiveToRelationSync } from '../Relation';
+import { receiveToRelationSync } from '../receiveUtils';
 import parseTuple from '../stringFormat/parseTuple'
 
 let graph: Graph;
 
 beforeEach(() => {
-    graph = new Graph();
+    graph = new Graph({
+        provide: {
+            'a v': 'memory',
+            'b v': 'memory',
+            'c v': 'memory',
+            'a query': 'memory',
+        }
+    });
 });
 
 it('triggers change events when a related query is modified', () => {
@@ -24,7 +31,7 @@ it('triggers change events when a related query is modified', () => {
     const liveQuery = new LiveQuery(graph, "get a v | get b v");
     liveQuery.onChange(evt => changeEvents.push(evt));
 
-    expect(liveQuery.runSync().tuples.map(t => t.stringify())).toEqual([
+    expect(Array.from(liveQuery.runSync().body()).map(t => t.stringify())).toEqual([
         'a v/123',
         'a v/456',
         'b v/789',
@@ -42,7 +49,7 @@ it('triggers change events when a related query is modified', () => {
 
     expect(changeEvents.length).toEqual(1);
     changeEvents = [];
-    expect(liveQuery.runSync().tuples.map(t => t.stringify())).toEqual([
+    expect(liveQuery.runSync().bodyArray().map(t => t.stringify())).toEqual([
         'a v/123',
         'a v/456',
         'a v/333',

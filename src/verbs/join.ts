@@ -63,7 +63,7 @@ function joinRelations(origRels: Relation[], out: Stream) {
     const identifiers = new AutoInitMap<string, FoundIdentifier>(str => new FoundIdentifier(str))
 
     for (const rel of rels) {
-        for (const headerTag of rel.rel.header.tags) {
+        for (const headerTag of rel.rel.header().tags) {
             if (headerTag.hasIdentifier()) {
                 identifiers.get(headerTag.identifier).add(rel.index, headerTag);
             }
@@ -80,8 +80,8 @@ function joinRelations(origRels: Relation[], out: Stream) {
 
     if (commonIdentifiers.length === 0) {
         emitCommandError(out, `No common identifiers found across incoming relations`
-                         +` (left = ${origRels[0].header.stringify()})`
-                         +` (right = ${origRels[1].header.stringify()})`);
+                         +` (left = ${origRels[0].header().stringify()})`
+                         +` (right = ${origRels[1].header().stringify()})`);
         out.done();
         return;
     }
@@ -90,7 +90,7 @@ function joinRelations(origRels: Relation[], out: Stream) {
     const hashed = new AutoInitMap<string, { tuples: Tuple[] }>(_ => ({ tuples: [] }) );
 
     for (const rel of rels) {
-        for (let tup of rel.rel.tuples) {
+        for (let tup of rel.rel.body()) {
 
             // Figure out join hash
             const hash = commonIdentifiers.map((found: FoundIdentifier) => {
@@ -104,7 +104,8 @@ function joinRelations(origRels: Relation[], out: Stream) {
     }
 
     // Emit header
-    out.next(combineTuples(rels.map(rel => rel.rel.header)));
+    out.next(combineTuples(rels.map(rel => rel.rel.header()))
+             .setVal('command-meta', true).setVal('search-pattern', true));
 
     // Emit combined tuples
     for (const hashedTupleList of hashed.values()) {

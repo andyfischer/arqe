@@ -1,13 +1,16 @@
 
+import * as lexer from './lexer'
+
 export { default as Graph } from './Graph'
 export { default as GraphLike } from './GraphLike'
 export { default as Tuple, newTuple, objectToTuple, isTuple } from './Tuple'
 export { default as TupleTag, newTag } from './TupleTag'
 export { default as Stream } from './Stream'
+export * from './coerce'
 export * from './receiveUtils'
 export * from './decorators'
 export * from './externalApi'
-export * from './coerce'
+export * from './platformExports'
 export { commandToJson, jsonToCommand } from './Command'
 export { emitCommandError } from './CommandUtils'
 export { default as printConsoleResult } from './console/printResult'
@@ -19,4 +22,6 @@ export { parseQuery } from './stringFormat/parseQuery'
 export { default as Program } from './Query'
 export { default as IDSource } from './utils/IDSource'
 export { default as parseTuple } from './stringFormat/parseTuple'
-export { default as setupTableSetV2, defineVerbV2 } from './setupTableSetV2'
+export { default as setupTableSet, defineVerbV2 } from './setupTableSet'
+
+export { lexer }

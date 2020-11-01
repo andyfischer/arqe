@@ -4,7 +4,7 @@ import Graph from '../Graph'
 let graph: Graph;
 
 beforeEach(() => {
-    graph = new Graph({ autoinitMemoryTables: false });
+    graph = new Graph();
 })
 
 it('getRelationAsync throws error for no table found', async () => {

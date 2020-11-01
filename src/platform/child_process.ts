@@ -1,5 +1,5 @@
 
-import runningInBrowser from './runningInBrowser'
+import runningInBrowser from '../utils/runningInBrowser'
 
 let _exec;
 

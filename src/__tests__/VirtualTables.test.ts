@@ -7,7 +7,7 @@ import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 let graph: Graph;
 
 beforeEach(() => {
-    graph = new Graph({autoinitMemoryTables: false});
+    graph = new Graph();
 })
 
 it('handles insert with (unique)', () => {

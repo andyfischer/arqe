@@ -84,6 +84,11 @@ export function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
     if (!searchPattern)
         throw new Error('missing filterPattern or tuple');
 
+    if (searchPattern.isEmpty()) {
+        out.done();
+        return;
+    }
+
     cxt.start("runGet", { searchPattern: searchPattern.stringify() })
 
     out = maybeAnnotateWithIdentifiers(searchPattern, out);
@@ -99,7 +104,7 @@ export function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
         foundAnyTables = true;
     }
 
-    if (!foundAnyTables && !cxt.graph.options.autoinitMemoryTables) {
+    if (!foundAnyTables) {
         cxt.msg('no table found');
         emitCommandError(out, "No table found for: " + searchPattern.stringify());
     }
