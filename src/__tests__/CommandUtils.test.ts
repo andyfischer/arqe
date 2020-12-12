@@ -1,5 +1,5 @@
 
-import Pipe from '../utils/Pipe'
+import Pipe from '../Pipe'
 import parseTuple from '../stringFormat/parseTuple';
 import { emitSearchPatternMeta } from '../CommandUtils';
 

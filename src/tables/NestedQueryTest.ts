@@ -1,7 +1,7 @@
 import Tuple from "../Tuple";
 import Stream from "../Stream";
 import QueryEvalHelper from "../QueryEvalHelper";
-import Pipe from "../utils/Pipe";
+import Pipe from "../Pipe";
 import Command from "../Command";
 import parseTuple from "../stringFormat/parseTuple";
 

@@ -1,38 +1,31 @@
 
-import Tuple from './Tuple'
+import Tuple, { jsonToTuple } from './Tuple'
 import Stream from './Stream'
 import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
 import IDSource from './utils/IDSource'
 import watchAndValidateCommand from './validation/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
-import parseJsonToTuple from './objectToTuple'
-import InMemoryTable from './tables/InMemoryTable'
 import TuplePatternMatcher from './tuple/TuplePatternMatcher'
 import TableMount, { MountId } from './TableMount'
 import parseTuple from './stringFormat/parseTuple'
 import { receiveToRelationInStream, receiveToRelationAsync } from './receiveUtils'
-import setupInMemoryObjectTable from './tables/InMemoryObject'
 import { setupSingleValueTable } from './tables/SingleValueTable'
-import Query, { runQueryV2 } from './Query'
+import Query, { runQuery, queryFromOneTuple } from './Query'
 import LiveQuery from './LiveQuery'
 import QueryContext from './QueryContext'
 import { VerbCallback } from './runOneCommand'
-import { QueryLike, toQuery } from './coerce'
+import { QueryLike, toQuery, TupleLike, toTuple } from './coerce'
 import setupTableSet, { TableSetDefinition } from './setupTableSet'
+import Relation from './Relation'
+import Pipe from './Pipe'
+import findPartitionsByTable from './findPartitionsByTable'
+import TableDefiner from './TableDefiner'
+import { randInt } from './utils/rand'
+import { toCapitalCase } from './utils/naming'
 
 interface GraphOptions {
     context?: 'browser' | 'node'
     provide?: TableSetDefinition
-}
-
-function looseInputToTuple(input: any): Tuple {
-    if (typeof input === 'string') {
-        return parseTuple(input);
-    } else if (input instanceof Tuple) {
-        return input;
-    } else {
-        return parseJsonToTuple(input);
-    }
 }
 
 export default class Graph {
@@ -68,10 +61,16 @@ export default class Graph {
         }
     }
 
+    /*
     defineInMemoryTable(name: string, pattern: Tuple): TableMount {
         const inMemoryTable = new InMemoryTable(name, pattern);
         this.addTable(inMemoryTable.mount);
         return inMemoryTable.mount;
+    }
+    */
+
+    *tables() {
+        yield* this.tablesById.values();
     }
 
     findTableByName(name: string) {
@@ -80,13 +79,21 @@ export default class Graph {
 
     addTable(table: TableMount) {
         if (!table.name)
-            table.name = this.getAnonymousTableName(table.schema);
+            table.name = this.getDefaultTableName(table.schema);
 
         if (!(table instanceof TableMount))
             throw new Error('addTable expected TableMount object');
 
         if (table.mountId)
             throw new Error("table already has mountId - mounted twice?");
+
+        for (const existingTable of this.tables()) {
+            if (table.schema.hasOverlap(existingTable.schema)) {
+                throw new Error("Added table has overlap with existing table. "
+                                +`Existing: ${existingTable.name} (${existingTable.schema.stringify()}). `
+                                +`New: ${table.name} (${table.schema.stringify()}).`);
+            }
+        }
 
         table.mountId = this.nextMountId.take();
         this.tablesByName.set(table.name, table);
@@ -125,8 +132,22 @@ export default class Graph {
         });
     }
 
-    getAnonymousTableName(schema: Tuple) {
-        return '_' + schema.tags.map(tag => tag.attr || '').join('_') + this.nextAnonTableNameId.take();
+    getDefaultTableName(schema: Tuple) {
+        let out = '';
+        for (const tag of schema.tags) {
+            if (tag.optional)
+                continue
+            out += toCapitalCase(tag.attr);
+        }
+
+        if (out === '')
+            out = 'Table'
+
+        while (this.tablesByName.get(out)) {
+            out += randInt(10);
+        }
+
+        return out;
     }
 
     takeNextUniqueIdForAttr(attr: string) {
@@ -135,16 +156,25 @@ export default class Graph {
         return this.nextUniquePerAttr[attr].take();
     }
 
-    run(queryLike: QueryLike, output?: Stream, env?: Tuple) {
+    run = (queryLike: QueryLike, output?: Stream): Pipe|null => {
         // output = watchAndValidateCommand(commandStr, output);
 
         const query = toQuery(queryLike);
-        if (!output)
-            output = fallbackReceiver(query);
-
         const cxt = new QueryContext(this);
-        cxt.env = env;
-        runQueryV2(cxt, query, output);
+
+        let pipe;
+        if (!output) {
+            pipe = new Pipe();
+            output = pipe;
+        }
+
+        runQuery(cxt, query, output);
+
+        return pipe;
+    }
+
+    runCallback(queryLike: QueryLike, callback: (rel: Relation) => void) {
+        this.run(queryLike, receiveToTupleList(tuples => callback(new Relation(tuples))));
     }
 
     runSync(queryLike: QueryLike): Tuple[] {
@@ -157,12 +187,16 @@ export default class Graph {
         });
 
         const cxt = new QueryContext(this);
-        runQueryV2(cxt, query, receiver);
+        runQuery(cxt, query, receiver);
 
         if (rels === null)
             throw new Error("command didn't finish synchronously: " + query.stringify());
 
         return rels;
+    }
+
+    runSyncRelation(queryLike: QueryLike): Relation {
+        return new Relation(this.runSync(queryLike));
     }
 
     runAsync(queryLike: QueryLike): Promise<Tuple[]> {
@@ -171,31 +205,26 @@ export default class Graph {
         return promise;
     }
 
-    get(patternInput: any, out: Stream) {
-        const pattern = looseInputToTuple(patternInput);
-
-        const query = new Query();
-        const term = query.addTerm('get', pattern);
-        query.setOutput(term);
-
-        const cxt = new QueryContext(this);
-        runQueryV2(cxt, query, out);
+    runAndPipe(queryLike: QueryLike): Pipe {
+        const pipe = new Pipe();
+        this.run(queryLike, pipe);
+        return pipe;
     }
 
-    set(patternInput: any, out: Stream) {
-        let pattern: Tuple;
-        if (typeof patternInput === 'string') {
-            pattern = parseTuple(patternInput);
-        } else {
-            pattern = parseJsonToTuple(patternInput);
-        }
+    get(patternLike: TupleLike, out: Stream) {
+        const pattern = toTuple(patternLike);
 
-        const query = new Query();
-        const term = query.addTerm('set', pattern);
-        query.setOutput(term);
-
+        const query = queryFromOneTuple(pattern.setValue('verb', 'get'));
         const cxt = new QueryContext(this);
-        runQueryV2(cxt, query, out);
+        runQuery(cxt, query, out);
+    }
+
+    set(patternLike: TupleLike, out: Stream) {
+        let pattern = toTuple(patternLike);
+
+        const query = queryFromOneTuple(pattern.setValue('verb', 'set'));
+        const cxt = new QueryContext(this);
+        runQuery(cxt, query, out);
     }
 
     setAsync(patternInput: any): Promise<Tuple[]> {
@@ -208,8 +237,7 @@ export default class Graph {
         this.get(searchPattern, receiveToRelationInStream(out, attrName));
     }
 
-    close() { }
-
+    /*
     mountMapBackedTable(name: string, baseKey: Tuple, keyAttr: string, valueAttr: string): Map<any,any> {
         const { map, table } = setupInMemoryObjectTable({ name, baseKey, keyAttr, valueAttr })
         this.addTable(table);
@@ -223,6 +251,7 @@ export default class Graph {
         this.addTable(table);
         return accessor;
     }
+    */
 
     getRelationAsync(patternInput: any) {
         const [ stream, promise ] = receiveToRelationAsync();
@@ -258,6 +287,12 @@ export default class Graph {
         return new LiveQuery(this, query);
     }
 
+    *findMatchingTables(tuple: TupleLike) {
+        for (const [mount, partition] of findPartitionsByTable(this, toTuple(tuple))) {
+            yield mount;
+        }
+    }
+
     stringifyTables() {
         const out = ['['];
         for (const table of this.tablesByName.values())
@@ -275,5 +310,11 @@ export default class Graph {
         const mounts = setupTableSet(def);
         this.addTables(mounts);
         return mounts;
+    }
+
+    provideWithDefiner(func: (definer: TableDefiner) => any) {
+        const definer = new TableDefiner();
+        func(definer);
+        definer.mount(this);
     }
 }

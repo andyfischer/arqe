@@ -33,10 +33,10 @@ it('handles insert with (unique)', () => {
     expect(run(graph, 'set t x(unique) y/one')).toEqual(['t x/1 y/one']);
     expect(entriesByX).toEqual({ '1': 'one' });
 
-    run(graph, 'set t x(unique) y/two');
+    run(graph, 'set t x(unique) y=two');
     expect(entriesByX).toEqual({ '1': 'one', '2': 'two' })
 
-    run(graph, 'set t x/5 y/five');
+    run(graph, 'set t x=5 y=five');
     expect(entriesByX).toEqual({ '1': 'one', '2': 'two', '5': 'five' })
 })
 
@@ -55,12 +55,12 @@ it('insert(unique) matches the correct attr', () => {
 
     graph.addTable(table);
 
-    run(graph, 'set t x(unique) y/yone z/zone');
+    run(graph, 'set t x(unique) y=yone z=zone');
     expect(inserts).toEqual([{
         xUnique: true, y: 'yone', z: 'zone'
     }]);
 
-    run(graph, 'set t x/xtwo y(unique) z/ztwo');
+    run(graph, 'set t x=xtwo y(unique) z=ztwo');
     expect(inserts).toEqual([{
         xUnique: true, y: 'yone', z: 'zone'
     },{

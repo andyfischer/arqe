@@ -1,7 +1,7 @@
 import Graph from "../Graph"
 import { run } from './utils'
 import parseTuple from "../stringFormat/parseTuple";
-import Pipe from "../utils/Pipe";
+import Pipe from "../Pipe";
 
 it('get accepts a Tuple as input', () => {
     const graph = new Graph({
@@ -35,6 +35,6 @@ describe('removeTables', () => {
 
         expect(() => {
             run(graph, 'get a');
-        }).toThrow("No table found for: a");
+        }).toThrow("No table found for pattern");
     });
 });

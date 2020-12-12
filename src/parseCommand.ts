@@ -2,7 +2,7 @@
 import Command from './Command'
 import Tuple, { newTuple } from './Tuple'
 import TupleTag from './TupleTag'
-import { lexStringToIterator, TokenIterator, TokenDef, t_ident, t_quoted_string, t_star,
+import { lexStringToIterator, TokenIterator, TokenDef, t_plain_value, t_quoted_string, t_star,
     t_space, t_hash, t_double_dot, t_newline, t_bar,
     t_integer, t_dash, t_line_comment } from './lexer'
 import parseOneTag from './stringFormat/parseOneTag'
@@ -12,30 +12,12 @@ interface InProgressQuery {
     flags: { [flag: string]: any }
 }
 
-function parseFlag(it: TokenIterator, query: InProgressQuery) {
-    it.consume(t_dash);
-
-    if (!(it.nextIs(t_ident) || it.nextIs(t_integer))) {
-        throw new Error('expected letter or number after -, found: ' + it.nextText());
-    }
-
-    const str = it.consumeNextText();
-    query.flags[str] = true;
-    if (!it.finished() && !it.nextIs(t_space))
-        throw new Error(`Expected space after -${str}`);
-}
-
 function parseArgs(it: TokenIterator, query: InProgressQuery) {
     while (true) {
         it.skipSpaces();
 
         if (it.finished() || it.nextIs(t_newline) || it.nextIs(t_bar))
             break;
-
-        if (it.nextIs(t_dash)) {
-            parseFlag(it, query);
-            continue;
-        }
 
         const tag = parseOneTag(it);
 
@@ -53,8 +35,8 @@ export function parseOneCommand(it: TokenIterator): Command {
 
     // Parse main command
     it.skipSpaces();
-    if (!it.nextIs(t_ident) && !it.nextIs(t_quoted_string))
-        throw new Error(formatExpectedError('identifier', it));
+    if (!it.nextIs(t_plain_value) && !it.nextIs(t_quoted_string))
+        throw new Error(formatExpectedError('plain_vlue', it));
 
     const command = it.consumeNextUnquotedText();
 

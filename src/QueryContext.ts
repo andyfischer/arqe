@@ -1,6 +1,6 @@
 import Graph from "./Graph";
 import Command from "./Command";
-import Pipe from "./utils/Pipe";
+import Pipe from "./Pipe";
 import LiveQuery, { LiveQueryId } from './LiveQuery'
 import Tuple from './Tuple'
 import { QueryLike } from './coerce'
@@ -79,6 +79,6 @@ export default class QueryContext {
     }
 
     makeSubquery(queryLike: QueryLike, out: Stream) {
-        this.graph.run(queryLike, out);
+        return this.graph.run(queryLike, out);
     }
 }

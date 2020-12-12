@@ -1,9 +1,9 @@
 
 import TupleTag, { newTagFromObject, TagOptions, FixedTag } from '../TupleTag'
-import { TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
+import { TokenIterator, Token, TokenDef, t_plain_value, t_quoted_string, t_star,
     t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
     t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
-    t_lparen, t_rparen } from '../lexer'
+    t_lparen, t_rparen, t_equals } from '../lexer'
 import { parseExpr } from '../parseExpr'
 import { parseTupleTokens } from './parseTuple'
 
@@ -13,7 +13,7 @@ export default function parseOneTag(it: TokenIterator): TupleTag {
 
     // Identifier prefix
     if (it.tryConsume(t_lbracket)) {
-        if (!it.nextIs(t_ident) || it.nextText() !== 'from')
+        if (!it.nextIs(t_plain_value) || it.nextText() !== 'from')
             throw new Error("expected 'from', found: " + it.nextText());
 
         it.consume();
@@ -53,7 +53,7 @@ export default function parseOneTag(it: TokenIterator): TupleTag {
 
     // Attribute
     let attr = it.consumeNextUnquotedText();
-    while (it.nextIs(t_ident) || it.nextIs(t_dot))
+    while (it.nextIs(t_plain_value) || it.nextIs(t_dot) || it.nextIs(t_dash) || it.nextIs(t_integer))
         attr += it.consumeNextUnquotedText();
 
     if (attr === '/')
@@ -77,13 +77,8 @@ export default function parseOneTag(it: TokenIterator): TupleTag {
 
 function parseTagValue(it: TokenIterator): TagOptions {
     let tagValue = null;
-    let valueExpr = null;
-    let hasValue = false;
-    let parenSyntax = false;
 
     if (it.tryConsume(t_lparen)) {
-        hasValue = true;
-        parenSyntax = true;
 
         const value = parseTupleTokens(it);
 
@@ -128,7 +123,7 @@ function parseTagValue(it: TokenIterator): TagOptions {
     }
 
     if (it.tryConsume(t_slash)) {
-        if (it.nextIs(t_dollar) && it.nextIs(t_ident, 1)) {
+        if (it.nextIs(t_dollar) && it.nextIs(t_plain_value, 1)) {
             it.consume();
             const identifier = it.consumeNextUnquotedText();
 
@@ -171,6 +166,25 @@ function parseTagValue(it: TokenIterator): TagOptions {
 
         return {
             value: tagValue,
+        }
+    }
+
+    if (it.tryConsume(t_equals)) {
+        it.skipSpaces();
+
+        if (it.nextIs(t_lparen)) {
+            const value = parseTupleTokens(it);
+
+            if (!it.tryConsume(t_rparen))
+                throw new Error('Expected )');
+            return {
+                value
+            }
+        }
+
+        const value = it.consumeNextUnquotedText();
+        return {
+            value
         }
     }
 

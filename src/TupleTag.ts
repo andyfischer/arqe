@@ -1,12 +1,11 @@
 import tagToString from './stringFormat/tagToString'
-import Tuple from './Tuple'
+import Tuple, { isTuple, tupleToJson, jsonToTuple } from './Tuple'
 import { symValueType } from './internalSymbols'
 
 export interface TagOptions {
     attr?: string
     value?: string | number | true | Tuple
     exprValue?: string[]
-    nativeValue?: any
     star?: boolean
     doubleStar?: boolean
     starValue?: boolean
@@ -17,8 +16,6 @@ export interface TagOptions {
 export default class TupleTag {
     attr?: string
     value?: any
-    nativeValue?: any
-    // todo, store exprValue as a nativeValue
     exprValue?: string[]
     star?: boolean
     doubleStar?: boolean
@@ -32,7 +29,6 @@ export default class TupleTag {
         this.attr = opts.attr;
         this.value = opts.value as any;
         this.exprValue = opts.exprValue;
-        this.nativeValue = opts.nativeValue;
         this.star = opts.star;
         this.doubleStar = opts.doubleStar;
         this.starValue = opts.starValue;
@@ -55,8 +51,13 @@ export default class TupleTag {
         if (this.value == null)
             return '';
         const s = '' + this.value;
+
+        if (isTuple(this.value))
+            return '(' + this.value.stringify() + ')';
+
         if (s === '[object Object]' && typeof this.value !== 'string')
             return '<native object>'
+
         return s;
     }
 
@@ -79,13 +80,12 @@ export default class TupleTag {
         });
     }
 
-    setValue(value: string): TupleTag {
+    setValue(value: any): TupleTag {
         return new TupleTag({
             ...this,
             value: value,
             starValue: null,
             exprValue: null,
-            nativeValue: null
         });
     }
 
@@ -95,7 +95,6 @@ export default class TupleTag {
             value: null,
             starValue: null,
             exprValue: null,
-            nativeValue: null
         });
     }
 
@@ -105,18 +104,7 @@ export default class TupleTag {
             starValue: true,
             value: null,
             exprValue: null,
-            nativeValue: null
         });
-    }
-
-    setNativeValue(v: any): TupleTag {
-        return new TupleTag({
-            ...this,
-            starValue: true,
-            value: null,
-            exprValue: null,
-            nativeValue: v
-        })
     }
 
     setIdentifier(id: string): TupleTag {
@@ -135,7 +123,6 @@ export default class TupleTag {
             ...this,
             value: null,
             exprValue: expr,
-            nativeValue: null
         });
     }
 
@@ -159,6 +146,10 @@ export default class TupleTag {
             return stringCompare(this.value, rhs.value);
 
         return 0;
+    }
+
+    isAbstractValue() {
+        return isTuple(this.value) && this.value.isAbstract();
     }
 
     equals(rhs: TupleTag): boolean {
@@ -196,4 +187,132 @@ export function newSimpleTag(attr: string, tagValue?: any): TupleTag {
 
 export function newTagFromObject(obj: TagOptions) {
     return new TupleTag(obj);
+}
+
+export function tagToJson(tag: TupleTag) {
+
+    if (tag.doubleStar) {
+        return { match: '**' }
+    }
+
+    if (tag.star) {
+        return { match: '*' }
+    }
+
+    let shouldUseExtended = false;
+
+    if (tag.identifier) {
+        shouldUseExtended = true;
+    }
+
+    if (tag.optional || tag.starValue || isTuple(tag.value))
+        shouldUseExtended = true;
+
+    if (shouldUseExtended) {
+
+        let details: any = {};
+
+        if (tag.starValue)
+            details.match = "*";
+
+        if (tag.value) {
+            if (isTuple(tag.value)) {
+                details.tuple = tupleToJson(tag.value)
+            } else {
+                details.value = tag.value;
+            }
+        }
+
+        if (tag.identifier)
+            details.identifier = tag.identifier;
+
+        if (tag.optional)
+            details.optional = true;
+
+        return details;
+    }
+
+    if (!tag.value) {
+        return true;
+    }
+
+    if (tag.value) {
+        return { value: tag.value }
+    }
+
+    throw new Error('unhandled case in tagToJson: ' + tag.stringify());
+}
+
+export function nativeValueToTag(attr: string, jsonData: any): TupleTag {
+    if (jsonData === true)
+        return newTagFromObject({attr});
+    
+    if (jsonData === null || jsonData === undefined)
+        return newTagFromObject({attr});
+
+    if (typeof jsonData === 'string')
+        return newTagFromObject({attr, value: jsonData});
+
+    if (typeof jsonData === 'number')
+        return newTagFromObject({attr, value: jsonData + ""});
+
+    if (isTag(jsonData))
+        return jsonData;
+
+    return newTagFromObject({attr, value: jsonData});
+}
+
+export function jsonToTag(attr: string, jsonData: any): TupleTag {
+    if (jsonData === true)
+        return newTagFromObject({attr});
+    
+    if (jsonData === null || jsonData === undefined)
+        return newTagFromObject({attr});
+
+    if (typeof jsonData === 'string')
+        return newTagFromObject({attr, value: jsonData});
+
+    if (typeof jsonData === 'number')
+        return newTagFromObject({attr, value: jsonData + ""});
+
+    if (isTag(jsonData))
+        return jsonData;
+
+    if (isTuple(jsonData))
+        return newTagFromObject({attr, value: jsonData});
+
+    if (typeof jsonData === 'function')
+        return newTagFromObject({attr, value: jsonData});
+
+    // Extended format
+
+    let value;
+
+    if (jsonData.tuple)
+        value = jsonToTuple(jsonData.tuple);
+    else
+        value = jsonData.value;
+
+    const newTag = newTagFromObject({
+        attr,
+        value,
+        identifier: jsonData.identifier,
+        star: jsonData.star,
+        doubleStar: jsonData.doubleStar,
+        starValue: jsonData.match === '*',
+        optional: jsonData.optional
+    });
+
+    // Internal test
+    try {
+        newTag.stringify()
+    } catch (err) {
+        throw new Error("jsonToTag created a tag that can't be stringifed: " + JSON.stringify(jsonData))
+    }
+    
+    return newTag;
+}
+
+export function isTag(val: any) {
+    return val && (val[symValueType] === 'tag');
 }

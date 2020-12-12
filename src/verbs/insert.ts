@@ -12,7 +12,7 @@ export function insertOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tu
     const uniqueTag = findUniqueTag(tuple);
 
     if (uniqueTag) {
-        if (table.callInsertUnique(uniqueTag, tuple, out))
+        if (table.callInsertUnique(cxt, uniqueTag, tuple, out))
             return;
     }
 
@@ -43,7 +43,7 @@ function findUniqueTag(tuple: Tuple) {
 
 export function insertPlanned(cxt: QueryContext, tuple: Tuple, out: Stream) {
     // Store a new tuple.
-    const partitions = Array.from(findPartitionsByTable(cxt, tuple));
+    const partitions = Array.from(findPartitionsByTable(cxt.graph, tuple));
 
     if (partitions.length === 0)
         throw new Error("Can't insert, no table found");

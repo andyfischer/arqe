@@ -1,5 +1,4 @@
-import { tupleToJson } from '../../objectToTuple'
-
+import { tupleToJson } from '../../Tuple'
 import parseTuple from '../parseTuple';
 
 it('parses optional attrs', () => {
@@ -25,3 +24,24 @@ it("parser handles attribute names with dots", () => {
     expect(pattern.tags[0].attr).toEqual("a.b");
     expect(pattern.tags[1].attr).toEqual("c.d");
 })
+
+it("parser handles '-1' tag", () => {
+    const pattern = parseTuple("a -1 b");
+    expect(pattern.tags[0].attr).toEqual("a");
+    expect(pattern.tags[1].attr).toEqual("-1");
+    expect(pattern.tags[2].attr).toEqual("b");
+});
+
+it("parser handles = syntax", () => {
+    const pattern = parseTuple("a=1 b");
+    expect(pattern.tags[0].attr).toEqual("a");
+    expect(pattern.tags[0].value).toEqual("1");
+    expect(pattern.tags[1].attr).toEqual("b");
+});
+
+it("parser handles = syntax 2", () => {
+    const pattern = parseTuple("a='1' b");
+    expect(pattern.tags[0].attr).toEqual("a");
+    expect(pattern.tags[0].value).toEqual("1");
+    expect(pattern.tags[1].attr).toEqual("b");
+});

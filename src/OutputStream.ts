@@ -1,38 +1,39 @@
 import Stream from "./Stream";
 import Tuple, { isTuple } from "./Tuple";
-import { RelationLike, toRelation } from './coerce'
+import { TupleLike, RelationLike, toRelation, toTuple } from './coerce'
 
 export default class OutputStream implements Stream {
-    input: Tuple
+    _relativeTuple: Tuple
     _next: (t: Tuple) => void;
     _done: () => void;
 
     constructor(input: Tuple, out: Stream) {
-        this.input = input;
+        this._relativeTuple = input;
         this._next = out.next;
         this._done = out.done;
     }
 
     nextTuple(t: Tuple) {
-        let combined = this.input;
-        for (const tag of t.tags) {
-            combined = combined.setTag(tag);
+        if (this._relativeTuple) {
+            let combined = this._relativeTuple;
+            for (const tag of t.tags) {
+                combined = combined.setTag(tag);
+            }
+            this._next(combined);
+        } else {
+            this._next(t);
         }
-        this._next(combined);
     }
 
-    next(val?: RelationLike) {
-        if (isTuple(val)) {
-            this.nextTuple(val as Tuple);
-        } else {
-            for (const t of toRelation(val).tuples)
-                this.nextTuple(t);
-        }
+    next(val?: TupleLike) {
+        this.nextTuple(toTuple(val));
     }
 
     done(val?: RelationLike) {
         if (val) {
-            this.next(val);
+            for (const t of toRelation(val).tuples) {
+                this.nextTuple(t);
+            }
         }
 
         this._done();

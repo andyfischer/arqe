@@ -8,7 +8,7 @@ class TestClass {
     schemaStr = 'x'
     x = 5
 
-    @handles('list-all')
+    @handles('find')
     getX() {
         return { x: this.x }
     }

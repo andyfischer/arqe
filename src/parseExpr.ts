@@ -1,6 +1,6 @@
 
 import { lexStringToIterator, TokenIterator, t_lparen, t_rparen,
-    t_ident, t_integer, t_slash, t_dollar } from './lexer';
+    t_ident, t_integer, t_slash, t_dollar, t_plain_value } from './lexer';
 
 export function parseExpr(it: TokenIterator): string | string[] {
     if (it.tryConsume(t_lparen)) {
@@ -20,7 +20,7 @@ export function parseExpr(it: TokenIterator): string | string[] {
     }
 
     let text = '';
-    while (it.nextIs(t_ident) || it.nextIs(t_integer) || it.nextIs(t_slash) || it.nextIs(t_dollar)) {
+    while (it.nextIs(t_plain_value) || it.nextIs(t_ident) || it.nextIs(t_integer) || it.nextIs(t_slash) || it.nextIs(t_dollar)) {
         text += it.consumeNextText();
     }
 

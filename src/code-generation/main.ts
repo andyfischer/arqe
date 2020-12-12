@@ -6,7 +6,6 @@ import { generateTextAsCode } from './TextAsCode'
 //import watchFile from '../old/file-watch/watchFile'
 //import { notifyFileChanged } from '../old/file-watch/notifyFileChanged'
 import Minimist from 'minimist'
-import runStandardProcess from '../node/runStandardProcess'
 import { runProviderGenerator } from './ProviderAPIGenerator'
 import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from '../node/loadBootstrapConfigs'
 
@@ -54,5 +53,4 @@ export function main() {
     const graph = new Graph();
     loadLocalBootstrapConfigs(graph);
     runGeneration(graph);
-    // runStandardProcess('generate-api', async (graph: Graph) => runGeneration(graph));
 }

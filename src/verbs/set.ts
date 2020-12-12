@@ -12,21 +12,6 @@ import TupleTag, { newTag } from '../TupleTag'
 import { emitCommandError } from '../CommandUtils'
 import QueryContext from '../QueryContext'
 
-function createImplicitTable(cxt: QueryContext, tuple: Tuple) {
-    const attrTags: TupleTag[] = []
-    for (const tag of tuple.tags) {
-        if (tag.attr)
-            attrTags.push(newTag(tag.attr));
-    }
-
-    const tableName = cxt.graph.getAnonymousTableName(tuple);
-    const tablePattern = new Tuple(attrTags);
-
-    cxt.msg("creating implicit table", { tableName })
-    
-    return cxt.graph.defineInMemoryTable(tableName, tablePattern);
-}
-
 function setOnTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
     // Check for a custom 'set' handler
     if (table.callWithDefiniteValues(cxt, 'set', tuple, out)) {
@@ -52,7 +37,7 @@ export default function set(cxt: QueryContext, params: CommandParams) {
     const allTables = combinedOut();
 
     let anyFound = false;
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, tuple)) {
         const tableOut = combinedOut();
         anyFound = true;
         setOnTable(cxt, table, partitionedTuple, tableOut);

@@ -8,7 +8,7 @@ export class TestMath {
     schemaStr = 'test-math sum a b'
     supportsCompleteScan = false
 
-    @handles("find-with a b")
+    @handles("find a b")
     sum({a, b}) {
         const sum = parseInt(a) + parseInt(b) + '';
         return { sum };

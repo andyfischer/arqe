@@ -1,12 +1,11 @@
 
-import Tuple, { isTuple } from './Tuple'
-import { newSimpleTag } from './TupleTag'
+import Tuple, { isTuple, nativeValueToTuple } from './Tuple'
+import TupleTag, { newSimpleTag, isTag } from './TupleTag'
 import Relation, { isRelation } from './Relation'
 import Query, { isQuery, queryFromOneTuple, queryFromTupleArray } from './Query'
 import { symValueType } from './internalSymbols'
 import parseTuple from './stringFormat/parseTuple'
 import { parseQuery } from './stringFormat/parseQuery'
-import objectToTuple from './objectToTuple'
 
 export type TagLike = string | { [key: string]: any }
 export type TupleLike = Tuple | string  | { [key:string]: any } | TagLike[]
@@ -14,8 +13,12 @@ export type QueryLike = Query | Tuple | string | TupleLike[]
 export type RelationLike = Tuple | Relation | TupleLike | TupleLike[]
 
 export function toTuple(val: TupleLike): Tuple {
-    if (val && val[symValueType] === 'tuple')
+
+    if (isTuple(val))
         return val as Tuple;
+
+    if (isTag(val))
+        return new Tuple([val as TupleTag]);
 
     if (typeof val === 'string')
         return parseTuple(val);
@@ -28,6 +31,8 @@ export function toTuple(val: TupleLike): Tuple {
                 tags.push(newSimpleTag(tagLike))
             } else if (isTuple(tagLike)) {
                 tags = tags.concat(tagLike.tags);
+            } else if (isTag(tagLike)) {
+                tags.push(tagLike);
             } else {
                 for (let k in tagLike) {
                     tags.push(newSimpleTag(k, tagLike[k]));
@@ -37,7 +42,7 @@ export function toTuple(val: TupleLike): Tuple {
         return new Tuple(tags);
     }
 
-    return objectToTuple(val);
+    return nativeValueToTuple(val);
 }
 
 export function toRelation(val: RelationLike): Relation {

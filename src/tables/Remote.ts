@@ -1,13 +1,13 @@
 
 import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
 import QueryEvalHelper from '../QueryEvalHelper';
-import Pipe from '../utils/Pipe';
+import Pipe from '../Pipe';
 import Command from '../Command';
 import parseTuple from '../stringFormat/parseTuple';
 import Tuple from '../Tuple';
 import Stream from '../Stream';
 import IDSource from '../utils/IDSource';
-import { Connection } from './SocketConnection'
+// import { Connection } from './SocketConnection'
 
 /*
 function handleRedirect(input: Tuple, out: Stream) {
@@ -25,6 +25,8 @@ function handleRedirect(input: Tuple, out: Stream) {
 }
 */
 
+export default {}
+/*
 export default function getDef() {
 
     const connections = {
@@ -54,3 +56,4 @@ export default function getDef() {
         }
     }
 }
+*/

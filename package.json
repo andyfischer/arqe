@@ -13,9 +13,9 @@
     "build": "tsc -p .",
     "test": "jest --watch",
     "tsc-watch": "tsc -w",
+    "nodemon-cli": "nodemon bin/arqe",
     "dev": "tsc-watch --onSuccess ./bin/arqe-server",
     "start": "tsc-watch --onSuccess ./bin/arqe-server",
-    "cli": "node dist/startCli.js",
     "start-cli": "tsc-watch --onSuccess 'node dist/startCli.js'",
     "generate-api": "tsc-watch --onSuccess 'bin/arqe-code-generator --db src/db'",
     "generate-api-once": "bin/arqe-code-generator --db src/db"
@@ -47,6 +47,7 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
     "jest": "^24.8.0",
+    "nodemon": "^2.0.6",
     "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "tsc-watch": "^4.0.0",

@@ -8,12 +8,12 @@ import TuplePatternMatcher from "./tuple/TuplePatternMatcher";
 import Tuple from "./Tuple";
 import Stream from "./Stream";
 import { TupleLike } from './coerce'
-import InMemoryTable from './tables/InMemoryTable'
+import InMemoryTable from './standardTables/InMemoryTable'
 import { toTuple } from './coerce'
 
 type TableCallback = (input: Tuple, out: OutputStream) => void | Promise<void>
 
-type SingleTableDefinition = string | SingleTableDefinitionObj
+export type SingleTableDefinition = string | SingleTableDefinitionObj
 
 interface SingleTableDefinitionObj {
     name?: string
@@ -31,21 +31,21 @@ function toTupleStreamCallback(tableCallback: TableCallback): TupleStreamCallbac
     }
 }
 
-function setupTableFromTemplate(schema: Tuple, template: string) {
-    if (template === 'memory') {
+function setupTableFromMixin(schema: Tuple, mixin: string) {
+    if (mixin === 'memory') {
         const table = new InMemoryTable(null, schema);
         return table.mount;
     } else {
-        throw new Error("template definition not recognized: " + template);
+        throw new Error("mixin definition not recognized: " + mixin);
     }
 }
 
-export function setupTable(schemaStr: string, tableDef: SingleTableDefinition): TableMount {
+export function setupTable(schemaLike: TupleLike, tableDef: SingleTableDefinition): TableMount {
 
-    const schema = toTuple(schemaStr);
+    const schema = toTuple(schemaLike);
 
     if (typeof tableDef === 'string') {
-        return setupTableFromTemplate(schema, tableDef);
+        return setupTableFromMixin(schema, tableDef);
     }
 
     const mount = new TableMount(tableDef.name, schema);
@@ -73,11 +73,4 @@ export default function setupTableSet(def: TableSetDefinition): TableMount[] {
     }
 
     return mounts;
-}
-
-export function defineVerbV2(graph: Graph, name: string, inputScheme: string, callback: TableCallback) {
-    graph.addTable(setupTable(`verb[${name}] ` + inputScheme, {
-        name: 'verb_' + name,
-        'run': callback
-    }));
 }

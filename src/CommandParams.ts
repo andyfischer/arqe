@@ -1,5 +1,5 @@
 
-import Pipe from './utils/Pipe'
+import Pipe from './Pipe'
 import Stream from './Stream'
 import Tuple from './Tuple'
 import { CommandFlags } from './Command'

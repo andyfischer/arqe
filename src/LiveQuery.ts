@@ -1,5 +1,5 @@
 
-import Query, { TermId, runQueryV2 } from './Query'
+import Query, { runQuery, termToSearchPattern } from './Query'
 import Graph from './Graph'
 import { MountId } from './TableMount'
 import Tuple from './Tuple';
@@ -36,11 +36,17 @@ export default class LiveQuery {
         this.addFixedListeners();
     }
 
+    *partitionsByTerm(cxt: QueryContext, term: Tuple) {
+        const tuple = termToSearchPattern(term);
+        yield* findPartitionsByTable(cxt.graph, tuple);
+    }
+
     addFixedListeners() {
         const cxt = new QueryContext(this.graph);
 
-        for (const { tuple } of this.query.terms.values()) {
-            for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
+        for (const term of this.query.body()) {
+
+            for (const [table, partitionedTuple] of this.partitionsByTerm(cxt, term)) {
                 /*
                 const listenerRequestTuple = objectToTuple({
                     id: this.liveQueryId,
@@ -79,7 +85,7 @@ export default class LiveQuery {
         }
 
         this.isRunning = true;
-        runQueryV2(cxt, this.query, wrappedOutput);
+        runQuery(cxt, this.query, wrappedOutput);
     }
 
     finishRun() {
@@ -162,16 +168,16 @@ export default class LiveQuery {
         this.isClosed = true;
         this.graph.liveQueries.delete(this.liveQueryId);
 
-        for (const { tuple } of this.query.terms.values()) {
-            for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
+        for (const term of this.query.body()) {
+            for (const [table, partitionedTuple] of this.partitionsByTerm(cxt, term)) {
                 table.listeners.delete(this.liveQueryId);
             }
         }
     }
 
     usedDynamicQueryDuringEval(cxt: QueryContext, query: Query) {
-        for (const { tuple } of query.terms.values()) {
-            for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
+        for (const term of query.body()) {
+            for (const [table, partitionedTuple] of this.partitionsByTerm(cxt, term)) {
                 this.newDynamicListens.set(table.mountId, true);
             }
         }

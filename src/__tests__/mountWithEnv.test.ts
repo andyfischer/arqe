@@ -1,6 +1,6 @@
 
 import Graph from "../Graph";
-import setupTableSetV2, { defineVerbV2 } from "../setupTableSet";
+import setupTableSetV2 from "../setupTableSet";
 import { run as _run } from './utils'
 
 let graph;
@@ -13,7 +13,7 @@ beforeEach(() => {
 it("can run a table mount function with an env value", () => {
     graph.addTables(setupTableSetV2({
         'table-1 val': {
-            'find-with someEnv(env)': (input, out) => {
+            'find someEnv(env)': (input, out) => {
                 const { someEnv } = input.obj();
                 out.done({ val: 'found env value: ' + someEnv });
             }

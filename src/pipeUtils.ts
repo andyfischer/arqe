@@ -21,7 +21,7 @@
 
 */
 
-import Pipe from './utils/Pipe'
+import Pipe from './Pipe'
 
 export function combinePipes(pipe1: Pipe, pipe2: Pipe) {
     const out = new Pipe();

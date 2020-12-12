@@ -6,7 +6,7 @@ import TokenDef from './TokenDef'
 import LexedText from './LexedText'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
     t_double_dot, t_line_comment, t_quoted_string, t_double_equals,
-    tokenFromSingleCharCode } from './tokens'
+    t_plain_value, tokenFromSingleCharCode } from './tokens'
 
 const c_0 = '0'.charCodeAt(0);
 const c_9 = '9'.charCodeAt(0);
@@ -35,6 +35,12 @@ function isUpperCase(c) {
 
 function isDigit(c) {
     return c >= c_0 && c <= c_9;
+}
+
+function isPlainValueCharacter(c) {
+    return (isLowerCase(c) || isUpperCase(c) || isDigit(c)
+        || c === c_dash
+        || c === c_under)
 }
 
 function canStartIdentifier(c) {
@@ -77,8 +83,27 @@ function consumeQuotedString(input: Context, lookingFor: number) {
     return input.consume(t_quoted_string, lookahead);
 }
 
+function consumePlainValue(input: Context) {
+    let lookahead = 0;
+    let allNumbers = true;
+
+    while (isPlainValueCharacter(input.next(lookahead))) {
+        if (!isDigit(input.next(lookahead)))
+            allNumbers = false;
+        lookahead++;
+    }
+
+    if (allNumbers)
+        return input.consume(t_integer, lookahead);
+    else
+        return input.consume(t_plain_value, lookahead);
+}
+
 function consumeNext(input: Context) {
     const c: number = input.next(0);
+
+    if (isPlainValueCharacter(c))
+        return consumePlainValue(input);
 
     if (canStartIdentifier(c))
         return input.consumeWhile(t_ident, canContinueIdentifier);
@@ -86,13 +111,11 @@ function consumeNext(input: Context) {
     if (c === c_hash)
         return input.consumeWhile(t_line_comment, c => c !== c_newline);
 
-    /*
     if (c === c_single_quote)
         return consumeQuotedString(input, c_single_quote);
     
     if (c === c_double_quote)
         return consumeQuotedString(input, c_double_quote);
-        */
 
     if (c === c_space)
         return input.consumeWhile(t_space, c => c === c_space);

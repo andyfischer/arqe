@@ -5,7 +5,7 @@ import { newSimpleTag } from "./TupleTag";
 
 export default class Relation {
     tuples: Tuple[]
-    cache: Map<string, any>
+    facts: Map<string, any> = new Map();
 
     [symValueType] = 'relation'
 
@@ -13,21 +13,36 @@ export default class Relation {
         this.tuples = tuples;
     }
 
-    usingCache(key: string, builder: (rel: Relation) => any) {
-        if (!this.cache)
-            this.cache = new Map();
+    getFact(key: string) {
+        return this.facts.get(key);
+    }
 
-        if (!this.cache.has(key)) {
+    setFact(key: string, value) {
+        this.facts.set(key, value);
+    }
+
+    getOrComputeFact(key: string, builder: (rel: Relation) => any) {
+        if (!this.facts.has(key)) {
             const result = builder(this);
-            this.cache.set(key, result);
+            this.facts.set(key, result);
             return result;
         }
 
-        return this.cache.get(key);
+        return this.facts.get(key);
     }
 
     append(tuples: Tuple[]) {
         return new Relation(this.tuples.concat(tuples));
+    }
+
+    remap(func: (t: Tuple) => Tuple | null) {
+        let out = [];
+        for (const t of this.tuples) {
+            const mapped = func(t)
+            if (mapped)
+                out.push(mapped);
+        }
+        return new Relation(out);
     }
 
     *body() {
@@ -48,8 +63,20 @@ export default class Relation {
         }
     }
 
+    firstError(): Tuple | null {
+        for (const error of this.errors())
+            return error;
+        return null;
+    }
+
+    hasError() {
+        for (const error of this.errors())
+            return true;
+        return false;
+    }
+
     header(): Tuple {
-        return this.usingCache('header', (rel) => {
+        return this.getOrComputeFact('header', (rel) => {
             if (rel.tuples.length === 0)
                 return new Tuple([]);
 
@@ -82,15 +109,35 @@ export default class Relation {
             return it;
     }
 
+    first() {
+        for (const t of this.body())
+            return t;
+    }
+
+    one(filter?: Tuple) {
+        if (filter)
+            throw new Error("lol one(filter) not implemented yet");
+
+        for (const tuple of this.tuples) {
+            if (tuple.isCommandMeta())
+                continue;
+
+            return tuple;
+        }
+
+        return null;
+    }
+
     oneValue(attr: string) {
-        const t = this.oneWithAttr(attr);
-        if (!t)
-            return null;
-        return t.getVal(attr);
+        for (const it of this.body())
+            if (it.hasValueForAttr(attr))
+                return it.getValue(attr);
+
+        throw new Error("no value found for: " + attr);
     }
 
     stringify() {
-        return `Relation[${this.tuples.map(t => t.stringify()).join(', ')}]`;
+        return `[Relation ${this.tuples.map(t => `(${t.stringify()})`).join(', ')} ]`;
     }
 
     stringifyBody() {

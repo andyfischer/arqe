@@ -1,4 +1,5 @@
 
+/*
 import Graph from '../Graph'
 import getProcessClient from './getProcessClient'
 import ToolShellApi from './generated/ToolShellApi'
@@ -64,3 +65,4 @@ export default async function runStandardProcess(toolName: string, handler: (gra
 
     graph.close();
 }
+*/

@@ -1,7 +1,7 @@
 import { Graph } from ".."
 import { run } from './utils'
 import { receiveToRelation } from "../receiveUtils";
-import Pipe from "../utils/Pipe";
+import Pipe from "../Pipe";
 import parseTuple from "../stringFormat/parseTuple";
 
 it("includes a correct header", () => {

@@ -9,7 +9,9 @@ import { QueryLike } from './coerce'
 export function receiveToTupleList(onDone: (rels: Tuple[]) => void): Stream {
     const list: Tuple[] = [];
     return {
-        next(rel) { list.push(rel) },
+        next(t) {
+            list.push(t)
+        },
         done() {
             onDone(list);
         }
@@ -201,7 +203,15 @@ export function receiveToRelationAsync(): [ Stream, Promise<Relation> ] {
     return [ stream, promise ]
 }
 
+/*
 export async function getRelationAsync(query: QueryLike, run: (query: QueryLike, output: Stream) => void): Promise<Relation> {
+    const [ stream, promise ] = receiveToRelationAsync();
+    run(query, stream);
+    return await promise;
+}
+*/
+
+export async function asyncSubquery(run: (query: QueryLike, output: Stream) => void, query: QueryLike) {
     const [ stream, promise ] = receiveToRelationAsync();
     run(query, stream);
     return await promise;

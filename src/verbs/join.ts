@@ -1,14 +1,26 @@
 
 import CommandParams from '../CommandParams'
 import Tuple, { newTuple } from '../Tuple';
+import TupleTag, { newSimpleTag } from '../TupleTag';
 import Stream from '../Stream';
 import { receiveToTupleList } from '../receiveUtils';
 import Relation from '../Relation';
 import { joinNStreams } from '../StreamUtil';
 import AutoInitMap from '../utils/AutoInitMap';
-import TupleTag from '../TupleTag';
-import { emitCommandError, emitSearchPatternMeta } from '../CommandUtils';
+import { emitCommandError, emitSearchPatternMeta, jsErrorToTuple, errorMessage } from '../CommandUtils';
 import QueryContext from '../QueryContext';
+import Pipe from '../Pipe'
+import { combineStreams } from '../StreamUtil'
+import { splitTuple } from '../operations'
+import { toTuple } from '../coerce'
+
+interface JoinStrategy {
+    pairs: {
+        leftAttr: string
+        rightAttr: string
+    }[]
+    error?: Tuple
+}
 
 class FoundIdentifier {
     str: string
@@ -52,113 +64,224 @@ function combineTuples(tuples: Tuple[]) {
     return newTuple(tags);
 }
 
-function joinRelations(origRels: Relation[], out: Stream) {
+function joinRelations(left: Relation, right: Relation, out: Stream) {
 
-    const rels: JoiningRelation[] = [];
-    for (let index = 0; index < origRels.length; index++) {
-        rels.push(new JoiningRelation(index, origRels[index]))
-    }
+    const lhsHeader = left.header();
+    const rhsHeader = right.header();
 
-    // Find identifiers
-    const identifiers = new AutoInitMap<string, FoundIdentifier>(str => new FoundIdentifier(str))
-
-    for (const rel of rels) {
-        for (const headerTag of rel.rel.header().tags) {
-            if (headerTag.hasIdentifier()) {
-                identifiers.get(headerTag.identifier).add(rel.index, headerTag);
-            }
+    for (const t of left.tuples) {
+        if (t.isError()) {
+            out.next(t);
+            out.done();
+            return;
         }
     }
 
-    // Look at 'common' identifiers that are used in all relations.
-    const commonIdentifiers: FoundIdentifier[] = []
-
-    for (const found of identifiers.values()) {
-        if (found.foundRelCount === rels.length)
-            commonIdentifiers.push(found);
+    for (const t of right.tuples) {
+        if (t.isError()) {
+            out.next(t);
+            out.done();
+            return;
+        }
     }
 
-    if (commonIdentifiers.length === 0) {
-        emitCommandError(out, `No common identifiers found across incoming relations`
-                         +` (left = ${origRels[0].header().stringify()})`
-                         +` (right = ${origRels[1].header().stringify()})`);
+    if (lhsHeader.isError()) {
+        console.log('no lhs header: ', left.stringify())
+        out.next(lhsHeader);
         out.done();
         return;
     }
 
-    // Hash all tuples using the identifiers
-    const hashed = new AutoInitMap<string, { tuples: Tuple[] }>(_ => ({ tuples: [] }) );
+    if (rhsHeader.isError()) {
+        console.log('no rhs header: ', right.stringify())
+        out.next(rhsHeader);
+        out.done();
+        return;
+    }
 
-    for (const rel of rels) {
-        for (let tup of rel.rel.body()) {
+    const strategy = getJoinStrategy(left.header(), right.header());
 
-            // Figure out join hash
-            const hash = commonIdentifiers.map((found: FoundIdentifier) => {
-                const attr = found.byRelIndex.get(rel.index).attr;
-                return tup.getVal(attr);
-            }).join(',');
-
-            // Update tuples with identifiers
-            hashed.get(hash).tuples.push(tup);
-        }
+    if (strategy.error) {
+        out.next(strategy.error);
+        out.done();
     }
 
     // Emit header
-    out.next(combineTuples(rels.map(rel => rel.rel.header()))
+    out.next(combineTuples([lhsHeader, rhsHeader])
              .setVal('command-meta', true).setVal('search-pattern', true));
 
-    // Emit combined tuples
-    for (const hashedTupleList of hashed.values()) {
+    const lhsIndexed = new Map();
 
-        // Inner join: Only include this if it found a match in each relation.
-        if (hashedTupleList.tuples.length !== rels.length)
-            continue;
+    for (const lhsTuple of left.body())
+        lhsIndexed.set(getIndexKey(strategy, lhsTuple, 'left'), lhsTuple);
 
-        out.next(combineTuples(hashedTupleList.tuples))
+    for (const rhsTuple of right.body()) {
+        const key = getIndexKey(strategy, rhsTuple, 'right');
+        const lhsMatch = lhsIndexed.get(key);
+        if (lhsMatch) {
+            out.next(combineTuples([lhsMatch, rhsTuple]));
+        }
     }
 
     out.done();
 }
 
-function performJoinWithData(out: Stream): Stream {
-    return receiveToTupleList((tuples: Tuple[]) => {
-        if (tuples.length !== 2)
-            throw new Error('internal error, expected 2-element list in performJoinWithData()');
+function isQuerySearchable(cxt: QueryContext, searchPattern: Tuple): Pipe {
+    const abstractGet = searchPattern
+        .setValue('verb', 'get')
+        .setValue('get.scope', 'handlercheck');
 
-        const input: Relation = tuples[0].getValOptional('input', null) || tuples[1].getValOptional('input', null);
-        const search: Relation = tuples[0].getValOptional('search', null) || tuples[1].getValOptional('search', null);
+    const pipe = new Pipe();
 
-        if (!input)
-            throw new Error('internal error: missing "input" relation')
+    cxt.graph.runCallback(abstractGet, (abstractResult) => {
+        const searchable = !abstractResult.hasError();
+        pipe.next(toTuple({searchable: searchable || null}));
+        pipe.done();
+    });
 
-        if (!search)
-            throw new Error('internal error: missing "search" relation')
-
-        if (!input.header) {
-            emitCommandError(out, "Input relation is missing header");
-            out.done();
-            return;
-        }
-
-        if (!search.header) {
-            emitCommandError(out, "Search relation is missing header");
-            out.done();
-            return;
-        }
-
-        joinRelations([input, search], out);
-    })
+    return pipe;
 }
 
-export default function runJoinStep(cxt: QueryContext, params: CommandParams) {
+function joinRhsSearchable(cxt: QueryContext, input: Pipe, searchPattern: Tuple, out: Stream) {
+
+    const searchPipe = new Pipe();
+    cxt.graph.run(searchPattern.setValue('verb','get'), searchPipe);
+
+    input.whenDone(inputRel => {
+        searchPipe.whenDone(searchRel => {
+            joinRelations(inputRel, searchRel, out);
+        });
+    });
+}
+
+function getJoinStrategy(lhsHeader: Tuple, rhsHeader: Tuple): JoinStrategy {
+
+    if (!lhsHeader)
+        throw new Error("internal error: missing lhsHeader");
+
+    const strategy: JoinStrategy = {
+        pairs: []
+    };
+
+    // Does the rhsHeader have any identifiers?
+    if (rhsHeader.hasAnyIdentifier()) {
+        for (const rt of rhsHeader.identifierTags()) {
+            const lt = lhsHeader.byIdentifier().get(rt.identifier);
+            if (!lt) {
+                continue;
+            }
+
+            strategy.pairs.push({ leftAttr: lt.attr, rightAttr: rt.attr });
+        }
+    } else {
+
+        // Try to pair by matching attributes
+        for (const rt of rhsHeader.tagsIt()) {
+            if (rt.attr && lhsHeader.hasAttr(rt.attr)) {
+                const lt = lhsHeader.getTag(rt.attr);
+                strategy.pairs.push({ leftAttr: lt.attr, rightAttr: rt.attr });
+            }
+        }
+    }
+
+    if (strategy.pairs.length === 0)
+        throw new Error(`No pair tags found to join, left = (${lhsHeader.stringify()}), right = (${rhsHeader.stringify()})`);
+
+    if (strategy.pairs.length >= 2)
+        throw new Error(`Unsupported - multiple pair tags in join, left = (${lhsHeader.stringify()}), right = (${rhsHeader.stringify()})`);
+
+    return strategy;
+}
+
+function injectPatternWithJoinKey(strategy: JoinStrategy, leftTuple: Tuple, searchPattern: Tuple) {
+
+    let result = searchPattern;
+
+    for (const pair of strategy.pairs) {
+        result = result.setValue(pair.rightAttr, leftTuple.getValue(pair.leftAttr));
+    }
+
+    return result;
+}
+
+function getIndexKey(strategy: JoinStrategy, tuple: Tuple, side: 'left' | 'right') {
+    const key = [];
+    for (const pair of strategy.pairs) {
+        const attr = side === 'left' ? pair.leftAttr : pair.rightAttr;
+
+        if (!tuple.hasAttr(attr)) {
+            console.log(`tuple doesn't have expected key attr ${attr}: ${tuple.stringify()}`);
+            return null;
+        }
+
+        key.push(tuple.getValue(attr));
+    }
+    return JSON.stringify(key);
+}
+
+function joinRhsNotSearchable(cxt: QueryContext, input: Pipe, searchPattern: Tuple, out: Stream) {
+
+    // Figure out the header & join keys.
+    let [ inputHeader, incoming ] = input.split(2);
+    inputHeader = inputHeader.filter(t => t.isCommandSearchPattern());
+
+    inputHeader.whenDone(rel => {
+        const lhsHeader = rel.tuples[0];
+
+        if (!lhsHeader) {
+            out.next(jsErrorToTuple("No search-pattern found on piped input"))
+            out.done();
+            return;
+        }
+
+        const strategy = getJoinStrategy(lhsHeader, searchPattern);
+
+        if (strategy.error) {
+            out.next(strategy.error);
+            out.done();
+        }
+
+        const addOutputStream = combineStreams(out);
+        const doneRunningQueries = addOutputStream();
+
+        const searchQuery = searchPattern.setValue('verb', 'get');
+
+        // For each incoming value, run another search to get the joined row.
+        incoming.sendTo({
+            next(incomingTuple: Tuple) {
+                if (incomingTuple.isCommandMeta())
+                    return;
+
+                const thisSearchOut = addOutputStream();
+                cxt.graph.run(injectPatternWithJoinKey(strategy, incomingTuple, searchQuery), {
+                    next(t) {
+                        thisSearchOut.next(combineTuples([incomingTuple, t]));
+                    },
+                    done() {
+                        thisSearchOut.done();
+                    }
+                });
+            },
+            done() {
+                doneRunningQueries.done();
+            }
+        });
+    });
+}
+
+export default function runJoinVerb(cxt: QueryContext, params: CommandParams) {
 
     const { input, output } = params;
+    //let [ joinMeta, searchPattern ] = splitTuple(params.tuple, tag => tag.attr === 'join.piped_pattern');
     const searchPattern = params.tuple;
 
-    // Collect two relations: input (piped) & search 
-    const [inputStream, searchOut] = joinNStreams(2, performJoinWithData(output));
-    input.sendRelationTo(inputStream, 'input');
-    cxt.graph.sendRelationValue(searchPattern, searchOut, 'search');
+    isQuerySearchable(cxt, searchPattern)
+    .whenDone(res => {
+        if (res.bodyArray()[0].hasAttr('searchable')) {
+            joinRhsSearchable(cxt, input, searchPattern, output);
+        } else {
+            joinRhsNotSearchable(cxt, input, searchPattern, output);
+        }
+    });
 }
-
 

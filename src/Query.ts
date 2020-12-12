@@ -1,157 +1,143 @@
 
-import Tuple from './Tuple'
+import Tuple, { tupleToJson, jsonToTuple } from './Tuple'
 import IDSource from './utils/IDSource'
 import { CommandFlags } from './Command'
 import Stream from './Stream'
 import QueryContext from './QueryContext'
-import Pipe from './utils/Pipe'
+import Pipe from './Pipe'
 import runOneCommand, { builtinVerbs } from './runOneCommand'
 import { emitCommandError } from './CommandUtils'
 import { symValueType } from './internalSymbols'
 import { TupleLike, toTuple } from './coerce'
+import Relation, { relationToJsonable } from './Relation'
+import { RelationLike, toRelation } from './coerce'
+import { isRelation } from './Relation'
 
-export type TermId = string
+type QueryTermId = string;
 
-interface Term {
-    id: TermId
-    verb: string
-    flags: CommandFlags
-    tuple: Tuple
-    stdinFrom?: TermId
-}
+type Query = Relation;
 
-interface RunPhase {
-    terms: TermId[]
-}
-
-// future: build this on Relation
-export default class Query {
-    queryId: string
-    terms = new Map<TermId, Term>()
-
-    nextTermId = new IDSource()
-    phases: RunPhase[] = []
-
-    outputFrom: TermId
-
-    [symValueType] = 'query'
-
-    prependTerm(verb: string, tupleLike: TupleLike, flags = {}) {
-        const tuple = toTuple(tupleLike);
-        const id = this.nextTermId.take();
-        this.terms.set(id, { id, verb, flags, tuple });
-        this.phases.unshift({terms: [id]});
-        return id;
-    }
-
-    addTerm(verb: string, tupleLike: TupleLike, flags = {}) {
-        const tuple = toTuple(tupleLike);
-        const id = this.nextTermId.take();
-        this.terms.set(id, { id, verb, flags, tuple });
-        this.phases.push({terms: [id]});
-        return id;
-    }
-
-    addTermFromTuple(tupleLike: TupleLike) {
-        let tuple = toTuple(tupleLike);
-        let verb: string;
-
-        if (tuple.hasAttr('verb')) {
-            verb = tuple.getValue('verb');
-            tuple = tuple.removeAttr('verb');
-        } else {
-            verb = tuple.tags[0].attr;
-            tuple = tuple.removeTagAtIndex(0);
-        }
-
-        const term = this.addTerm(verb, tuple);
-        this.setOutput(term);
-    }
-
-    connectAsInput(input: TermId, consumer: TermId) {
-        this.terms.get(consumer).stdinFrom = input;
-    }
-
-    setOutput(output: TermId) {
-        this.outputFrom = output;
-    }
-
-    stringify() {
-        return this.phases.map(phase =>
-            phase.terms.map(termId => {
-                const term = this.terms.get(termId);
-                return term.verb + ' ' + term.tuple.stringify();
-            }).join(', ')).join(' | ');
-    }
-}
+export default Query;
 
 export function queryFromOneTuple(tuple: Tuple) {
-
-    const q = new Query();
-    q.addTermFromTuple(tuple);
-    return q;
+    return relationAsQuery(new Relation([ tuple ]));
 }
 
 export function queryFromTupleArray(tuples: Tuple[]) {
-    const q = new Query();
-    for (const t of tuples)
-        q.addTermFromTuple(t);
-    return q;
+    return relationAsQuery(new Relation(tuples));
 }
 
-export function runQueryV2(cxt: QueryContext, query: Query, overallOutput: Stream) {
-    if (!query.outputFrom)
-        throw new Error("runQueryV2 - query has no output defined");
+export function runQuery(cxt: QueryContext, query: Query, overallOutput: Stream) {
 
-    // Validation
-    /*
-    for (const { verb } of query.terms.values()) {
-        if (!builtinVerbs[verb] && !cxt.graph.definedVerbs[verb]) {
-            emitCommandError(overallOutput, "unrecognized verb: " + verb);
-            overallOutput.done();
-            return;
-        }
-    }*/
+    const inputPipes = new Map<QueryTermId, Pipe>();
+    const outputPipes = new Map<QueryTermId, Pipe>();
 
-    const inputPipes = new Map<TermId, Pipe>();
-    const outputPipes = new Map<TermId, Pipe>();
-
-    // Initialize output pipes
-    for (const id of query.terms.keys()) {
-        outputPipes.set(id, new Pipe());
+    interface RunnableStep {
+        termId: string
+        input: Pipe
+        output: Pipe
+        verb: string
+        tuple: Tuple
+        searchPattern: Tuple,
+        flags: any
     }
 
-    // Initialize input pipes
-    for (const id of query.terms.keys()) {
-        const inputPipe = new Pipe()
-        inputPipes.set(id, inputPipe);
+    const runnableSteps: RunnableStep[] = [];
 
-        const stdinFrom = query.terms.get(id).stdinFrom;
+    // Initialize runnable steps
+    for (const term of query.body()) {
+        const termId = term.get('query-term-id');
+        runnableSteps.push({
+            termId,
+            input: new Pipe(),
+            output: new Pipe(),
+            flags: term.getOptional('flags', null),
+            verb: term.get('verb'),
+            searchPattern: termToSearchPattern(term),
+            tuple: termToSearchPattern(term)
+        });
+    }
 
-        if (!stdinFrom) {
-            inputPipe.done();
+    // Hook up input pipes
+    for (let stepIndex = 0; stepIndex < runnableSteps.length; stepIndex++) {
+
+        const step = runnableSteps[stepIndex];
+        const previousStep = runnableSteps[stepIndex - 1];
+
+        if (previousStep) {
+            previousStep.output.sendTo(step.input);
         } else {
-            outputPipes.get(stdinFrom).sendTo(inputPipe);
+            step.input.done();
         }
     }
 
-    outputPipes.get(query.outputFrom).sendTo({
-        next(t:Tuple) {
-            overallOutput.next(t);
-        },
-        done() {
-            overallOutput.done();
-            cxt.graph && cxt.graph.flushPendingChangeEvents();
-        }
-    });
-
-    for (const { id, verb, tuple, flags } of query.terms.values()) {
-        const input = inputPipes.get(id);
-        const output = outputPipes.get(id);
-        runOneCommand(cxt, { verb, tuple, input, output, flags });
+    // Handle the last output.
+    if (runnableSteps.length > 0) {
+        runnableSteps[runnableSteps.length-1].output.sendTo({
+            next(t:Tuple) {
+                overallOutput.next(t);
+            },
+            done() {
+                overallOutput.done();
+                cxt.graph && cxt.graph.flushPendingChangeEvents();
+            }
+        });
     }
+
+    // Run
+    for (const step of runnableSteps) {
+        runOneCommand(cxt, step);
+    }
+}
+
+export function termToSearchPattern(term: Tuple) {
+    return term.removeAttr('query-term-id').removeAttr('verb').removeAttr('flags');
 }
 
 export function isQuery(val: any) {
-    return val && val[symValueType] === 'query'
+    return isRelation(val) && val.getFact('isQuery');
+}
+
+export function queryToJson(query: Query) {
+    const tuplesOut = []
+
+    for (const tuple of query.tuples) {
+        tuplesOut.push(tupleToJson(tuple));
+    }
+
+    return {
+        query: tuplesOut
+    }
+    return { query: relationToJsonable(query) }
+}
+
+export function jsonToQuery(data: any) {
+    if (!data.query)
+        throw new Error("expected data to have .query: " + data)
+
+    const tuples = data.query.map(jsonToTuple);
+    return relationAsQuery(new Relation(tuples));
+}
+
+export function relationAsQuery(rel: Relation): Relation {
+    if (rel.getFact('isQuery'))
+        return rel;
+
+    const ids = new IDSource();
+
+    const result = rel.remap((term:Tuple) => {
+        if (!term.has('verb')) {
+            const verb = term.tags[0].attr;
+            term = term.removeTagAtIndex(0).setValue('verb', verb);
+        }
+
+        if (!term.has('query-term-id'))
+            term = term.setValue('query-term-id', ids.take());
+
+        return term;
+    });
+
+    result.setFact('isQuery', true);
+
+    return result;
 }

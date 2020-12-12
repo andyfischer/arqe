@@ -36,7 +36,7 @@ export function updatePlanned(cxt: QueryContext, tuple: Tuple, output: Stream) {
 
     const allTables = collectOutput();
 
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, tuple)) {
         const tableOut = collectOutput();
         updateOnOneTable(cxt, table, partitionedTuple, tableOut);
     }

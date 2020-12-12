@@ -137,6 +137,10 @@ export const t_ident = {
     name: "ident"
 }
 
+export const t_plain_value = {
+    name: "plain_value"
+}
+
 export const t_integer = {
     name: "integer"
 }
@@ -188,6 +192,7 @@ export const everyToken: TokenDef[] = [
     t_question,
     t_ident,
     t_integer,
+    t_plain_value,
     t_space,
     t_newline,
     t_quoted_string,

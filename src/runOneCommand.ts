@@ -1,5 +1,5 @@
 
-import Tuple, { newTuple } from './Tuple'
+import Tuple, { newTuple, isTuple } from './Tuple'
 import TupleTag, { newTag } from './TupleTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandUtils'
 import findPartitionsByTable from './findPartitionsByTable'
@@ -11,6 +11,7 @@ import watchCommand from './verbs/watch'
 import setCommand from './verbs/set'
 import getCommand from './verbs/get'
 import runCommand from './verbs/run'
+import runVerbOne from './verbs/one'
 import deleteCommand from './verbs/delete'
 import runJustStep from './verbs/just'
 import QueryContext from './QueryContext'
@@ -19,6 +20,7 @@ import runQueryCommand from './verbs/run-query'
 import renameCommand from './verbs/rename'
 import traceCommand from './verbs/trace'
 import envCommand from './verbs/env'
+import browseCommand from './verbs/browse'
 import { toRelation } from './coerce'
 import { compileTupleModificationStream } from './compilation/TupleModificationFunc'
 import Relation from './Relation'
@@ -32,8 +34,8 @@ function handleCommandContextTags(cxt: QueryContext, params: CommandParams) {
 
 function resolveImmediateExpressions(tuple: Tuple) {
     return tuple.remapTags((tag: TupleTag) => {
-        if (tag.exprValue && tag.exprValue[0] === 'seconds-from-now') {
-            const seconds = parseInt(tag.exprValue[1]);
+        if (isTuple(tag.value) && tag.value.tags[0] && tag.value.tags[0].attr === 'seconds-from-now') {
+            const seconds = parseInt(tag.value.tags[1].attr);
             return tag.setValue(Date.now() + (seconds * 1000) + '');
         }
 
@@ -51,6 +53,7 @@ export const builtinVerbs: { [name: string]: VerbCallback } = {
     run: (cxt, params) => runCommand(cxt, params),
     delete: (cxt, params) => deleteCommand(cxt, params),
     count: (cxt, params) => countCommand(cxt, params),
+    one: (cxt, params) => runVerbOne(cxt, params),
     'order-by': (cxt, params) => orderByCommand(params),
     watch: (cxt, params) => watchCommand(cxt, params),
     'single-value': (cxt, params) => singleValue(cxt, params),
@@ -58,6 +61,7 @@ export const builtinVerbs: { [name: string]: VerbCallback } = {
     rename: (cxt, params) => renameCommand(cxt, params),
     trace: (cxt, params) => traceCommand(cxt, params),
     env: (cxt, params) => envCommand(cxt, params),
+    browse: (cxt, params) => browseCommand(cxt, params),
 }
 
 let removeVerbArgs: Relation;
@@ -81,7 +85,7 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
         parentCxt.traceEnabled = true;
 
     if (cxt.traceEnabled) {
-        for (const [table, partitionedTuple] of findPartitionsByTable(cxt, params.tuple)) {
+        for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, params.tuple)) {
             output.next(newTuple([newTag('trace'), newTag('matching-table'),
                                  newTag('table-name', table.name),
                                  newTag('partitioned-tuple', partitionedTuple)]));
@@ -112,9 +116,6 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
         builtinVerbs['run'](cxt, params);
 
         return;
-
-        emitCommandError(output, "unrecognized verb: " + verb);
-        output.done();
 
     } catch (err) {
         console.log(err.stack || err);

@@ -35,5 +35,5 @@ test('seconds-from-now expression', () => {
             'a': 'memory'
         }
     });
-    expect(run(graph, 'set a/(seconds-from-now 5)')).toEqual([`a/${Date.now() + 5000}`]);
+    expect(run(graph, 'set a(seconds-from-now 5)')).toEqual([`a/${Date.now() + 5000}`]);
 });

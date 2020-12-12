@@ -31,7 +31,7 @@ export function deletePlanned(cxt: QueryContext, searchPattern: Tuple, output: S
     const collectOutput = combineStreams(output);
 
     const allTables = collectOutput();
-    for (const [table, tablePattern] of findPartitionsByTable(cxt, searchPattern)) {
+    for (const [table, tablePattern] of findPartitionsByTable(cxt.graph, searchPattern)) {
         const tableOut = collectOutput();
         deleteOnOneTable(cxt, table, tablePattern, tableOut);
 

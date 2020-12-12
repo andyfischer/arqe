@@ -5,7 +5,7 @@ import Stream from '../Stream'
 
 export function compileTupleModificationFunc(rel: Relation): (t: Tuple) => Tuple {
 
-    return rel.usingCache('tupleModification', rel => {
+    return rel.getOrComputeFact('tupleModification', rel => {
         const body = [];
 
         for (const t of rel.body()) {

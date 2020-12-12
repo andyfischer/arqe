@@ -1,4 +1,4 @@
-import Pipe from "../utils/Pipe"
+import Pipe from "../Pipe"
 import { streamPostRemoveAttr, streamPostModify } from "../StreamUtil";
 import parseTuple from "../stringFormat/parseTuple";
 import { stringify } from "querystring";

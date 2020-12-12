@@ -20,7 +20,7 @@ export default class InMemoryTable {
         this.pattern = pattern;
 
         this.mount = new TableMount(name, pattern);
-        this.mount.addHandler('list-all', '', this.findAll.bind(this));
+        this.mount.addHandler('find', '', this.findAll.bind(this));
         this.mount.addHandler('insert', '', this.insert.bind(this) );
         this.mount.addHandler('update', '', this.update.bind(this) );
         this.mount.addHandler('delete', '', this.delete.bind(this) );

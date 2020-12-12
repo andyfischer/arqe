@@ -1,5 +1,6 @@
 
 import Tuple from '../Tuple'
+import Relation from '../Relation'
 import printAsTable from './printAsTable'
 
 function isMultiColumn(rels: Tuple[]) {
@@ -14,14 +15,35 @@ function isMultiColumn(rels: Tuple[]) {
     return false;
 }
 
-export default function printResult(rels: Tuple[]) {
-    if (isMultiColumn(rels)) {
-        for (const line of printAsTable(rels)) {
+export default function printResult(rel: Relation) {
+    if (rel.hasError()) {
+        printError(rel);
+        return;
+    }
+
+    const tuples = rel.bodyArray();
+
+    if (isMultiColumn(tuples)) {
+        for (const line of printAsTable(tuples)) {
             console.log('  ' + line);
         }
     } else {
-        for (const rel of rels) {
+        for (const rel of tuples) {
             console.log('  ' + rel.stringify());
         }
+    }
+}
+
+export function printError(rel: Relation) {
+
+    for (const t of rel.tuples) {
+        if (!t.isCommandError())
+            continue;
+
+        if (t.has('message') && !t.has('stack'))
+            console.log('Error: ' + t.get('message'))
+
+        if (t.has('stack'))
+            console.log(t.get('stack'));
     }
 }

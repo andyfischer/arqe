@@ -20,10 +20,10 @@ it('handles paren sections', () => {
 });
 
 it('handles bracket quoting', () => {
-    tupleRestringify(`get message[can't use dir(*)]`);
+    // tupleRestringify(`get message[can't use dir(*)]`);
 });
 
 it('stringifies expressions', () => {
-    tupleRestringify('set a/(increment)');
+    tupleRestringify('set a(increment)');
 });
 

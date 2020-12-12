@@ -1,6 +1,6 @@
 import Graph from "../Graph";
 import { receiveToTupleList } from "../receiveUtils";
-import Pipe from "../utils/Pipe";
+import Pipe from "../Pipe";
 import Tuple from "../Tuple";
 import { run } from "./utils";
 

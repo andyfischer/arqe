@@ -1,6 +1,7 @@
 
-import Tuple from './Tuple'
+import Tuple, { isTuple } from './Tuple'
 import TupleTag from './TupleTag'
+
 
 interface ExactTranslation {
     from: Tuple
@@ -50,13 +51,32 @@ function getCallbackForExpression(expr: string[]) {
     }
 }
 
+function getUpdateExpression(updateExpr: Tuple) {
+    if (updateExpr.tags.length === 0)
+        return null;
+
+    switch (updateExpr.tags[0].attr) {
+    case 'increment':
+        return {
+            callback: value => parseInt(value, 10) + 1 + ''
+        }
+
+    case 'set':
+        return {
+            callback: _ => updateExpr.tags[1].attr
+        }
+    }
+
+    return null;
+}
+
 export function tupleToModification(tuple: Tuple) {
     const mod = new TupleModification();
 
     for (const tag of tuple.tags) {
-        if (tag.exprValue && expressionUpdatesExistingValue(tag.exprValue)) {
-            mod.addAttrModification(tag.attr, getCallbackForExpression(tag.exprValue));
-        }
+        const found = isTuple(tag.value) && getUpdateExpression(tag.value);
+        if (found) 
+            mod.addAttrModification(tag.attr, found.callback);
     }
 
     return mod;
@@ -68,7 +88,8 @@ export function expressionUpdatesExistingValue(expr: string[]) {
 }
 
 function tagModifiesExistingRelations(tag: TupleTag) {
-    if (tag.exprValue && expressionUpdatesExistingValue(tag.exprValue))
+    const found = isTuple(tag.value) && getUpdateExpression(tag.value);
+    if (found) 
         return true;
 
     return false;

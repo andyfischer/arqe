@@ -1,6 +1,7 @@
 
 import Fs from 'fs'
 import Path from 'path'
+import Glob from 'glob'
 
 import GraphRepl from '../GraphRepl'
 import printResult from '../console/printResult'
@@ -9,7 +10,7 @@ import Tuple from '../Tuple'
 import { receiveToTupleList, receiveToTupleListPromise } from '../receiveUtils'
 import { processGraph } from '../platformExports'
 import Graph from '../Graph'
-import loadWatchedTableModule from './loadWatchedTableModule'
+import loadWatchedTableModule, { prepareForWatchedModules } from './loadWatchedTableModule'
 import startRepl from './startRepl'
 
 // import WebServer from './node/socket/WebServer'
@@ -18,55 +19,29 @@ import startRepl from './startRepl'
 function runFile(graph: Graph, filename: string) {
     const contents = Fs.readFileSync(filename, 'utf8');
     throw new Error("parseFile not implemented");
-    /*
-    const commands = parseFile(contents);
-    for (const command of commands) {
-
-        const listReceiver = receiveToTupleList((rels: Tuple[]) => {
-            printResult(rels);
-        });
-
-        graph.run(command.stringify(), {
-            next(tuple) {
-                if (tuple.hasAttr('command-meta')) {
-                    if (tuple.hasAttr('search-pattern'))
-                        return;
-
-                    console.log('# ' + tuple.removeAttr('command-meta').stringify());
-                }
-
-                listReceiver.next(tuple);
-            },
-            done() {
-                listReceiver.done();
-            }
-        });
-    }
-    */
-}
-
-function requireTables(graph: Graph, moduleName: string) {
-    console.log('loading: ' + moduleName);
-    const { setupTables } = require(moduleName);
-    if (!setupTables)
-        throw new Error(`Module '${moduleName}' didn't export 'setupTables'`);
-
-    const tables = setupTables();
-
-    for (const table of tables)
-        graph.addTable(table);
 }
 
 function loadStandardTables(graph: Graph) {
+    loadWatchedTableModule(graph, Path.join(__dirname, '../tables/Filesystem.js'));
     loadWatchedTableModule(graph, Path.join(__dirname, 'standardTables.js'));
 }
 
 function autoloadNearbyTables(graph: Graph) {
-    for (const filename of ['dist/tables.js']) {
-        if (Fs.existsSync(filename)) {
-            console.log('autoloading: ' + filename);
-            loadWatchedTableModule(graph, filename);
-        }
+
+    let files = [];
+
+    for (const filename of ['dist/tables.js', '.tables.js', 'tables.js'])
+        if (Fs.existsSync(filename))
+            files.push(filename);
+
+    files = files.concat(Glob.sync('dist/tables/**/*.js'));
+    files = files.concat(Glob.sync(Path.join(process.env.HOME, '.arqe/tables/**/*.js'), {
+        ignore: ['**/node_modules/**']
+    }));
+
+    for (const filename of files) {
+        console.log('autoloading: ' + filename);
+        loadWatchedTableModule(graph, filename);
     }
 }
 
@@ -82,15 +57,7 @@ export default async function main() {
 
     const graph = processGraph();
 
-    /*
-    if (cliArgs.db) {
-        loadBootstrapConfigs(graph, cliArgs.db);
-    } else {
-        loadLocalBootstrapConfigs(graph);
-    }
-    */
-
-
+    prepareForWatchedModules(graph);
     loadStandardTables(graph);
     autoloadNearbyTables(graph);
 
@@ -106,14 +73,12 @@ export default async function main() {
 
     if (cliArgs.c) {
 
-        const [ receiver, promise ] = receiveToTupleListPromise();
-        graph.run(cliArgs.c, receiver);
-
-        const rels = await promise;
-        printResult(rels);
         runRepl = false;
-        graph.close();
-        process.exit(0);
+        graph.run(cliArgs.c)
+        .then(rel => {
+            printResult(rel);
+            process.exit(0);
+        })
         return;
     }
 

@@ -1,5 +1,5 @@
 
-import parseJsonToTuple, { tupleToJson } from './objectToTuple'
+import { jsonToTuple, tupleToJson } from './Tuple'
 import Tuple from './Tuple'
 
 type FlagMap = { [flag: string]: any }
@@ -48,7 +48,7 @@ export function jsonToCommand(obj: any): Command {
     const tupleObj = { ...obj };
     delete tupleObj.verb;
     delete tupleObj.flags;
-    const tuple = parseJsonToTuple(tupleObj);
+    const tuple = jsonToTuple(tupleObj);
 
     return new Command(obj.verb, tuple, obj.flags);
 }

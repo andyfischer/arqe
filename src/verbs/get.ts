@@ -1,47 +1,61 @@
 
-import Tuple from '../Tuple'
+import Tuple, { newTuple } from '../Tuple'
+import { newSimpleTag } from '../TupleTag'
 import Stream from '../Stream'
-import { emitSearchPatternMeta, emitCommandError } from '../CommandUtils'
+import { emitSearchPatternMeta, asCommandMeta, tableNotFoundError, tableDoesntSupportOperation } from '../CommandUtils'
 import { combineStreams, joinNStreams_v2 } from '../StreamUtil'
 import TableMount from '../TableMount'
+import { callTableHandler } from '../callTableHandler'
 import findPartitionsByTable from '../findPartitionsByTable'
 import QueryContext from '../QueryContext'
+import { splitTuple, abstractHoles } from '../operations'
 
-export function getOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
+function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tuple, getMeta: Tuple, out: Stream) {
 
-    cxt.start('getOnOneTable', { tableName: table.name, tuple: tuple.stringify() });
+    cxt.start('getOnOneTable', { tableName: table.name, tuple: searchPattern.stringify() });
 
-    cxt.msg(`looking for 'get' handler`);
-    if (table.callWithDefiniteValues(cxt, 'get', tuple, out)) {
+    // should this rename to "alias" or similar ?
+    if (table.callWithDefiniteValues(cxt, 'get', searchPattern, out)) {
         cxt.msg(`used 'get' handler`);
         cxt.end('getOnOneTable');
         return;
     }
 
-    cxt.msg(`looking for 'find-with' handler`);
-    if (table.callWithDefiniteValues(cxt, 'find-with', tuple, out)) {
-        cxt.msg('used find-with handler');
-        cxt.end('getOnOneTable');
+    // Check if there is a 'find' handler
+    //   If it matches fixed values then call it.
+    //   If it matches abstractly then return the abstract result.
+
+    const definiteFind = table.findHandler(cxt, 'find', searchPattern);
+
+    if (getMeta.getOptional('get.scope', null) === 'handlercheck') {
+        if (definiteFind) {
+            // Yes we have a handler for this pattern.
+            out.next(abstractHoles(searchPattern));
+            out.done();
+        } else {
+            // No handler for this pattern.
+            out.next(tableDoesntSupportOperation('find', searchPattern));
+            out.done();
+        }
         return;
     }
 
-    cxt.msg(`looking for 'list-all' handler`);
-    if (table.callWithDefiniteValues(cxt, 'list-all', tuple, {
+    if (definiteFind) {
+        const filteredOut = {
             next(t: Tuple) {
-                if (tuple.isSupersetOf(t))
+                if (t.isCommandMeta() || searchPattern.isSupersetOf(t))
                     out.next(t);
             },
             done() { out.done() }
-        })) {
+        }
 
-        cxt.msg('used list-all handler');
-        cxt.end('getOnOneTable');
+        callTableHandler(cxt, definiteFind, searchPattern, filteredOut);
         return;
     }
 
     // Fail
     cxt.msg('no handler found');
-    emitCommandError(out, `No 'get' handler found on table '${table.name}' for tuple: ${tuple.stringify()}`);
+    emptyResultFromError(out, searchPattern, tableDoesntSupportOperation('get', searchPattern));
     out.done();
     cxt.end('getOnOneTable');
 }
@@ -80,9 +94,9 @@ function maybeAnnotateWithIdentifiers(searchPattern: Tuple, out: Stream) {
     }
 }
 
-export function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
+function runGet(cxt: QueryContext, searchPattern: Tuple, getMeta: Tuple, out: Stream) {
     if (!searchPattern)
-        throw new Error('missing filterPattern or tuple');
+        throw new Error('missing searchPattern');
 
     if (searchPattern.isEmpty()) {
         out.done();
@@ -98,19 +112,36 @@ export function runGet(cxt: QueryContext, searchPattern: Tuple, out: Stream) {
 
     let foundAnyTables = false;
 
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, searchPattern)) {
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, searchPattern)) {
         const tableOut = combined();
-        getOnOneTable(cxt, table, partitionedTuple, tableOut);
+        getOnOneTable(cxt, table, partitionedTuple, getMeta, tableOut);
         foundAnyTables = true;
     }
 
     if (!foundAnyTables) {
-        cxt.msg('no table found');
-        emitCommandError(out, "No table found for: " + searchPattern.stringify());
+        emptyResultFromError(out, searchPattern, tableNotFoundError(searchPattern));
     }
 
     startedAllTables.done();
     cxt.end('runGet');
+}
+
+function emptyResultFromError(out: Stream, searchPattern: Tuple, error: Tuple) {
+    if (searchPattern.hasAnyAbstractValues()) {
+        out.next(searchPattern.remapTags(tag => {
+            if (tag.isAbstractValue()) {
+                return tag.setValue(newTuple([newSimpleTag('empty'), newSimpleTag('reason', error)]));
+            } else {
+                return tag;
+            }
+        }));
+    } else {
+        out.next(asCommandMeta(error));
+    }
+}
+
+function extractGetScopeAttrs(tuple: Tuple) {
+
 }
 
 export default function runGetStep(cxt: QueryContext, tuple: Tuple, out: Stream) {
@@ -118,6 +149,8 @@ export default function runGetStep(cxt: QueryContext, tuple: Tuple, out: Stream)
 
     cxt.input.sendTo(combined);
 
-    emitSearchPatternMeta(tuple, combined);
-    runGet(cxt, tuple, combined);
+    let [ getMeta, searchPattern ] = splitTuple(tuple, tag => tag.attr === 'get.scope');
+
+    emitSearchPatternMeta(searchPattern, combined);
+    runGet(cxt, searchPattern, getMeta, combined);
 }

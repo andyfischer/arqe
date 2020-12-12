@@ -5,6 +5,7 @@ import WebSocket from '../platform/ws'
 import parseTuple from "../stringFormat/parseTuple";
 import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 
+/*
 export class Connection {
     socketId: string
     url: string
@@ -45,11 +46,11 @@ export function setupTables(): TableMount[] {
         return { 'socketId': id }
     }));
 
-    socketConnections.addHandler('find-with', 'socketId', unwrapTuple(({ socketId }) => {
+    socketConnections.addHandler('find', 'socketId', unwrapTuple(({ socketId }) => {
         return connections.get(socketId);
     }));
 
-    socketConnections.addHandler('list-all', '', unwrapTuple(() => {
+    socketConnections.addHandler('find', '', unwrapTuple(() => {
         return connections.values();
     }));
 
@@ -65,3 +66,6 @@ export function setupTables(): TableMount[] {
 
     return [ socketConnections ];
 }
+*/
+
+export default {}

@@ -1,8 +1,7 @@
 
 import CommandExecutionParams from '../CommandParams'
 import { objectToTuple } from '../Tuple'
-import { runGet } from './get'
-import Pipe from '../utils/Pipe'
+import Pipe from '../Pipe'
 import QueryContext from '../QueryContext';
 
 export default function countCommand(cxt: QueryContext, params: CommandExecutionParams) {
@@ -10,10 +9,10 @@ export default function countCommand(cxt: QueryContext, params: CommandExecution
     let count = 0;
 
     const combined = new Pipe();
-    runGet(cxt, tuple, combined);
 
     params.input.sendTo(combined);
-    
+    cxt.graph.run(tuple.setValue('verb', 'get'), combined);
+
     combined.sendTo({
         next(rel) {
             if (rel.hasAttr('command-meta'))

@@ -6,6 +6,7 @@ import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_
     t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen } from '../lexer'
 import parseOneTag from './parseOneTag'
+import { tupleBidirectionalJsonTest } from '../SelfTest'
 
 interface InProgressQuery {
     tags: TupleTag[]
@@ -36,7 +37,11 @@ export default function parseTuple(str: string): Tuple {
     const it = lexStringToIterator(str);
 
     try {
-        return parseTupleTokens(it);
+        const tuple = parseTupleTokens(it);
+
+        // tupleBidirectionalJsonTest(tuple); // temp
+
+        return tuple;
     } catch(e) {
         console.error(e);
         throw new Error('Error trying to parse tuple: ' + str);

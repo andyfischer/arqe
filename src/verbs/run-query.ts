@@ -2,18 +2,18 @@
 import QueryContext from '../QueryContext'
 import CommandParams from '../CommandParams'
 import { combineStreams } from '../StreamUtil'
-import { getSearchAndInputCombined } from '../CommandUtils'
 import Tuple from '../Tuple'
 import { emitCommandError } from '../CommandUtils'
-import { runQueryV2 } from '../Query'
+import { runQuery } from '../Query'
 import { toQuery } from '../coerce'
+import { joinNStreams_v2 } from '../StreamUtil'
 
 export default function runQueryCommand(cxt: QueryContext, params: CommandParams) {
 
     const collector = combineStreams(params.output);
     const allQueries = collector();
 
-    getSearchAndInputCombined(cxt, params, {
+    const combined = joinNStreams_v2(2, {
         next(t: Tuple) {
             if (t.isCommandMeta()) {
                 params.output.next(t);
@@ -33,11 +33,13 @@ export default function runQueryCommand(cxt: QueryContext, params: CommandParams
                 liveQuery.usedDynamicQueryDuringEval(cxt, query);
             }
 
-            runQueryV2(cxt, query, queryOut);
-
+            runQuery(cxt, query, queryOut);
         },
         done() {
             allQueries.done();
         }
-    })
+    });
+
+    params.input.sendTo(combined);
+    cxt.graph.run(params.tuple.setValue('verb', 'get'), combined);
 }

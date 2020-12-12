@@ -4,7 +4,8 @@ import Stream from './Stream'
 import { receiveToTupleList } from './receiveUtils'
 import printResult from './console/printResult'
 import Tuple from './Tuple'
-import GraphLike from './GraphLike'
+import { toQuery } from './coerce'
+import { queryToJson } from './Query'
 
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
@@ -14,9 +15,9 @@ function trimEndline(str) {
 }
 
 export default class GraphRepl {
-    graph: GraphLike
+    graph: Graph
 
-    constructor(graph: GraphLike) {
+    constructor(graph: Graph) {
         this.graph = graph;
     }
 
@@ -29,32 +30,11 @@ export default class GraphRepl {
             return;
         }
 
-        const listReceiver = receiveToTupleList((rels: Tuple[]) => {
-            printResult(rels);
-            isFinished = true;
+        this.graph.run(line)
+        .then(rel => {
+            printResult(rel);
             onDone();
-        });
-
-        this.graph.run(line, {
-            next: (rel) => {
-                if (isFinished)
-                    throw new Error('got relation after finish()');
-
-                if (rel.hasAttr('command-meta')) {
-                    if (rel.hasAttr('error')) {
-                        console.log('error: ' + rel.getVal('message'));
-                    }
-
-                    return;
-                }
-
-                listReceiver.next(rel);
-            },
-            done: () => {
-                listReceiver.done();
-                onDone();
-            }
-        });
+        })
     }
 }
 

@@ -2,7 +2,10 @@
 import { lexStringToIterator, TokenIterator, TokenDef, t_newline, t_space,
     t_line_comment, t_bar } from '../lexer'
 import { parseOneCommand } from '../parseCommand'
-import Query from '../Query'
+import Query, { relationAsQuery } from '../Query'
+import Relation from '../Relation'
+import Tuple from '../Tuple'
+import { queryBidirectionalJsonTest } from '../SelfTest'
 
 function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
     let lookahead = 0;
@@ -22,18 +25,28 @@ function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
     return false;
 }
 
-function parseOneStatement(it: TokenIterator, program: Query) {
+function parseOneStatement(it: TokenIterator, terms: Tuple[]) {
 
-    let lhs = null;
+    //let lhs = null;
 
     while (!it.finished()) {
         const command = parseOneCommand(it);
 
-        const term = program.addTerm(command.verb, command.tuple, command.flags);
+        let term = command.tuple
+           .setValue('verb', command.verb);
+
+        if (command.flags && (Object.keys(command.flags).length > 0))
+            term = term.setValue('flags', command.flags);
+
+        terms.push(term);
+
+           /*
+        const term = query.addTerm(command.verb, command.tuple, command.flags);
         if (lhs) {
-            program.connectAsInput(lhs, term);
+            query.connectAsInput(lhs, term);
         }
         lhs = term;
+        */
 
         it.skipSpaces();
 
@@ -48,11 +61,11 @@ function parseOneStatement(it: TokenIterator, program: Query) {
             break;
     }
 
-    program.setOutput(lhs);
+    // query.setOutput(lhs);
 }
 
 function parseProgramTok(it: TokenIterator): Query {
-    const query = new Query();
+    const terms: Tuple[] = [];
 
     while (!it.finished()) {
         while (it.nextIs(t_space) || it.nextIs(t_newline) || it.nextIs(t_line_comment))
@@ -61,10 +74,10 @@ function parseProgramTok(it: TokenIterator): Query {
         if (it.finished())
             break;
 
-        parseOneStatement(it, query);
+        parseOneStatement(it, terms);
     }
 
-    return query;
+    return relationAsQuery(new Relation(terms));
 }
 
 export function parseQuery(str: string): Query {
@@ -72,9 +85,7 @@ export function parseQuery(str: string): Query {
     
     const query = parseProgramTok(it);
 
-    if (!query.outputFrom) {
-        console.log('warning: parsed query has no output: ' + str);
-    }
+    // queryBidirectionalJsonTest(query); // temp
 
     return query;
 }

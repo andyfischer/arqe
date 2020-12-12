@@ -67,27 +67,6 @@ it('parses doubleStar', () => {
     expect(parsed.tuple.tags[0].doubleStar).toEqual(true)
 });
 
-it('parses flags', () => {
-    const parsed = parseCommand('test -a 1');
-    expect(parsed.verb).toEqual('test')
-    expect(parsed.flags).toEqual({a: true})
-    expect(parsed.tuple.tags[0].attr).toEqual('1');
-});
-
-it('parses multiple flags', () => {
-    const parsed = parseCommand('test -a -b -c 1');
-    expect(parsed.verb).toEqual('test')
-    expect(parsed.flags).toEqual({a: true, b: true, c: true})
-    expect(parsed.tuple.tags[0].attr).toEqual('1');
-});
-
-it('parses multicharacter flag', () => {
-    const parsed = parseCommand('test -list 1');
-    expect(parsed.verb).toEqual('test')
-    expect(parsed.flags.list).toEqual(true);
-    expect(parsed.tuple.tags[0].attr).toEqual('1');
-});
-
 it('parses unbound variables', () => {
     const parsed = parseCommand('test $a');
     expect(parsed.verb).toEqual('test')

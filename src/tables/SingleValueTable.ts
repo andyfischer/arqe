@@ -20,7 +20,7 @@ export function setupSingleValueTable(name: string, base: Tuple, valueAttr: stri
     const table = new TableMount(name, schema);
     const accessor = new ValueAccessor();
 
-    table.addHandler(`list-all`, '', toStream((search) => {
+    table.addHandler(`find`, '', toStream((search) => {
         const found = search.setVal(valueAttr, accessor.value);
         return found;
     }));

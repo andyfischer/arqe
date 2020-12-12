@@ -65,8 +65,8 @@ it('get * works with fixed valueless tags', () => {
 });
 
 it('get * works with fixed valueless tags 2', () => {
-    run(graph, 'set a/1 b c')
-    run(graph, 'set a/2 b c')
+    run(graph, 'set a=1 b c')
+    run(graph, 'set a=2 b c')
     expect(run(graph, 'get a/* b c')).toEqual([
         'a/1 b c',
         'a/2 b c'

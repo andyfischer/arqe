@@ -8,21 +8,21 @@ it('supports searches with find-for', () => {
     const graph = new Graph();
     const table = new TableMount('custom1', parseTuple('t x? y?'));
     graph.addTable(table);
-    table.addHandler("find-with", "x", unwrapTuple(({ x }) => {
+    table.addHandler("find", "x", unwrapTuple(({ x }) => {
         return {
             x,
             y: parseInt(x) + 1
         }
     }));
 
-    table.addHandler("find-with", "y", unwrapTuple(({ y }) => {
+    table.addHandler("find", "y", unwrapTuple(({ y }) => {
         return {
             y,
             x: parseInt(y) - 1
         }
     }));
 
-    expect(run(graph, "get t x/1 y", { withHeaders: true })).toEqual([
+    expect(run(graph, "get t x=1 y", { withHeaders: true })).toEqual([
         "t x/1 y command-meta search-pattern",
         "t x/1 y/2"
     ]);
@@ -38,7 +38,7 @@ it('supports searches with find-all', () => {
     const table = new TableMount('custom2', parseTuple('t x? y?'));
     graph.addTable(table);
 
-    table.addHandler("list-all", "", unwrapTuple(() => {
+    table.addHandler("find", "", unwrapTuple(() => {
         return [
             { x: '1', y: '2' },
             { x: '5', y: '6' }
@@ -67,7 +67,7 @@ it('supports custom inserts', () => {
         'b': '2'
     }
 
-    table.addHandler("find-with", "x", unwrapTuple(({ x }) => {
+    table.addHandler("find", "x", unwrapTuple(({ x }) => {
         return {
             x,
             y: data[x]

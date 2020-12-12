@@ -1,5 +1,5 @@
 
-import TupleTag, { newSimpleTag, TagOptions } from './TupleTag'
+import TupleTag, { newSimpleTag, newTagFromObject, TagOptions, tagToJson, jsonToTag, nativeValueToTag } from './TupleTag'
 import TupleMatchHelper from './tuple/TupleMatchHelper'
 import TupleDerivedData from './tuple/TupleDerivedData'
 import { symValueType } from './internalSymbols'
@@ -68,6 +68,12 @@ export default class Tuple {
         return this._queryDerivedData;
     }
 
+    *tagsIt() {
+        for (const tag of this.tags) {
+            yield tag;
+        }
+    }
+
     obj(): any {
         return this.toObject();
     }
@@ -96,10 +102,27 @@ export default class Tuple {
         return this._byIdentifier;
     }
 
+    hasAnyIdentifier() {
+        for (const t of this.tags)
+            if (t.identifier)
+                return true;
+        return false;
+    }
+
+    *identifierTags() {
+        for (const t of this.tags)
+            if (t.identifier)
+                yield t;
+    }
+
     remapTags(func: (tag:TupleTag) => TupleTag) {
         const tags = this.tags.map(func)
             .filter(tag => tag);
         return new Tuple(tags);
+    }
+
+    filterTags(func: (tag:TupleTag) => boolean) {
+        return new Tuple(this.tags.filter(func));
     }
 
     modifyTagsList(func: (tags: TupleTag[]) => TupleTag[]) {
@@ -267,11 +290,8 @@ export default class Tuple {
         return this.get(attr);
     }
 
-    getNativeVal(attr: string) {
-        const tag = this.asMap().get(attr);
-        if (!tag.hasValue())
-            throw new Error("not a fixed value: " + attr);
-        return tag.nativeValue;
+    getInt(attr: string) {
+        return parseInt(this.get(attr));
     }
 
     getOptional(attr: string, defaultValue) {
@@ -303,29 +323,19 @@ export default class Tuple {
         return new Tuple(this.tags.slice(0,index).concat(this.tags.slice(index + 1)));
     }
 
+    justAttrs(attrs: string[]) {
+        const out: TupleTag[] = [];
+        for (const attr of attrs)
+            out.push(this.getTag(attr));
+        return new Tuple(out);
+    }
+
     setValueAtIndex(index: number, value: any) {
         const tags = this.tags.map(t => t);
         tags[index] = tags[index].copy();
         tags[index].value = value;
 
         return new Tuple(tags);
-    }
-
-    setNativeVal(attr: string, value: any) {
-        let found = false;
-
-        let out = this.remapTags(tag => {
-            if (tag.attr === attr) {
-                found = true;
-                return tag.setNativeValue(value);
-            }
-            return tag;
-        });
-
-        if (!found)
-            out = out.addTag(newSimpleTag(attr, null).setNativeValue(value));
-
-        return out; 
     }
 
     setTag(tag: TupleTag) {
@@ -341,8 +351,12 @@ export default class Tuple {
             return this.addTag(tag);
         }
     }
-
+    
     setVal(attr: string, value: any) {
+        return this.setValue(attr, value);
+    }
+
+    setValue(attr: string, value: any) {
         if (!attr)
             throw new Error('setVal missing required: attr')
 
@@ -408,6 +422,13 @@ export default class Tuple {
         return new Tuple(tags);
     }
 
+    attrsOnly() {
+        return this.remapTags(tag => {
+            if (tag.attr)
+                return newSimpleTag(tag.attr)
+        });
+    }
+
     addTag(tag: TupleTag) {
         return new Tuple(this.tags.concat([tag]));
     }
@@ -432,6 +453,10 @@ export default class Tuple {
         return this.tags.map(tag => tag.stringify()).join(' ');
     }
 
+    isError() {
+        return this.hasAttr('error');
+    }
+
     isCommandMeta() {
         return this.hasAttr('command-meta');
     }
@@ -442,6 +467,18 @@ export default class Tuple {
 
     isCommandSearchPattern() {
         return this.hasAttr('command-meta') && this.hasAttr('search-pattern');
+    }
+
+    isAbstract() {
+        return this.tags.length > 0 && this.tags[0].attr === 'abstract'
+    }
+
+    hasAnyAbstractValues() {
+        for (const tag of this.tags)
+            if (tag.isAbstractValue())
+                return true;
+
+        return false;
     }
 
     toProxyObject(): any {
@@ -477,3 +514,120 @@ export function isTuple(val: any) {
     return val && (val[symValueType] === 'tuple');
 }
 
+type PatternJSON = { [key: string]: any }
+
+function oneKeyValueToTag(key: string, value: any) {
+    if (key === '**') {
+        return newTagFromObject({doubleStar: true});
+    }
+
+    if (key === '*') {
+        return newTagFromObject({star: true});
+    }
+
+    if (Array.isArray(value)) {
+        return value.map(valueEl => oneKeyValueToTag(key, valueEl));
+    }
+
+    if (value === true) {
+        return newTagFromObject({attr: key});
+    }
+    
+    if (value === null || value === undefined)
+        return newTagFromObject({attr: key});
+
+    if (typeof value === 'string')
+        return newTagFromObject({attr: key, value: value});
+
+    if (typeof value === 'number')
+        return newTagFromObject({attr: key, value: value + ""});
+
+    // Parse extended object
+    let identifier = null;
+    let attr = null;
+
+    if (key[0] === '$') {
+        identifier = key.slice(1);
+    } else {
+        attr = key;
+    }
+
+    if (value.attr)
+        attr = value.attr;
+
+    return newTagFromObject({
+        attr,
+        identifier,
+        value: value.value,
+        starValue: value.match === '*',
+        optional: value.optional
+    });
+}
+
+export function jsonToTuple(obj: PatternJSON): Tuple {
+
+    if ((obj as any)[symValueType] !== undefined)
+        throw new Error("parseObjectToPattern called on native type: " + (obj as any)[symValueType])
+
+    let tags: TupleTag[] = [];
+
+    for (const attr in obj) {
+        if (attr === 'exprValue')
+            throw new Error('object looks suspiciously like a Tag?? ' + JSON.stringify(obj));
+
+        if (attr === '') {
+            for (const jsonData of obj['']) {
+                tags.push(jsonToTag(null, jsonData));
+            }
+            continue;
+        }
+
+        const jsonData = obj[attr];
+
+        if (jsonData === false || jsonData === null) {
+            continue;
+        }
+
+        tags.push(jsonToTag(attr, jsonData));
+    }
+
+    return newTuple(tags);
+}
+
+export function nativeValueToTuple(obj: any): Tuple {
+
+    if ((obj as any)[symValueType] !== undefined)
+        throw new Error("parseObjectToPattern called on native type: " + (obj as any)[symValueType])
+
+    let tags: TupleTag[] = [];
+
+    for (const attr in obj) {
+        if (attr === 'exprValue')
+            throw new Error('object looks suspiciously like a Tag?? ' + JSON.stringify(obj));
+
+        const jsonData = obj[attr];
+
+        if (jsonData === false || jsonData === null) {
+            continue;
+        }
+
+        tags.push(nativeValueToTag(attr, jsonData));
+    }
+
+    return newTuple(tags);
+}
+
+export function tupleToJson(pattern: Tuple): PatternJSON {
+    const out: PatternJSON = {}
+
+    for (const tag of pattern.tags) {
+        if (tag.attr) {
+            out[tag.attr] = tagToJson(tag);
+        } else {
+            out[''] = out[''] || [];
+            out[''].push(tag);
+        }
+    }
+
+    return out;
+}

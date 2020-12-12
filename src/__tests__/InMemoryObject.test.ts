@@ -1,5 +1,5 @@
 import Graph from "../Graph";
-import setupInMemoryObjectTable from "../tables/InMemoryObject";
+import setupInMemoryObjectTable from "../standardTables/InMemoryObject";
 import parseTuple from "../stringFormat/parseTuple";
 import { run } from './utils'
 

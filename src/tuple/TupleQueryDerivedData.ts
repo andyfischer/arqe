@@ -1,4 +1,4 @@
-import Tuple from "../Tuple";
+import Tuple, { isTuple } from "../Tuple";
 
 const exprFuncEffects = {
     increment: {
@@ -34,8 +34,10 @@ export default class TupleQueryDerivedData {
         let canInitializeMissing = true;
 
         for (const tag of tuple.tags) {
-            const expr = tag.exprValue;
-            const tagEffects = expr && expr[0] && exprFuncEffects[expr[0]];
+
+            let tagEffects = isTuple(tag.value)
+                                     && (tag.value.tags.length > 0)
+                                     && exprFuncEffects[tag.value.tags[0].attr];
 
             if (!tagEffects)
                 continue;

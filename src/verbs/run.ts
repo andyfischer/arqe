@@ -16,7 +16,7 @@ export default function runCommand(cxt: QueryContext, params: CommandExecutionPa
     const allTables = combinedOut();
 
     let foundCount = 0;
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt, tuple)) {
+    for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, tuple)) {
         const tableOut = combinedOut();
         foundCount += 1;
 

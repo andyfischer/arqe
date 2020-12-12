@@ -1,14 +1,12 @@
 
 import fs from 'fs-extra'
-
+import TableDefiner from '../TableDefiner'
 import globLib from 'glob'
 import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
 
 async function callGlob(pattern: string, options): Promise<{filename: string}[]> {
     return new Promise((resolve, reject) => {
-        // console.log('calling globLib', pattern, JSON.stringify(options))
         globLib(pattern, options, (err, files) => {
-            // console.log('globLib returned: ' + files)
             if (err) {
                 reject(err);
             } else {
@@ -18,41 +16,46 @@ async function callGlob(pattern: string, options): Promise<{filename: string}[]>
     })
 }
 
-export default function getDef() {
-    return {
-        'fs filename file-contents?': {
-            name: 'FsFile',
-            "find-with filename": unwrapTuple(async ({ filename }) => {
-                return {
-                    'file-contents': await fs.readFile(filename, 'utf8')
-                }
-            }),
-            "insert filename file-contents": unwrapTuple(async ({ filename, 'file-contents': contents }) => {
-                await fs.writeFile(filename, contents);
-            }),
-            "delete filename": unwrapTuple(async ({ filename }) => {
-                await fs.unlink(filename);
-            })
+export default (definer: TableDefiner) =>
+    definer.provide('fs filename file-contents? mtime?', {
+        name: 'FsFile',
+        "find filename": async (input, out) => {
+            const filename = input.get('filename');
+            const found = { }
+
+            if (input.hasAttr('file-contents'))
+                found['file-contents'] = await fs.readFile(filename, 'utf8');
+
+            if (input.hasAttr('mtime')) {
+                found['mtime'] = (await fs.stat(filename)).mtime.getTime()
+            }
+
+            out.done(found);
         },
-        'fs dir filename?': {
-            name: 'FsDirectory',
-            'find-with dir': unwrapTuple(async ({ dir }) => {
-                const files = await fs.readdir(dir);
-                return files.map(filename => ({ filename }))
-            })
+        "insert filename file-contents": unwrapTuple(async ({ filename, 'file-contents': contents }) => {
+            await fs.writeFile(filename, contents);
+        }),
+        "delete filename": unwrapTuple(async ({ filename }) => {
+            await fs.unlink(filename);
+        })
+    })
+    .provide('fs dir filename?', {
+        name: 'FsDirectory',
+        'find dir': unwrapTuple(async ({ dir }) => {
+            const files = await fs.readdir(dir);
+            return files.map(filename => ({ filename }))
+        })
+    })
+    .provide('glob pattern cwd? filename?', {
+        name: 'Glob',
+        'find pattern cwd': async (input, out) => {
+            const { pattern, cwd } = input.obj();
+            const results = await callGlob(pattern, { cwd });
+            out.done(results);
         },
-        'glob pattern cwd? filename?': {
-            name: 'Glob',
-            'find-with pattern cwd': unwrapTuple(({ pattern, cwd }) => {
-                if (!pattern)
-                    throw new Error('missing pattern')
-                return callGlob(pattern, { cwd });
-            }),
-            'find-with pattern': unwrapTuple(({ pattern }) => {
-                if (!pattern)
-                    throw new Error('missing pattern')
-                return callGlob(pattern, {});
-            })
+        'find pattern': async (input, out) => {
+            const { pattern } = input.obj();
+            const results = await callGlob(pattern, {});
+            out.done(results);
         }
-    };
-}
+    })

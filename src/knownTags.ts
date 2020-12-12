@@ -13,3 +13,9 @@ export function isEnvTag(t: TupleTag) {
         && t.value.tags[0]
         && t.value.tags[0].attr === 'env');
 }
+
+export function isSubqueryTag(t: TupleTag) {
+    return (isTuple(t.value)
+        && t.value.tags[0]
+        && t.value.tags[0].attr === 'subquery');
+}
