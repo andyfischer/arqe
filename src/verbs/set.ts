@@ -6,7 +6,7 @@ import { updatePlanned } from './update'
 import Stream from '../Stream'
 import Tuple from '../Tuple'
 import TableMount from '../TableMount'
-import findPartitionsByTable from '../findPartitionsByTable'
+import findTablesForPattern from '../findTablesForPattern'
 import { combineStreams } from '../StreamUtil'
 import TupleTag, { newTag } from '../TupleTag'
 import { emitCommandError } from '../CommandUtils'
@@ -37,7 +37,7 @@ export default function set(cxt: QueryContext, params: CommandParams) {
     const allTables = combinedOut();
 
     let anyFound = false;
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, tuple)) {
+    for (const [table, partitionedTuple] of findTablesForPattern(cxt.graph, tuple)) {
         const tableOut = combinedOut();
         anyFound = true;
         setOnTable(cxt, table, partitionedTuple, tableOut);

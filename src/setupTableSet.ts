@@ -4,7 +4,6 @@ import parseTuple from "./stringFormat/parseTuple";
 import parseCommand from "./parseCommand";
 import Graph from "./Graph";
 import OutputStream from "./OutputStream";
-import TuplePatternMatcher from "./tuple/TuplePatternMatcher";
 import Tuple from "./Tuple";
 import Stream from "./Stream";
 import { TupleLike } from './coerce'

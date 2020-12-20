@@ -22,7 +22,9 @@ function runFile(graph: Graph, filename: string) {
 }
 
 function loadStandardTables(graph: Graph) {
-    loadWatchedTableModule(graph, Path.join(__dirname, '../tables/Filesystem.js'));
+    for (const file of Glob.sync(Path.join(__dirname, '../tables/*.js')))
+        loadWatchedTableModule(graph, file);
+
     loadWatchedTableModule(graph, Path.join(__dirname, 'standardTables.js'));
 }
 

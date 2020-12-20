@@ -16,15 +16,15 @@ it("subquery works", () => {
             }
         },
         'test1-mirror a b': {
-            'find a context.subquery': (input, out) => {
+            'find a sq(subquery)': (input, out) => {
                 const a = input.get('a');
-                const subquery = input.get('context.subquery');
+                const subquery = input.get('sq');
 
-                subquery(`get test1 a[${a}] b | rename from/test1 to/test1-mirror`, out);
+                subquery(`get test1 a=${a} b | rename from=test1 to=test1-mirror`, out);
             }
         }
     });
 
-    expect(run(graph, "get test1-mirror a[1] b | just b")).toEqual(['b/one']);
+    expect(run(graph, "get test1-mirror a=1 b | just b")).toEqual(['b/one']);
     // expect(run(graph, "get test1-mirror a[2] b | just b")).toEqual(['b/two']);
 });

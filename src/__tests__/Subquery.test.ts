@@ -15,7 +15,6 @@ it('works correctly', () => {
 
                 sq('get a | rename from=a to=b')
                 .then(rel => {
-                    console.log('test: ', rel.stringify())
                     o.done(rel);
                 })
             }

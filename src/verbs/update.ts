@@ -3,7 +3,7 @@ import CommandParams from '../CommandParams'
 import { Tuple, Stream } from '..';
 import { combineStreams } from '../StreamUtil';
 import { toInitialization, insertPlanned } from './insert';
-import findPartitionsByTable from '../findPartitionsByTable';
+import findTablesForPattern from '../findTablesForPattern';
 import TableMount from '../TableMount';
 import QueryContext from '../QueryContext';
 
@@ -36,7 +36,7 @@ export function updatePlanned(cxt: QueryContext, tuple: Tuple, output: Stream) {
 
     const allTables = collectOutput();
 
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, tuple)) {
+    for (const [table, partitionedTuple] of findTablesForPattern(cxt.graph, tuple)) {
         const tableOut = collectOutput();
         updateOnOneTable(cxt, table, partitionedTuple, tableOut);
     }

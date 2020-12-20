@@ -1,5 +1,4 @@
 
-import TuplePatternMatcher from './tuple/TuplePatternMatcher'
 import TableMount, { TupleStreamCallback } from './TableMount';
 import parseTuple from './stringFormat/parseTuple';
 import { unwrapTuple } from './tuple/UnwrapTupleCallback';

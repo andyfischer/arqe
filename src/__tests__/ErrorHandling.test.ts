@@ -8,16 +8,6 @@ beforeEach(() => {
     graph = new Graph();
 })
 
-it('getRelationAsync throws error for no table found', async () => {
-    expect.assertions(1);
-
-    try {
-        await graph.getRelationAsync('a b c')
-    } catch (err) {
-        expect(err.message).toEqual('No table found for pattern')
-    }
-})
-
 it("throwing an exception in a handler registers as an error", () => {
     const { run, graph, toRelation } = setupGraph();
 

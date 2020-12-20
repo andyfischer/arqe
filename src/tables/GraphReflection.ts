@@ -3,7 +3,7 @@ import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 
 export default function getDef(graph: Graph) {
     return {
-        'graph-tables name? schema?': {
+        'graph-tables(key) name schema': {
             name: 'GraphTables',
             'find': unwrapTuple(() => {
                 const out = [];

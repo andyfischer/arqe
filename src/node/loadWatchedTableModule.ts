@@ -19,9 +19,8 @@ export default function loadWatchedTableModule(graph: Graph, filename: string) {
     filename = Path.resolve(filename);
 
     //console.log('loadWatchedTableModule check:')
-    //console.log(graph.runSyncRelation(toTuple(['get', 'watched-table-modules', 'loaded', { filename }])).stringify())
 
-    if (graph.runSyncRelation(toTuple(['get', 'watched-table-modules', 'loaded', { filename }])).bodyArray().length > 0) {
+    if (graph.run(['get', 'watched-table-modules', 'loaded', { filename }]).rel().bodyArray().length > 0) {
         // console.log("filename already watched: " + filename);
         return;
     }

@@ -7,16 +7,13 @@ import { isUniqueTag, isEnvTag, isSubqueryTag } from './knownTags'
 import Query from './Query'
 
 const contextInputStream = 'context.inputStream'
-const contextOutputStream = 'context.outputStream'
 const contextEvalHelper = 'context.evalHelper'
-const contextSubquery = 'context.subquery'
 
 export interface PreCallStep {
     injectEvalHelper?: boolean
     injectInputStream?: boolean
     injectOutputStream?: boolean
     injectFromEnv?: string
-    injectSubquery?: boolean
     injectSubqueryFunc?: string
     injectSubqueryResult?: Query
 }
@@ -46,7 +43,8 @@ function isPreRun(tag: TupleTag) {
 
 export default class Handler {
     verb: string
-    inputPattern: Tuple
+    declaredMountPattern: Tuple
+    mountPattern: Tuple
     requiredValues: TupleTag[]
     tagsWithUnique: TupleTag[]
     preRunQueries: TupleTag[]
@@ -61,6 +59,7 @@ export default class Handler {
         const postResultModify: Tuple[] = [];
         const preRunQueries: TupleTag[] = [];
         const tagsWithUnique: TupleTag[] = [];
+        const declaredMountPattern = mountPattern;
 
         function checkOneMountTag(mountTag: TupleTag) {
             if (mountTag.attr === contextEvalHelper) {
@@ -77,16 +76,8 @@ export default class Handler {
                 return;
             }
 
-            if (mountTag.attr === contextOutputStream) {
-                steps.push({injectOutputStream: true});
-                mountPattern = mountPattern.removeAttr(contextOutputStream);
-                postResultModify.push(newTuple(newTag('remove-attr', contextOutputStream)));
-            }
-
-            if (mountTag.attr === contextSubquery) {
-                steps.push({injectSubquery: true});
-                mountPattern = mountPattern.removeAttr(contextSubquery);
-                postResultModify.push(newTuple(newTag('remove-attr', contextSubquery)));
+            if (mountTag.attr === "context.subquery") {
+                throw new Error("don't use contextSubquery");
             }
 
             if (isEnvTag(mountTag)) {
@@ -125,7 +116,8 @@ export default class Handler {
         if (mountPattern.hasAttr("evalHelper"))
             throw new Error("internal error: CommandEntry should not see 'evalHelper' attr");
 
-        this.inputPattern = mountPattern;
+        this.declaredMountPattern = declaredMountPattern;
+        this.mountPattern = mountPattern;
         this.callback = callback;
     }
 

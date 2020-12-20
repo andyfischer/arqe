@@ -1,5 +1,6 @@
 
-import Tuple, { newTuple } from './Tuple'
+import Tuple, { newTuple, isTuple } from './Tuple'
+import TupleTag from './TupleTag'
 import { emitCommandError } from './CommandUtils'
 import Stream from './Stream'
 import Pipe from './Pipe'
@@ -8,55 +9,90 @@ import QueryContext from './QueryContext';
 import { compileTupleModificationStream } from './compilation/TupleModificationFunc'
 import QueryEvalHelper from './QueryEvalHelper';
 import TableHandler from './TableHandler'
+import { isUniqueTag, isEnvTag, isSubqueryTag } from './knownTags'
 
 const contextInputStream = 'context.inputStream'
-const contextOutputStream = 'context.outputStream'
 const contextEvalHelper = 'context.evalHelper'
-const contextSubquery = 'context.subquery'
 
-function insertEvalHelperTag(cxt: QueryContext, tuple: Tuple) {
-    const verb = cxt.verb;
-    const helper = new QueryEvalHelper(cxt, verb, tuple);
-    return tuple.setVal(contextEvalHelper, helper);
+interface PreparedCall {
+    handlerInput: Tuple
+    postStripTags: TupleTag[]
+    preRunQueries: {
+        mountTag: TupleTag
+        query: Tuple
+    }[]
 }
 
-export function callTableHandler(cxt: QueryContext, handler: TableHandler, tuple: Tuple, out: Stream) {
+function prepareHandlerCall(cxt: QueryContext, incomingInput: Tuple, mountPattern: Tuple): PreparedCall {
+
+    const postStripTags = [];
+    const updatedTags = [];
+    const preRunQueries = []
+
+    mountPattern.tags.forEach(tag => {
+        if (isSubqueryTag(tag)) {
+            const func = (query: QueryLike, output?: Stream) => {
+                return cxt.graph.run(query, output);
+            }
+            
+            postStripTags.push(tag);
+            updatedTags.push(tag.setVal(func));
+            return;
+        }
+
+        if (isEnvTag(tag)) {
+            const val = cxt.getEnv(tag.attr);
+            updatedTags.push(tag.setVal(val));
+            postStripTags.push(tag);
+            return;
+        }
+
+        if (tag.attr === contextEvalHelper) {
+            const verb = cxt.verb;
+            const helper = new QueryEvalHelper(cxt, verb, incomingInput);
+            updatedTags.push(tag.setVal(helper));
+            postStripTags.push(tag);
+            return;
+        }
+
+        if (tag.attr === contextInputStream) {
+            postStripTags.push(tag);
+            updatedTags.push(tag.setVal(cxt.input));
+            return;
+        }
+
+        if (isTuple(tag.value)) {
+            preRunQueries.push({
+                query: tag.value,
+                mountTag: tag
+            });
+        }
+    });
+
+    //console.log('updatedTags = ', updatedTags.map(t=>t.stringify()))
+
+    let handlerInput = incomingInput;
+
+    for (const tag of updatedTags)
+        handlerInput = handlerInput.setTag(tag);
+
+    return {
+        handlerInput,
+        postStripTags,
+        preRunQueries
+    }
+}
+
+export function callTableHandler(cxt: QueryContext, handler: TableHandler, inputPattern: Tuple, out: Stream) {
     
     out = compileTupleModificationStream(handler.postResultModify, out);
 
-    for (const step of handler.steps) {
-        if (step.injectEvalHelper) {
-            tuple = insertEvalHelperTag(cxt, tuple);
-        }
-
-        if (step.injectInputStream) {
-            tuple = tuple.setVal(contextInputStream, cxt.input);
-        }
-        
-        if (step.injectOutputStream) {
-            tuple = tuple.setVal(contextOutputStream, out);
-        }
-
-        if (step.injectFromEnv) {
-            tuple = tuple.setVal(step.injectFromEnv, cxt.getEnv(step.injectFromEnv));
-        }
-
-        if (step.injectSubqueryFunc) {
-            const func = (query: QueryLike) => {
-                const pipe = new Pipe();
-                cxt.graph.run(query, pipe);
-                return pipe;
-            }
-            tuple = tuple.setVal(step.injectSubqueryFunc, func);
-        }
-
-        if (step.injectSubquery) {
-            tuple = tuple.setVal(contextSubquery, (query: QueryLike, out: Stream) => cxt.makeSubquery(query, out));
-        }
-    }
+    const preparedCall = prepareHandlerCall(cxt, inputPattern, handler.declaredMountPattern);
+    //console.log(`calling (${handler.declaredMountPattern.stringify()}) with (${inputPattern.stringify()})`
+    //            +`, sending: (${handlerInput.stringify()})`)
 
     try {
-        const result: any = handler.callback(tuple, out);
+        const result: any = handler.callback(preparedCall.handlerInput, out);
 
         if (result && result.then) {
             result.catch(err => {

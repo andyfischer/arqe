@@ -3,7 +3,7 @@ import { Graph, Tuple, Stream } from "..";
 import TupleTag, { newTag } from "../TupleTag";
 import CommandExecutionParams from '../CommandParams'
 import TableMount from "../TableMount";
-import findPartitionsByTable from "../findPartitionsByTable";
+import findTablesForPattern from "../findTablesForPattern";
 import QueryContext from "../QueryContext";
 
 export function stripDeleteTag(tuple: Tuple) {
@@ -31,7 +31,7 @@ export function deletePlanned(cxt: QueryContext, searchPattern: Tuple, output: S
     const collectOutput = combineStreams(output);
 
     const allTables = collectOutput();
-    for (const [table, tablePattern] of findPartitionsByTable(cxt.graph, searchPattern)) {
+    for (const [table, tablePattern] of findTablesForPattern(cxt.graph, searchPattern)) {
         const tableOut = collectOutput();
         deleteOnOneTable(cxt, table, tablePattern, tableOut);
 

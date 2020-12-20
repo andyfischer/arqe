@@ -4,7 +4,7 @@ import Tuple from '../Tuple';
 import Stream from '../Stream';
 import TupleTag from '../TupleTag';
 import TableMount from '../TableMount';
-import findPartitionsByTable from '../findPartitionsByTable';
+import findTablesForPattern from '../findTablesForPattern';
 import QueryContext from '../QueryContext';
 import { isUniqueTag } from '../knownTags'
 
@@ -43,7 +43,7 @@ function findUniqueTag(tuple: Tuple) {
 
 export function insertPlanned(cxt: QueryContext, tuple: Tuple, out: Stream) {
     // Store a new tuple.
-    const partitions = Array.from(findPartitionsByTable(cxt.graph, tuple));
+    const partitions = Array.from(findTablesForPattern(cxt.graph, tuple));
 
     if (partitions.length === 0)
         throw new Error("Can't insert, no table found");

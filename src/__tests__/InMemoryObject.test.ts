@@ -3,7 +3,7 @@ import setupInMemoryObjectTable from "../standardTables/InMemoryObject";
 import parseTuple from "../stringFormat/parseTuple";
 import { run } from './utils'
 
-it('can correctly read from InMemoryObject table', () => {
+xit('can correctly read from InMemoryObject table', () => {
     const graph = new Graph();
     const { map, table } = setupInMemoryObjectTable({ baseKey: parseTuple('imo/1') });
 

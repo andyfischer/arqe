@@ -4,7 +4,7 @@ import Graph from './Graph'
 import { MountId } from './TableMount'
 import Tuple from './Tuple';
 import QueryContext from './QueryContext';
-import findPartitionsByTable from './findPartitionsByTable';
+import findTablesForPattern from './findTablesForPattern';
 import { EventEmitter } from 'events';
 import Stream from './Stream';
 import Relation from './Relation'
@@ -38,7 +38,7 @@ export default class LiveQuery {
 
     *partitionsByTerm(cxt: QueryContext, term: Tuple) {
         const tuple = termToSearchPattern(term);
-        yield* findPartitionsByTable(cxt.graph, tuple);
+        yield* findTablesForPattern(cxt.graph, tuple);
     }
 
     addFixedListeners() {

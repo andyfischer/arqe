@@ -1,5 +1,6 @@
 
-import TupleTag, { newSimpleTag, newTagFromObject, TagOptions, tagToJson, jsonToTag, nativeValueToTag } from './TupleTag'
+import TupleTag, { newSimpleTag, newTagFromObject, TagOptions,
+    tagToJson, jsonToTag, nativeValueToTag, isTag } from './TupleTag'
 import TupleMatchHelper from './tuple/TupleMatchHelper'
 import TupleDerivedData from './tuple/TupleDerivedData'
 import { symValueType } from './internalSymbols'
@@ -43,6 +44,15 @@ export default class Tuple {
         if (!this._matchHelper)
             this._matchHelper = new TupleMatchHelper(this);
         return this._matchHelper;
+    }
+
+    getFunc(): string | null {
+        if (this.tags.length === 0) {
+            console.log('no tags')
+            return null;
+        }
+
+        return this.tags[0].attr;
     }
 
     asMap() {
@@ -254,6 +264,10 @@ export default class Tuple {
         return tag && tag.hasValue();
     }
 
+    hasValue(attr: string) {
+        return this.asMap().has(attr) && !!this.asMap().get(attr).value;
+    }
+
     hasValueForAttr(attr: string) {
         return this.asMap().has(attr) && !!this.asMap().get(attr).value;
     }
@@ -328,6 +342,10 @@ export default class Tuple {
         for (const attr of attrs)
             out.push(this.getTag(attr));
         return new Tuple(out);
+    }
+
+    justHoles() {
+        return this.filterTags(tag => !tag.hasValue());
     }
 
     setValueAtIndex(index: number, value: any) {
@@ -430,6 +448,9 @@ export default class Tuple {
     }
 
     addTag(tag: TupleTag) {
+        if (!isTag(tag))
+            throw new Error("not a valid tag: " + tag);
+
         return new Tuple(this.tags.concat([tag]));
     }
 

@@ -5,11 +5,9 @@ import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from 
 import IDSource from './utils/IDSource'
 import watchAndValidateCommand from './validation/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
-import TuplePatternMatcher from './tuple/TuplePatternMatcher'
 import TableMount, { MountId } from './TableMount'
 import parseTuple from './stringFormat/parseTuple'
 import { receiveToRelationInStream, receiveToRelationAsync } from './receiveUtils'
-import { setupSingleValueTable } from './tables/SingleValueTable'
 import Query, { runQuery, queryFromOneTuple } from './Query'
 import LiveQuery from './LiveQuery'
 import QueryContext from './QueryContext'
@@ -18,7 +16,7 @@ import { QueryLike, toQuery, TupleLike, toTuple } from './coerce'
 import setupTableSet, { TableSetDefinition } from './setupTableSet'
 import Relation from './Relation'
 import Pipe from './Pipe'
-import findPartitionsByTable from './findPartitionsByTable'
+import findTablesForPattern from './findTablesForPattern'
 import TableDefiner from './TableDefiner'
 import { randInt } from './utils/rand'
 import { toCapitalCase } from './utils/naming'
@@ -36,8 +34,6 @@ export default class Graph {
 
     tablesByName = new Map<string, TableMount>()
     tablesById = new Map<MountId, TableMount>()
-
-    tablePatternMap = new TuplePatternMatcher<TableMount>();
 
     nextMountId = new IDSource('mount-');
     nextLiveQueryId = new IDSource('lq-');
@@ -61,14 +57,6 @@ export default class Graph {
         }
     }
 
-    /*
-    defineInMemoryTable(name: string, pattern: Tuple): TableMount {
-        const inMemoryTable = new InMemoryTable(name, pattern);
-        this.addTable(inMemoryTable.mount);
-        return inMemoryTable.mount;
-    }
-    */
-
     *tables() {
         yield* this.tablesById.values();
     }
@@ -87,18 +75,18 @@ export default class Graph {
         if (table.mountId)
             throw new Error("table already has mountId - mounted twice?");
 
+        /*
         for (const existingTable of this.tables()) {
             if (table.schema.hasOverlap(existingTable.schema)) {
                 throw new Error("Added table has overlap with existing table. "
                                 +`Existing: ${existingTable.name} (${existingTable.schema.stringify()}). `
                                 +`New: ${table.name} (${table.schema.stringify()}).`);
             }
-        }
+        }*/
 
         table.mountId = this.nextMountId.take();
         this.tablesByName.set(table.name, table);
         this.tablesById.set(table.mountId, table);
-        this.tablePatternMap.add(table.schema, table);
         return table;
     }
 
@@ -126,10 +114,6 @@ export default class Graph {
             if (idsToRemove.get(id))
                 this.tablesById.delete(id);
         }
-
-        this.tablePatternMap.filterEntries((entry: { pattern: Tuple, value: TableMount }) => {
-            return !idsToRemove.get(entry.value.mountId);
-        });
     }
 
     getDefaultTableName(schema: Tuple) {
@@ -195,20 +179,10 @@ export default class Graph {
         return rels;
     }
 
-    runSyncRelation(queryLike: QueryLike): Relation {
-        return new Relation(this.runSync(queryLike));
-    }
-
     runAsync(queryLike: QueryLike): Promise<Tuple[]> {
         const [ receiver, promise ] = receiveToTupleListPromise();
         this.run(toQuery(queryLike), receiver);
         return promise;
-    }
-
-    runAndPipe(queryLike: QueryLike): Pipe {
-        const pipe = new Pipe();
-        this.run(queryLike, pipe);
-        return pipe;
     }
 
     get(patternLike: TupleLike, out: Stream) {
@@ -235,28 +209,6 @@ export default class Graph {
 
     sendRelationValue(searchPattern: Tuple, out: Stream, attrName: string) {
         this.get(searchPattern, receiveToRelationInStream(out, attrName));
-    }
-
-    /*
-    mountMapBackedTable(name: string, baseKey: Tuple, keyAttr: string, valueAttr: string): Map<any,any> {
-        const { map, table } = setupInMemoryObjectTable({ name, baseKey, keyAttr, valueAttr })
-        this.addTable(table);
-        return map;
-    }
-
-    mountSingleValueTable(name: string, base: Tuple | string, valueAttr: string) {
-        if (typeof base === 'string')
-            base = parseTuple(base);
-        const { accessor, table } = setupSingleValueTable(name, base, valueAttr);
-        this.addTable(table);
-        return accessor;
-    }
-    */
-
-    getRelationAsync(patternInput: any) {
-        const [ stream, promise ] = receiveToRelationAsync();
-        this.get(patternInput, stream);
-        return promise;
     }
 
     pushChangeEvent(liveQueryId: string) {
@@ -288,7 +240,7 @@ export default class Graph {
     }
 
     *findMatchingTables(tuple: TupleLike) {
-        for (const [mount, partition] of findPartitionsByTable(this, toTuple(tuple))) {
+        for (const [mount, partition] of findTablesForPattern(this, toTuple(tuple))) {
             yield mount;
         }
     }

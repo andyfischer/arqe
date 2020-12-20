@@ -2,7 +2,7 @@
 import Tuple, { newTuple, isTuple } from './Tuple'
 import TupleTag, { newTag } from './TupleTag'
 import { emitCommandError, emitCommandOutputFlags } from './CommandUtils'
-import findPartitionsByTable from './findPartitionsByTable'
+import findTablesForPattern from './findTablesForPattern'
 import CommandParams from './CommandParams'
 import runJoinStep from './verbs/join'
 import countCommand from './verbs/count'
@@ -85,7 +85,7 @@ export default function runOneCommand(parentCxt: QueryContext, params: CommandPa
         parentCxt.traceEnabled = true;
 
     if (cxt.traceEnabled) {
-        for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, params.tuple)) {
+        for (const [table, partitionedTuple] of findTablesForPattern(cxt.graph, params.tuple)) {
             output.next(newTuple([newTag('trace'), newTag('matching-table'),
                                  newTag('table-name', table.name),
                                  newTag('partitioned-tuple', partitionedTuple)]));

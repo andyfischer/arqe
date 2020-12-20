@@ -80,6 +80,15 @@ export default class TupleTag {
         });
     }
 
+    setVal(value: any) {
+        return new TupleTag({
+            ...this,
+            value: value,
+            starValue: null,
+            exprValue: null,
+        });
+    }
+
     setValue(value: any): TupleTag {
         return new TupleTag({
             ...this,
@@ -150,6 +159,18 @@ export default class TupleTag {
 
     isAbstractValue() {
         return isTuple(this.value) && this.value.isAbstract();
+    }
+
+    isTupleValue() {
+        return isTuple(this.value)
+    }
+
+    isStringValue() {
+        return typeof (this.value) === 'string';
+    }
+
+    getTupleFunc(): string | null {
+        return this.isTupleValue() && this.value.getFunc();
     }
 
     equals(rhs: TupleTag): boolean {

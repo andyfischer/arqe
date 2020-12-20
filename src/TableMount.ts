@@ -1,5 +1,5 @@
 
-import Tuple, { newTuple } from './Tuple'
+import Tuple, { newTuple, isTuple } from './Tuple'
 import { emitCommandError } from './CommandUtils'
 import Stream from './Stream'
 import TupleTag, { newTag, newSimpleTag } from './TupleTag';
@@ -22,7 +22,6 @@ export type MountId = string;
 const contextInputStream = 'context.inputStream'
 const contextOutputStream = 'context.outputStream'
 const contextEvalHelper = 'context.evalHelper'
-const contextSubquery = 'context.subquery'
 
 interface FindHandlerOptions {
     acceptAbstract?: boolean
@@ -37,7 +36,7 @@ class HandlersByVerb {
 
     find(tuple: Tuple) {
         for (const entry of this.entries) {
-            if (entry.inputPattern.checkDefiniteValuesProvidedBy(tuple))
+            if (entry.mountPattern.checkDefiniteValuesProvidedBy(tuple))
                 return entry;
         }
         return null;
@@ -52,10 +51,13 @@ interface Listener {
     type: 'queryFixed' | 'dynamic'
 }
 
+
 export default class TableMount {
     mountId: MountId
     name: string
+    declaredSchema: Tuple
     schema: Tuple
+    requiredKeys: Tuple | null
     watches = new Map();
 
     allEntries: TableHandler[] = []
@@ -65,8 +67,52 @@ export default class TableMount {
 
     constructor(name: string, schema: Tuple) {
         this.name = name;
-        this.schema = schema;
         this.byVerb = new AutoInitMap(name => new HandlersByVerb() )
+
+        const declaredSchema = schema;
+        let requiredKeys;
+
+        //console.log('declaredSchema = ', declaredSchema.stringify())
+        if (declaredSchema.getFunc() === 'table') {
+            //console.log('translating ', declaredSchema.stringify())
+            // Newer style syntax
+            let translatedSchema = new Tuple([]);
+
+            for (const declaredTag of declaredSchema.tags) {
+                if (declaredTag.attr === 'keys' || declaredTag.attr === 'required') {
+                    for (const tag of declaredTag.value.tags) {
+                        translatedSchema = translatedSchema.addTag(tag.setValue(newTuple([newSimpleTag('key')])));
+                    }
+                } else if (declaredTag.attr === 'values') {
+                    for (const tag of declaredTag.value.tags) {
+                        translatedSchema = translatedSchema.addTag(tag);
+                    }
+                } else if (declaredTag.attr === 'table') {
+                    // ignore
+                } else {
+                    translatedSchema = translatedSchema.addTag(declaredTag);
+                }
+            }
+
+            schema = translatedSchema;
+        }
+
+        const keyAttrs = schema.tags.filter(tag => (tag.isTupleValue() && tag.value.hasAttr('key')));
+        if (keyAttrs.length > 0) {
+            if (requiredKeys)
+                requiredKeys = requiredKeys.addTags(keyAttrs);
+            else
+                requiredKeys = new Tuple(keyAttrs);
+        }
+
+        // If required() is missing then all attrs are required.
+        if (!requiredKeys) {
+            requiredKeys = schema;
+        }
+
+        this.requiredKeys = requiredKeys;
+        this.schema = schema;
+        this.declaredSchema = schema;
     }
 
     addHandler(verb: string, tuple: string | Tuple, callback: TupleStreamCallback) {

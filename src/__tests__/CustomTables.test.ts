@@ -6,7 +6,7 @@ import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 
 it('supports searches with find-for', () => {
     const graph = new Graph();
-    const table = new TableMount('custom1', parseTuple('t x? y?'));
+    const table = new TableMount('custom1', parseTuple('t(key) x y'));
     graph.addTable(table);
     table.addHandler("find", "x", unwrapTuple(({ x }) => {
         return {
@@ -35,7 +35,7 @@ it('supports searches with find-for', () => {
 
 it('supports searches with find-all', () => {
     const graph = new Graph();
-    const table = new TableMount('custom2', parseTuple('t x? y?'));
+    const table = new TableMount('custom2', parseTuple('t(key) x y'));
     graph.addTable(table);
 
     table.addHandler("find", "", unwrapTuple(() => {
@@ -51,7 +51,7 @@ it('supports searches with find-all', () => {
         "t x/5 y/6"]);
 
     // With filter:
-    expect(run(graph, "get t x/1 y", { withHeaders: true } )).toEqual([
+    expect(run(graph, "get t x=1 y", { withHeaders: true } )).toEqual([
         "t x/1 y command-meta search-pattern",
         "t x/1 y/2"
     ]);
@@ -59,7 +59,7 @@ it('supports searches with find-all', () => {
 
 it('supports custom inserts', () => {
     const graph = new Graph();
-    const table = new TableMount('custom3', parseTuple('t x? y?'));
+    const table = new TableMount('custom3', parseTuple('t(key) x y'));
     graph.addTable(table);
 
     const data = {
@@ -79,11 +79,11 @@ it('supports custom inserts', () => {
         return { x, y };
     }))
 
-    expect(run(graph, "get t x/a y")).toEqual([
+    expect(run(graph, "get t x=a y")).toEqual([
         "t x/a y/1"
     ]);
-    expect(run(graph, "set t x/a y/2")).toEqual(["t x/a y/2"]);
-    expect(run(graph, "get t x/a y")).toEqual([
+    expect(run(graph, "set t x=a y=2")).toEqual(["t x/a y/2"]);
+    expect(run(graph, "get t x=a y")).toEqual([
         "t x/a y/2"
     ]);
 });

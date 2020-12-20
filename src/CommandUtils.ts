@@ -97,7 +97,7 @@ export function tableNotFoundError(pattern: Tuple) {
         commandMetaTag,
         errorTag,
         errorCodeTag.setValue('table-not-found'),
-        messageTag.setValue("No table found for pattern"),
+        messageTag.setValue("No table found for pattern: " + pattern.stringify()),
         patternTag.setValue(pattern)
     ]);
 }

@@ -6,9 +6,40 @@ import { emitSearchPatternMeta, asCommandMeta, tableNotFoundError, tableDoesntSu
 import { combineStreams, joinNStreams_v2 } from '../StreamUtil'
 import TableMount from '../TableMount'
 import { callTableHandler } from '../callTableHandler'
-import findPartitionsByTable from '../findPartitionsByTable'
+import findTablesForPattern from '../findTablesForPattern'
 import QueryContext from '../QueryContext'
 import { splitTuple, abstractHoles } from '../operations'
+
+function limitResultToSearchPattern(tuple: Tuple, searchPattern: Tuple) {
+    if (tuple.isCommandMeta())
+        return tuple;
+
+    // Check for any conditions that invalidate the tuple
+    let hasExtraTags = false;
+    for (const resultTag of tuple.tags) {
+        const fromPattern = searchPattern.getTag(resultTag.attr);
+        if (!fromPattern) {
+            hasExtraTags = true;
+            continue;
+        }
+
+        if (fromPattern.hasValue() && resultTag.value !== fromPattern.value)
+            return null;
+    }
+
+    // Throw out extra values that the search didn't ask for
+    if (hasExtraTags) {
+        return tuple.remapTags(resultTag => {
+            const fromPattern = searchPattern.getTag(resultTag.attr);
+            if (!fromPattern)
+                return null;
+
+            return resultTag;
+        });
+    }
+
+    return tuple;
+}
 
 function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tuple, getMeta: Tuple, out: Stream) {
 
@@ -41,15 +72,16 @@ function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tupl
     }
 
     if (definiteFind) {
-        const filteredOut = {
-            next(t: Tuple) {
-                if (t.isCommandMeta() || searchPattern.isSupersetOf(t))
+        const filteredOutput: Stream = {
+            next(t) {
+                t = limitResultToSearchPattern(t, searchPattern);
+                if (t)
                     out.next(t);
             },
             done() { out.done() }
         }
 
-        callTableHandler(cxt, definiteFind, searchPattern, filteredOut);
+        callTableHandler(cxt, definiteFind, searchPattern, filteredOutput);
         return;
     }
 
@@ -112,7 +144,7 @@ function runGet(cxt: QueryContext, searchPattern: Tuple, getMeta: Tuple, out: St
 
     let foundAnyTables = false;
 
-    for (const [table, partitionedTuple] of findPartitionsByTable(cxt.graph, searchPattern)) {
+    for (const [table, partitionedTuple] of findTablesForPattern(cxt.graph, searchPattern)) {
         const tableOut = combined();
         getOnOneTable(cxt, table, partitionedTuple, getMeta, tableOut);
         foundAnyTables = true;
