@@ -8,7 +8,8 @@ Current project status: Experimental phase, not ready to use yet.
 Provides:
 
  - A query engine that handles parsing, planning, and execution.
- - A pretty easy API for mounting your own arbitrary data or functions into the system.
+ - A framework for creating entire applications by defining relational-style tables.
+ - An easy API for mounting your own arbitrary data or functions into the system.
  - Standard tables for things like accessing the filesystem, network, caching, etc.
 
 Overall goals:
@@ -24,8 +25,11 @@ Overall goals:
 
 Inspirations and influences:
 
- - Relational tables over foreign data: [OSQuery](https://osquery.io/), [SQL foreign data wrappers](https://wiki.postgresql.org/wiki/Foreign_data_wrappers), and others.
  - Codd's relational model of data
  - [The Third Manifesto](https://www.dcs.warwick.ac.uk/~hugh/TTM/DTATRM.pdf)
  - ["Compilers are databases"](https://www.youtube.com/watch?v=WxyyJyB_Ssc) - Martin Odersky
 
+Similar projects:
+ - [Imp lang](https://scattered-thoughts.net/writing/imp-intro/)
+ - [OSQuery](https://osquery.io/)
+ - [Foreign data wrappers](https://wiki.postgresql.org/wiki/Foreign_data_wrappers) and [Materialized views](https://en.wikipedia.org/wiki/Materialized_view)

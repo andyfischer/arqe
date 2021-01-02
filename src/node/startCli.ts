@@ -10,8 +10,8 @@ import Tuple from '../Tuple'
 import { receiveToTupleList, receiveToTupleListPromise } from '../receiveUtils'
 import { processGraph } from '../platformExports'
 import Graph from '../Graph'
-import loadWatchedTableModule, { prepareForWatchedModules } from './loadWatchedTableModule'
 import startRepl from './startRepl'
+import setupWatchedModules, { loadWatchedTableModule } from './watchedModules'
 
 // import WebServer from './node/socket/WebServer'
 // import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from './loadBootstrapConfigs'
@@ -37,6 +37,7 @@ function autoloadNearbyTables(graph: Graph) {
             files.push(filename);
 
     files = files.concat(Glob.sync('dist/tables/**/*.js'));
+    files = files.concat(Glob.sync('dist/**/*.table.js'));
     files = files.concat(Glob.sync(Path.join(process.env.HOME, '.arqe/tables/**/*.js'), {
         ignore: ['**/node_modules/**']
     }));
@@ -59,7 +60,7 @@ export default async function main() {
 
     const graph = processGraph();
 
-    prepareForWatchedModules(graph);
+    graph.provideWithDefiner(setupWatchedModules);
     loadStandardTables(graph);
     autoloadNearbyTables(graph);
 

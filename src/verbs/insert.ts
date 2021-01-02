@@ -64,7 +64,7 @@ export function toInitialization(rel: Tuple) {
     });
 }
 
-export default function insertCommand(cxt: QueryContext, params: CommandExecutionParams) {
+export default function insertVerb(cxt: QueryContext, params: CommandExecutionParams) {
     const { tuple, output } = params;
 
     insertPlanned(cxt, tuple, output);

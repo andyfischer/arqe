@@ -30,7 +30,7 @@ export default function startRepl(graph: Graph) {
     }
 
     repl = Repl.start({
-        prompt: '~ ',
+        prompt: 'arqe~ ',
         eval: line => graphRepl.eval(line, () => {
             displayPrompt()
         })

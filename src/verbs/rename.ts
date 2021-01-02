@@ -4,7 +4,7 @@ import CommandParams from '../CommandParams'
 import { emitCommandError } from '../CommandUtils'
 import Tuple from '../Tuple'
 
-export default function runQueryCommand(cxt: QueryContext, params: CommandParams) {
+export default function runQueryCommand(params: CommandParams) {
 
     const { tuple, input, output } = params;
 
@@ -25,7 +25,7 @@ export default function runQueryCommand(cxt: QueryContext, params: CommandParams
 
     input.sendTo({
         next(t: Tuple) {
-            const tag = t.getTagObject(from);
+            const tag = t.getTag(from);
             if (!tag) {
                 output.next(t)
                 return;

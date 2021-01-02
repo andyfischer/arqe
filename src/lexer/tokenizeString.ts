@@ -5,7 +5,7 @@ import Token from './Token'
 import TokenDef from './TokenDef'
 import LexedText from './LexedText'
 import { t_ident, t_integer, t_unrecognized, t_space, t_double_dash,
-    t_double_dot, t_line_comment, t_quoted_string, t_double_equals,
+    t_line_comment, t_quoted_string, t_double_equals,
     t_plain_value, tokenFromSingleCharCode } from './tokens'
 
 const c_0 = '0'.charCodeAt(0);
@@ -128,9 +128,6 @@ function consumeNext(input: Context) {
 
     if (c === c_dash && input.next(1) === c_dash)
         return input.consume(t_double_dash, 2);
-
-    if (c === c_dot && input.next(1) === c_dot)
-        return input.consume(t_double_dot, 2);
 
     if (tokenFromSingleCharCode[c])
         return input.consume(tokenFromSingleCharCode[c], 1);

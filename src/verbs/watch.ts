@@ -8,12 +8,12 @@ function createWatchCommand(graph: Graph, pattern: Tuple) {
     const res = graph.runSync(`set watch((unique)) pattern(${pattern.stringify()})`)[0];
 }
 
-export default function watchCommand(cxt: QueryContext, params: CommandParams) {
+export default function watchCommand(params: CommandParams) {
     const { tuple, output } = params;
 
     output.next(objectToTuple({ 'command-meta': true, 'watch': true }));
 
-    createWatchCommand(cxt.graph, tuple);
+    createWatchCommand(params.scope.graph, tuple);
 
     output.done();
 }

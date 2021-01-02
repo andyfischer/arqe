@@ -1,7 +1,7 @@
 
 import Graph from './Graph'
 import runningInBrowser from './utils/runningInBrowser'
-import { TableSetDefinition } from './setupTableSet'
+import { TableSetDefinition } from './parseTableDefinition'
 
 interface GraphOptions {
     provide?: TableSetDefinition

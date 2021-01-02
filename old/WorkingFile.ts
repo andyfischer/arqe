@@ -1,4 +1,5 @@
 
+/*
 import Stream from '../Stream'
 import Tuple from '../Tuple'
 import { handles } from '../decorators'
@@ -59,3 +60,4 @@ export class WorkingFile {
         file.contents = contents;
     }
 }
+*/

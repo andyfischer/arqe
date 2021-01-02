@@ -176,6 +176,10 @@ export default class TupleTag {
     equals(rhs: TupleTag): boolean {
         return this.compareCanonicalSort(rhs) === 0;
     }
+
+    remapValue(callback: (v: any) => any) {
+        return this.setValue(callback(this.value));
+    }
 }
 
 function stringCompare(a,b) {

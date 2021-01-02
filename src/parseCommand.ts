@@ -3,7 +3,7 @@ import Command from './Command'
 import Tuple, { newTuple } from './Tuple'
 import TupleTag from './TupleTag'
 import { lexStringToIterator, TokenIterator, TokenDef, t_plain_value, t_quoted_string, t_star,
-    t_space, t_hash, t_double_dot, t_newline, t_bar,
+    t_space, t_hash, t_newline, t_bar,
     t_integer, t_dash, t_line_comment } from './lexer'
 import parseOneTag from './stringFormat/parseOneTag'
 
@@ -38,7 +38,7 @@ export function parseOneCommand(it: TokenIterator): Command {
     if (!it.nextIs(t_plain_value) && !it.nextIs(t_quoted_string))
         throw new Error(formatExpectedError('plain_vlue', it));
 
-    const command = it.consumeNextUnquotedText();
+    const verb = it.consumeNextUnquotedText();
 
     const query: InProgressQuery = {
         tags: [],
@@ -56,33 +56,10 @@ export function parseOneCommand(it: TokenIterator): Command {
     }
 
     const pattern = newTuple(query.tags);
-    return new Command(command, pattern, query.flags);
+    return new Command(verb, pattern, query.flags);
 }
 
-function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
-    let lookahead = 0;
-
-    while (!it.finished(lookahead)) {
-        if (it.nextIs(match, lookahead))
-            return true;
-
-        if (it.nextIs(t_newline, lookahead) || it.nextIs(t_space, lookahead)) {
-            lookahead += 1;
-            continue;
-        }
-        
-        break;
-    }
-
-    return false;
-}
-
-export function parseTag(str: string): TupleTag {
-    const it = lexStringToIterator(str);
-    return parseOneTag(it);
-}
-
-export default function parseCommand(str: string): Command {
+export default function parseCompoundQuery(str: string): Command {
 
     if (typeof str !== 'string')
         throw new Error('expected string, saw: ' + str);
@@ -94,7 +71,7 @@ export default function parseCommand(str: string): Command {
 
     it.consumeWhitespace();
     if (it.nextIs(t_bar)) {
-        throw new Error('parseCommand was called on a command chain: ' + str);
+        throw new Error('parseCompoundQuery was called on a command chain: ' + str);
     }
 
     try {
@@ -106,7 +83,3 @@ export default function parseCommand(str: string): Command {
     }
 }
 
-export function parsePattern(query: string) {
-    const parsed = parseCommand('get ' + query);
-    return parsed.tuple;
-}

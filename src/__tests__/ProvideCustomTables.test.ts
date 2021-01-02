@@ -1,5 +1,5 @@
+
 import Graph from "../Graph";
-import setupTableSetV2 from "../setupTableSet";
 import { run as _run } from './utils'
 
 let graph;
@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 
 it('can define a simple table', () => {
-    graph.addTables(setupTableSetV2({
+    graph.provide({
         'sum a b': {
             'find a b': (input, out) => {
                 const { a, b } = input.obj();
@@ -25,11 +25,11 @@ it('can define a simple table', () => {
                 out.done({ product });
             }
         }
-    }));
+    });
 
-    expect(run('get sum a[1] b[3] | just sum')).toEqual(['sum/4']);
-    expect(run('get sum a[1] b[10] | just sum')).toEqual(['sum/11']);
+    expect(run('get sum a=1 b=3 | just sum')).toEqual(['sum/4']);
+    expect(run('get sum a=1 b=10 | just sum')).toEqual(['sum/11']);
 
-    expect(run('get product a[2] b[3] | just product')).toEqual(['product/6']);
-    expect(run('get product a[4] b[3] | just product')).toEqual(['product/12']);
+    expect(run('get product a=2 b=3 | just product')).toEqual(['product/6']);
+    expect(run('get product a=4 b=3 | just product')).toEqual(['product/12']);
 });

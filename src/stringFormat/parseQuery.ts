@@ -6,6 +6,7 @@ import Query, { relationAsQuery } from '../Query'
 import Relation from '../Relation'
 import Tuple from '../Tuple'
 import { queryBidirectionalJsonTest } from '../SelfTest'
+import { parseTupleTokens } from './parseTuple'
 
 function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {
     let lookahead = 0;
@@ -30,13 +31,15 @@ function parseOneStatement(it: TokenIterator, terms: Tuple[]) {
     //let lhs = null;
 
     while (!it.finished()) {
-        const command = parseOneCommand(it);
+        const term = parseTupleTokens(it);
 
-        let term = command.tuple
-           .setValue('verb', command.verb);
+        /*
+        if (command.verb)
+            term = term.setValue('verb', command.verb);
 
         if (command.flags && (Object.keys(command.flags).length > 0))
             term = term.setValue('flags', command.flags);
+            */
 
         terms.push(term);
 

@@ -8,18 +8,19 @@ import setupBuiltinTables from './setupBuiltinTables'
 import TableMount, { MountId } from './TableMount'
 import parseTuple from './stringFormat/parseTuple'
 import { receiveToRelationInStream, receiveToRelationAsync } from './receiveUtils'
-import Query, { runQuery, queryFromOneTuple } from './Query'
+import Query, { queryFromOneTuple } from './Query'
+import { runQuery } from './runQuery'
 import LiveQuery from './LiveQuery'
 import QueryContext from './QueryContext'
-import { VerbCallback } from './runOneCommand'
 import { QueryLike, toQuery, TupleLike, toTuple } from './coerce'
-import setupTableSet, { TableSetDefinition } from './setupTableSet'
+import parseTableDefinition, { TableSetDefinition } from './parseTableDefinition'
 import Relation from './Relation'
 import Pipe from './Pipe'
 import findTablesForPattern from './findTablesForPattern'
 import TableDefiner from './TableDefiner'
 import { randInt } from './utils/rand'
 import { toCapitalCase } from './utils/naming'
+import MemoryTable from './MemoryTable'
 
 interface GraphOptions {
     context?: 'browser' | 'node'
@@ -43,7 +44,7 @@ export default class Graph {
     pendingChangeEvents = new Map<string, true>();
     _isFlushingChangeEvents = false;
 
-    definedVerbs: { [name: string]: VerbCallback } = {}
+    memoryTable = new MemoryTable()
 
     constructor(options: GraphOptions = {}) {
         this.options = options;
@@ -53,7 +54,7 @@ export default class Graph {
         setupBuiltinTables(this);
 
         if (options.provide) {
-            this.addTables(setupTableSet(options.provide));
+            this.addTables(parseTableDefinition(options.provide));
         }
     }
 
@@ -179,12 +180,6 @@ export default class Graph {
         return rels;
     }
 
-    runAsync(queryLike: QueryLike): Promise<Tuple[]> {
-        const [ receiver, promise ] = receiveToTupleListPromise();
-        this.run(toQuery(queryLike), receiver);
-        return promise;
-    }
-
     get(patternLike: TupleLike, out: Stream) {
         const pattern = toTuple(patternLike);
 
@@ -199,16 +194,6 @@ export default class Graph {
         const query = queryFromOneTuple(pattern.setValue('verb', 'set'));
         const cxt = new QueryContext(this);
         runQuery(cxt, query, out);
-    }
-
-    setAsync(patternInput: any): Promise<Tuple[]> {
-        const [ receiver, promise ] = receiveToTupleListPromise();
-        this.set(patternInput, receiver);
-        return promise;
-    }
-
-    sendRelationValue(searchPattern: Tuple, out: Stream, attrName: string) {
-        this.get(searchPattern, receiveToRelationInStream(out, attrName));
     }
 
     pushChangeEvent(liveQueryId: string) {
@@ -254,12 +239,8 @@ export default class Graph {
         return out.join('\n');
     }
 
-    defineVerb(name: string, callback: VerbCallback) {
-        this.definedVerbs[name] = callback;
-    }
-
     provide(def: TableSetDefinition): TableMount[] {
-        const mounts = setupTableSet(def);
+        const mounts = parseTableDefinition(def);
         this.addTables(mounts);
         return mounts;
     }

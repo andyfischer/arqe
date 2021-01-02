@@ -43,8 +43,16 @@ export default class Pipe implements Stream {
         return this._storedRel;
     }
 
+    bodyArr() {
+        return this.rel().bodyArr();
+    }
+
     one(filter?: Tuple) {
         return this.rel().one(filter);
+    }
+
+    oneValue(attr: string) {
+        return this.rel().oneValue(attr);
     }
 
     // Pipe API

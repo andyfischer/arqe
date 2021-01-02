@@ -269,18 +269,18 @@ function joinRhsNotSearchable(cxt: QueryContext, input: Pipe, searchPattern: Tup
     });
 }
 
-export default function runJoinVerb(cxt: QueryContext, params: CommandParams) {
+export default function runJoinVerb(params: CommandParams) {
 
-    const { input, output } = params;
+    const { input, output, scope } = params;
     //let [ joinMeta, searchPattern ] = splitTuple(params.tuple, tag => tag.attr === 'join.piped_pattern');
     const searchPattern = params.tuple;
 
-    isQuerySearchable(cxt, searchPattern)
+    isQuerySearchable(scope, searchPattern)
     .whenDone(res => {
-        if (res.bodyArray()[0].hasAttr('searchable')) {
-            joinRhsSearchable(cxt, input, searchPattern, output);
+        if (res.bodyArr()[0].hasAttr('searchable')) {
+            joinRhsSearchable(scope, input, searchPattern, output);
         } else {
-            joinRhsNotSearchable(cxt, input, searchPattern, output);
+            joinRhsNotSearchable(scope, input, searchPattern, output);
         }
     });
 }

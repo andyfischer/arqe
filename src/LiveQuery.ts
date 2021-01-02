@@ -1,5 +1,6 @@
 
-import Query, { runQuery, termToSearchPattern } from './Query'
+import Query, { termToSearchPattern } from './Query'
+import { runQuery } from './runQuery'
 import Graph from './Graph'
 import { MountId } from './TableMount'
 import Tuple from './Tuple';

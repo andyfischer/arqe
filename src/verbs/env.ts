@@ -2,10 +2,10 @@
 import CommandExecutionParams from '../CommandParams'
 import QueryContext from '../QueryContext';
 
-export default function envCommand(cxt: QueryContext, params: CommandExecutionParams) {
-    const { tuple, output } = params;
+export default function envCommand(params: CommandExecutionParams) {
+    const { tuple, output, scope } = params;
 
-    const parent = cxt.parent;
+    const parent = scope.parent;
 
     if (!parent.env) {
         parent.env = tuple;

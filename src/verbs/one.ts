@@ -1,9 +1,9 @@
 
-import CommandExecutionParams from '../CommandParams'
+import CommandParams from '../CommandParams'
 import Tuple from '../Tuple';
 import QueryContext from '../QueryContext'
 
-export default function runVerbOne(cxt: QueryContext, params: CommandExecutionParams) {
+export default function runVerbOne(params: CommandParams) {
     const { tuple, input, output } = params;
 
     let _hasSentOne = false;

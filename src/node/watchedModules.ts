@@ -1,26 +1,27 @@
 
+import TableDefiner from '../TableDefiner'
 import Path from 'path'
 import Fs from 'fs'
 import Graph from '../Graph'
 import TableMount from '../TableMount'
 import debounce from '../utils/debounce'
 import { toTuple } from '../coerce'
-import TableDefiner from '../TableDefiner'
 import Glob from 'glob'
 
-export function prepareForWatchedModules(graph: Graph) {
-    graph.provide({
-        'watched-table-modules loaded filename': 'memory'
+export default function graphSetup(def: TableDefiner) {
+    def.provide('watched-table-modules loaded filename', 'memory');
+
+    def.provide('reload-all-modules', {
+        find(i,o) {
+        }
     });
 }
 
-export default function loadWatchedTableModule(graph: Graph, filename: string) {
+export function loadWatchedTableModule(graph: Graph, filename: string) {
 
     filename = Path.resolve(filename);
 
-    //console.log('loadWatchedTableModule check:')
-
-    if (graph.run(['get', 'watched-table-modules', 'loaded', { filename }]).rel().bodyArray().length > 0) {
+    if (graph.run(toTuple(['get', 'watched-table-modules', 'loaded', { filename }])).rel().bodyArr().length > 0) {
         // console.log("filename already watched: " + filename);
         return;
     }
@@ -68,9 +69,6 @@ export default function loadWatchedTableModule(graph: Graph, filename: string) {
     }
 
     graph.runSync(toTuple(['set', 'watched-table-modules', 'loaded', { filename }]));
-
-    //console.log('saved:')
-    //console.log(graph.runSyncRelation(toTuple(['get', 'watched-table-modules', 'loaded', { filename }])).stringify())
 
     const reload = debounce(250, reloadNow);
 

@@ -53,11 +53,6 @@ export const t_dot = {
     str: "."
 }
 
-export const t_double_dot = {
-    name: "double-dot",
-    str: ".."
-}
-
 export const t_semicolon = {
     "name": "semicolon",
     "str": ";"
@@ -175,7 +170,6 @@ export const everyToken: TokenDef[] = [
     t_rbrace,
     t_slash,
     t_dot,
-    t_double_dot,
     t_semicolon,
     t_colon,
     t_plus,

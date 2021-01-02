@@ -2,7 +2,7 @@
 import Tuple, { isTuple, nativeValueToTuple } from './Tuple'
 import TupleTag, { newSimpleTag, isTag } from './TupleTag'
 import Relation, { isRelation } from './Relation'
-import Query, { isQuery, queryFromOneTuple, queryFromTupleArray } from './Query'
+import Query, { isQuery, queryFromOneTuple, queryFromTupleArray, relationAsQuery } from './Query'
 import { symValueType } from './internalSymbols'
 import parseTuple from './stringFormat/parseTuple'
 import { parseQuery } from './stringFormat/parseQuery'
@@ -67,6 +67,9 @@ export function toQuery(value: QueryLike): Query {
     if (isQuery(value))
         return value as Query;
 
+    if (isRelation(value))
+        return relationAsQuery(value as Relation);
+
     if (typeof value === 'string')
         return parseQuery(value);
 
@@ -77,5 +80,6 @@ export function toQuery(value: QueryLike): Query {
         return queryFromTupleArray(value.map(toTuple));
     }
 
-    throw new Error(`can't convert type ${value[symValueType] || typeof value} to query: ` + value);
+    const asStr = value.stringify ? value.stringify() : value.toString();
+    throw new Error(`can't convert type ${value[symValueType] || typeof value} to query: ` + asStr);
 }

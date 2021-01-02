@@ -49,7 +49,7 @@ it('triggers change events when a related query is modified', () => {
 
     expect(changeEvents.length).toEqual(1);
     changeEvents = [];
-    expect(liveQuery.runSync().bodyArray().map(t => t.stringify())).toEqual([
+    expect(liveQuery.runSync().bodyArr().map(t => t.stringify())).toEqual([
         'a v/123',
         'a v/456',
         'a v/333',

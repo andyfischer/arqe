@@ -21,7 +21,7 @@ export default function printResult(rel: Relation) {
         return;
     }
 
-    const tuples = rel.bodyArray();
+    const tuples = rel.bodyArr();
 
     if (isMultiColumn(tuples)) {
         for (const line of printAsTable(tuples)) {

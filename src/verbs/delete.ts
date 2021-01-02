@@ -41,10 +41,10 @@ export function deletePlanned(cxt: QueryContext, searchPattern: Tuple, output: S
     allTables.done();
 }
 
-export default function deleteCommand(cxt: QueryContext, params: CommandExecutionParams) {
-    const { tuple, output } = params;
+export default function deleteCommand(params: CommandExecutionParams) {
+    const { tuple, output, scope } = params;
 
     const deletePattern = tuple.addTag(newTag('deleted').setValueExpr(['set']));
 
-    deletePlanned(cxt, tuple, output);
+    deletePlanned(scope, tuple, output);
 }

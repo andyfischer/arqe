@@ -10,17 +10,17 @@ import QueryContext from '../QueryContext';
 import { combineStreams } from '../StreamUtil'
 import { emitCommandError } from '../CommandUtils'
 
-export default function runCommand(cxt: QueryContext, params: CommandExecutionParams) {
-    const { tuple, output } = params;
+export default function runCommand(params: CommandExecutionParams) {
+    const { tuple, output, scope } = params;
     const combinedOut = combineStreams(output);
     const allTables = combinedOut();
 
     let foundCount = 0;
-    for (const [table, partitionedTuple] of findTablesForPattern(cxt.graph, tuple)) {
+    for (const [table, partitionedTuple] of findTablesForPattern(scope.graph, tuple)) {
         const tableOut = combinedOut();
         foundCount += 1;
 
-        if (!table.callWithDefiniteValues(cxt, 'run', partitionedTuple, tableOut)) {
+        if (!table.callWithDefiniteValues(scope, 'run', partitionedTuple, tableOut)) {
             emitCommandError(output, "Table doesn't have a 'run' handler: " + table.name);
         }
     }

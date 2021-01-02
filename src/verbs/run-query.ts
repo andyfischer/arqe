@@ -4,11 +4,13 @@ import CommandParams from '../CommandParams'
 import { combineStreams } from '../StreamUtil'
 import Tuple from '../Tuple'
 import { emitCommandError } from '../CommandUtils'
-import { runQuery } from '../Query'
+import { runQuery } from '../runQuery'
 import { toQuery } from '../coerce'
 import { joinNStreams_v2 } from '../StreamUtil'
 
-export default function runQueryCommand(cxt: QueryContext, params: CommandParams) {
+export default function runQueryCommand(params: CommandParams) {
+
+    const { scope } = params;
 
     const collector = combineStreams(params.output);
     const allQueries = collector();
@@ -29,11 +31,11 @@ export default function runQueryCommand(cxt: QueryContext, params: CommandParams
             const query = toQuery(queryInput);
             const queryOut = collector();
 
-            for (const liveQuery of cxt.eachWatchingQuery()) {
-                liveQuery.usedDynamicQueryDuringEval(cxt, query);
+            for (const liveQuery of scope.eachWatchingQuery()) {
+                liveQuery.usedDynamicQueryDuringEval(scope, query);
             }
 
-            runQuery(cxt, query, queryOut);
+            runQuery(scope, query, queryOut);
         },
         done() {
             allQueries.done();
@@ -41,5 +43,5 @@ export default function runQueryCommand(cxt: QueryContext, params: CommandParams
     });
 
     params.input.sendTo(combined);
-    cxt.graph.run(params.tuple.setValue('verb', 'get'), combined);
+    scope.graph.run(params.tuple.setValue('verb', 'get'), combined);
 }

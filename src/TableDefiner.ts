@@ -1,8 +1,10 @@
 
-import setupTableSet, { setupTable, SingleTableDefinition, TableSetDefinition } from './setupTableSet'
+import parseTableDefinition, { setupTable, SingleTableDefinition, TableSetDefinition } from './parseTableDefinition'
 import TableMount from './TableMount'
 import { TupleLike } from './coerce'
 import Graph from './Graph'
+import QueryTemplate from './QueryTemplate'
+import { QueryLike } from './coerce'
 
 export default class TableDefiner {
     mounts: TableMount[] = []
@@ -16,7 +18,7 @@ export default class TableDefiner {
     }
 
     provideSet(set: TableSetDefinition) {
-        this.mounts = this.mounts.concat(setupTableSet(set));
+        this.mounts = this.mounts.concat(parseTableDefinition(set));
         return this;
     }
 
@@ -27,5 +29,9 @@ export default class TableDefiner {
     unmount(graph: Graph) {
         graph.removeTables(this.mounts);
         this.mounts = [];
+    }
+
+    prepare(queryLike: QueryLike) {
+        return new QueryTemplate(queryLike);
     }
 }

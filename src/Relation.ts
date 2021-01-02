@@ -35,7 +35,7 @@ export default class Relation {
         return new Relation(this.tuples.concat(tuples));
     }
 
-    remap(func: (t: Tuple) => Tuple | null) {
+    remapTuples(func: (t: Tuple) => Tuple | null) {
         let out = [];
         for (const t of this.tuples) {
             const mapped = func(t)
@@ -52,27 +52,18 @@ export default class Relation {
         }
     }
 
-    bodyArray() {
+    bodyArr() {
         return Array.from(this.body())
     }
 
-    *errors() {
-        for (const tuple of this.tuples) {
-            if (tuple.isCommandError())
-                yield tuple;
-        }
+    *column(attr: string) {
+        for (const t of this.body())
+            if (t.hasValue(attr))
+                yield t.getValue(attr);
     }
 
-    firstError(): Tuple | null {
-        for (const error of this.errors())
-            return error;
-        return null;
-    }
-
-    hasError() {
-        for (const error of this.errors())
-            return true;
-        return false;
+    columnArr(attr: string) {
+        return Array.from(this.column(attr));
     }
 
     header(): Tuple {
@@ -87,6 +78,25 @@ export default class Relation {
 
             return new Tuple([newSimpleTag('error'), newSimpleTag('infer-header-not-supported')])
         });
+    }
+
+    firstError(): Tuple | null {
+        for (const error of this.errors())
+            return error;
+        return null;
+    }
+
+    hasError() {
+        for (const error of this.errors())
+            return true;
+        return false;
+    }
+    
+    *errors() {
+        for (const tuple of this.tuples) {
+            if (tuple.isCommandError())
+                yield tuple;
+        }
     }
 
     errorsToErrorObject(): Error | null {
@@ -130,7 +140,7 @@ export default class Relation {
 
     oneValue(attr: string) {
         for (const it of this.body())
-            if (it.hasValueForAttr(attr))
+            if (it.hasValue(attr))
                 return it.getValue(attr);
 
         throw new Error("no value found for: " + attr);

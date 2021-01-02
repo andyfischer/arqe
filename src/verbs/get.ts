@@ -9,6 +9,7 @@ import { callTableHandler } from '../callTableHandler'
 import findTablesForPattern from '../findTablesForPattern'
 import QueryContext from '../QueryContext'
 import { splitTuple, abstractHoles } from '../operations'
+import CommandParams from '../CommandParams'
 
 function limitResultToSearchPattern(tuple: Tuple, searchPattern: Tuple) {
     if (tuple.isCommandMeta())
@@ -23,8 +24,9 @@ function limitResultToSearchPattern(tuple: Tuple, searchPattern: Tuple) {
             continue;
         }
 
-        if (fromPattern.hasValue() && resultTag.value !== fromPattern.value)
+        if (fromPattern.hasValue() && resultTag.value !== fromPattern.value) {
             return null;
+        }
     }
 
     // Throw out extra values that the search didn't ask for
@@ -81,7 +83,7 @@ function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tupl
             done() { out.done() }
         }
 
-        callTableHandler(cxt, definiteFind, searchPattern, filteredOutput);
+        callTableHandler(table.schema, definiteFind.mountPattern, definiteFind.callback, cxt, searchPattern, filteredOutput);
         return;
     }
 
@@ -172,17 +174,15 @@ function emptyResultFromError(out: Stream, searchPattern: Tuple, error: Tuple) {
     }
 }
 
-function extractGetScopeAttrs(tuple: Tuple) {
+export default function runGetStep(params: CommandParams) {
 
-}
+    const { scope, tuple, output } = params;
+    const combined = joinNStreams_v2(2, output);
 
-export default function runGetStep(cxt: QueryContext, tuple: Tuple, out: Stream) {
-    const combined = joinNStreams_v2(2, out);
-
-    cxt.input.sendTo(combined);
+    scope.input.sendTo(combined);
 
     let [ getMeta, searchPattern ] = splitTuple(tuple, tag => tag.attr === 'get.scope');
 
     emitSearchPatternMeta(searchPattern, combined);
-    runGet(cxt, searchPattern, getMeta, combined);
+    runGet(scope, searchPattern, getMeta, combined);
 }

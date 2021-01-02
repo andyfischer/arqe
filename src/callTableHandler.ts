@@ -1,98 +1,112 @@
 
-import Tuple, { newTuple, isTuple } from './Tuple'
-import TupleTag from './TupleTag'
-import { emitCommandError } from './CommandUtils'
+import Tuple from './Tuple'
+import { TupleStreamCallback } from './TableMount'
+import QueryContext from './QueryContext'
 import Stream from './Stream'
-import Pipe from './Pipe'
-import { QueryLike } from './coerce'
-import QueryContext from './QueryContext';
-import { compileTupleModificationStream } from './compilation/TupleModificationFunc'
-import QueryEvalHelper from './QueryEvalHelper';
-import TableHandler from './TableHandler'
 import { isUniqueTag, isEnvTag, isSubqueryTag } from './knownTags'
+import { QueryLike } from './coerce'
+import QueryEvalHelper from './QueryEvalHelper';
+import { randomHex } from './utils'
+import { emitCommandError } from './CommandUtils'
 
 const contextInputStream = 'context.inputStream'
 const contextEvalHelper = 'context.evalHelper'
 
-interface PreparedCall {
-    handlerInput: Tuple
-    postStripTags: TupleTag[]
-    preRunQueries: {
-        mountTag: TupleTag
-        query: Tuple
-    }[]
-}
+function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple) {
+    //console.log('getInjectTags.. ', mountPattern.stringify())
+    const injectTags = [];
 
-function prepareHandlerCall(cxt: QueryContext, incomingInput: Tuple, mountPattern: Tuple): PreparedCall {
-
-    const postStripTags = [];
-    const updatedTags = [];
-    const preRunQueries = []
-
-    mountPattern.tags.forEach(tag => {
-        if (isSubqueryTag(tag)) {
+    mountPattern.tags.forEach(mountTag => {
+        //console.log('looking at mount tag: ', mountTag.stringify())
+        if (isSubqueryTag(mountTag)) {
             const func = (query: QueryLike, output?: Stream) => {
                 return cxt.graph.run(query, output);
             }
             
-            postStripTags.push(tag);
-            updatedTags.push(tag.setVal(func));
+            // postStripTags.push(mountTag);
+            injectTags.push(mountTag.setVal(func));
             return;
         }
 
-        if (isEnvTag(tag)) {
-            const val = cxt.getEnv(tag.attr);
-            updatedTags.push(tag.setVal(val));
-            postStripTags.push(tag);
+        if (isEnvTag(mountTag)) {
+            const val = cxt.getEnv(mountTag.attr);
+            injectTags.push(mountTag.setVal(val));
+            // postStripTags.push(mountTag);
             return;
         }
 
-        if (tag.attr === contextEvalHelper) {
+        if (mountTag.attr === contextEvalHelper) {
             const verb = cxt.verb;
-            const helper = new QueryEvalHelper(cxt, verb, incomingInput);
-            updatedTags.push(tag.setVal(helper));
-            postStripTags.push(tag);
+            const helper = new QueryEvalHelper(cxt, verb, callInput);
+            injectTags.push(mountTag.setVal(helper));
+            // postStripTags.push(mountTag);
             return;
         }
 
-        if (tag.attr === contextInputStream) {
-            postStripTags.push(tag);
-            updatedTags.push(tag.setVal(cxt.input));
+        if (mountTag.attr === contextInputStream) {
+            // postStripTags.push(mountTag);
+            injectTags.push(mountTag.setVal(cxt.input));
             return;
         }
 
-        if (isTuple(tag.value)) {
+        if (isUniqueTag(mountTag)) {
+            injectTags.push(mountTag.setVal(randomHex(8)));
+            return;
+        }
+        
+        // how to best control eager evaluation? Tags can have tuple values
+
+        /*
+        if (isTuple(mountTag.value)) {
             preRunQueries.push({
-                query: tag.value,
-                mountTag: tag
+                query: mountTag.value,
+                mountTag: mountTag
             });
         }
+        */
     });
 
-    //console.log('updatedTags = ', updatedTags.map(t=>t.stringify()))
-
-    let handlerInput = incomingInput;
-
-    for (const tag of updatedTags)
-        handlerInput = handlerInput.setTag(tag);
-
-    return {
-        handlerInput,
-        postStripTags,
-        preRunQueries
-    }
+    return injectTags;
 }
 
-export function callTableHandler(cxt: QueryContext, handler: TableHandler, inputPattern: Tuple, out: Stream) {
-    
-    out = compileTupleModificationStream(handler.postResultModify, out);
+export function callTableHandler(tableSchema: Tuple,
+                                   mountPattern: Tuple,
+                                   callback: TupleStreamCallback,
+                                   cxt: QueryContext,
+                                   input: Tuple,
+                                   out: Stream) {
 
-    const preparedCall = prepareHandlerCall(cxt, inputPattern, handler.declaredMountPattern);
-    //console.log(`calling (${handler.declaredMountPattern.stringify()}) with (${inputPattern.stringify()})`
-    //            +`, sending: (${handlerInput.stringify()})`)
+    /*
+    console.log('callTableHandlerV2', {
+        tableSchema: tableSchema.stringify(),
+        mountPattern: mountPattern.stringify(),
+        input: input.stringify()
+    });
+    */
 
+    let handlerInput = input;
+
+    // Insert any injected values that the mount pattern requests.
+    for (const injectTag of getInjectTags(mountPattern, cxt, input)) {
+        handlerInput = handlerInput.setTag(injectTag);
+    }
+
+    // Set up output stream
+    const filteredOut: Stream = {
+        next(t) {
+            // Only include attributes that were asked for
+            if (!t.isCommandMeta())
+                t = t.filterTags(tag => input.hasAttr(tag.attr));
+            out.next(t);
+        },
+        done() {
+            out.done();
+        }
+    }
+
+    // Call the native callback
     try {
-        const result: any = handler.callback(preparedCall.handlerInput, out);
+        const result: any = callback(handlerInput, filteredOut);
 
         if (result && result.then) {
             result.catch(err => {
@@ -104,6 +118,4 @@ export function callTableHandler(cxt: QueryContext, handler: TableHandler, input
         emitCommandError(out, err);
         out.done();
     }
-
-    return true
 }

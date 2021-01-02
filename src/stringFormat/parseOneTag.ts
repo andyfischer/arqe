@@ -1,10 +1,9 @@
 
 import TupleTag, { newTagFromObject, TagOptions, FixedTag } from '../TupleTag'
 import { TokenIterator, Token, TokenDef, t_plain_value, t_quoted_string, t_star,
-    t_space, t_hash, t_double_dot, t_newline, t_bar, t_slash,
+    t_space, t_hash, t_newline, t_bar, t_slash,
     t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen, t_equals } from '../lexer'
-import { parseExpr } from '../parseExpr'
 import { parseTupleTokens } from './parseTuple'
 
 export default function parseOneTag(it: TokenIterator): TupleTag {
@@ -138,14 +137,6 @@ function parseTagValue(it: TokenIterator): TagOptions {
             }
         }
 
-        if (it.nextIs(t_lparen)) {
-            const exprValue = parseExpr(it) as string[];
-
-            return {
-                exprValue
-            }
-        }
-
         let iterationCount = 0;
         let parenDepth = 0;
         tagValue = '';
@@ -182,7 +173,10 @@ function parseTagValue(it: TokenIterator): TagOptions {
             }
         }
 
-        const value = it.consumeNextUnquotedText();
+        let value = it.consumeNextUnquotedText();
+        while (it.nextIs(t_plain_value) || it.nextIs(t_dot) || it.nextIs(t_slash))
+            value += it.consumeNextUnquotedText();
+
         return {
             value
         }

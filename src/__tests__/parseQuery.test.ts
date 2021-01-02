@@ -8,7 +8,7 @@ it(`parses a simple 'get'`, () => {
 
 it(`parses a custom command`, () => {
     const query = parseQuery('join-room room1');
-    expect(query.stringify()).toEqual('[Relation (room1 verb/join-room query-term-id/1) ]');
+    expect(query.stringify()).toEqual('[Relation (join-room room1 verb/get query-term-id/1) ]');
 });
 
 it(`doesn't trip up on an extra newline`, () => {

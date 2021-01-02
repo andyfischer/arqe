@@ -123,6 +123,6 @@ it('stringifies tag identifiers', () => {
 });
 
 it('stringifies expressions', () => {
-    testRestringify('set a/(increment)');
+    testRestringify('set a(increment)');
 });
 

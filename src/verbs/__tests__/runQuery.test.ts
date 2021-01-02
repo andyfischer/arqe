@@ -31,7 +31,7 @@ it("works with piped input", () => {
     run(graph, "set a/1 value/123");
     run(graph, "set a/2 value/abc");
 
-    expect(run(graph, "single-value query(get a/1 value) | run-query")).toEqual([
+    expect(run(graph, "val query(get a/1 value) | run-query")).toEqual([
         'a/1 value/123',
     ]);
 });
@@ -47,7 +47,7 @@ it("works with multiple inputs", () => {
         "named-query/even-numbers query(get a value is_even)"
     ])
 
-    expect(run(graph, "single-value query(get a/1 value) | run-query query named-query/even-numbers")).toEqual([
+    expect(run(graph, "val query(get a/1 value) | run-query query named-query/even-numbers")).toEqual([
         'a/1 value/one',
         'a/2 is_even value/two',
         'a/4 is_even value/four',

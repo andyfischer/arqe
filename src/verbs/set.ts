@@ -30,17 +30,17 @@ function setOnTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Str
     table.pushChangeEvent(cxt);
 }
 
-export default function set(cxt: QueryContext, params: CommandParams) {
-    const { tuple, output } = params;
+export default function set(params: CommandParams) {
+    const { tuple, output, scope } = params;
 
     const combinedOut = combineStreams(output);
     const allTables = combinedOut();
 
     let anyFound = false;
-    for (const [table, partitionedTuple] of findTablesForPattern(cxt.graph, tuple)) {
+    for (const [table, partitionedTuple] of findTablesForPattern(scope.graph, tuple)) {
         const tableOut = combinedOut();
         anyFound = true;
-        setOnTable(cxt, table, partitionedTuple, tableOut);
+        setOnTable(scope, table, partitionedTuple, tableOut);
     }
 
     if (!anyFound) {

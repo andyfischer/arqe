@@ -46,9 +46,9 @@ export default class Tuple {
         return this._matchHelper;
     }
 
-    getFunc(): string | null {
+    getVerb(): string | null {
         if (this.tags.length === 0) {
-            console.log('no tags')
+            throw new Error("empty tag has no verb");
             return null;
         }
 
@@ -268,10 +268,6 @@ export default class Tuple {
         return this.asMap().has(attr) && !!this.asMap().get(attr).value;
     }
 
-    hasValueForAttr(attr: string) {
-        return this.asMap().has(attr) && !!this.asMap().get(attr).value;
-    }
-
     getTagObject(attr: string): TupleTag {
         return this.asMap().get(attr);
     }
@@ -318,11 +314,6 @@ export default class Tuple {
         return defaultValue;
     }
 
-    getValOptional(attr: string, defaultValue) {
-        // todo- delete
-        return this.getOptional(attr, defaultValue);
-    }
-
     getValByIdentifierOptional(identifierStr: string, defaultValue) {
         const tag = this.byIdentifier().get(identifierStr);
         if (tag && tag.value)
@@ -335,6 +326,10 @@ export default class Tuple {
             throw new Error('index out of range: ' + index);
 
         return new Tuple(this.tags.slice(0,index).concat(this.tags.slice(index + 1)));
+    }
+
+    just(...attrs: string[]): Tuple {
+        return this.filterTags(tag => attrs.indexOf(tag.attr) !== -1);
     }
 
     justAttrs(attrs: string[]) {
@@ -447,6 +442,11 @@ export default class Tuple {
         });
     }
 
+
+    addAttr(attr: string) {
+        return this.addTag(newSimpleTag(attr));
+    }
+
     addTag(tag: TupleTag) {
         if (!isTag(tag))
             throw new Error("not a valid tag: " + tag);
@@ -505,7 +505,7 @@ export default class Tuple {
     toProxyObject(): any {
         return new Proxy({}, {
             get: (target, prop) => {
-                return this.getValOptional(prop as any, undefined);
+                return this.getOptional(prop as any, undefined);
             }
         });
     }
@@ -533,6 +533,10 @@ export function singleTagToTuple(attr: string, value: any) {
 
 export function isTuple(val: any) {
     return val && (val[symValueType] === 'tuple');
+}
+
+export function emptyTuple() {
+    return new Tuple([]);
 }
 
 type PatternJSON = { [key: string]: any }

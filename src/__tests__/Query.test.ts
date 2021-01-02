@@ -1,6 +1,7 @@
 
 import Graph from '../Graph'
-import Query, { runQuery } from '../Query'
+import Query from '../Query'
+import { runQuery } from '../runQuery'
 import Pipe from '../Pipe'
 import parseTuple from '../stringFormat/parseTuple'
 import QueryContext from '../QueryContext'

@@ -13,19 +13,60 @@ import Relation from './Relation'
 import Pipe from './Pipe'
 import { QueryLike } from './coerce'
 import { callTableHandler } from './callTableHandler'
-import TableHandler from './TableHandler'
 import Query from './Query'
 
 export type TupleStreamCallback = (input: Tuple, out: Stream) => void
 export type MountId = string;
 
-const contextInputStream = 'context.inputStream'
-const contextOutputStream = 'context.outputStream'
-const contextEvalHelper = 'context.evalHelper'
-
 interface FindHandlerOptions {
     acceptAbstract?: boolean
 }
+
+function getTagsWithUnique(tuple: Tuple) {
+    return tuple.tags.filter((tag: TupleTag) => isUniqueTag(tag));
+}
+
+function getRequiredValueTags(tuple: Tuple) {
+    return tuple.tags.filter((tag: TupleTag) => {
+        if (isUniqueTag(tag))
+            return false;
+        if (isEnvTag(tag))
+            return false;
+        if (isSubqueryTag(tag))
+            return false;
+        return !!tag.attr;
+    })
+}
+
+class TableHandler {
+    verb: string
+    mountPattern: Tuple
+    requiredValues: TupleTag[]
+    tagsWithUnique: TupleTag[]
+    callback: TupleStreamCallback
+
+    constructor(verb: string, mountPattern: Tuple, callback: TupleStreamCallback) {
+        this.verb = verb;
+        this.requiredValues = getRequiredValueTags(mountPattern);
+        this.tagsWithUnique = getTagsWithUnique(mountPattern);
+
+        if (mountPattern.hasAttr("evalHelper"))
+            throw new Error("internal error: CommandEntry should not see 'evalHelper' attr");
+
+        this.mountPattern = mountPattern;
+        this.callback = callback;
+    }
+
+    checkHasRequiredValues(input: Tuple) {
+        for (const tag of this.requiredValues) {
+            const matchingTag = input.getTag(tag.attr);
+            if (!matchingTag || !matchingTag.hasValue() || matchingTag.isAbstractValue())
+                return false;
+        }
+        return true;
+    }
+}
+
 
 class HandlersByVerb {
     entries: TableHandler[] = []
@@ -73,7 +114,7 @@ export default class TableMount {
         let requiredKeys;
 
         //console.log('declaredSchema = ', declaredSchema.stringify())
-        if (declaredSchema.getFunc() === 'table') {
+        if (declaredSchema.getVerb() === 'table') {
             //console.log('translating ', declaredSchema.stringify())
             // Newer style syntax
             let translatedSchema = new Tuple([]);
@@ -147,7 +188,7 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        callTableHandler(cxt, handler, tuple, out);
+        callTableHandler(this.schema, handler.mountPattern, handler.callback, cxt, tuple, out);
         return true;
     }
 
@@ -156,7 +197,8 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        callTableHandler(cxt, handler, tuple, out);
+        callTableHandler(this.schema, handler.mountPattern, handler.callback, cxt, tuple, out);
+        
         return true;
     }
 

@@ -10,13 +10,13 @@ it("browse works", () => {
         'b c': {}
     })
 
-    expect(run('browse b')).toEqual([
-        "id/mount-2 name/AB schema(a b)",
-        "id/mount-3 name/BC schema(b c)"
+    expect(run('browse b | just name schema')).toEqual([
+        "name/AB schema(a b)",
+        "name/BC schema(b c)"
     ])
     
-    expect(run('browse a')).toEqual([
-        "id/mount-2 name/AB schema(a b)",
+    expect(run('browse a | just name schema')).toEqual([
+        "name/AB schema(a b)",
     ])
 
 });

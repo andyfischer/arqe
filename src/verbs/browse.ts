@@ -3,10 +3,10 @@ import QueryContext from "../QueryContext";
 import CommandExecutionParams from '../CommandParams'
 import { toTuple } from '../coerce'
 
-export default function browseCommand(cxt: QueryContext, params: CommandExecutionParams) {
-    const { tuple, output } = params;
+export default function browseCommand(params: CommandExecutionParams) {
+    const { tuple, output, scope } = params;
 
-    for (const mount of cxt.graph.tablesById.values()) {
+    for (const mount of scope.graph.tablesById.values()) {
 
         let match = true;
         for (const tag of tuple.tags)
