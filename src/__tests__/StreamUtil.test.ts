@@ -4,8 +4,8 @@ import parseTuple from "../stringFormat/parseTuple";
 import { stringify } from "querystring";
 
 it("streamPostRemoveAttr works", () => {
-    const input = new Pipe();
-    const output = new Pipe();
+    const input = new Pipe('input');
+    const output = new Pipe('output');
 
     input.sendTo(streamPostRemoveAttr(output, "x"));
 

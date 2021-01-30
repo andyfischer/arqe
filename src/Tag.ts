@@ -13,7 +13,7 @@ export interface TagOptions {
     identifier?: string
 }
 
-export default class TupleTag {
+export default class Tag {
     attr?: string
     value?: any
     exprValue?: string[]
@@ -69,19 +69,19 @@ export default class TupleTag {
         return tagToString(this);
     }
 
-    copy(): TupleTag {
-        return new TupleTag(this);
+    copy(): Tag {
+        return new Tag(this);
     }
 
-    setAttr(attr: string): TupleTag {
-        return new TupleTag({
+    setAttr(attr: string): Tag {
+        return new Tag({
             ...this,
             attr
         });
     }
 
     setVal(value: any) {
-        return new TupleTag({
+        return new Tag({
             ...this,
             value: value,
             starValue: null,
@@ -89,8 +89,8 @@ export default class TupleTag {
         });
     }
 
-    setValue(value: any): TupleTag {
-        return new TupleTag({
+    setValue(value: any): Tag {
+        return new Tag({
             ...this,
             value: value,
             starValue: null,
@@ -98,8 +98,8 @@ export default class TupleTag {
         });
     }
 
-    setValueless(): TupleTag {
-        return new TupleTag({
+    dropValue(): Tag {
+        return new Tag({
             ...this,
             value: null,
             starValue: null,
@@ -107,8 +107,8 @@ export default class TupleTag {
         });
     }
 
-    setStarValue(): TupleTag {
-        return new TupleTag({
+    setStarValue(): Tag {
+        return new Tag({
             ...this,
             starValue: true,
             value: null,
@@ -116,26 +116,26 @@ export default class TupleTag {
         });
     }
 
-    setIdentifier(id: string): TupleTag {
-        return new TupleTag({
+    setIdentifier(id: string): Tag {
+        return new Tag({
             ...this,
             identifier: id
         });
     }
 
-    removeIdentifier(): TupleTag {
+    removeIdentifier(): Tag {
         return this.setIdentifier(null);
     }
 
-    setValueExpr(expr: string[]): TupleTag {
-        return new TupleTag({
+    setValueExpr(expr: string[]): Tag {
+        return new Tag({
             ...this,
             value: null,
             exprValue: expr,
         });
     }
 
-    compareCanonicalSort(rhs: TupleTag): number {
+    compareCanonicalSort(rhs: Tag): number {
         if (this.doubleStar !== rhs.doubleStar)
             return boolCompare(this.doubleStar, rhs.doubleStar);
 
@@ -169,11 +169,11 @@ export default class TupleTag {
         return typeof (this.value) === 'string';
     }
 
-    getTupleFunc(): string | null {
-        return this.isTupleValue() && this.value.getFunc();
+    getTupleVerb(): string | null {
+        return (this.isTupleValue() && (this.value as Tuple).getVerb()) || null;
     }
 
-    equals(rhs: TupleTag): boolean {
+    equals(rhs: Tag): boolean {
         return this.compareCanonicalSort(rhs) === 0;
     }
 
@@ -198,23 +198,21 @@ function boolCompare(a,b) {
     return 0;
 }
 
-export type FixedTag = TupleTag;
-
-export function newTag(attr: string, tagValue?: any): TupleTag {
-    return new TupleTag({ attr, value: tagValue });
+export function newTag(attr: string, tagValue?: any): Tag {
+    return new Tag({ attr, value: tagValue });
 }
 
-export function newSimpleTag(attr: string, tagValue?: any): TupleTag {
+export function newSimpleTag(attr: string, tagValue?: any): Tag {
     if (!attr)
         throw new Error('missing required: attr')
-    return new TupleTag({ attr, value: tagValue });
+    return new Tag({ attr, value: tagValue });
 }
 
 export function newTagFromObject(obj: TagOptions) {
-    return new TupleTag(obj);
+    return new Tag(obj);
 }
 
-export function tagToJson(tag: TupleTag) {
+export function tagToJson(tag: Tag) {
 
     if (tag.doubleStar) {
         return { match: '**' }
@@ -268,7 +266,7 @@ export function tagToJson(tag: TupleTag) {
     throw new Error('unhandled case in tagToJson: ' + tag.stringify());
 }
 
-export function nativeValueToTag(attr: string, jsonData: any): TupleTag {
+export function nativeValueToTag(attr: string, jsonData: any): Tag {
     if (jsonData === true)
         return newTagFromObject({attr});
     
@@ -287,7 +285,7 @@ export function nativeValueToTag(attr: string, jsonData: any): TupleTag {
     return newTagFromObject({attr, value: jsonData});
 }
 
-export function jsonToTag(attr: string, jsonData: any): TupleTag {
+export function jsonToTag(attr: string, jsonData: any): Tag {
     if (jsonData === true)
         return newTagFromObject({attr});
     

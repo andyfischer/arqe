@@ -23,8 +23,8 @@
 
 import Pipe from './Pipe'
 
-export function combinePipes(pipe1: Pipe, pipe2: Pipe) {
-    const out = new Pipe();
+function combinePipes(pipe1: Pipe, pipe2: Pipe) {
+    const out = new Pipe('combinePipes');
     pipe1.sendTo(out);
     pipe2.sendTo(out);
     return out;

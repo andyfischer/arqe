@@ -5,10 +5,13 @@ import LiveQuery, { LiveQueryId } from './LiveQuery'
 import Tuple from './Tuple'
 import { QueryLike } from './coerce'
 import Stream from './Stream'
+import { symValueType } from './internalSymbols'
 
-export default class QueryContext {
+export default class Scope {
     graph: Graph
-    parent?: QueryContext
+    parent?: Scope
+
+    [symValueType] = 'scope'
 
     env?: Tuple
 
@@ -21,14 +24,14 @@ export default class QueryContext {
     enableDebugDumpTrace = false;
     depth = 0
 
-    constructor(graph: Graph, parent?: QueryContext) {
+    constructor(graph: Graph, parent?: Scope) {
         this.graph = graph;
         this.parent = parent;
         this.traceEnabled = parent && parent.traceEnabled;
     }
 
     newChild() {
-        return new QueryContext(this.graph, this);
+        return new Scope(this.graph, this);
     }
 
     *eachWatchingQuery(): Iterable<LiveQuery> {

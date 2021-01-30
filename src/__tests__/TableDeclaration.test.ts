@@ -18,5 +18,5 @@ it('new style works', () => {
     //expect(run('browse')).toEqual('a/1 b/2 c/3');
     //expect(run('get a b c')).toEqual(['a/1 b/2 c/3']);
     //expect(run('browse')).toEqual(['a/1 b/2']);
-    expect(run('get a b')).toEqual(['a/1 b/2']);
+    expect(run('get a b').stringifyBody()).toEqual(['a/1 b/2']);
 });

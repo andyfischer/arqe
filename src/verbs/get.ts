@@ -1,6 +1,6 @@
 
 import Tuple, { newTuple } from '../Tuple'
-import { newSimpleTag } from '../TupleTag'
+import { newSimpleTag } from '../Tag'
 import Stream from '../Stream'
 import { emitSearchPatternMeta, asCommandMeta, tableNotFoundError, tableDoesntSupportOperation } from '../CommandUtils'
 import { combineStreams, joinNStreams_v2 } from '../StreamUtil'
@@ -10,6 +10,7 @@ import findTablesForPattern from '../findTablesForPattern'
 import QueryContext from '../QueryContext'
 import { splitTuple, abstractHoles } from '../operations'
 import CommandParams from '../CommandParams'
+import Pipe, { newPrefilledPipe, joinPipes } from '../Pipe'
 
 function limitResultToSearchPattern(tuple: Tuple, searchPattern: Tuple) {
     if (tuple.isCommandMeta())
@@ -43,58 +44,43 @@ function limitResultToSearchPattern(tuple: Tuple, searchPattern: Tuple) {
     return tuple;
 }
 
-function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tuple, getMeta: Tuple, out: Stream) {
-
-    cxt.start('getOnOneTable', { tableName: table.name, tuple: searchPattern.stringify() });
+function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tuple, getMeta: Tuple): Pipe {
 
     // should this rename to "alias" or similar ?
-    if (table.callWithDefiniteValues(cxt, 'get', searchPattern, out)) {
-        cxt.msg(`used 'get' handler`);
-        cxt.end('getOnOneTable');
-        return;
+    const getHandler = table.findHandler(cxt, 'get', searchPattern);
+    if (getHandler) {
+        //const out = new Pipe();
+        return callTableHandler(table.schema, getHandler, cxt, searchPattern)
     }
 
     // Check if there is a 'find' handler
     //   If it matches fixed values then call it.
     //   If it matches abstractly then return the abstract result.
 
-    const definiteFind = table.findHandler(cxt, 'find', searchPattern);
+    const find = table.findHandler(cxt, 'find', searchPattern);
 
     if (getMeta.getOptional('get.scope', null) === 'handlercheck') {
-        if (definiteFind) {
+        if (find) {
             // Yes we have a handler for this pattern.
-            out.next(abstractHoles(searchPattern));
-            out.done();
+            return newPrefilledPipe([abstractHoles(searchPattern)]);
         } else {
             // No handler for this pattern.
-            out.next(tableDoesntSupportOperation('find', searchPattern));
-            out.done();
+            return newPrefilledPipe([tableDoesntSupportOperation('find', searchPattern)]);
         }
-        return;
     }
 
-    if (definiteFind) {
-        const filteredOutput: Stream = {
-            next(t) {
-                t = limitResultToSearchPattern(t, searchPattern);
-                if (t)
-                    out.next(t);
-            },
-            done() { out.done() }
-        }
-
-        callTableHandler(table.schema, definiteFind.mountPattern, definiteFind.callback, cxt, searchPattern, filteredOutput);
-        return;
+    if (find) {
+        return (callTableHandler(table.schema, find, cxt, searchPattern)
+        .map((t:Tuple) => {
+            return limitResultToSearchPattern(t, searchPattern);
+        }, 'limitResultToSearchPattern'));
     }
 
     // Fail
-    cxt.msg('no handler found');
-    emptyResultFromError(out, searchPattern, tableDoesntSupportOperation('get', searchPattern));
-    out.done();
-    cxt.end('getOnOneTable');
+    return emptyResultFromError(searchPattern, tableDoesntSupportOperation('get', searchPattern))
 }
 
-function maybeAnnotateWithIdentifiers(searchPattern: Tuple, out: Stream) {
+function maybeAnnotateWithIdentifiers(searchPattern: Tuple) {
     let hasAnyIdentifiers = false;
     const attrToIdentifier = {};
 
@@ -106,83 +92,74 @@ function maybeAnnotateWithIdentifiers(searchPattern: Tuple, out: Stream) {
     }
 
     if (!hasAnyIdentifiers)
-        return out;
+        return (t) => t;
 
-    return {
-        next(t) {
-            out.next(t.remapTags(tag => {
-                if (!tag.attr)
-                    return tag;
-
-                const ident = attrToIdentifier[tag.attr];
-                if (ident) {
-                    return tag.setIdentifier(ident);
-                }
-
+    return (t:Tuple) => {
+        return t.remapTags(tag => {
+            if (!tag.attr)
                 return tag;
-            }))
-        },
-        done() {
-            out.done()
-        }
+
+            const ident = attrToIdentifier[tag.attr];
+            if (ident) {
+                return tag.setIdentifier(ident);
+            }
+
+            return tag;
+        });
     }
 }
 
-function runGet(cxt: QueryContext, searchPattern: Tuple, getMeta: Tuple, out: Stream) {
+function runGet(cxt: QueryContext, searchPattern: Tuple, getMeta: Tuple) {
     if (!searchPattern)
         throw new Error('missing searchPattern');
 
     if (searchPattern.isEmpty()) {
-        out.done();
-        return;
+        return newPrefilledPipe([]);
     }
 
-    cxt.start("runGet", { searchPattern: searchPattern.stringify() })
-
-    out = maybeAnnotateWithIdentifiers(searchPattern, out);
-
-    const combined = combineStreams(out);
-    const startedAllTables = combined();
-
-    let foundAnyTables = false;
+    const tableOuts: Pipe[] = []
 
     for (const [table, partitionedTuple] of findTablesForPattern(cxt.graph, searchPattern)) {
-        const tableOut = combined();
-        getOnOneTable(cxt, table, partitionedTuple, getMeta, tableOut);
-        foundAnyTables = true;
+        const tableOut = getOnOneTable(cxt, table, partitionedTuple, getMeta);
+        tableOuts.push(tableOut);
     }
 
-    if (!foundAnyTables) {
-        emptyResultFromError(out, searchPattern, tableNotFoundError(searchPattern));
+    if (tableOuts.length === 0) {
+        return emptyResultFromError(searchPattern, tableNotFoundError(searchPattern));
     }
 
-    startedAllTables.done();
-    cxt.end('runGet');
+    return (joinPipes(tableOuts)
+            .map(maybeAnnotateWithIdentifiers(searchPattern), 'maybeAnnotateWithIdentifiers'));
 }
 
-function emptyResultFromError(out: Stream, searchPattern: Tuple, error: Tuple) {
+function emptyResultFromError(searchPattern: Tuple, error: Tuple): Pipe {
     if (searchPattern.hasAnyAbstractValues()) {
-        out.next(searchPattern.remapTags(tag => {
-            if (tag.isAbstractValue()) {
-                return tag.setValue(newTuple([newSimpleTag('empty'), newSimpleTag('reason', error)]));
-            } else {
-                return tag;
-            }
-        }));
+        return newPrefilledPipe([
+            searchPattern.remapTags(tag => {
+                if (tag.isAbstractValue()) {
+                    return tag.setValue(newTuple([newSimpleTag('empty'), newSimpleTag('reason', error)]));
+                } else {
+                    return tag;
+                }
+            })
+        ]);
     } else {
-        out.next(asCommandMeta(error));
+        return newPrefilledPipe([asCommandMeta(error)]);
     }
 }
 
-export default function runGetStep(params: CommandParams) {
+export default function runGetVerb(params: CommandParams) {
 
     const { scope, tuple, output } = params;
-    const combined = joinNStreams_v2(2, output);
-
-    scope.input.sendTo(combined);
 
     let [ getMeta, searchPattern ] = splitTuple(tuple, tag => tag.attr === 'get.scope');
 
-    emitSearchPatternMeta(searchPattern, combined);
-    runGet(scope, searchPattern, getMeta, combined);
+    const getResult = new Pipe('get');
+    emitSearchPatternMeta(searchPattern, getResult);
+
+    runGet(scope, searchPattern, getMeta)
+    .sendTo(getResult);
+
+    joinPipes([scope.input, getResult])
+    .sendTo(output);
 }

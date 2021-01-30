@@ -5,7 +5,7 @@ import { emitSearchPatternMeta } from '../CommandUtils';
 
 it('emitSearchPatternMeta includes identifiers', () => {
 
-    const out = new Pipe();
+    const out = new Pipe('out');
     const t = parseTuple("a/$a b c/1");
     emitSearchPatternMeta(t, out);
 

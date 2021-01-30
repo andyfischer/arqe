@@ -1,11 +1,11 @@
 
-import TupleTag, { newSimpleTag } from './TupleTag'
+import Tag, { newSimpleTag } from './Tag'
 import Tuple, { newTuple } from './Tuple'
 import Stream from './Stream'
 
 const s_tupleAbstract: Tuple = newTuple([newSimpleTag('abstract')]);
 
-export function remapTags(t: Tuple, callback: (tag:TupleTag) => TupleTag | null): Tuple {
+export function remapTags(t: Tuple, callback: (tag:Tag) => Tag | null): Tuple {
     return newTuple(t.tags.map(callback).filter(tag => tag));
 }
 
@@ -22,9 +22,9 @@ export function streamMap(mapper: (Tuple) => Tuple|null, out: Stream) {
     }
 }
 
-export function splitTuple(t: Tuple, callback: (tag:TupleTag) => boolean): [Tuple,Tuple] {
-    const firstTags: TupleTag[] = [];
-    const secondTags: TupleTag[] = [];
+export function splitTuple(t: Tuple, callback: (tag:Tag) => boolean): [Tuple,Tuple] {
+    const firstTags: Tag[] = [];
+    const secondTags: Tag[] = [];
 
     for (const tag of t.tags) {
         if (callback(tag))

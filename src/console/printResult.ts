@@ -15,23 +15,31 @@ function isMultiColumn(rels: Tuple[]) {
     return false;
 }
 
+export function stringifyResult(rel: Relation): string[] {
+    const out = []
+
+    const tuples = rel.bodyArr();
+
+    if (isMultiColumn(tuples)) {
+        for (const line of printAsTable(tuples)) {
+            out.push('  ' + line);
+        }
+    } else {
+        for (const rel of tuples) {
+            out.push('  ' + rel.stringify());
+        }
+    }
+    return out;
+}
+
 export default function printResult(rel: Relation) {
     if (rel.hasError()) {
         printError(rel);
         return;
     }
 
-    const tuples = rel.bodyArr();
-
-    if (isMultiColumn(tuples)) {
-        for (const line of printAsTable(tuples)) {
-            console.log('  ' + line);
-        }
-    } else {
-        for (const rel of tuples) {
-            console.log('  ' + rel.stringify());
-        }
-    }
+    for (const line of stringifyResult(rel))
+        console.log(line);
 }
 
 export function printError(rel: Relation) {

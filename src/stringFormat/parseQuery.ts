@@ -2,7 +2,7 @@
 import { lexStringToIterator, TokenIterator, TokenDef, t_newline, t_space,
     t_line_comment, t_bar } from '../lexer'
 import { parseOneCommand } from '../parseCommand'
-import Query, { relationAsQuery } from '../Query'
+import Query from '../Query'
 import Relation from '../Relation'
 import Tuple from '../Tuple'
 import { queryBidirectionalJsonTest } from '../SelfTest'
@@ -33,23 +33,7 @@ function parseOneStatement(it: TokenIterator, terms: Tuple[]) {
     while (!it.finished()) {
         const term = parseTupleTokens(it);
 
-        /*
-        if (command.verb)
-            term = term.setValue('verb', command.verb);
-
-        if (command.flags && (Object.keys(command.flags).length > 0))
-            term = term.setValue('flags', command.flags);
-            */
-
         terms.push(term);
-
-           /*
-        const term = query.addTerm(command.verb, command.tuple, command.flags);
-        if (lhs) {
-            query.connectAsInput(lhs, term);
-        }
-        lhs = term;
-        */
 
         it.skipSpaces();
 
@@ -63,8 +47,6 @@ function parseOneStatement(it: TokenIterator, terms: Tuple[]) {
         if (!it.tryConsume(t_bar))
             break;
     }
-
-    // query.setOutput(lhs);
 }
 
 function parseProgramTok(it: TokenIterator): Query {
@@ -80,15 +62,11 @@ function parseProgramTok(it: TokenIterator): Query {
         parseOneStatement(it, terms);
     }
 
-    return relationAsQuery(new Relation(terms));
+    return new Relation(terms) as Query;
 }
 
 export function parseQuery(str: string): Query {
     const it = lexStringToIterator(str);
-    
     const query = parseProgramTok(it);
-
-    // queryBidirectionalJsonTest(query); // temp
-
     return query;
 }

@@ -9,7 +9,7 @@ it('supports defining a table with just a function', () => {
         }
     }));
 
-    expect(run('get table1 a')).toEqual(['table1 a/123']);
+    expect(run('get table1 a').stringifyBody()).toEqual(['table1 a/123']);
 });
 
 it('supports defining a table with just a function', () => {
@@ -18,5 +18,5 @@ it('supports defining a table with just a function', () => {
         o.done(i.setValue('a', 123));
     }));
 
-    expect(run('get table1 a')).toEqual(['table1 a/123']);
+    expect(run('get table1 a').stringifyBody()).toEqual(['table1 a/123']);
 });

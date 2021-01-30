@@ -82,3 +82,9 @@ export function loadWatchedTableDir(graph: Graph, dir: string) {
     for (const file of files)
         loadWatchedTableModule(graph, file);
 }
+
+export function loadWatchedTableGlob(graph: Graph, pattern) {
+    const files = Glob.sync(pattern);
+    for (const file of files)
+        loadWatchedTableModule(graph, file);
+}

@@ -1,7 +1,7 @@
-import Tuple, { singleTagToTuple } from "./Tuple"
+import Tuple, { singleTagToTuple, isTuple, jsonToTuple } from "./Tuple"
 import Stream from "./Stream"
 import { symValueStringify, symValueType } from "./internalSymbols"
-import { newSimpleTag } from "./TupleTag";
+import { newSimpleTag } from "./Tag";
 
 export default class Relation {
     tuples: Tuple[]
@@ -10,6 +10,10 @@ export default class Relation {
     [symValueType] = 'relation'
 
     constructor(tuples: Tuple[]) {
+        for (const t of tuples)
+            if (!isTuple(t))
+                throw new Error("error: input must be Tuple[]");
+
         this.tuples = tuples;
     }
 
@@ -107,6 +111,12 @@ export default class Relation {
         return null;
     }
 
+    rethrow() {
+        const err = this.errorsToErrorObject();
+        if (err)
+            throw err;
+    }
+
     *withAttr(attr: string) {
         for (const tuple of this.tuples) {
             if (tuple.hasAttr(attr))
@@ -139,38 +149,52 @@ export default class Relation {
     }
 
     oneValue(attr: string) {
-        for (const it of this.body())
-            if (it.hasValue(attr))
+        for (const it of this.body()) {
+            if (it.hasValue(attr)) {
                 return it.getValue(attr);
+            }
+        }
 
         throw new Error("no value found for: " + attr);
     }
 
     stringify() {
-        return `[Relation ${this.tuples.map(t => `(${t.stringify()})`).join(', ')} ]`;
+        return `[${this.tuples.map(t => `(${t.stringify()})`).join(', ')}]`;
     }
 
     stringifyBody() {
         return `[${Array.from(this.body()).map(t => t.stringify()).join(', ')}]`;
     }
-}
 
-export function relationToJsonable(rel: Relation) {
-    return {
-        type: 'relation',
-        tuples: rel.tuples.map(t => t.stringify())
+    stringifyBuffer(): string[] {
+        return this.tuples.map(t => t.stringify());
+    }
+
+    toJson() {
+        return relationToJson(this);
     }
 }
 
-export function jsonableToRelation(json: any): Relation {
+export function relationToJson(rel: Relation) {
+    return {
+        type: 'relation',
+        tuples: rel.tuples.map(t => t.toJson())
+    }
+}
+
+export function jsonToRelation(json: any): Relation {
     if (json.type !== 'relation') {
         throw new Error("jsonableToRelation: object doesn't have type = relation");
     }
 
-    const tuples = json.tuples;
+    const tuples = json.tuples.map(obj => jsonToTuple(obj));
     return new Relation(tuples);
 }
 
 export function isRelation(val: any) {
     return val && (val[symValueType] === 'relation');
+}
+
+export function newRelation(tuples: Tuple[]) {
+    return new Relation(tuples);
 }

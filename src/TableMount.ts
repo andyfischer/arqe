@@ -2,18 +2,17 @@
 import Tuple, { newTuple, isTuple } from './Tuple'
 import { emitCommandError } from './CommandUtils'
 import Stream from './Stream'
-import TupleTag, { newTag, newSimpleTag } from './TupleTag';
+import Tag, { newTag, newSimpleTag } from './Tag';
 import parseTuple from './stringFormat/parseTuple';
 import QueryContext from './QueryContext';
 import { streamPostRemoveAttr } from './StreamUtil';
 import AutoInitMap from "./utils/AutoInitMap"
 import { LiveQueryId } from './LiveQuery'
-import { isUniqueTag, isEnvTag, isSubqueryTag } from './knownTags'
 import Relation from './Relation'
 import Pipe from './Pipe'
-import { QueryLike } from './coerce'
 import { callTableHandler } from './callTableHandler'
 import Query from './Query'
+import { toTuple, TupleLike, toQuery, QueryLike } from './coerce'
 
 export type TupleStreamCallback = (input: Tuple, out: Stream) => void
 export type MountId = string;
@@ -23,29 +22,36 @@ interface FindHandlerOptions {
 }
 
 function getTagsWithUnique(tuple: Tuple) {
-    return tuple.tags.filter((tag: TupleTag) => isUniqueTag(tag));
+    return tuple.tags.filter((tag: Tag) => tag.getTupleVerb() === 'unique');
 }
 
 function getRequiredValueTags(tuple: Tuple) {
-    return tuple.tags.filter((tag: TupleTag) => {
-        if (isUniqueTag(tag))
+    return tuple.tags.filter((tag: Tag) => {
+        const verb = tag.getTupleVerb();
+        if (verb === 'unique')
             return false;
-        if (isEnvTag(tag))
+        if (verb === 'env')
             return false;
-        if (isSubqueryTag(tag))
+        if (verb === 'subquery')
+            return false;
+        if (verb === 'scope')
             return false;
         return !!tag.attr;
     })
 }
 
-class TableHandler {
+export class VerbHandler {
     verb: string
     mountPattern: Tuple
-    requiredValues: TupleTag[]
-    tagsWithUnique: TupleTag[]
-    callback: TupleStreamCallback
+    requiredValues: Tag[]
+    tagsWithUnique: Tag[]
+    mount: TableMount
 
-    constructor(verb: string, mountPattern: Tuple, callback: TupleStreamCallback) {
+    nativeCallback?: TupleStreamCallback
+    query?: Query
+
+    constructor(mount: TableMount, verb: string, mountPattern: Tuple) {
+        this.mount = mount;
         this.verb = verb;
         this.requiredValues = getRequiredValueTags(mountPattern);
         this.tagsWithUnique = getTagsWithUnique(mountPattern);
@@ -54,7 +60,14 @@ class TableHandler {
             throw new Error("internal error: CommandEntry should not see 'evalHelper' attr");
 
         this.mountPattern = mountPattern;
-        this.callback = callback;
+    }
+
+    setNativeCallback(nativeCallback: TupleStreamCallback) {
+        this.nativeCallback = nativeCallback;
+    }
+
+    setQuery(query: Query) {
+        this.query = query;
     }
 
     checkHasRequiredValues(input: Tuple) {
@@ -67,17 +80,16 @@ class TableHandler {
     }
 }
 
-
 class HandlersByVerb {
-    entries: TableHandler[] = []
+    entries: VerbHandler[] = []
 
-    add(entry: TableHandler) {
+    add(entry: VerbHandler) {
         this.entries.push(entry)
     }
 
     find(tuple: Tuple) {
         for (const entry of this.entries) {
-            if (entry.mountPattern.checkDefiniteValuesProvidedBy(tuple))
+            if (entry.mountPattern.checkRequiredValuesProvidedBy(tuple))
                 return entry;
         }
         return null;
@@ -101,7 +113,7 @@ export default class TableMount {
     requiredKeys: Tuple | null
     watches = new Map();
 
-    allEntries: TableHandler[] = []
+    allEntries: VerbHandler[] = []
     byVerb: AutoInitMap<string, HandlersByVerb>
 
     listeners = new Map<LiveQueryId, Listener>()
@@ -156,7 +168,14 @@ export default class TableMount {
         this.declaredSchema = schema;
     }
 
-    addHandler(verb: string, tuple: string | Tuple, callback: TupleStreamCallback) {
+    _addHandler(handler: VerbHandler) {
+        const commandMatches  = this.byVerb.get(handler.verb);
+        commandMatches.add(handler);
+        this.allEntries.push(handler);
+    }
+
+    addHandler(verb: string, tupleLike: TupleLike, callback: TupleStreamCallback) {
+        const tuple = toTuple(tupleLike);
         if (typeof verb !== 'string')
             throw new Error('expected string: ' + verb);
 
@@ -168,27 +187,32 @@ export default class TableMount {
             throw new Error(`use 'find' instead of find-with`);
         }
 
-        if (typeof tuple === 'string')
-            tuple = parseTuple(tuple);
+        const handler: VerbHandler = new VerbHandler(this, verb, tuple);
+        handler.setNativeCallback(callback);
+        this._addHandler(handler);
+    }
 
-        const commandMatches  = this.byVerb.get(verb);
-        const handler: TableHandler = new TableHandler(verb, tuple, callback);
-        commandMatches.add(handler);
-        this.allEntries.push(handler);
+    addQueryHandler(verb: string, tupleLike: TupleLike, queryLike: QueryLike) {
+        const tuple = toTuple(tupleLike);
+        const handler: VerbHandler = new VerbHandler(this, verb, tuple);
+        handler.setQuery(toQuery(queryLike));
+        this._addHandler(handler);
     }
 
     hasHandler(verb: string, tuple: Tuple) {
         return !!this.find(verb, tuple);
     }
 
-    callInsertUnique(cxt: QueryContext, uniqueTag: TupleTag, tuple: Tuple, out: Stream): boolean {
+    callInsertUnique(cxt: QueryContext, uniqueTag: Tag, tuple: Tuple, out: Stream): boolean {
         // Find a matching entry that has (unique) for this tag.
         const handler = this.findWithUnique('insert', uniqueTag, tuple);
 
         if (!handler)
             return false;
 
-        callTableHandler(this.schema, handler.mountPattern, handler.callback, cxt, tuple, out);
+        callTableHandler(this.schema, handler, cxt, tuple)
+        .sendTo(out);
+
         return true;
     }
 
@@ -197,8 +221,9 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        callTableHandler(this.schema, handler.mountPattern, handler.callback, cxt, tuple, out);
-        
+        callTableHandler(this.schema, handler, cxt, tuple)
+        .sendTo(out);
+
         return true;
     }
 
@@ -225,7 +250,7 @@ export default class TableMount {
         return matches.find(tuple);
     }
 
-    findWithUnique(verb: string, uniqueTag: TupleTag, tuple: Tuple) {
+    findWithUnique(verb: string, uniqueTag: Tag, tuple: Tuple) {
         for (const entry of this.handlersByVerb(verb)) {
             if (entry.tagsWithUnique.length !== 1)
                 continue;
@@ -256,7 +281,7 @@ export default class TableMount {
         return null;
     }
 
-    handlerAllows(handler: TableHandler, verb: string, input: Tuple, opts: FindHandlerOptions) {
+    handlerAllows(handler: VerbHandler, verb: string, input: Tuple, opts: FindHandlerOptions) {
         if (!opts.acceptAbstract && input.hasAnyAbstractValues())
             return false;
 
@@ -274,7 +299,7 @@ export default class TableMount {
 
         for (const tag of handler.tagsWithUnique) {
             const match = input.getTag(tag.attr);
-            if (!match || !isUniqueTag(match))
+            if (!match || match.getTupleVerb() !== 'unique')
                 return false;
         }
 

@@ -1,15 +1,14 @@
 
 import parseTableDefinition, { setupTable, SingleTableDefinition, TableSetDefinition } from './parseTableDefinition'
 import TableMount from './TableMount'
-import { TupleLike } from './coerce'
 import Graph from './Graph'
 import QueryTemplate from './QueryTemplate'
-import { QueryLike } from './coerce'
+import { QueryLike, toQuery, TupleLike, toTuple } from './coerce'
 
 export default class TableDefiner {
     mounts: TableMount[] = []
 
-    provide(schema: TupleLike, def: SingleTableDefinition) {
+    provide = (schema: TupleLike, def: SingleTableDefinition) => {
         const mount = setupTable(schema, def);
 
         this.mounts.push(mount);
@@ -33,5 +32,13 @@ export default class TableDefiner {
 
     prepare(queryLike: QueryLike) {
         return new QueryTemplate(queryLike);
+    }
+
+    toQuery(queryLike: QueryLike) {
+        return toQuery(queryLike);
+    }
+
+    toTuple(tupleLike: TupleLike) {
+        return toTuple(tupleLike);
     }
 }

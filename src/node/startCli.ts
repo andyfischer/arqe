@@ -7,14 +7,17 @@ import GraphRepl from '../GraphRepl'
 import printResult from '../console/printResult'
 import Minimist from 'minimist'
 import Tuple from '../Tuple'
-import { receiveToTupleList, receiveToTupleListPromise } from '../receiveUtils'
 import { processGraph } from '../platformExports'
 import Graph from '../Graph'
 import startRepl from './startRepl'
 import setupWatchedModules, { loadWatchedTableModule } from './watchedModules'
+import TableDefiner from '../TableDefiner'
 
-// import WebServer from './node/socket/WebServer'
-// import loadBootstrapConfigs, { loadLocalBootstrapConfigs } from './loadBootstrapConfigs'
+let _startupLogs = [];
+
+function log(msg: string) {
+    _startupLogs.push(msg);
+}
 
 function runFile(graph: Graph, filename: string) {
     const contents = Fs.readFileSync(filename, 'utf8');
@@ -22,10 +25,64 @@ function runFile(graph: Graph, filename: string) {
 }
 
 function loadStandardTables(graph: Graph) {
-    for (const file of Glob.sync(Path.join(__dirname, '../tables/*.js')))
+    for (const file of Glob.sync(Path.join(__dirname, './tables/*.js'))) {
+        log('loading standard file: ' + file);
         loadWatchedTableModule(graph, file);
+    }
+}
 
-    loadWatchedTableModule(graph, Path.join(__dirname, 'standardTables.js'));
+function loadDirectory(graph: Graph, dir: string) {
+
+    const nearbyPatterns = [
+        'dist/tables/**/*.js',
+        'dist/**/*.table.js',
+        'dist/**/*.t.js',
+        '*.table.js',
+        'tables.js',
+    ]
+
+    let files = [];
+
+    for (const pattern of nearbyPatterns) {
+        files = files.concat(Glob.sync(Path.join(dir, pattern), {
+            ignore: ['**/node_modules/**']
+        }))
+    }
+
+    for (const filename of files) {
+        log(`loading file (part of directory ${dir}): ` + filename);
+        loadWatchedTableModule(graph, filename);
+    }
+}
+
+function loadUserSetupJson() {
+    const localSetupPath = Path.join(process.env.HOME, ".arqe/local_setup.json");
+    if (Fs.existsSync(localSetupPath)) {
+        log('found user setup file: ' + localSetupPath);
+        return JSON.parse(Fs.readFileSync(localSetupPath, 'utf8'));
+    }
+    return {};
+}
+
+function loadUserSetupDirectories(graph: Graph) {
+
+    const data = loadUserSetupJson();
+    const dirs = data.load_directories || [];
+
+    for (const dir of dirs) {
+        log('loading dir (from ~/.arqe/local_setup.json): ' + dir);
+        loadDirectory(graph, dir);
+    }
+}
+
+function cliInspectionTable(def: TableDefiner) {
+    def.provide('cli startup-log', {
+        'find'(i,o) {
+            for (const log of _startupLogs)
+                o.next({'startup-log': log})
+            o.done();
+        }
+    });
 }
 
 function autoloadNearbyTables(graph: Graph) {
@@ -38,14 +95,40 @@ function autoloadNearbyTables(graph: Graph) {
 
     files = files.concat(Glob.sync('dist/tables/**/*.js'));
     files = files.concat(Glob.sync('dist/**/*.table.js'));
+    files = files.concat(Glob.sync('dist/**/*.t.js'));
+    files = files.concat(Glob.sync('*.table.js'));
+    files = files.concat(Glob.sync('*.t.js'));
+
+    for (const filename of files) {
+        log(`loading file (nearby in cwd): ` + filename);
+        loadWatchedTableModule(graph, filename);
+    }
+}
+
+function autoloadUserDirTables(graph: Graph) {
+    let files = [];
+
     files = files.concat(Glob.sync(Path.join(process.env.HOME, '.arqe/tables/**/*.js'), {
         ignore: ['**/node_modules/**']
     }));
 
     for (const filename of files) {
-        console.log('autoloading: ' + filename);
+        log(`loading file (found in .arqe/tables): ` + filename);
         loadWatchedTableModule(graph, filename);
     }
+}
+
+export async function getCliGraph() {
+    const graph = processGraph();
+
+    graph.provideWithDefiner(setupWatchedModules);
+    graph.provideWithDefiner(cliInspectionTable);
+    loadStandardTables(graph);
+    autoloadNearbyTables(graph);
+    autoloadUserDirTables(graph);
+    loadUserSetupDirectories(graph);
+
+    return graph;
 }
 
 export default async function main() {
@@ -58,23 +141,13 @@ export default async function main() {
     // Set up 'cwd' and 'projectHome' entries
     // Mount schema.json
 
-    const graph = processGraph();
-
-    graph.provideWithDefiner(setupWatchedModules);
-    loadStandardTables(graph);
-    autoloadNearbyTables(graph);
+    const graph = await getCliGraph();
 
     let runRepl = true;
 
-    // load schema with JsonFile
-
-    if (cliArgs.server) {
-        console.log('--server not supported');
-        // const server = new WebServer(graph);
-        // await server.start();
-    }
-
     if (cliArgs.c) {
+
+        // add support for --flat ?
 
         runRepl = false;
         graph.run(cliArgs.c)
@@ -96,8 +169,10 @@ export default async function main() {
     }
 }
 
-main()
-.catch(err => {
-    process.exitCode = -1;
-    console.error(err.stack || err);
-});
+if (require.main === module) {
+    main()
+    .catch(err => {
+        process.exitCode = -1;
+        console.error(err.stack || err);
+    });
+}

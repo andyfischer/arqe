@@ -1,6 +1,5 @@
 
 import { EventEmitter } from 'events'
-import ChildProcess from 'child_process'
 
 export const printEvents = new EventEmitter();
 
@@ -32,11 +31,6 @@ export function randomHex(length: number) {
     }
 
     return out;
-}
-
-export function readTextLinesSync(filename: string): string[] {
-    const contents = require('fs').readFileSync(filename, 'utf8');
-    return contents.split('\n')
 }
 
 export function toSet(items: string[])  {
@@ -77,11 +71,6 @@ export function isRunningInNode() {
     return (typeof module !== 'undefined' && module.exports);
 }
 
-export function spawn(cmd: string) {
-    const args = cmd.split(' ');
-    print('spawning process: ' + cmd);
-    const proc = ChildProcess.spawn(args[0], args.slice(1));
-}
 
 export function zeroPad(num: number|string, len: number) {
     num = num + '';

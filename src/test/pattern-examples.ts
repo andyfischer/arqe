@@ -41,7 +41,7 @@ function checkIsSupersetOf(session: FuzzTestSession, example: Tuple) {
 
 function checkNotSupersetOf(session: FuzzTestSession, example: Tuple) {
     const pattern = parseTuple(example.getVal("pattern"));
-    const notSupersetOf = parseTuple(example.getValOptional("not-superset-of", ''));
+    const notSupersetOf = parseTuple(example.getOptional("not-superset-of", ''));
 
     if (!pattern.isSupersetOf(notSupersetOf)) {
         session.markPass();

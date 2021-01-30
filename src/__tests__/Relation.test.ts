@@ -1,20 +1,19 @@
 import { Graph } from ".."
-import { run } from './utils'
-import { receiveToRelation } from "../receiveUtils";
 import Pipe from "../Pipe";
 import parseTuple from "../stringFormat/parseTuple";
+import { setupGraph } from './utils'
 
 it("includes a correct header", () => {
-    const graph = new Graph({
+    const { graph, run } = setupGraph({
         provide: {
             'a b': 'memory'
         }
     });
-    run(graph, "set a b/1");
-    run(graph, "set a b/2");
 
-    const out = new Pipe();
-    graph.get("a b", out);
+    run("set a b/1");
+    run("set a b/2");
+
+    const out = graph.run("get a b");
     const relation = out.takeAsRelation();
 
     expect(relation.header().stringify()).toEqual("a b");

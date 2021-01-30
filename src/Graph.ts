@@ -1,29 +1,27 @@
 
 import Tuple, { jsonToTuple } from './Tuple'
 import Stream from './Stream'
-import { receiveToTupleList, fallbackReceiver, receiveToTupleListPromise } from './receiveUtils'
+import { receiveToTupleList } from './receiveUtils'
 import IDSource from './utils/IDSource'
 import watchAndValidateCommand from './validation/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
 import TableMount, { MountId } from './TableMount'
 import parseTuple from './stringFormat/parseTuple'
-import { receiveToRelationInStream, receiveToRelationAsync } from './receiveUtils'
-import Query, { queryFromOneTuple } from './Query'
+import Query from './Query'
 import { runQuery } from './runQuery'
 import LiveQuery from './LiveQuery'
 import QueryContext from './QueryContext'
 import { QueryLike, toQuery, TupleLike, toTuple } from './coerce'
 import parseTableDefinition, { TableSetDefinition } from './parseTableDefinition'
-import Relation from './Relation'
-import Pipe from './Pipe'
+import Relation, { newRelation } from './Relation'
+import Pipe, { newNullPipe } from './Pipe'
 import findTablesForPattern from './findTablesForPattern'
 import TableDefiner from './TableDefiner'
 import { randInt } from './utils/rand'
 import { toCapitalCase } from './utils/naming'
 import MemoryTable from './MemoryTable'
 
-interface GraphOptions {
-    context?: 'browser' | 'node'
+export interface GraphOptions {
     provide?: TableSetDefinition
 }
 
@@ -48,9 +46,6 @@ export default class Graph {
 
     constructor(options: GraphOptions = {}) {
         this.options = options;
-        if (this.options.context === undefined)
-            this.options.context = 'node';
-
         setupBuiltinTables(this);
 
         if (options.provide) {
@@ -141,6 +136,10 @@ export default class Graph {
         return this.nextUniquePerAttr[attr].take();
     }
 
+    newScope() {
+        return new QueryContext(this);
+    }
+
     run = (queryLike: QueryLike, output?: Stream): Pipe|null => {
         // output = watchAndValidateCommand(commandStr, output);
 
@@ -148,18 +147,15 @@ export default class Graph {
         const cxt = new QueryContext(this);
 
         let pipe;
-        if (!output) {
-            pipe = new Pipe();
-            output = pipe;
-        }
 
-        runQuery(cxt, query, output);
+        // console.log(`run(${queryLike}) calling runQuery`, output)
 
-        return pipe;
-    }
+        const result = runQuery(cxt, query, newNullPipe())
 
-    runCallback(queryLike: QueryLike, callback: (rel: Relation) => void) {
-        this.run(queryLike, receiveToTupleList(tuples => callback(new Relation(tuples))));
+        if (output)
+            result.sendTo(output);
+
+        return result;
     }
 
     runSync(queryLike: QueryLike): Tuple[] {
@@ -172,7 +168,8 @@ export default class Graph {
         });
 
         const cxt = new QueryContext(this);
-        runQuery(cxt, query, receiver);
+        runQuery(cxt, query, newNullPipe())
+        .sendTo(receiver);
 
         if (rels === null)
             throw new Error("command didn't finish synchronously: " + query.stringify());
@@ -183,17 +180,19 @@ export default class Graph {
     get(patternLike: TupleLike, out: Stream) {
         const pattern = toTuple(patternLike);
 
-        const query = queryFromOneTuple(pattern.setValue('verb', 'get'));
+        const query = newRelation([pattern.setValue('verb', 'get')]);
         const cxt = new QueryContext(this);
-        runQuery(cxt, query, out);
+        runQuery(cxt, query, newNullPipe())
+        .sendTo(out);
     }
 
     set(patternLike: TupleLike, out: Stream) {
         let pattern = toTuple(patternLike);
 
-        const query = queryFromOneTuple(pattern.setValue('verb', 'set'));
+        const query = newRelation([pattern.setValue('verb', 'set')]);
         const cxt = new QueryContext(this);
-        runQuery(cxt, query, out);
+        runQuery(cxt, query, newNullPipe())
+        .sendTo(out);
     }
 
     pushChangeEvent(liveQueryId: string) {

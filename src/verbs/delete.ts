@@ -1,13 +1,13 @@
 import { combineStreams } from "../StreamUtil";
 import { Graph, Tuple, Stream } from "..";
-import TupleTag, { newTag } from "../TupleTag";
+import Tag, { newTag } from "../Tag";
 import CommandExecutionParams from '../CommandParams'
 import TableMount from "../TableMount";
 import findTablesForPattern from "../findTablesForPattern";
 import QueryContext from "../QueryContext";
 
 export function stripDeleteTag(tuple: Tuple) {
-    return tuple.remapTags((tag: TupleTag) => {
+    return tuple.remapTags((tag: Tag) => {
         if (tag.attr === 'deleted')
             return null;
         return tag

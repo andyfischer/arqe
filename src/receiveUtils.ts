@@ -9,13 +9,16 @@ import { QueryLike } from './coerce'
 export function receiveToTupleList(onDone: (rels: Tuple[]) => void): Stream {
     const list: Tuple[] = [];
     return {
+        _receiveToTupleList: true,
         next(t) {
+            // console.log('receiveToTupleList got result')
             list.push(t)
         },
         done() {
+            // console.log('receiveToTupleList onDone')
             onDone(list);
         }
-    }
+    } as any as Stream;
 }
 
 export function receiveToTupleListPromise(): [ Stream, Promise<Tuple[]> ] {
@@ -121,21 +124,6 @@ export function receiveToSingleValue(attrName: string): [SingleValueAccessor, St
     }
 
     return [ accessor, stream ]
-}
-
-export function receiveToRelationInStream(out: Stream, attrName: string): Stream {
-    const tuples = [];
-
-    return {
-        next(t) {
-            tuples.push(t);
-        },
-        done() {
-            const relation = new Relation(tuples);
-            out.next(singleTagToTuple(attrName, relation));
-            out.done();
-        }
-    }
 }
 
 export function receiveToRelationSync(): [Stream, () => Relation] {

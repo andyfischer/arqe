@@ -1,6 +1,6 @@
 
-import Query, { termToSearchPattern } from './Query'
-import { runQuery } from './runQuery'
+import Query from './Query'
+import { runQuery, extractVerbForTerm } from './runQuery'
 import Graph from './Graph'
 import { MountId } from './TableMount'
 import Tuple from './Tuple';
@@ -12,6 +12,7 @@ import Relation from './Relation'
 import { receiveToRelationSync, receiveToRelationAsync,
     receiveToRelationCallback} from './receiveUtils';
 import { toQuery, QueryLike } from './coerce'
+import Pipe, { newNullPipe } from './Pipe'
 
 export type LiveQueryId = string;
 
@@ -38,8 +39,8 @@ export default class LiveQuery {
     }
 
     *partitionsByTerm(cxt: QueryContext, term: Tuple) {
-        const tuple = termToSearchPattern(term);
-        yield* findTablesForPattern(cxt.graph, tuple);
+        const { verb, termInput } = extractVerbForTerm(term);
+        yield* findTablesForPattern(cxt.graph, termInput);
     }
 
     addFixedListeners() {
@@ -77,16 +78,15 @@ export default class LiveQuery {
         const cxt = new QueryContext(this.graph);
         cxt.watchingQueries.set(this.liveQueryId, this);
 
-        const wrappedOutput = {
+        this.isRunning = true;
+        runQuery(cxt, this.query, newNullPipe())
+        .sendTo({
             next(t: Tuple) { out.next(t) },
             done: () => {
                 this.finishRun();
                 out.done();
             }
-        }
-
-        this.isRunning = true;
-        runQuery(cxt, this.query, wrappedOutput);
+        });
     }
 
     finishRun() {

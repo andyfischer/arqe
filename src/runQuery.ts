@@ -5,26 +5,38 @@ import Stream from './Stream'
 import Tuple from './Tuple'
 import Pipe from './Pipe'
 import { builtinVerbs } from './everyVerb'
-import { termToSearchPattern } from './Query'
 import { emitCommandError, emitCommandOutputFlags } from './CommandUtils'
 import CommandParams from './CommandParams'
 
 type QueryTermId = string;
 
-function verbForTerm(term: Tuple) {
+export function extractVerbForTerm(term: Tuple) {
 
-    const verb = term.getValue('verb');
+    if (term.hasValue('verb')) {
+        return {
+            verb: term.getValue('verb'),
+            termInput: term.removeAttr('verb')
+        }
+    }
 
-    if (verb && builtinVerbs[verb])
-        return verb;
+    for (const attr of term.attrs()) {
+        if (builtinVerbs[attr]) {
+            return {
+                verb: attr,
+                termInput: term.removeAttr(attr)
+            }
+        }
+    }
 
-    return 'get';
+    return {
+        verb: 'get',
+        termInput: term
+    }
 }
 
-export function runQuery(cxt: QueryContext, query: Query, overallOutput: Stream) {
+export function runQuery(scope: QueryContext, query: Query, overallInput: Pipe) {
 
-    const inputPipes = new Map<QueryTermId, Pipe>();
-    const outputPipes = new Map<QueryTermId, Pipe>();
+    const overallOutput = new Pipe('runQuery');
 
     interface Step {
         input: Pipe
@@ -34,7 +46,6 @@ export function runQuery(cxt: QueryContext, query: Query, overallOutput: Stream)
         tuple: Tuple
         searchPattern: Tuple,
         flags: any
-        queryTerm: Tuple
     }
 
     const steps: Step[] = [];
@@ -42,24 +53,26 @@ export function runQuery(cxt: QueryContext, query: Query, overallOutput: Stream)
     // Initialize steps
     for (const term of query.body()) {
 
-        const verb = verbForTerm(term);
-        const input = new Pipe();
+        const { verb, termInput } = extractVerbForTerm(term);
+        const input = new Pipe('queryStepInput');
 
-        const localScope = cxt.newChild();
+        const localScope = scope.newChild();
         localScope.verb = verb;
         localScope.input = input;
 
         steps.push({
             input,
-            output: new Pipe(),
+            output: new Pipe('queryStepOutput - ' + term.stringify()),
             scope: localScope,
             flags: term.getOptional('flags', null),
             verb,
-            searchPattern: termToSearchPattern(term),
-            tuple: termToSearchPattern(term),
-            queryTerm: term,
+            searchPattern: termInput,
+            tuple: termInput,
         });
     }
+
+    if (steps.length === 0)
+        throw new Error("zero steps in runQuery..")
 
     // Hook up input pipes
     for (let stepIndex = 0; stepIndex < steps.length; stepIndex++) {
@@ -70,27 +83,22 @@ export function runQuery(cxt: QueryContext, query: Query, overallOutput: Stream)
         if (previousStep) {
             previousStep.output.sendTo(step.input);
         } else {
-            step.input.done();
+            overallInput.sendTo(step.input);
         }
     }
 
     // Handle the last output.
     if (steps.length > 0) {
-        steps[steps.length-1].output.sendTo({
-            next(t:Tuple) {
-                overallOutput.next(t);
-            },
-            done() {
-                overallOutput.done();
-                cxt.graph && cxt.graph.flushPendingChangeEvents();
-            }
-        });
+        const lastOutputPipe = steps[steps.length - 1].output;
+        lastOutputPipe.sendTo(overallOutput);
     }
 
     // Run everything
     for (const step of steps) {
         runSingleTerm(step);
     }
+
+    return overallOutput;
 }
 
 export function runSingleTerm(params: CommandParams) {
@@ -103,7 +111,7 @@ export function runSingleTerm(params: CommandParams) {
 
     } catch (err) {
         console.log(err.stack || err);
-        emitCommandError(params.output, "unhandled exception in runOneCommand: " + (err.stack || err));
+        emitCommandError(params.output, "unhandled exception in runSingleTerm: " + (err.stack || err));
         params.output.done();
     }
 }

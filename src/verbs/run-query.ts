@@ -7,6 +7,7 @@ import { emitCommandError } from '../CommandUtils'
 import { runQuery } from '../runQuery'
 import { toQuery } from '../coerce'
 import { joinNStreams_v2 } from '../StreamUtil'
+import Pipe, { newNullPipe } from '../Pipe'
 
 export default function runQueryCommand(params: CommandParams) {
 
@@ -35,7 +36,8 @@ export default function runQueryCommand(params: CommandParams) {
                 liveQuery.usedDynamicQueryDuringEval(scope, query);
             }
 
-            runQuery(scope, query, queryOut);
+            runQuery(scope, query, newNullPipe())
+            .sendTo(queryOut);
         },
         done() {
             allQueries.done();

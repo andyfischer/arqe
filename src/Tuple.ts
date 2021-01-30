@@ -1,6 +1,6 @@
 
-import TupleTag, { newSimpleTag, newTagFromObject, TagOptions,
-    tagToJson, jsonToTag, nativeValueToTag, isTag } from './TupleTag'
+import Tag, { newSimpleTag, newTagFromObject, TagOptions,
+    tagToJson, jsonToTag, nativeValueToTag, isTag } from './Tag'
 import TupleMatchHelper from './tuple/TupleMatchHelper'
 import TupleDerivedData from './tuple/TupleDerivedData'
 import { symValueType } from './internalSymbols'
@@ -11,17 +11,17 @@ export default class Tuple {
 
     _s: string
 
-    tags: TupleTag[] = []
+    tags: Tag[] = []
 
     _asMap?: TupleMap
     _derivedData?: TupleDerivedData
     _matchHelper?: TupleMatchHelper
-    _byIdentifier?: Map<string, TupleTag>
+    _byIdentifier?: Map<string, Tag>
     _queryDerivedData?: TupleQueryDerivedData
 
     [symValueType] = 'tuple'
 
-    constructor(tags: TupleTag[]) {
+    constructor(tags: Tag[]) {
         if (!Array.isArray(tags))
             throw new Error("expected 'tags' to be an Array");
 
@@ -55,6 +55,7 @@ export default class Tuple {
         return this.tags[0].attr;
     }
 
+
     asMap() {
         if (!this._asMap) {
             const newMap = new Map();
@@ -81,6 +82,13 @@ export default class Tuple {
     *tagsIt() {
         for (const tag of this.tags) {
             yield tag;
+        }
+    }
+
+    *attrs() {
+        for (const tag of this.tags) {
+            if (tag.attr)
+                yield tag.attr;
         }
     }
 
@@ -125,17 +133,21 @@ export default class Tuple {
                 yield t;
     }
 
-    remapTags(func: (tag:TupleTag) => TupleTag) {
+    remapTags(func: (tag: Tag) => Tag) {
         const tags = this.tags.map(func)
             .filter(tag => tag);
         return new Tuple(tags);
     }
 
-    filterTags(func: (tag:TupleTag) => boolean) {
+    filterTags(func: (tag: Tag) => boolean) {
         return new Tuple(this.tags.filter(func));
     }
 
-    modifyTagsList(func: (tags: TupleTag[]) => TupleTag[]) {
+    forEachTag(func: (tag: Tag) => void) {
+        this.tags.forEach(func)
+    }
+
+    modifyTagsList(func: (tags: Tag[]) => Tag[]) {
         const tags = func(this.tags);
         return new Tuple(tags);
     }
@@ -174,7 +186,7 @@ export default class Tuple {
         return true;
     }
 
-    overlapCheckSingleAttr(lhsTag: TupleTag, rhs: Tuple) {
+    overlapCheckSingleAttr(lhsTag: Tag, rhs: Tuple) {
         const rhsTag = rhs.getTag(lhsTag.attr);
         if (!rhsTag) {
             // No corresponding tag found on rhs.
@@ -223,7 +235,7 @@ export default class Tuple {
      Look at every attr used in this tuple, and returns true if subTuple has a
      definite value for each attr.
     */
-    checkDefiniteValuesProvidedBy(subTuple: Tuple) {
+    checkRequiredValuesProvidedBy(subTuple: Tuple) {
         for (const tag of this.tags) {
             if (tag.exprValue)
                 return false;
@@ -268,7 +280,7 @@ export default class Tuple {
         return this.asMap().has(attr) && !!this.asMap().get(attr).value;
     }
 
-    getTagObject(attr: string): TupleTag {
+    getTagObject(attr: string): Tag {
         return this.asMap().get(attr);
     }
 
@@ -290,6 +302,10 @@ export default class Tuple {
             throw new Error("not a fixed value: " + attr);
 
         return tag.value;
+    }
+
+    getIndex(index: number): Tag {
+        return this.tags[index] || null;
     }
 
     getVal(attr: string) {
@@ -333,7 +349,7 @@ export default class Tuple {
     }
 
     justAttrs(attrs: string[]) {
-        const out: TupleTag[] = [];
+        const out: Tag[] = [];
         for (const attr of attrs)
             out.push(this.getTag(attr));
         return new Tuple(out);
@@ -343,15 +359,23 @@ export default class Tuple {
         return this.filterTags(tag => !tag.hasValue());
     }
 
-    setValueAtIndex(index: number, value: any) {
-        const tags = this.tags.map(t => t);
-        tags[index] = tags[index].copy();
-        tags[index].value = value;
+    setVerb(attr: string) {
+        return this.setTagAtIndex(0, newSimpleTag(attr));
+    }
 
+    setTagAtIndex(index: number, tag: Tag) {
+        const tags = this.tags.map(t => t);
+        tags[index] = tag;
         return new Tuple(tags);
     }
 
-    setTag(tag: TupleTag) {
+    setValueAtIndex(index: number, value: any) {
+        const tags = this.tags.map(t => t);
+        tags[index] = tags[index].setValue(value);
+        return new Tuple(tags);
+    }
+
+    setTag(tag: Tag) {
         if (this.hasAttr(tag.attr)) {
             return this.remapTags(existing => {
                 if (existing.attr === tag.attr) {
@@ -382,7 +406,7 @@ export default class Tuple {
                     return null;
 
                 if (value === true)
-                    return tag.setValueless();
+                    return tag.dropValue();
 
                 return tag.setValue(value);
             }
@@ -395,28 +419,20 @@ export default class Tuple {
         return out;
     }
 
-    getTag(attr: string): TupleTag {
+    getTag(attr: string): Tag {
         return this.asMap().get(attr) || null;
     }
 
-    findTagIndex(attr: string) {
-        for (let i = 0; i < this.tags.length; i++)
-            if (this.tags[i].attr === attr)
-                return i;
-        return -1;
+    updateTagOfType(attr: string, update: (t: Tag) => Tag) {
+        return this.remapTags(tag => {
+            if (tag.attr === attr)
+                return update(tag);
+            return tag;
+        });
     }
 
-    updateTagOfType(attr: string, update: (t: TupleTag) => TupleTag) {
-        const index = this.findTagIndex(attr);
-        if (index === -1)
-            throw new Error('attr not found: ' + attr);
-        return this.updateTagAtIndex(index, update);
-    }
-
-    updateTagAtIndex(index: number, update: (t: TupleTag) => TupleTag) {
-        const tags = this.tags.map(t => t);
-        tags[index] = update(tags[index]);
-        return new Tuple(tags);
+    drop(attr: string) {
+        return new Tuple(this.tags.filter(tag => tag.attr !== attr));
     }
 
     removeAttr(typeName: string) {
@@ -442,19 +458,29 @@ export default class Tuple {
         });
     }
 
-
     addAttr(attr: string) {
         return this.addTag(newSimpleTag(attr));
     }
 
-    addTag(tag: TupleTag) {
+    addTag(tag: Tag) {
         if (!isTag(tag))
             throw new Error("not a valid tag: " + tag);
 
         return new Tuple(this.tags.concat([tag]));
     }
 
-    addTags(tags: TupleTag[]) {
+    copyTag(attr: string, tuple: Tuple) {
+        return this.addTag(tuple.getTag(attr));
+    }
+
+    copyTagOptional(attr: string, tuple: Tuple) {
+        if (tuple.hasAttr(attr)) {
+            return this.addTag(tuple.getTag(attr));
+        }
+        return this;
+    }
+
+    addTags(tags: Tag[]) {
         return new Tuple(this.tags.concat(tags));
     }
 
@@ -463,7 +489,7 @@ export default class Tuple {
     }
 
     addNewTag(opts: TagOptions) {
-        return this.addTag(new TupleTag(opts));
+        return this.addTag(new Tag(opts));
     }
 
     str() {
@@ -472,6 +498,10 @@ export default class Tuple {
 
     stringify() {
         return this.tags.map(tag => tag.stringify()).join(' ');
+    }
+
+    toJson() {
+        return tupleToJson(this);
     }
 
     isError() {
@@ -521,7 +551,7 @@ export function objectToTuple(object: { [k: string]: any }) {
     return new Tuple(tags);
 }
 
-export function newTuple(tags: TupleTag | TupleTag[]): Tuple {
+export function newTuple(tags: Tag | Tag[]): Tuple {
     if (!Array.isArray(tags))
         tags = [tags];
     return new Tuple(tags)
@@ -532,7 +562,9 @@ export function singleTagToTuple(attr: string, value: any) {
 }
 
 export function isTuple(val: any) {
-    return val && (val[symValueType] === 'tuple');
+    if (!val)
+        return false;
+    return val[symValueType] === 'tuple';
 }
 
 export function emptyTuple() {
@@ -594,7 +626,7 @@ export function jsonToTuple(obj: PatternJSON): Tuple {
     if ((obj as any)[symValueType] !== undefined)
         throw new Error("parseObjectToPattern called on native type: " + (obj as any)[symValueType])
 
-    let tags: TupleTag[] = [];
+    let tags: Tag[] = [];
 
     for (const attr in obj) {
         if (attr === 'exprValue')
@@ -624,7 +656,7 @@ export function nativeValueToTuple(obj: any): Tuple {
     if ((obj as any)[symValueType] !== undefined)
         throw new Error("parseObjectToPattern called on native type: " + (obj as any)[symValueType])
 
-    let tags: TupleTag[] = [];
+    let tags: Tag[] = [];
 
     for (const attr in obj) {
         if (attr === 'exprValue')
@@ -642,10 +674,10 @@ export function nativeValueToTuple(obj: any): Tuple {
     return newTuple(tags);
 }
 
-export function tupleToJson(pattern: Tuple): PatternJSON {
+export function tupleToJson(tuple: Tuple): PatternJSON {
     const out: PatternJSON = {}
 
-    for (const tag of pattern.tags) {
+    for (const tag of tuple.tags) {
         if (tag.attr) {
             out[tag.attr] = tagToJson(tag);
         } else {

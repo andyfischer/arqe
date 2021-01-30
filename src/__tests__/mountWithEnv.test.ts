@@ -1,16 +1,11 @@
 
 import Graph from "../Graph";
 import setupTableSetV2 from "../parseTableDefinition";
-import { run as _run } from './utils'
-
-let graph;
-const run = (str, opts?) => _run(graph, str, opts);
-
-beforeEach(() => {
-    graph = new Graph();
-});
+import { setupGraph } from './utils'
 
 it("can run a table mount function with an env value", () => {
+    const { run, graph } = setupGraph();
+
     graph.provide({
         'table-1 val': {
             'find someEnv(env)': (input, out) => {
@@ -20,5 +15,6 @@ it("can run a table mount function with an env value", () => {
         }
     });
 
-    expect(run('env someEnv/123 | get table-1 val')).toEqual(["table-1 val[found env value: 123]"]);
+    expect(run('env someEnv/123 | get table-1 val').stringifyBody())
+        .toEqual(["table-1 val[found env value: 123]"]);
 });

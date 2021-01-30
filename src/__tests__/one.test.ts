@@ -10,6 +10,6 @@ it("works as expected", () => {
     run('set a=2');
     run('set a=3');
 
-    expect(run('get a')).toEqual(['a/1','a/2','a/3']);
-    expect(run('get a | one')).toEqual(['a/1']);
+    expect(run('get a').stringifyBody()).toEqual(['a/1','a/2','a/3']);
+    expect(run('get a | one').stringifyBody()).toEqual(['a/1']);
 });

@@ -1,6 +1,6 @@
 
 import parseCommand from './parseCommand'
-import TupleTag, { newTag } from './TupleTag'
+import Tag, { newTag } from './Tag'
 
 export function appendTagInCommand(str: string, tag: string) {
     const parsed = parseCommand(str);
@@ -17,7 +17,7 @@ export function parseAsSet(str: string) {
     return command.tuple.tags;
 }
 
-export function normalizeExactTag(tags: TupleTag[]) {
+export function normalizeExactTag(tags: Tag[]) {
     const argStrs = tags.map(arg => arg.attr + '/' + arg.value)
     argStrs.sort();
     return argStrs.join(' ');

@@ -13,7 +13,7 @@ it('works correctly', () => {
             'find sq(subquery)': (i,o) => {
                 const { sq } = i.obj();
 
-                sq('get a | rename from=a to=b')
+                sq('get a | rename a b')
                 .then(rel => {
                     o.done(rel);
                 })
@@ -21,5 +21,5 @@ it('works correctly', () => {
         }
     });
 
-    expect(run('get b')).toEqual(['b/1']);
+    expect(run('get b').stringifyBody()).toEqual(['b/1']);
 });

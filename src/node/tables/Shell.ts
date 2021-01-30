@@ -1,8 +1,9 @@
 
-import { TableDefiner } from '..'
+import Tuple from '../../Tuple'
+import TableDefiner from '../../TableDefiner'
 import ChildProcess from 'child_process'
 
-export default (def: TableDefiner) =>
+export default (def: TableDefiner) => {
     def.provide('table required(shell cmd) cwd stdout stderr', {
         'find cmd': (input, out) => {
             const cmd = input.get('cmd');
@@ -44,4 +45,18 @@ export default (def: TableDefiner) =>
             }
         }
     })
+
+    def.provide('table required(shell cmd output) cwd stderr', {
+        'find sq(subquery)'(i: Tuple, o) {
+            const { sq } = i.obj();
+
+            sq(i.drop('sq').drop('output').addAttr('stdout'))
+            .then(rel => {
+                const joined = rel.columnArr('stdout').join('\n');
+
+                o.done({output: joined});
+            })
+        }
+    })
+}
 

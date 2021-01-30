@@ -1,6 +1,6 @@
 
 import parseTuple from './stringFormat/parseTuple'
-import TupleTag from './TupleTag'
+import Tag from './Tag'
 import Tuple, { isTuple, jsonToTuple } from './Tuple'
 
 export function tup(value: any) {
@@ -18,5 +18,5 @@ export function tup(value: any) {
 }
 
 export function newTag(attr: string, value: any) {
-    return new TupleTag({ attr, value });
+    return new Tag({ attr, value });
 }

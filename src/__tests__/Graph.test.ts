@@ -1,20 +1,18 @@
 import Graph from "../Graph"
-import { run } from './utils'
 import parseTuple from "../stringFormat/parseTuple";
 import Pipe from "../Pipe";
+import { setupGraph } from "./utils";
 
 it('get accepts a Tuple as input', () => {
-    const graph = new Graph({
+    const { run, graph } = setupGraph({
         provide: {
             'a b': 'memory'
         }
     });
 
-    graph.run('set a/1 b/1')
+    run('set a/1 b/1')
 
-    const out = new Pipe();
-    graph.get(parseTuple('a/$a b'), out);
-    expect(out.take().map(t => t.stringify())).toEqual([
+    expect(run('get a/$a b').stringifyBuffer()).toEqual([
         'a/$a b command-meta search-pattern',
         '[from $a] a/1 b/1'
     ]);
@@ -22,19 +20,23 @@ it('get accepts a Tuple as input', () => {
 
 describe('removeTables', () => {
     it('works', () => {
-        const graph = new Graph();
+        const { run, graph } = setupGraph({
+            provide: {
+                'a b': 'memory'
+            }
+        });
 
         const mounts = graph.provide({
             'a': 'memory'
         });
 
-        expect(run(graph, 'get a')).toEqual([]);
-        expect(run(graph, 'set a/1')).toEqual(["a/1"]);
+        expect(run('get a').stringifyBody()).toEqual([]);
+        expect(run('set a/1').stringifyBody()).toEqual(["a/1"]);
 
         graph.removeTables(mounts);
 
         expect(() => {
-            run(graph, 'get a');
+            run('get a').rel().rethrow();
         }).toThrow("No table found for pattern");
     });
 });

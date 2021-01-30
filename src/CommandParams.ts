@@ -8,7 +8,6 @@ import QueryContext from './QueryContext'
 export default interface CommandParams {
     verb: string
     scope: QueryContext
-    queryTerm: Tuple
     tuple: Tuple
     flags: CommandFlags
     input: Pipe

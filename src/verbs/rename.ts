@@ -8,29 +8,23 @@ export default function runQueryCommand(params: CommandParams) {
 
     const { tuple, input, output } = params;
 
-    if (!tuple.hasAttr("from")) {
-        emitCommandError(output, "missing required field: from");
+    if (tuple.tags.length < 2) {
+        emitCommandError(output, "expected two arguments");
         output.done();
         return;
     }
 
-    if (!tuple.hasAttr("to")) {
-        emitCommandError(output, "missing required field: to");
-        output.done();
-        return;
-    }
-
-    const from = tuple.getVal("from");
-    const to = tuple.getVal("to");
+    const from = tuple.getIndex(0);
+    const to = tuple.getIndex(1);
 
     input.sendTo({
         next(t: Tuple) {
-            const tag = t.getTag(from);
+            const tag = t.getTag(from.attr);
             if (!tag) {
                 output.next(t)
                 return;
             }
-            t = t.removeAttr(from).addTag(tag.setAttr(to));
+            t = t.removeAttr(from.attr).addTag(tag.setAttr(to.attr));
             output.next(t);
         },
         done() {

@@ -1,9 +1,9 @@
 
-import IDSource from '../utils/IDSource'
-import Tuple from '../Tuple'
-import Stream from '../Stream'
-import TableMount from '../TableMount'
-import { tupleToModification, modificationPatternToFilter } from '../TupleModification'
+import IDSource from './utils/IDSource'
+import Tuple from './Tuple'
+import Stream from './Stream'
+import TableMount from './TableMount'
+import { tupleToModification, modificationPatternToFilter } from './TupleModification'
 
 export default class InMemoryTable {
     name: string

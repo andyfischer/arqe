@@ -1,7 +1,7 @@
 
 import Tuple from './Tuple'
 import Stream from './Stream'
-import TupleTag from './TupleTag'
+import Tag from './Tag'
 import tagToString from './stringFormat/tagToString'
 
 export default function receiveToStringList(onDone: (s: string|string[]) => void): Stream {
@@ -18,7 +18,7 @@ export default function receiveToStringList(onDone: (s: string|string[]) => void
 
     function stringifyTuple(rel: Tuple) {
 
-        const tags = rel.tags.filter((tag: TupleTag) => {
+        const tags = rel.tags.filter((tag: Tag) => {
             // Maybe ignore tag from result
             if (searchPattern
                 && !outputExtended

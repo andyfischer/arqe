@@ -1,24 +1,56 @@
 
 import Tuple from './Tuple'
+import Tag from './Tag'
 import { TupleStreamCallback } from './TableMount'
 import QueryContext from './QueryContext'
 import Stream from './Stream'
-import { isUniqueTag, isEnvTag, isSubqueryTag } from './knownTags'
 import { QueryLike } from './coerce'
 import QueryEvalHelper from './QueryEvalHelper';
 import { randomHex } from './utils'
 import { emitCommandError } from './CommandUtils'
+import { VerbHandler } from './TableMount'
+import { runQuery } from './runQuery'
+import Pipe, { newPrefilledPipe } from './Pipe'
+import Query from './Query'
 
 const contextInputStream = 'context.inputStream'
 const contextEvalHelper = 'context.evalHelper'
 
+function translateQueryForAlias(input: Tuple, sourceQuery: Query) {
+    return sourceQuery.remapTuples((term:Tuple) => {
+        if (term.getVerb() === 'get') {
+            return term.remapTags((tag: Tag) => {
+                if (!tag.hasValue() && input.hasValue(tag.attr))
+                    return tag.setValue(input.getValue(tag.attr));
+
+                return tag;
+            });
+        } else {
+            return term;
+        }
+    });
+}
+
+function fitOutputToSchema(schema: Tuple, output: Tuple) {
+    return schema.remapTags((schemaTag: Tag) => {
+        if (schemaTag.isTupleValue())
+            schemaTag = schemaTag.dropValue();
+        const outputTag = output.getTag(schemaTag.attr);
+        if (outputTag && outputTag.hasValue())
+            return outputTag;
+
+        return schemaTag;
+    });
+}
+
 function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple) {
-    //console.log('getInjectTags.. ', mountPattern.stringify())
     const injectTags = [];
 
     mountPattern.tags.forEach(mountTag => {
         //console.log('looking at mount tag: ', mountTag.stringify())
-        if (isSubqueryTag(mountTag)) {
+        const verb = mountTag.getTupleVerb();
+
+        if (verb === 'subquery') {
             const func = (query: QueryLike, output?: Stream) => {
                 return cxt.graph.run(query, output);
             }
@@ -28,7 +60,7 @@ function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple)
             return;
         }
 
-        if (isEnvTag(mountTag)) {
+        if (verb === 'env') {
             const val = cxt.getEnv(mountTag.attr);
             injectTags.push(mountTag.setVal(val));
             // postStripTags.push(mountTag);
@@ -49,8 +81,13 @@ function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple)
             return;
         }
 
-        if (isUniqueTag(mountTag)) {
+        if (verb === 'unique') {
             injectTags.push(mountTag.setVal(randomHex(8)));
+            return;
+        }
+
+        if (mountTag.getTupleVerb() === 'scope') {
+            injectTags.push(mountTag.setVal(cxt));
             return;
         }
         
@@ -70,52 +107,63 @@ function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple)
 }
 
 export function callTableHandler(tableSchema: Tuple,
-                                   mountPattern: Tuple,
-                                   callback: TupleStreamCallback,
-                                   cxt: QueryContext,
-                                   input: Tuple,
-                                   out: Stream) {
-
-    /*
-    console.log('callTableHandlerV2', {
-        tableSchema: tableSchema.stringify(),
-        mountPattern: mountPattern.stringify(),
-        input: input.stringify()
-    });
-    */
+                                 handler: VerbHandler,
+                                 scope: QueryContext,
+                                 input: Tuple) {
 
     let handlerInput = input;
 
     // Insert any injected values that the mount pattern requests.
-    for (const injectTag of getInjectTags(mountPattern, cxt, input)) {
+    for (const injectTag of getInjectTags(handler.mountPattern, scope, input)) {
         handlerInput = handlerInput.setTag(injectTag);
     }
 
-    // Set up output stream
-    const filteredOut: Stream = {
-        next(t) {
-            // Only include attributes that were asked for
+    // Call the native callback
+    if (handler.nativeCallback) {
+
+        const callbackOut = new Pipe('callTableHandler nativeCallback output');
+
+        const out = callbackOut
+        .map((t:Tuple) => {
             if (!t.isCommandMeta())
-                t = t.filterTags(tag => input.hasAttr(tag.attr));
-            out.next(t);
-        },
-        done() {
+                //t = t.filterTags(tag => input.hasAttr(tag.attr));
+                t = fitOutputToSchema(handler.mount.schema, t);
+
+            return t;
+        }, 'filter native callback');
+
+        try {
+            const result: any = handler.nativeCallback(handlerInput, callbackOut);
+
+            if (result && result.then) {
+                result.catch(err => {
+                    emitCommandError(out, err);
+                    out.done();
+                });
+            }
+        } catch (err) {
+            emitCommandError(out, err);
             out.done();
         }
+
+        return out;
     }
 
-    // Call the native callback
-    try {
-        const result: any = callback(handlerInput, filteredOut);
+    if (handler.query) {
+        // Run the destination query instead
 
-        if (result && result.then) {
-            result.catch(err => {
-                emitCommandError(out, err);
-                out.done();
-            });
-        }
-    } catch (err) {
-        emitCommandError(out, err);
-        out.done();
+        // console.log('running sub query: ', handler.query.stringify())
+
+        const updatedQuery = translateQueryForAlias(handlerInput, handler.query);
+
+        const out = runQuery(scope.newChild(), updatedQuery, newPrefilledPipe([ ]))
+        .map(t => {
+            if (t.isCommandMeta())
+                return;
+
+            return fitOutputToSchema(handler.mount.schema, t);
+        }, 'query fitOutputToSchema');
+
+        return out;
     }
 }

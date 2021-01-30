@@ -2,11 +2,10 @@ import CommandExecutionParams from '../CommandParams'
 import Graph from '../Graph';
 import Tuple from '../Tuple';
 import Stream from '../Stream';
-import TupleTag from '../TupleTag';
+import Tag from '../Tag';
 import TableMount from '../TableMount';
 import findTablesForPattern from '../findTablesForPattern';
 import QueryContext from '../QueryContext';
-import { isUniqueTag } from '../knownTags'
 
 export function insertOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tuple, out: Stream) {
     const uniqueTag = findUniqueTag(tuple);
@@ -23,20 +22,19 @@ export function insertOnOneTable(cxt: QueryContext, table: TableMount, tuple: Tu
 
 function resolveExpressionValuesForInsert(graph: Graph, tuple: Tuple) {
 
-    for (let i=0; i < tuple.tags.length; i++) {
-        const tag = tuple.tags[i];
+    return tuple.remapTags(tag => {
         if (tag.exprValue && tag.exprValue[0] === 'unique') {
             const id = graph.takeNextUniqueIdForAttr(tag.attr);
-            tuple = tuple.updateTagAtIndex(i, tag => tag.setValue(id));
+            return tag.setValue(id);
         }
-    }
 
-    return tuple;
+        return tag
+    });
 }
 
 function findUniqueTag(tuple: Tuple) {
     for (const tag of tuple.tags)
-        if (isUniqueTag(tag))
+        if (tag.getTupleVerb() === 'unique')
             return tag;
     return null;
 }
@@ -57,7 +55,7 @@ export function insertPlanned(cxt: QueryContext, tuple: Tuple, out: Stream) {
 }
 
 export function toInitialization(rel: Tuple) {
-    return rel.remapTags((tag: TupleTag) => {
+    return rel.remapTags((tag: Tag) => {
         if (tag.exprValue && tag.exprValue[0] === 'set')
             return tag.setValue(tag.exprValue[1]);
         return tag;

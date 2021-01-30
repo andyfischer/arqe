@@ -8,7 +8,7 @@ import Tuple from '../Tuple'
 import TableMount from '../TableMount'
 import findTablesForPattern from '../findTablesForPattern'
 import { combineStreams } from '../StreamUtil'
-import TupleTag, { newTag } from '../TupleTag'
+import Tag, { newTag } from '../Tag'
 import { emitCommandError } from '../CommandUtils'
 import QueryContext from '../QueryContext'
 

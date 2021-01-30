@@ -1,7 +1,7 @@
 
 import CommandExecutionParams from '../CommandParams'
 import Tuple from '../Tuple';
-import TupleTag from '../TupleTag';
+import Tag from '../Tag';
 
 export default function runJustStep(params: CommandExecutionParams) {
     const { tuple, input, output } = params;
@@ -13,7 +13,7 @@ export default function runJustStep(params: CommandExecutionParams) {
                 return;
             }
 
-            const modified = t.remapTags((tag: TupleTag) => {
+            const modified = t.remapTags((tag: Tag) => {
                 if (tag.attr && tuple.hasAttr(tag.attr)) {
                     return tag;
                 } else {

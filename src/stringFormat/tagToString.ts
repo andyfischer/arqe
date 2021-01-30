@@ -1,4 +1,4 @@
-import TupleTag from '../TupleTag'
+import Tag from '../Tag'
 import { isTuple } from '../Tuple'
 import { symValueStringify } from "../internalSymbols"
 import exprToString from "./exprToString"
@@ -28,7 +28,7 @@ function valueToString(value: any): string {
     return '<native>'
 }
 
-export default function tagToString(tag: TupleTag) {
+export default function tagToString(tag: Tag) {
     if (tag.star && tag.identifier)
         return '$' + tag.identifier;
 

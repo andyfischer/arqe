@@ -1,8 +1,8 @@
 
 import fs from 'fs-extra'
-import TableDefiner from '../TableDefiner'
+import TableDefiner from '../../TableDefiner'
 import globLib from 'glob'
-import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
+import { unwrapTuple } from '../../tuple/UnwrapTupleCallback'
 
 async function callGlob(pattern: string, options): Promise<{filename: string}[]> {
     return new Promise((resolve, reject) => {

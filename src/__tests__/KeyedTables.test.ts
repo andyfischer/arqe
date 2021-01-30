@@ -32,8 +32,8 @@ it("picks the provider with available keys", () => {
 
     expect(findTablesWithKeyedAccess(graph, toTuple('a data'))).toEqual([aKeyTable]);
 
-    expect(run('get a=1 data')).toEqual(['a/1 data/a1']);
-    expect(run('get a data')).toEqual(['a/1 data/a1']);
-    expect(run('get b=2 data')).toEqual(['b/2 data/b2']);
-    expect(run('get a b | join a data')).toEqual(['a/1 b/2 data/a1']);
+    expect(run('get a=1 data').stringifyBody()).toEqual(['a/1 data/a1']);
+    expect(run('get a data').stringifyBody()).toEqual(['a/1 data/a1']);
+    expect(run('get b=2 data').stringifyBody()).toEqual(['b/2 data/b2']);
+    expect(run('get a b | join a data').stringifyBody()).toEqual(['a/1 b/2 data/a1']);
 });

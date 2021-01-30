@@ -1,8 +1,7 @@
 import QueryContext from '../QueryContext'
-import CommandExecutionParams from '../CommandParams'
+import CommandParams from '../CommandParams'
 
-
-export default function traceCommand(params: CommandExecutionParams) {
+export default function traceCommand(params: CommandParams) {
     const { scope } = params;
     scope.traceEnabled = true;
     params.output.done();

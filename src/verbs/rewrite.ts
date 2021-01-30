@@ -1,10 +1,10 @@
 import CommandExecutionParams from '../CommandParams'
 import QueryContext from '../QueryContext';
 import Tuple from '../Tuple'
-import TupleTag from '../TupleTag'
+import Tag from '../Tag'
 
 export function recursivelyReplaceFromTerms(template: Tuple, inputValue: Tuple) {
-    return template.remapTags((tag: TupleTag) => {
+    return template.remapTags((tag: Tag) => {
         if (tag.isTupleValue()) {
             if (tag.value.getVerb() === 'from') {
 
@@ -34,6 +34,10 @@ export function recursivelyReplaceFromTerms(template: Tuple, inputValue: Tuple) 
                 }
             }
 
+            if (tag.value.getVerb() === 'from-all') {
+                return tag.setValue(inputValue);
+            }
+
             return tag.remapValue(tupleValue => recursivelyReplaceFromTerms(tupleValue, inputValue));
         }
 
@@ -44,15 +48,9 @@ export function recursivelyReplaceFromTerms(template: Tuple, inputValue: Tuple) 
 export default function rewriteVerb(params: CommandExecutionParams) {
     const { tuple, input, output } = params;
 
-    input.sendTo({
-        next(t: Tuple) {
-            t = recursivelyReplaceFromTerms(tuple, t);
-            output.next(t);
-        },
-        done() {
-            output.done();
-        }
-    })
-
-    output.done();
+    input
+    .map((t: Tuple) => {
+        return recursivelyReplaceFromTerms(tuple, t);
+    }, 'recursivelyReplaceFromTerms')
+    .sendTo(output);
 }

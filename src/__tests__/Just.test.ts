@@ -1,29 +1,33 @@
 import { Graph } from ".."
-import { run } from "./utils";
-
-let graph: Graph;
-
-beforeEach(() => {
-    graph = new Graph({provide: {
-        'a b c': 'memory',
-        'a b': 'memory',
-    }});
-})
+import { setupGraph } from "./utils";
 
 it('strips attrs', () => {
-    run(graph, 'set a b c/1');
-    run(graph, 'set a b c/2');
-    run(graph, 'set a b c/3');
+    const { run } = setupGraph({
+        provide: {
+            'a b c': 'memory',
+            'a b': 'memory',
+        }
+    });
+
+    run('set a b c/1');
+    run('set a b c/2');
+    run('set a b c/3');
     
-    expect(run(graph, 'get a b c | just c')).toEqual(['c/1', 'c/2', 'c/3'])
-    expect(run(graph, 'get a b c | just b c')).toEqual(['b c/1', 'b c/2', 'b c/3'])
+    expect(run('get a b c | just c').stringifyBody()).toEqual(['c/1', 'c/2', 'c/3'])
+    expect(run('get a b c | just b c').stringifyBody()).toEqual(['b c/1', 'b c/2', 'b c/3'])
 })
 
 it(`doesn't include empty tuples`, () => {
+    const { run } = setupGraph({
+        provide: {
+            'a b c': 'memory',
+            'a b': 'memory',
+        }
+    });
 
-    run(graph, 'set a b/1 c/1');
-    run(graph, 'set a b/2');
+    run('set a b/1 c/1');
+    run('set a b/2');
     
-    expect(run(graph, 'get a b c?')).toEqual(['a b/1 c/1', 'a b/2']);
-    expect(run(graph, 'get a b c | just c')).toEqual(['c/1'])
+    expect(run('get a b c?').stringifyBody()).toEqual(['a b/1 c/1', 'a b/2']);
+    expect(run('get a b c | just c').stringifyBody()).toEqual(['c/1'])
 })

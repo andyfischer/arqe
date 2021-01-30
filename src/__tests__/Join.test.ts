@@ -16,7 +16,7 @@ it('join works', () => {
     run('set a b=3')
     run('set b=1 c')
     run('set b=4 c')
-    expect(run('get a b/$b | join b/$b c', { withHeaders: true })).toEqual([
+    expect(run('get a b/$b | join b/$b c').stringifyBuffer()).toEqual([
         'a b/$b c command-meta search-pattern',
         'a [from $b] b/1 c'
     ]);
@@ -38,7 +38,7 @@ it('double join works', () => {
     run('set b/4 c/1');
     run('set c/1 d/1')
     run('set c/1 d/2')
-    expect(run('get a b/$b | join b/$b c/$c | join c/$c d', { withHeaders: true })).toEqual(
+    expect(run('get a b/$b | join b/$b c/$c | join c/$c d').stringifyBuffer()).toEqual(
     [
         'a b/$b c/$c d command-meta search-pattern',
         'a [from $b] b/1 [from $c] c/1 d/1',
@@ -67,7 +67,7 @@ it(`knows how to join on a pattern that doesn't support total search`, () => {
         }
     });
 
-    expect(run('get a/$a | join n/$a squared')).toEqual([
+    expect(run('get a/$a | join n/$a squared').stringifyBody()).toEqual([
         '[from $a] a/1 [from $a] n/1 squared/1',
         '[from $a] a/2 [from $a] n/2 squared/4',
         '[from $a] a/3 [from $a] n/3 squared/9'
@@ -91,7 +91,7 @@ it(`supports join by attr`, () => {
         }
     });
 
-    expect(run('get a asqr | join asqr asqrsqr')).toEqual([
+    expect(run('get a asqr | join asqr asqrsqr').stringifyBody()).toEqual([
         'a/2 asqr/4 asqrsqr/16',
         'a/3 asqr/9 asqrsqr/81'
     ]);

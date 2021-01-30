@@ -1,3 +1,7 @@
 #! /usr/bin/env node
 
-require('../dist/node/startCli.js');
+require('../dist/node/startCli.js').default()
+.catch(err => {
+    process.exitCode = -1;
+    console.error(err.stack || err);
+})

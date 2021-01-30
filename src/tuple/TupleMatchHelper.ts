@@ -8,7 +8,7 @@
 */
 
 import Tuple from '../Tuple'
-import TupleTag from '../TupleTag'
+import Tag from '../Tag'
 
 function expressionMatches(expr: string[], subExpr: string[]) {
     if (expr.length !== subExpr.length)
@@ -25,7 +25,7 @@ function expressionMatches(expr: string[], subExpr: string[]) {
 export default class TupleMatchHelper {
     tuple: Tuple
     countsByAttr: { [attr: string]: { min: number, max?: number } } = {}
-    valueTagsByAttr: { [ attr: string]: TupleTag[] } = {}
+    valueTagsByAttr: { [ attr: string]: Tag[] } = {}
 
     constructor(tuple: Tuple) {
         this.tuple = tuple;
@@ -58,7 +58,7 @@ export default class TupleMatchHelper {
         Object.freeze(this);
     }
 
-    findMatchingFixedTag(valueTag: TupleTag, tags: TupleTag[]) {
+    findMatchingFixedTag(valueTag: Tag, tags: Tag[]) {
         if (valueTag.value) {
 
             for (const tag of tags) {

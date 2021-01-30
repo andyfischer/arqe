@@ -1,8 +1,8 @@
 
 import Tuple, { isTuple, nativeValueToTuple } from './Tuple'
-import TupleTag, { newSimpleTag, isTag } from './TupleTag'
-import Relation, { isRelation } from './Relation'
-import Query, { isQuery, queryFromOneTuple, queryFromTupleArray, relationAsQuery } from './Query'
+import Tag, { newSimpleTag, isTag } from './Tag'
+import Relation, { isRelation, newRelation } from './Relation'
+import Query, { isQuery } from './Query'
 import { symValueType } from './internalSymbols'
 import parseTuple from './stringFormat/parseTuple'
 import { parseQuery } from './stringFormat/parseQuery'
@@ -18,7 +18,7 @@ export function toTuple(val: TupleLike): Tuple {
         return val as Tuple;
 
     if (isTag(val))
-        return new Tuple([val as TupleTag]);
+        return new Tuple([val as Tag]);
 
     if (typeof val === 'string')
         return parseTuple(val);
@@ -68,16 +68,16 @@ export function toQuery(value: QueryLike): Query {
         return value as Query;
 
     if (isRelation(value))
-        return relationAsQuery(value as Relation);
+        return value as Query;
 
     if (typeof value === 'string')
         return parseQuery(value);
 
     if (isTuple(value))
-        return queryFromOneTuple(value as Tuple);
+        return newRelation([value as Tuple]);
 
     if (Array.isArray(value)) {
-        return queryFromTupleArray(value.map(toTuple));
+        return newRelation(value.map(toTuple));
     }
 
     const asStr = value.stringify ? value.stringify() : value.toString();

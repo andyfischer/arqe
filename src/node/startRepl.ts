@@ -3,14 +3,14 @@ import Repl from 'repl'
 import Path from 'path'
 import os from 'os'
 import Graph from '../Graph'
-import GraphRepl from '../GraphRepl'
+import GraphRepl, { ReplOptions } from '../GraphRepl'
 import debounce from '../utils/debounce'
 
-export default function startRepl(graph: Graph) {
+export default function startRepl(graph: Graph, opts: ReplOptions = {}) {
 
     let repl;
     let lastLineIsPrompt = false;
-    const graphRepl = new GraphRepl(graph);
+    const graphRepl = new GraphRepl(graph, opts);
 
     const actualConsoleLog = console.log;
     const delayedDisplayPrompt = debounce(100, () => displayPrompt());
@@ -30,7 +30,7 @@ export default function startRepl(graph: Graph) {
     }
 
     repl = Repl.start({
-        prompt: 'arqe~ ',
+        prompt: opts.customPrompt || 'arqe~ ',
         eval: line => graphRepl.eval(line, () => {
             displayPrompt()
         })

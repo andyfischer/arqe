@@ -6,9 +6,9 @@ it('supports direct access', () => {
 
     run('set memory key(a=1) value(c=101)');
     run('set memory key(a=2) value(c=202)');
-    expect(run('get memory key(a=1) value')).toEqual(['memory key(a/1) value(c/101)']);
-    expect(run('get memory key(a=2) value')).toEqual(['memory key(a/2) value(c/202)']);
-    expect(run('get memory key value')).toEqual([
+    expect(run('get memory key(a=1) value').stringifyBody()).toEqual(['memory key(a/1) value(c/101)']);
+    expect(run('get memory key(a=2) value').stringifyBody()).toEqual(['memory key(a/2) value(c/202)']);
+    expect(run('get memory key value').stringifyBody()).toEqual([
         'memory key(a/1) value(c/101)',
         'memory key(a/2) value(c/202)'
     ]);

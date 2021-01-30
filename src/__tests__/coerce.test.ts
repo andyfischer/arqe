@@ -1,4 +1,5 @@
 
+import { isTuple } from '../Tuple'
 import { toTuple, toQuery } from '../coerce'
 import { isQuery } from '../Query'
 
@@ -13,12 +14,12 @@ it('toTuple works when receiving raw tags', () => {
 it('toQuery works on strings', () => {
     const query = toQuery('get a b');
     expect(isQuery(query)).toBe(true);
-    expect(query.stringify()).toEqual('[Relation (a b verb/get query-term-id/1) ]');
+    expect(query.stringify()).toEqual('[(get a b)]');
 });
 
 it('toQuery is idempotent', () => {
     const query = toQuery(toQuery('get a b'));
-    expect(query.stringify()).toEqual('[Relation (a b verb/get query-term-id/1) ]');
+    expect(query.stringify()).toEqual('[(get a b)]');
 });
 
 it('toQuery works on lists', () => {
@@ -28,7 +29,7 @@ it('toQuery works on lists', () => {
         b: '2',
     }]);
 
-    expect(query.stringify()).toEqual('[Relation (verb/get a/1 b/2 query-term-id/1) ]');
+    expect(query.stringify()).toEqual('[(verb/get a/1 b/2)]');
 
     const query2 = toQuery([{
         verb: 'get',
@@ -40,7 +41,7 @@ it('toQuery works on lists', () => {
         c: '3',
     }]);
 
-    expect(query2.stringify()).toEqual('[Relation (verb/get a/1 b/2 query-term-id/1), (verb/join b/2 c/3 query-term-id/2) ]');
+    expect(query2.stringify()).toEqual('[(verb/get a/1 b/2), (verb/join b/2 c/3)]');
 });
 
 it('toTuple handles native values', () => {
@@ -60,4 +61,12 @@ it('toTuple treats null value as absent tag', () => {
     });
 
     expect(t.stringify()).toEqual("a");
+});
+
+it('isTuple works', () => {
+    const t = toTuple({});
+
+    expect(isTuple(t)).toEqual(true);
+    expect(isTuple("hi")).toEqual(false);
+    expect(isTuple(null)).toEqual(false);
 });

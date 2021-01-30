@@ -1,5 +1,5 @@
 import Tuple, { newTuple } from '../Tuple'
-import TupleTag, { newTagFromObject, TagOptions, FixedTag } from '../TupleTag'
+import Tag, { newTagFromObject, TagOptions } from '../Tag'
 import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_string, t_star,
     t_space, t_hash, t_newline, t_bar, t_slash,
     t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
@@ -8,7 +8,7 @@ import parseOneTag from './parseOneTag'
 import { tupleBidirectionalJsonTest } from '../SelfTest'
 
 interface InProgressQuery {
-    tags: TupleTag[]
+    tags: Tag[]
     flags: { [flag: string]: any }
 }
 

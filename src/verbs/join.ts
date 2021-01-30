@@ -1,7 +1,7 @@
 
 import CommandParams from '../CommandParams'
 import Tuple, { newTuple } from '../Tuple';
-import TupleTag, { newSimpleTag } from '../TupleTag';
+import Tag, { newSimpleTag } from '../Tag';
 import Stream from '../Stream';
 import { receiveToTupleList } from '../receiveUtils';
 import Relation from '../Relation';
@@ -25,13 +25,13 @@ interface JoinStrategy {
 class FoundIdentifier {
     str: string
     foundRelCount = 0
-    byRelIndex = new Map<number, TupleTag>()
+    byRelIndex = new Map<number, Tag>()
 
     constructor(str: string) {
         this.str = str;
     }
 
-    add(relIndex: number, tag: TupleTag) {
+    add(relIndex: number, tag: Tag) {
         this.foundRelCount++;
         this.byRelIndex.set(relIndex, tag);
     }
@@ -131,9 +131,10 @@ function isQuerySearchable(cxt: QueryContext, searchPattern: Tuple): Pipe {
         .setValue('verb', 'get')
         .setValue('get.scope', 'handlercheck');
 
-    const pipe = new Pipe();
+    const pipe = new Pipe('isQuerySearchable result');
 
-    cxt.graph.runCallback(abstractGet, (abstractResult) => {
+    cxt.graph.run(abstractGet)
+    .then((abstractResult: Relation) => {
         const searchable = !abstractResult.hasError();
         pipe.next(toTuple({searchable: searchable || null}));
         pipe.done();
@@ -144,7 +145,7 @@ function isQuerySearchable(cxt: QueryContext, searchPattern: Tuple): Pipe {
 
 function joinRhsSearchable(cxt: QueryContext, input: Pipe, searchPattern: Tuple, out: Stream) {
 
-    const searchPipe = new Pipe();
+    const searchPipe = new Pipe('joinRhsSearchable searchPipe');
     cxt.graph.run(searchPattern.setValue('verb','get'), searchPipe);
 
     input.whenDone(inputRel => {
@@ -187,8 +188,10 @@ function getJoinStrategy(lhsHeader: Tuple, rhsHeader: Tuple): JoinStrategy {
     if (strategy.pairs.length === 0)
         throw new Error(`No pair tags found to join, left = (${lhsHeader.stringify()}), right = (${rhsHeader.stringify()})`);
 
+    /*
     if (strategy.pairs.length >= 2)
         throw new Error(`Unsupported - multiple pair tags in join, left = (${lhsHeader.stringify()}), right = (${rhsHeader.stringify()})`);
+        */
 
     return strategy;
 }
@@ -225,7 +228,7 @@ function joinRhsNotSearchable(cxt: QueryContext, input: Pipe, searchPattern: Tup
     let [ inputHeader, incoming ] = input.split(2);
     inputHeader = inputHeader.filter(t => t.isCommandSearchPattern());
 
-    inputHeader.whenDone(rel => {
+    inputHeader.then(rel => {
         const lhsHeader = rel.tuples[0];
 
         if (!lhsHeader) {
@@ -276,7 +279,7 @@ export default function runJoinVerb(params: CommandParams) {
     const searchPattern = params.tuple;
 
     isQuerySearchable(scope, searchPattern)
-    .whenDone(res => {
+    .then(res => {
         if (res.bodyArr()[0].hasAttr('searchable')) {
             joinRhsSearchable(scope, input, searchPattern, output);
         } else {

@@ -9,7 +9,7 @@ beforeEach(() => {
 })
 
 it("throwing an exception in a handler registers as an error", () => {
-    const { run, graph, toRelation } = setupGraph();
+    const { run, graph } = setupGraph();
 
     graph.provide({
         'throws': {
@@ -19,7 +19,7 @@ it("throwing an exception in a handler registers as an error", () => {
         }
     });
 
-    const result = toRelation('get throws');
+    const result = run('get throws').rel();
     const error = result.firstError();
     expect(error.get('message')).toEqual('an error');
     expect(error.has('stack')).toBe(true);

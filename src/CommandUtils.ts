@@ -4,7 +4,7 @@ import QueryContext from './QueryContext'
 import { joinNStreams_v2 } from './StreamUtil'
 import Stream from './Stream'
 import Tuple, { newTuple, isTuple } from './Tuple'
-import { newTag, newSimpleTag } from './TupleTag'
+import { newTag, newSimpleTag } from './Tag'
 import { CommandFlags } from './Command'
 
 const errorTag  = newSimpleTag('error')

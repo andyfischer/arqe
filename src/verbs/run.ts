@@ -3,7 +3,7 @@ import CommandExecutionParams from '../CommandParams'
 import Graph from '../Graph';
 import Tuple from '../Tuple';
 import Stream from '../Stream';
-import TupleTag from '../TupleTag';
+import Tag from '../Tag';
 import TableMount from '../TableMount';
 import findTablesForPattern from '../findTablesForPattern';
 import QueryContext from '../QueryContext';

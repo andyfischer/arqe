@@ -1,16 +1,13 @@
 import TableMount from "../TableMount"
 import parseTuple from "../stringFormat/parseTuple";
-import { run } from './utils'
+import { setupGraph } from './utils'
 import { Graph } from "..";
 import { unwrapTuple } from "../tuple/UnwrapTupleCallback";
 
-let graph: Graph;
-
-beforeEach(() => {
-    graph = new Graph();
-})
 
 it('handles insert with (unique)', () => {
+    const { run, graph } = setupGraph();
+
     const table = new TableMount('test', parseTuple('t x y'));
 
     let nextUniqueX = 1;
@@ -30,17 +27,19 @@ it('handles insert with (unique)', () => {
 
     graph.addTable(table);
 
-    expect(run(graph, 'set t x(unique) y=one')).toEqual(['t x/1 y/one']);
+    expect(run('set t x(unique) y=one').stringifyBody()).toEqual(['t x/1 y/one']);
     expect(entriesByX).toEqual({ '1': 'one' });
 
-    run(graph, 'set t x(unique) y=two');
+    run('set t x(unique) y=two');
     expect(entriesByX).toEqual({ '1': 'one', '2': 'two' })
 
-    run(graph, 'set t x=5 y=five');
+    run('set t x=5 y=five');
     expect(entriesByX).toEqual({ '1': 'one', '2': 'two', '5': 'five' })
 })
 
 it('insert(unique) matches the correct attr', () => {
+    const { run, graph } = setupGraph();
+
     const table = new TableMount('test', parseTuple('t x y z'));
 
     const inserts = [];
@@ -55,12 +54,12 @@ it('insert(unique) matches the correct attr', () => {
 
     graph.addTable(table);
 
-    run(graph, 'set t x(unique) y=yone z=zone');
+    run('set t x(unique) y=yone z=zone');
     expect(inserts).toEqual([{
         xUnique: true, y: 'yone', z: 'zone'
     }]);
 
-    run(graph, 'set t x=xtwo y(unique) z=ztwo');
+    run('set t x=xtwo y(unique) z=ztwo');
     expect(inserts).toEqual([{
         xUnique: true, y: 'yone', z: 'zone'
     },{
@@ -69,6 +68,8 @@ it('insert(unique) matches the correct attr', () => {
 })
 
 it(`insert(unique) doesn't trigger if an input is missing`, () => {
+    const { run, graph } = setupGraph();
+
     const table = new TableMount('test', parseTuple('t(key) x(key) y'));
     graph.addTable(table);
 
@@ -77,8 +78,10 @@ it(`insert(unique) doesn't trigger if an input is missing`, () => {
     }));
 
     expect.assertions(1);
+
     try {
-        run(graph, 'set t x')
+        const result = run('set t x')
+        result.rel().rethrow();
     } catch (err) {
         expect(err.message).toEqual(`Table test doesn't support: insert t x`);
     }

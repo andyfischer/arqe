@@ -1,7 +1,6 @@
 
 import Tuple, { isTuple } from './Tuple'
-import TupleTag from './TupleTag'
-
+import Tag from './Tag'
 
 interface ExactTranslation {
     from: Tuple
@@ -87,7 +86,7 @@ export function expressionUpdatesExistingValue(expr: string[]) {
     return effects && effects.isUpdate;
 }
 
-function tagModifiesExistingRelations(tag: TupleTag) {
+function tagModifiesExistingRelations(tag: Tag) {
     const found = isTuple(tag.value) && getUpdateExpression(tag.value);
     if (found) 
         return true;
@@ -96,7 +95,7 @@ function tagModifiesExistingRelations(tag: TupleTag) {
 }
 
 export function modificationPatternToFilter(tuple: Tuple) {
-    return tuple.remapTags((tag: TupleTag) => {
+    return tuple.remapTags((tag: Tag) => {
         if (tag.attr === 'deleted')
             return null;
 

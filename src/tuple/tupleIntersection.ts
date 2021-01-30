@@ -1,8 +1,8 @@
 import Tuple from "../Tuple"
-import TupleTag from "../TupleTag"
+import Tag from "../Tag"
 
 export default function tupleIntersection(lhs: Tuple, rhs: Tuple) {
-    return lhs.remapTags((lhsTag: TupleTag) => {
+    return lhs.remapTags((lhsTag: Tag) => {
         if (lhsTag.doubleStar) {
             if (rhs.derivedData().hasDoubleStar)
                 return lhsTag;

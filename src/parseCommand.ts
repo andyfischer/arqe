@@ -1,14 +1,14 @@
 
 import Command from './Command'
 import Tuple, { newTuple } from './Tuple'
-import TupleTag from './TupleTag'
+import Tag from './Tag'
 import { lexStringToIterator, TokenIterator, TokenDef, t_plain_value, t_quoted_string, t_star,
     t_space, t_hash, t_newline, t_bar,
     t_integer, t_dash, t_line_comment } from './lexer'
 import parseOneTag from './stringFormat/parseOneTag'
 
 interface InProgressQuery {
-    tags: TupleTag[]
+    tags: Tag[]
     flags: { [flag: string]: any }
 }
 

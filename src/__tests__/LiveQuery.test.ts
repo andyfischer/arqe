@@ -2,14 +2,12 @@
 import Graph from '../Graph'
 import LiveQuery from '../LiveQuery'
 import Query from '../Query';
-import { run, preset, setupGraph } from './utils';
+import { preset, setupGraph } from './utils';
 import { receiveToRelationSync } from '../receiveUtils';
 import parseTuple from '../stringFormat/parseTuple'
 
-let graph: Graph;
-
-beforeEach(() => {
-    graph = new Graph({
+xit('triggers change events when a related query is modified', () => {
+    const { run, graph } = setupGraph({
         provide: {
             'a v': 'memory',
             'b v': 'memory',
@@ -17,9 +15,6 @@ beforeEach(() => {
             'a query': 'memory',
         }
     });
-});
-
-it('triggers change events when a related query is modified', () => {
     preset(graph, [
         'a v=123',
         'a v=456',
@@ -45,7 +40,7 @@ it('triggers change events when a related query is modified', () => {
     liveQuery.runSync();
     expect(changeEvents.length).toEqual(0);
 
-    run(graph, 'set a v=333');
+    run('set a v=333');
 
     expect(changeEvents.length).toEqual(1);
     changeEvents = [];
@@ -57,10 +52,10 @@ it('triggers change events when a related query is modified', () => {
         'b v/987'
     ]);
 
-    run(graph, 'set c v=123');
+    run('set c v=123');
     expect(changeEvents.length).toEqual(0);
 
-    run(graph, 'delete b v=789');
+    run('delete b v=789');
     expect(changeEvents.length).toEqual(1);
     changeEvents = []
 });
@@ -82,9 +77,14 @@ it("cleans up listeners on close", () => {
     expect(table.listeners.size).toEqual(0);
 });
 
-it("correctly listens on a run-query", () => {
-    run(graph, 'set b v=999');
-    run(graph, 'set a query(get b v)');
+xit("correctly listens on a run-query", () => {
+    const { graph, run } = setupGraph();
+    graph.provide({
+        'a b': 'memory'
+    });
+
+    run('set b v=999');
+    run('set a query(get b v)');
 
     const liveQuery = graph.newLiveQuery('run-query a query');
 
@@ -94,7 +94,7 @@ it("correctly listens on a run-query", () => {
 
     expect(latest.stringifyBody()).toEqual(`[b v/999]`);
 
-    run(graph, 'set b=1 v=888');
+    run('set b=1 v=888');
 
     expect(latest.stringifyBody()).toEqual(`[b v/999, b/1 v/888]`);
 });

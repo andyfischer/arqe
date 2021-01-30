@@ -10,12 +10,12 @@ it("browse works", () => {
         'b c': {}
     })
 
-    expect(run('browse b | just name schema')).toEqual([
+    expect(run('browse b | just name schema').stringifyBuffer()).toEqual([
         "name/AB schema(a b)",
         "name/BC schema(b c)"
     ])
     
-    expect(run('browse a | just name schema')).toEqual([
+    expect(run('browse a | just name schema').stringifyBuffer()).toEqual([
         "name/AB schema(a b)",
     ])
 

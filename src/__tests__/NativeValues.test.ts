@@ -21,7 +21,7 @@ it('toTuple takes an object with a native instance', () => {
 });
 
 it('can provide a native function from a table', () => {
-    const { graph, runv2 } = setupGraph();
+    const { graph, run } = setupGraph();
 
     graph.provide({
         callback: {
@@ -31,6 +31,6 @@ it('can provide a native function from a table', () => {
         }
     });
 
-    const result = runv2('get callback').one();
+    const result = run('get callback').one();
     expect(result.stringify()).toEqual('callback/<native>');
 });

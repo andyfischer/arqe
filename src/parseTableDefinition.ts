@@ -6,10 +6,11 @@ import Graph from "./Graph";
 import OutputStream from "./OutputStream";
 import Tuple from "./Tuple";
 import Stream from "./Stream";
-import { TupleLike } from './coerce'
-import InMemoryTable from './standardTables/InMemoryTable'
-import { toTuple, toQuery, QueryLike } from './coerce'
+import InMemoryTable from './InMemoryTable'
+import { toTuple, toQuery, QueryLike, TupleLike } from './coerce'
 import { isQuery } from './Query'
+import Pipe, { newNullPipe } from './Pipe'
+import { runQuery } from './runQuery'
 
 type TableCallback = (input: Tuple, out: OutputStream) => void | Promise<void>
 
@@ -40,31 +41,6 @@ function setupTableFromMixin(schema: Tuple, mixin: string) {
     return null;
 }
 
-function setupTableFromQuery(schema: Tuple, queryLike: QueryLike) {
-    const query = toQuery(queryLike);
-
-    const mount = new TableMount(null, schema);
-
-
-    mount.addHandler('get', null, (input, out) => {
-
-        // Execute the 'rewrite' query, using the incoming input.
-        // QueryContext needs scopes.
-        // Terms need symbol IDs for scope association. (already have this?)
-        // Support a '*' verb handler
-
-        // run the query, providing input via 'from' tags?
-        // XX lexical scoping?
-        // target table might have a custom mount pattern?
-        // late binding?
-        // just implement as pipe processing?
-        // use 'alias' or 'redirect' command?
-    });
-
-    //mount.addHandler('set', );
-
-    return mount;
-}
 
 export function setupTable(schemaLike: TupleLike, tableDef: SingleTableDefinition): TableMount {
 
@@ -75,8 +51,9 @@ export function setupTable(schemaLike: TupleLike, tableDef: SingleTableDefinitio
         if (foundMixin)
             return foundMixin;
 
-        const fromQuery = setupTableFromQuery(schema, tableDef)
-        return fromQuery;
+        const mount = new TableMount(null, schema);
+        mount.addQueryHandler('get', '', tableDef);
+        return mount;
     }
 
     const mount = new TableMount(tableDef.name, schema);
@@ -86,13 +63,24 @@ export function setupTable(schemaLike: TupleLike, tableDef: SingleTableDefinitio
         return mount;
     }
 
+    if (typeof tableDef === 'string') {
+        mount.addQueryHandler('find', toTuple([]), tableDef);
+        return mount;
+    }
+
     for (const commandStr in tableDef) {
         if (commandStr === 'name')
             continue;
 
         const command = parseCommand(commandStr);
-        const callback: TableCallback = tableDef[commandStr] as TableCallback;
-        mount.addHandler(command.verb, command.tuple, toTupleStreamCallback(callback));
+        const handlerDef = tableDef[commandStr];
+
+        if (typeof handlerDef === 'string' ) {
+            mount.addQueryHandler(command.verb, command.tuple, handlerDef);
+        } else {
+            const callback = handlerDef as TableCallback;
+            mount.addHandler(command.verb, command.tuple, toTupleStreamCallback(callback));
+        }
     }
 
     return mount;

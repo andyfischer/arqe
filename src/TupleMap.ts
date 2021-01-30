@@ -1,15 +1,15 @@
-import TupleTag, { newSimpleTag } from "./TupleTag";
+import Tag, { newSimpleTag } from "./Tag";
 import Tuple from "./Tuple";
 
 export default class TupleMap {
-    data: Map<string,TupleTag>
+    data: Map<string,Tag>
 
-    constructor(data: Map<string,TupleTag>) {
+    constructor(data: Map<string,Tag>) {
         this.data = data;
         Object.freeze(this.data);
     }
 
-    get(attr: string): TupleTag {
+    get(attr: string): Tag {
         return this.data.get(attr);
     }
 
@@ -19,7 +19,7 @@ export default class TupleMap {
     }
 
     setValue(attr: string, value: any) {
-        const newData: Map<string,TupleTag> = new Map();
+        const newData: Map<string,Tag> = new Map();
 
         // create clone
         for (const [k,v] of this.data.entries()) {
