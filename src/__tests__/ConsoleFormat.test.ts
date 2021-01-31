@@ -1,21 +1,28 @@
 import { consoleFormatRelation } from "../console/formatRelation";
 import { setupGraph } from "./utils";
-import parseTuple from '../stringFormat/parseTuple'
+import parseTuple from "../stringFormat/parseTuple";
 
-it("correctly formats a simple relation", () => {
+it("correctly formats relations", () => {
   const { run } = setupGraph({
     provide: {
       "a b": "val a/1 b/2"
     }
   });
 
-  expect(consoleFormatRelation(run("get a b").rel())).toMatchInlineSnapshot(`
+  expect(consoleFormatRelation(run("get a b | just a").rel()))
+    .toMatchInlineSnapshot(`
             Array [
-              "  a ┃ b",
-              "  ━━╋━━",
-              "  1 ┃ 2",
+              "  a/1",
             ]
       `);
+
+  expect(consoleFormatRelation(run("get a b").rel())).toMatchInlineSnapshot(`
+                        Array [
+                          "  a ┃ b",
+                          "  ━━╋━━",
+                          "  1 ┃ 2",
+                        ]
+            `);
 });
 
 it("correctly formats various values", () => {
@@ -32,11 +39,32 @@ it("correctly formats various values", () => {
   });
 
   expect(consoleFormatRelation(run("get val").rel())).toMatchInlineSnapshot(`
+                Array [
+                  "  val/true",
+                  "  val/false",
+                  "  val/1",
+                  "  val/string",
+                ]
+        `);
+});
+
+it("handles results with mixed schemas", () => {
+  const { run } = setupGraph({
+    provide: {
+      "a b": "val a=1 b=2",
+      "b c": "val b=2 c=3",
+      d: "val d=4"
+    }
+  });
+
+  expect(consoleFormatRelation(run("get a b | get b c | get d").rel()))
+    .toMatchInlineSnapshot(`
     Array [
-      "  val/true",
-      "  val/false",
-      "  val/1",
-      "  val/string",
+      "  a ┃ b ┃ c ┃ d",
+      "  ━━╋━━━╋━━━╋━━",
+      "  1 ┃ 2 ┃   ┃  ",
+      "    ┃ 2 ┃ 3 ┃  ",
+      "    ┃   ┃   ┃ 4",
     ]
   `);
 });
