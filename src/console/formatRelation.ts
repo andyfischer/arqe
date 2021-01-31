@@ -15,7 +15,7 @@ function isMultiColumn(rels: Tuple[]) {
     return false;
 }
 
-export function stringifyResult(rel: Relation): string[] {
+export function consoleFormatRelation(rel: Relation): string[] {
     const out = []
 
     const tuples = rel.bodyArr();
@@ -38,7 +38,7 @@ export default function printResult(rel: Relation) {
         return;
     }
 
-    for (const line of stringifyResult(rel))
+    for (const line of consoleFormatRelation(rel))
         console.log(line);
 }
 

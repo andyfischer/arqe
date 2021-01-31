@@ -6,7 +6,7 @@ it('parses optional attrs', () => {
     expect(pattern.tags[1].attr).toEqual('y');
     expect(pattern.tags[1].optional).toEqual(true);
     expect(tupleToJson(pattern)).toEqual({
-        x: true,
+        x: null,
         y: {
             optional: true
         }

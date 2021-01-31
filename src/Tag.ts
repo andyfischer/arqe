@@ -4,7 +4,7 @@ import { symValueType } from './internalSymbols'
 
 export interface TagOptions {
     attr?: string
-    value?: string | number | true | Tuple
+    value?: any
     exprValue?: string[]
     star?: boolean
     doubleStar?: boolean
@@ -27,20 +27,23 @@ export default class Tag {
 
     constructor(opts: TagOptions) {
         this.attr = opts.attr;
-        this.value = opts.value as any;
+
+        if (opts.value === undefined) {
+            this.value = null
+        } else {
+            this.value = opts.value as any;
+        }
+
         this.exprValue = opts.exprValue;
         this.star = opts.star;
         this.doubleStar = opts.doubleStar;
         this.starValue = opts.starValue;
         this.optional = opts.optional;
         this.identifier = opts.identifier;
-
-        if (opts.value === undefined || opts.value === true)
-            this.value = null;
     }
 
     hasValue() {
-        return !!this.value;
+        return this.value !== null;
     }
 
     hasIdentifier() {
@@ -48,8 +51,16 @@ export default class Tag {
     }
 
     valueToString() {
+
+        if (this.value === true)
+            return 'true';
+
+        if (this.value === false)
+            return 'false';
+
         if (this.value == null)
             return '';
+
         const s = '' + this.value;
 
         if (isTuple(this.value))
@@ -238,7 +249,7 @@ export function tagToJson(tag: Tag) {
         if (tag.starValue)
             details.match = "*";
 
-        if (tag.value) {
+        if (tag.hasValue()) {
             if (isTuple(tag.value)) {
                 details.tuple = tupleToJson(tag.value)
             } else {
@@ -255,20 +266,19 @@ export function tagToJson(tag: Tag) {
         return details;
     }
 
-    if (!tag.value) {
-        return true;
-    }
-
-    if (tag.value) {
+    if (tag.hasValue()) {
         return { value: tag.value }
+    } else {
+        return null;
     }
-
-    throw new Error('unhandled case in tagToJson: ' + tag.stringify());
 }
 
 export function nativeValueToTag(attr: string, jsonData: any): Tag {
     if (jsonData === true)
-        return newTagFromObject({attr});
+        return newTagFromObject({attr, value: true});
+
+    if (jsonData === false)
+        return newTagFromObject({attr, value: false});
     
     if (jsonData === null || jsonData === undefined)
         return newTagFromObject({attr});

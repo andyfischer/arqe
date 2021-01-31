@@ -108,7 +108,7 @@ function joinRelations(left: Relation, right: Relation, out: Stream) {
 
     // Emit header
     out.next(combineTuples([lhsHeader, rhsHeader])
-             .setVal('command-meta', true).setVal('search-pattern', true));
+             .addAttr('command-meta').addAttr('search-pattern'));
 
     const lhsIndexed = new Map();
 

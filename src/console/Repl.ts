@@ -1,12 +1,10 @@
 
-import Graph from './Graph'
-import Stream from './Stream'
-import { receiveToTupleList } from './receiveUtils'
-import printResult from './console/printResult'
-import Tuple from './Tuple'
-import { toQuery, QueryLike } from './coerce'
-import { queryToJson } from './Query'
-import Pipe, { EnablePipeTracing } from './Pipe'
+import Graph from '../Graph'
+import { receiveToTupleList } from '../receiveUtils'
+import printResult from './formatRelation'
+import Tuple from '../Tuple'
+import { toQuery, QueryLike } from '../coerce'
+import Pipe, { EnablePipeTracing } from '../Pipe'
 
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')

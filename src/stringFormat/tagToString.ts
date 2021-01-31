@@ -42,7 +42,7 @@ export default function tagToString(tag: Tag) {
         return tag.attr + '/$' + tag.identifier;
     }
 
-    if (tag.value) {
+    if (tag.hasValue()) {
 
         let s = '';
 

@@ -8,7 +8,6 @@ function circularTest(tuple: Tuple) {
     const backToTuple = objectToTuple(reparsedObject);
 
     expect(tuple.stringify()).toEqual(backToTuple.stringify());
-
 }
 
 it('works for attr-only tuples', () => {
