@@ -41,12 +41,6 @@ it("allows complicated patterns", () => {
         'all a/4 squared/16',
     ]);
 
-    /*
-    expect(run('get all a/3 squared').stringifyBody()).toEqual([
-        'all a/3 squared/9',
-    ]);
-    */
-
     expect(run('get alias b').stringifyBody()).toEqual(['alias b/123']);
 });
 
@@ -82,4 +76,18 @@ it("intermediate tables work with direct runQuery", () => {
         "alias b command-meta search-pattern",
         "alias b/123"
     ]);
+});
+
+it("errors are propogated for query based mounts", () => {
+    const { run } = setupGraph({
+        provide: {
+            'always-errors'(i,o) {
+                throw new Error("oops had an error")
+            },
+            'derived-from-always-errors': 'get always-errors'
+        }
+    });
+
+    expect(run('get always-errors').rel().errorsToErrorObject()).toEqual(new Error("oops had an error"));
+    expect(run('get derived-from-always-errors').rel().errorsToErrorObject()).toEqual(new Error("oops had an error"));
 });
