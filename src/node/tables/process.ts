@@ -1,7 +1,6 @@
 
 let os;
 
-
 export default {
     'process cwd': {
         'find': (input, out) => {

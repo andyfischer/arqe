@@ -1,10 +1,11 @@
 
 import * as lexer from './lexer'
+import Stream_ from './Stream'
+import Query_ from './Query'
 
 export { default as Graph } from './Graph'
 export { default as Tuple, newTuple, tupleToJson, jsonToTuple, isTuple } from './Tuple'
 export { default as Tag, newTag, tagToJson, jsonToTag } from './Tag'
-export { default as Stream } from './Stream'
 export { default as TableDefiner } from './TableDefiner'
 export * from './coerce'
 export * from './receiveUtils'
@@ -18,9 +19,11 @@ export { default as Relation, relationToJson, jsonToRelation } from './Relation'
 export { default as parseCommand } from './parseCommand'
 export { default as Command } from './Command'
 export { parseQuery } from './stringFormat/parseQuery'
-export { default as Query, queryToJson, jsonToQuery } from './Query'
+export { queryToJson, jsonToQuery } from './Query'
 export { default as IDSource } from './utils/IDSource'
 export { default as parseTuple } from './stringFormat/parseTuple'
 export { default as parseTableDefinition } from './parseTableDefinition'
 
 export { lexer }
+export type Stream = Stream_;
+export type Query = Query_;
