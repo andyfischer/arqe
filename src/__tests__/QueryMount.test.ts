@@ -91,3 +91,4 @@ it("errors are propogated for query based mounts", () => {
     expect(run('get always-errors').rel().errorsToErrorObject()).toEqual(new Error("oops had an error"));
     expect(run('get derived-from-always-errors').rel().errorsToErrorObject()).toEqual(new Error("oops had an error"));
 });
+
