@@ -2,7 +2,6 @@
 import * as lexer from './lexer'
 
 export { default as Graph } from './Graph'
-export { default as GraphLike } from './GraphLike'
 export { default as Tuple, newTuple, tupleToJson, jsonToTuple, isTuple } from './Tuple'
 export { default as Tag, newTag, tagToJson, jsonToTag } from './Tag'
 export { default as Stream } from './Stream'
