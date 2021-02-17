@@ -14,9 +14,11 @@ function trimEndline(str) {
 }
 
 class SlowResponseTimer {
+    startedAt = Date.now()
     timer: any
     queryLike: QueryLike
     outputPipe: Pipe
+    hasTriggered: boolean
 
     constructor(queryLike: QueryLike, outputPipe: Pipe) {
         this.queryLike = queryLike;
@@ -25,6 +27,7 @@ class SlowResponseTimer {
     }
 
     afterDelay() {
+        this.hasTriggered = true;
         console.log(`Slow query (${this.queryLike}), still running after 2 seconds`);
         if (EnablePipeTracing) {
             console.log('Trace:')
@@ -34,7 +37,10 @@ class SlowResponseTimer {
         }
     }
 
-    cancel() {
+    queryFinished() {
+        if (this.hasTriggered) {
+            console.log(`Slow query (${this.queryLike}), has finished (${(Date.now() - this.startedAt) / 1000} seconds)`);
+        }
         clearTimeout(this.timer);
         this.timer = null;
     }
@@ -69,8 +75,7 @@ export default class GraphRepl {
         outputPipe
         .then(rel => {
 
-            slowResponseTimer.cancel();
-
+            slowResponseTimer.queryFinished();
             printResult(rel);
             onDone();
         })
