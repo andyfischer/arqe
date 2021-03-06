@@ -3,7 +3,7 @@ import Repl from 'repl'
 import Path from 'path'
 import os from 'os'
 import Graph from '../Graph'
-import GraphRepl, { ReplOptions } from '../GraphRepl'
+import GraphRepl, { ReplOptions } from '../console/Repl'
 import debounce from '../utils/debounce'
 
 export default function startRepl(graph: Graph, opts: ReplOptions = {}) {

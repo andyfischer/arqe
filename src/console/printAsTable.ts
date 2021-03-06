@@ -112,11 +112,9 @@ export default function printAsTable(patterns: Tuple[]): string[] {
     for (const tuple of patterns) {
         const outputEls = [];
         for (const column of columns.values()) {
-            if (tuple.hasAttr(column.title)) {
-                const tag = tuple.getTag(column.title);
-                const str = tag ? tag.valueToString() : '';
-                outputEls.push(column.format(str));
-            }
+            const tag = tuple.getTag(column.title);
+            const str = tag ? tag.valueToString() : '';
+            outputEls.push(column.format(str));
         }
         outputLines.push(outputEls.join(` ${vertLineChar} `));
     }

@@ -3,7 +3,6 @@ import WebSocket from '../../platform/ws'
 import EventEmitter from 'events'
 import Stream from '../../Stream'
 import IDSource from '../../utils/IDSource'
-import GraphLike from '../../GraphLike'
 import { receiveToTupleList, fallbackReceiver } from '../../receiveUtils'
 import parseTuple from '../../stringFormat/parseTuple'
 import { toQuery, QueryLike } from '../../coerce'
@@ -50,7 +49,7 @@ function tryToConnect(url: string): Promise<ConnectResult> {
     });
 }
 
-export default class ClientConnection implements GraphLike {
+export default class ClientConnection {
     url: string
     ws: WebSocket
     requestId: IDSource = new IDSource()

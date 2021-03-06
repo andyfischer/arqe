@@ -1,12 +1,10 @@
 
-import Graph from './Graph'
-import Stream from './Stream'
-import { receiveToTupleList } from './receiveUtils'
-import printResult from './console/printResult'
-import Tuple from './Tuple'
-import { toQuery, QueryLike } from './coerce'
-import { queryToJson } from './Query'
-import Pipe, { EnablePipeTracing } from './Pipe'
+import Graph from '../Graph'
+import { receiveToTupleList } from '../receiveUtils'
+import printResult from './formatRelation'
+import Tuple from '../Tuple'
+import { toQuery, QueryLike } from '../coerce'
+import Pipe, { EnablePipeTracing } from '../Pipe'
 
 function trimEndline(str) {
     if (str.length > 0 && str[str.length-1] === '\n')
@@ -16,9 +14,11 @@ function trimEndline(str) {
 }
 
 class SlowResponseTimer {
+    startedAt = Date.now()
     timer: any
     queryLike: QueryLike
     outputPipe: Pipe
+    hasTriggered: boolean
 
     constructor(queryLike: QueryLike, outputPipe: Pipe) {
         this.queryLike = queryLike;
@@ -27,6 +27,7 @@ class SlowResponseTimer {
     }
 
     afterDelay() {
+        this.hasTriggered = true;
         console.log(`Slow query (${this.queryLike}), still running after 2 seconds`);
         if (EnablePipeTracing) {
             console.log('Trace:')
@@ -36,7 +37,10 @@ class SlowResponseTimer {
         }
     }
 
-    cancel() {
+    queryFinished() {
+        if (this.hasTriggered) {
+            console.log(`Slow query (${this.queryLike}), has finished (${(Date.now() - this.startedAt) / 1000} seconds)`);
+        }
         clearTimeout(this.timer);
         this.timer = null;
     }
@@ -71,8 +75,7 @@ export default class GraphRepl {
         outputPipe
         .then(rel => {
 
-            slowResponseTimer.cancel();
-
+            slowResponseTimer.queryFinished();
             printResult(rel);
             onDone();
         })

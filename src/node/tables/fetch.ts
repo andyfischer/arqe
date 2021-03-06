@@ -1,5 +1,5 @@
 
-module.exports = def => {
+export default def => {
     def.provide('fetch url output', {
         async 'find url sq(subquery)'(i,o) {
             const { sq, url } = i.obj();

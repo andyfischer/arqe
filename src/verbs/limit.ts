@@ -2,9 +2,7 @@
 import CommandExecutionParams from '../CommandParams'
 import { objectToTuple } from '../Tuple'
 import Pipe, { joinPipes } from '../Pipe'
-import QueryContext from '../QueryContext';
 import { emitCommandError } from '../CommandUtils'
-
 
 export default function limitCommand(params: CommandExecutionParams) {
     const { tuple, input, output, scope } = params;

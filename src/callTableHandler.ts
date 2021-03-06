@@ -158,8 +158,12 @@ export function callTableHandler(tableSchema: Tuple,
 
         const out = runQuery(scope.newChild(), updatedQuery, newPrefilledPipe([ ]))
         .map(t => {
-            if (t.isCommandMeta())
+            if (t.isCommandMeta()) {
+                if (t.isError())
+                    return t;
+
                 return;
+            }
 
             return fitOutputToSchema(handler.mount.schema, t);
         }, 'query fitOutputToSchema');

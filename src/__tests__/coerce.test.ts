@@ -60,7 +60,7 @@ it('toTuple treats null value as absent tag', () => {
         c: null
     });
 
-    expect(t.stringify()).toEqual("a");
+    expect(t.stringify()).toEqual("a/true b/false");
 });
 
 it('isTuple works', () => {

@@ -403,9 +403,6 @@ export default class Tuple {
             if (tag.attr === attr) {
                 found = true;
                 if (value === null)
-                    return null;
-
-                if (value === true)
                     return tag.dropValue();
 
                 return tag.setValue(value);
@@ -640,11 +637,6 @@ export function jsonToTuple(obj: PatternJSON): Tuple {
         }
 
         const jsonData = obj[attr];
-
-        if (jsonData === false || jsonData === null) {
-            continue;
-        }
-
         tags.push(jsonToTag(attr, jsonData));
     }
 
@@ -664,7 +656,7 @@ export function nativeValueToTuple(obj: any): Tuple {
 
         const jsonData = obj[attr];
 
-        if (jsonData === false || jsonData === null) {
+        if (jsonData === null) {
             continue;
         }
 
