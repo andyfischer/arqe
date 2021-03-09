@@ -22,7 +22,7 @@ export function findTablesWithKeyedAccess(graph: Graph, pattern: Tuple): TableMo
     let tables: TableMount[] = [];
     
     // A table can be used for a pattern IF:
-    //  - The pattern has EVERY attribute that is a 'key' attribute on the table.
+    //  - The pattern has EVERY attribute that is a required attribute on the table.
     //  - The pattern does not have any attributes that aren't on the table.
     //
     // The pattern might or might not have attributes that are non-key attributes on the table.
@@ -30,8 +30,7 @@ export function findTablesWithKeyedAccess(graph: Graph, pattern: Tuple): TableMo
     for (const table of graph.tables()) {
         //console.log('looking at', table.schema.stringify())
         if (!table.requiredKeys) {
-            // TODO: this is an internal error
-            //console.log('  no required keys?')
+            throw new Error("table has no .requiredKeys?")
             continue;
         }
 
@@ -49,8 +48,6 @@ export function findTablesWithKeyedAccess(graph: Graph, pattern: Tuple): TableMo
 
         tables.push(table);
     }
-
-    //console.log('first step', tables)
 
     return tables;
 }
@@ -72,7 +69,6 @@ export default function *findTablesForPattern(graph: Graph, pattern: Tuple): Ite
 
     if (keyedAccess.length > 0) {
         for (const table of keyedAccess) {
-            //const partitionedTuple = tupleIntersection(pattern, table.schema)
             yield [table, pattern];
         }
         return;

@@ -681,12 +681,15 @@ export function tupleToJson(tuple: Tuple): PatternJSON {
     return out;
 }
 
-const s_tupleAbstract: Tuple = newTuple([newSimpleTag('abstract')]);
+let s_tupleAbstract: Tuple;
 
 export function remapTags(t: Tuple, callback: (tag:Tag) => Tag | null): Tuple {
     return newTuple(t.tags.map(callback).filter(tag => tag));
 }
 export function abstractHoles(tuple: Tuple) {
+    if (!s_tupleAbstract)
+         s_tupleAbstract = newTuple([newSimpleTag('abstract')]);
+
     return remapTags(tuple, tag => {
         if (!tag.hasValue())
             return tag.setValue(s_tupleAbstract);
