@@ -4,7 +4,7 @@ import { Query, toQuery, QueryLike, queryToJson, jsonToQuery,
     tagToJson, jsonToTag
 } from '..'
 
-import { queryBidirectionalJsonTest, tupleBidirectionalJsonTest } from '../SelfTest'
+import { queryBidirectionalJsonTest, tupleBidirectionalJsonTest } from '../test/SelfTest'
 
 const tupleStringSamples = [
     "a b",

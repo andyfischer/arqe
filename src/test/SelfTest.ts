@@ -1,7 +1,7 @@
 
-import { toQuery, QueryLike, toTuple, TupleLike } from './coerce'
-import { jsonToQuery, queryToJson } from './Query'
-import { jsonToTuple, tupleToJson } from './Tuple'
+import { toQuery, QueryLike, toTuple, TupleLike } from '../coerce'
+import { jsonToQuery, queryToJson } from '../Query'
+import { jsonToTuple, tupleToJson } from '../Tuple'
 
 export function queryBidirectionalJsonTest(queryLike: QueryLike) {
     const query = toQuery(queryLike);

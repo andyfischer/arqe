@@ -5,7 +5,7 @@ import { lexStringToIterator, TokenIterator, Token, TokenDef, t_ident, t_quoted_
     t_dot, t_question, t_integer, t_dash, t_dollar, t_lbracket, t_rbracket,
     t_lparen, t_rparen } from '../lexer'
 import parseOneTag from './parseOneTag'
-import { tupleBidirectionalJsonTest } from '../SelfTest'
+import { tupleBidirectionalJsonTest } from '../test/SelfTest'
 
 interface InProgressQuery {
     tags: Tag[]

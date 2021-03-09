@@ -5,7 +5,7 @@ import { parseOneCommand } from '../parseCommand'
 import Query from '../Query'
 import Relation from '../Relation'
 import Tuple from '../Tuple'
-import { queryBidirectionalJsonTest } from '../SelfTest'
+import { queryBidirectionalJsonTest } from '../test/SelfTest'
 import { parseTupleTokens } from './parseTuple'
 
 function lookaheadPastNewlinesFor(it: TokenIterator, match: TokenDef) {

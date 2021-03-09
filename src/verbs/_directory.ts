@@ -53,3 +53,4 @@ export const builtinVerbs: { [name: string]: VerbCallback } = {
     env: (params) => envCommand(params),
     browse: (params) => browseCommand(params),
 }
+
