@@ -4,7 +4,7 @@ import QueryContext from './QueryContext'
 import Stream from './Stream'
 import Tuple from './Tuple'
 import Pipe from './Pipe'
-import { builtinVerbs } from './everyVerb'
+import { builtinVerbs } from './verbs/_directory'
 import { emitCommandError, emitCommandOutputFlags } from './CommandUtils'
 import CommandParams from './CommandParams'
 

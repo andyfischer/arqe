@@ -104,7 +104,6 @@ interface Listener {
     type: 'queryFixed' | 'dynamic'
 }
 
-
 export default class TableMount {
     mountId: MountId
     name: string

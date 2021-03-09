@@ -11,7 +11,7 @@ import { TupleLike, toTuple } from './coerce'
 import Relation, { relationToJson } from './Relation'
 import { RelationLike, toRelation } from './coerce'
 import { isRelation } from './Relation'
-import { builtinVerbs } from './everyVerb'
+import { builtinVerbs } from './verbs/_directory'
 
 type Query = Relation;
 
