@@ -9,7 +9,7 @@ import QueryEvalHelper from './QueryEvalHelper';
 import { randomHex } from './utils'
 import { emitCommandError } from './CommandUtils'
 import { VerbHandler } from './TableMount'
-import { runQuery } from './runQuery'
+import { runQuery } from './query/runQuery'
 import Pipe, { newPrefilledPipe } from './Pipe'
 import Query from './Query'
 

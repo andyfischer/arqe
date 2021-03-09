@@ -10,7 +10,6 @@ import InMemoryTable from './InMemoryTable'
 import { toTuple, toQuery, QueryLike, TupleLike } from './coerce'
 import { isQuery } from './Query'
 import Pipe, { newNullPipe } from './Pipe'
-import { runQuery } from './runQuery'
 
 type TableCallback = (input: Tuple, out: OutputStream) => void | Promise<void>
 

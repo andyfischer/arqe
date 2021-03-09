@@ -1,6 +1,7 @@
 
 import Query from './Query'
-import { runQuery, extractVerbForTerm } from './runQuery'
+import { getPreparedTerm } from './query/prepareQuery'
+import { runQuery } from './query/runQuery'
 import Graph from './Graph'
 import { MountId } from './TableMount'
 import Tuple from './Tuple';
@@ -39,8 +40,8 @@ export default class LiveQuery {
     }
 
     *partitionsByTerm(cxt: QueryContext, term: Tuple) {
-        const { verb, termInput } = extractVerbForTerm(term);
-        yield* findTablesForPattern(cxt.graph, termInput);
+        const { params } = getPreparedTerm(term);
+        yield* findTablesForPattern(cxt.graph, params);
     }
 
     addFixedListeners() {

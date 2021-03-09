@@ -1,5 +1,5 @@
 
-import { runQuery } from '../runQuery'
+import { runQuery } from '../query/runQuery'
 import { parseQuery } from '../parser/parseQuery'
 import parseTuple from '../parser/parseTuple'
 import Pipe from '../Pipe'

@@ -1,7 +1,7 @@
 
 import { setupGraph } from "./utils"
 import Pipe, { newPrefilledPipe } from '../Pipe'
-import { runQuery } from '../runQuery'
+import { runQuery } from '../query/runQuery'
 import { toQuery } from '../coerce'
 import { receiveToTupleList } from "../receiveUtils";
 

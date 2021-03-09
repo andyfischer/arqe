@@ -2,7 +2,7 @@ import QueryContext from "./QueryContext";
 import Tuple from "./Tuple";
 import Stream from "./Stream";
 import CommandParams from "./CommandParams";
-import { runSingleTerm } from "./runQuery";
+import { runSingleTerm } from "./query/runQuery";
 
 export default class QueryEvalHelper {
     cxt: QueryContext
