@@ -1,7 +1,7 @@
 
-import Relation from '../../Relation'
-import { compileTupleModificationFunc } from '../TupleModificationFunc'
-import parseTuple from '../../stringFormat/parseTuple'
+import Relation from '../Relation'
+import { compileTupleModificationFunc } from '../compilation/TupleModificationFunc'
+import parseTuple from '../parser/parseTuple'
 
 function equalityTest(start: string, modifier, end: string) {
     const modified = modifier(parseTuple(start));

@@ -1,7 +1,7 @@
 
 import Graph from '../Graph'
 import Pipe from '../Pipe';
-import parseTuple from '../stringFormat/parseTuple';
+import parseTuple from '../parser/parseTuple';
 import { setupGraph } from "./utils";
 
 it('getting a pattern with identifiers returns tuples with identifiers', () => {

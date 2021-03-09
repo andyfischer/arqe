@@ -5,7 +5,7 @@ import Tag from './Tag'
 import { lexStringToIterator, TokenIterator, TokenDef, t_plain_value, t_quoted_string, t_star,
     t_space, t_hash, t_newline, t_bar,
     t_integer, t_dash, t_line_comment } from './lexer'
-import parseOneTag from './stringFormat/parseOneTag'
+import parseOneTag from './parser/parseOneTag'
 
 interface InProgressQuery {
     tags: Tag[]

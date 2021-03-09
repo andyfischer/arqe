@@ -1,6 +1,6 @@
 import { consoleFormatRelation } from "../console/formatRelation";
 import { setupGraph } from "./utils";
-import parseTuple from "../stringFormat/parseTuple";
+import parseTuple from "../parser/parseTuple";
 
 it("correctly formats relations", () => {
   const { run } = setupGraph({

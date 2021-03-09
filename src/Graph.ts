@@ -6,7 +6,7 @@ import IDSource from './utils/IDSource'
 import watchAndValidateCommand from './test/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
 import TableMount, { MountId } from './TableMount'
-import parseTuple from './stringFormat/parseTuple'
+import parseTuple from './parser/parseTuple'
 import Query from './Query'
 import { runQuery } from './runQuery'
 import LiveQuery from './LiveQuery'
@@ -168,6 +168,7 @@ export default class Graph {
         });
 
         const cxt = new QueryContext(this);
+
         runQuery(cxt, query, newNullPipe())
         .sendTo(receiver);
 
@@ -182,6 +183,7 @@ export default class Graph {
 
         const query = newRelation([pattern.setValue('verb', 'get')]);
         const cxt = new QueryContext(this);
+
         runQuery(cxt, query, newNullPipe())
         .sendTo(out);
     }
@@ -191,6 +193,7 @@ export default class Graph {
 
         const query = newRelation([pattern.setValue('verb', 'set')]);
         const cxt = new QueryContext(this);
+
         runQuery(cxt, query, newNullPipe())
         .sendTo(out);
     }

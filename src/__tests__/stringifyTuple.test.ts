@@ -1,6 +1,6 @@
 import { Tuple } from ".."
 import Relation from "../Relation";
-import parseTuple from "../stringFormat/parseTuple";
+import parseTuple from "../parser/parseTuple";
 
 it('works for simple tuples', () => {
     let t = new Tuple([]).addSimpleTag('test', '1');

@@ -18,10 +18,10 @@ export { default as printConsoleResult } from './console/formatRelation'
 export { default as Relation, relationToJson, jsonToRelation } from './Relation'
 export { default as parseCommand } from './parseCommand'
 export { default as Command } from './Command'
-export { parseQuery } from './stringFormat/parseQuery'
+export { parseQuery } from './parser/parseQuery'
 export { queryToJson, jsonToQuery } from './Query'
 export { default as IDSource } from './utils/IDSource'
-export { default as parseTuple } from './stringFormat/parseTuple'
+export { default as parseTuple } from './parser/parseTuple'
 export { default as parseTableDefinition } from './parseTableDefinition'
 
 export { lexer }

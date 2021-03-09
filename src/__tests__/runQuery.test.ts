@@ -1,7 +1,7 @@
 
 import { runQuery } from '../runQuery'
-import { parseQuery } from '../stringFormat/parseQuery'
-import parseTuple from '../stringFormat/parseTuple'
+import { parseQuery } from '../parser/parseQuery'
+import parseTuple from '../parser/parseTuple'
 import Pipe from '../Pipe'
 import QueryContext from '../QueryContext'
 import { setupGraph } from './utils'

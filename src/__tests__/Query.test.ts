@@ -3,7 +3,7 @@ import Graph from '../Graph'
 import Query from '../Query'
 import { runQuery } from '../runQuery'
 import Pipe from '../Pipe'
-import parseTuple from '../stringFormat/parseTuple'
+import parseTuple from '../parser/parseTuple'
 import QueryContext from '../QueryContext'
 
 let graph: Graph;

@@ -1,6 +1,6 @@
 
 import Tuple from './Tuple'
-import tagToString from './stringFormat/tagToString'
+import tagToString from './parser/tagToString'
 
 export default function stringifyRelationStream() {
     let searchPattern: Tuple = null;

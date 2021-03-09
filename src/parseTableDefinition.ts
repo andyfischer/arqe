@@ -1,6 +1,6 @@
 
 import TableMount, { TupleStreamCallback } from "./TableMount";
-import parseTuple from "./stringFormat/parseTuple";
+import parseTuple from "./parser/parseTuple";
 import parseCommand from "./parseCommand";
 import Graph from "./Graph";
 import OutputStream from "./OutputStream";

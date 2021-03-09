@@ -1,5 +1,5 @@
 import TableMount from "../TableMount"
-import parseTuple from "../stringFormat/parseTuple";
+import parseTuple from "../parser/parseTuple";
 import { setupGraph } from './utils'
 import { Graph } from "..";
 import { unwrapTuple } from "../tuple/UnwrapTupleCallback";

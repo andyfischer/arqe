@@ -1,5 +1,5 @@
-import parseTuple from "../../stringFormat/parseTuple";
-import tupleIntersection from "../tupleIntersection";
+import parseTuple from "../parser/parseTuple";
+import tupleIntersection from "../tuple/tupleIntersection";
 
 function testTupleIntersection(lhsStr: string, rhsStr: string) {
     const lhs = parseTuple(lhsStr);

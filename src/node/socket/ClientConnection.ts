@@ -4,7 +4,7 @@ import EventEmitter from 'events'
 import Stream from '../../Stream'
 import IDSource from '../../utils/IDSource'
 import { receiveToTupleList, fallbackReceiver } from '../../receiveUtils'
-import parseTuple from '../../stringFormat/parseTuple'
+import parseTuple from '../../parser/parseTuple'
 import { toQuery, QueryLike } from '../../coerce'
 
 export type RespondFunc = (msg: string) => void

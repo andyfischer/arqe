@@ -1,6 +1,6 @@
 
 import Tuple, { objectToTuple, tupleToJson } from '../Tuple'
-import parseTuple from '../stringFormat/parseTuple'
+import parseTuple from '../parser/parseTuple'
 
 function circularTest(tuple: Tuple) {
     const obj = tupleToJson(tuple);

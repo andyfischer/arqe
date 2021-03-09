@@ -1,6 +1,6 @@
 
 import Tag from '../Tag'
-import parseTuple from '../stringFormat/parseTuple'
+import parseTuple from '../parser/parseTuple'
 
 it("setValue removes star and valueExpr", () => {
     const tag = new Tag({ attr: 'a', starValue: true });

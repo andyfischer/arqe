@@ -1,4 +1,4 @@
-import parseTuple from "../stringFormat/parseTuple";
+import parseTuple from "../parser/parseTuple";
 import { Tuple } from "..";
 
 function propCheck(lhs: Tuple, rhs: Tuple) {

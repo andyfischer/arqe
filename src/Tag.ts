@@ -1,4 +1,4 @@
-import tagToString from './stringFormat/tagToString'
+import tagToString from './parser/tagToString'
 import Tuple, { isTuple, tupleToJson, jsonToTuple } from './Tuple'
 import { symValueType } from './internalSymbols'
 

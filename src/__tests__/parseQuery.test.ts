@@ -1,5 +1,5 @@
 
-import { parseQuery } from '../stringFormat/parseQuery'
+import { parseQuery } from '../parser/parseQuery'
 
 it(`parses a simple 'get'`, () => {
     const query = parseQuery('get a');

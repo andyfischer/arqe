@@ -4,7 +4,7 @@ import Tuple, { jsonToTuple, tupleToJson } from '../Tuple'
 import Stream from '../Stream'
 import { receiveToTupleList } from '../receiveUtils'
 import { loadLocalBootstrapConfigs } from '../node/loadBootstrapConfigs'
-import parseTuple from '../stringFormat/parseTuple'
+import parseTuple from '../parser/parseTuple'
 
 class FuzzTestSession {
     graph: Graph

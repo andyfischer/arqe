@@ -1,6 +1,6 @@
 
 import TableMount, { TupleStreamCallback } from './TableMount';
-import parseTuple from './stringFormat/parseTuple';
+import parseTuple from './parser/parseTuple';
 import { unwrapTuple } from './tuple/UnwrapTupleCallback';
 import parseCommand from './parseCommand';
 

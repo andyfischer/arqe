@@ -4,8 +4,8 @@ import Tag, { newSimpleTag, isTag } from './Tag'
 import Relation, { isRelation, newRelation } from './Relation'
 import Query, { isQuery } from './Query'
 import { symValueType } from './internalSymbols'
-import parseTuple from './stringFormat/parseTuple'
-import { parseQuery } from './stringFormat/parseQuery'
+import parseTuple from './parser/parseTuple'
+import { parseQuery } from './parser/parseQuery'
 
 export type TagLike = string | { [key: string]: any }
 export type TupleLike = Tuple | string  | { [key:string]: any } | TagLike[]

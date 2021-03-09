@@ -1,6 +1,6 @@
 
 import Pipe from '../Pipe'
-import parseTuple from '../stringFormat/parseTuple';
+import parseTuple from '../parser/parseTuple';
 import { emitSearchPatternMeta } from '../CommandUtils';
 
 it('emitSearchPatternMeta includes identifiers', () => {

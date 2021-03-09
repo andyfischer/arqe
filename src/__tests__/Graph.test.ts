@@ -1,5 +1,5 @@
 import Graph from "../Graph"
-import parseTuple from "../stringFormat/parseTuple";
+import parseTuple from "../parser/parseTuple";
 import Pipe from "../Pipe";
 import { setupGraph } from "./utils";
 

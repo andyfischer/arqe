@@ -1,6 +1,6 @@
 
 import Command, { commandToJson, jsonToCommand } from '../Command'
-import parseTuple from '../stringFormat/parseTuple';
+import parseTuple from '../parser/parseTuple';
 
 it('parses to and from json object', () => {
     const command = new Command('get', parseTuple('a b'), { flag: true });

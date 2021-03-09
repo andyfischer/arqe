@@ -3,7 +3,7 @@ import { unwrapTuple } from '../tuple/UnwrapTupleCallback'
 import QueryEvalHelper from '../QueryEvalHelper';
 import Pipe from '../Pipe';
 import Command from '../Command';
-import parseTuple from '../stringFormat/parseTuple';
+import parseTuple from '../parser/parseTuple';
 import Tuple from '../Tuple';
 import Stream from '../Stream';
 import IDSource from '../utils/IDSource';

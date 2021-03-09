@@ -4,7 +4,7 @@ import LiveQuery from '../LiveQuery'
 import Query from '../Query';
 import { preset, setupGraph } from './utils';
 import { receiveToRelationSync } from '../receiveUtils';
-import parseTuple from '../stringFormat/parseTuple'
+import parseTuple from '../parser/parseTuple'
 
 xit('triggers change events when a related query is modified', () => {
     const { run, graph } = setupGraph({

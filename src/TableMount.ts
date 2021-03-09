@@ -3,7 +3,7 @@ import Tuple, { newTuple, isTuple } from './Tuple'
 import { emitCommandError } from './CommandUtils'
 import Stream from './Stream'
 import Tag, { newTag, newSimpleTag } from './Tag';
-import parseTuple from './stringFormat/parseTuple';
+import parseTuple from './parser/parseTuple';
 import QueryContext from './QueryContext';
 import { streamPostRemoveAttr } from './StreamUtil';
 import AutoInitMap from "./utils/AutoInitMap"

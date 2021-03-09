@@ -1,5 +1,5 @@
 
-import parseTuple from './stringFormat/parseTuple'
+import parseTuple from './parser/parseTuple'
 import Tag from './Tag'
 import Tuple, { isTuple, jsonToTuple } from './Tuple'
 
