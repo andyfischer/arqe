@@ -35,13 +35,11 @@ export function getPreparedTerm(term: Tuple): PreparedTerm {
     }
 
     if (!verb) {
-        // See if any tags look like verbs.
-        for (const attr of term.attrs()) {
-            if (builtinVerbs[attr]) {
-                verb = attr;
-                params = params.removeAttr(attr);
-                break;
-            }
+        // See if the first tag looks like a verb.
+        const termVerb = term.getVerbOptional();
+        if (termVerb && builtinVerbs[termVerb]) {
+            verb = termVerb;
+            params = params.removeAttr(termVerb);
         }
     }
 

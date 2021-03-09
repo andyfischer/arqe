@@ -55,6 +55,11 @@ export default class Tuple {
         return this.tags[0].attr;
     }
 
+    getVerbOptional(): string | null {
+        if (this.tags.length === 0)
+            return null;
+        return this.tags[0].attr;
+    }
 
     asMap() {
         if (!this._asMap) {
