@@ -8,7 +8,7 @@ import TableMount from '../TableMount'
 import { callTableHandler } from '../callTableHandler'
 import findTablesForPattern from '../findTablesForPattern'
 import QueryContext from '../QueryContext'
-import { splitTuple, abstractHoles } from '../operations'
+import { splitTuple, abstractHoles } from '../Tuple'
 import CommandParams from '../CommandParams'
 import Pipe, { newPrefilledPipe, joinPipes } from '../Pipe'
 

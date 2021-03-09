@@ -11,7 +11,7 @@ import { emitCommandError, emitSearchPatternMeta, jsErrorToTuple, errorMessage }
 import QueryContext from '../QueryContext';
 import Pipe from '../Pipe'
 import { combineStreams } from '../StreamUtil'
-import { splitTuple } from '../operations'
+import { splitTuple } from '../Tuple'
 import { toTuple } from '../coerce'
 
 interface JoinStrategy {

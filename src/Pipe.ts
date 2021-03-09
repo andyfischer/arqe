@@ -3,7 +3,7 @@ import Tuple from './Tuple'
 import Stream from './Stream'
 import { receiveToRelation } from './receiveUtils'
 import Relation from './Relation'
-import { streamMap } from './operations'
+import { streamMap } from './Stream'
 import randomHex from './utils/randomHex'
 
 export const EnablePipeTracing = true;

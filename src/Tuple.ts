@@ -680,3 +680,31 @@ export function tupleToJson(tuple: Tuple): PatternJSON {
 
     return out;
 }
+
+const s_tupleAbstract: Tuple = newTuple([newSimpleTag('abstract')]);
+
+export function remapTags(t: Tuple, callback: (tag:Tag) => Tag | null): Tuple {
+    return newTuple(t.tags.map(callback).filter(tag => tag));
+}
+export function abstractHoles(tuple: Tuple) {
+    return remapTags(tuple, tag => {
+        if (!tag.hasValue())
+            return tag.setValue(s_tupleAbstract);
+        return tag;
+    });
+}
+
+export function splitTuple(t: Tuple, callback: (tag:Tag) => boolean): [Tuple,Tuple] {
+    const firstTags: Tag[] = [];
+    const secondTags: Tag[] = [];
+
+    for (const tag of t.tags) {
+        if (callback(tag))
+            firstTags.push(tag)
+        else
+            secondTags.push(tag);
+    }
+
+    return [ newTuple(firstTags), newTuple(secondTags) ]
+}
+

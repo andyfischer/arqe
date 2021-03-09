@@ -16,3 +16,16 @@ export function receiveToNull(): Stream {
         done() {  }
     }
 }
+
+export function streamMap(mapper: (Tuple) => Tuple|null, out: Stream) {
+    return {
+        next(t) {
+            const mapped = mapper(t);
+            if (mapped)
+                out.next(mapped);
+        },
+        done() {
+            out.done()
+        }
+    }
+}
