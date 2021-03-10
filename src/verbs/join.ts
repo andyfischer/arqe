@@ -13,6 +13,7 @@ import Pipe from '../Pipe'
 import { combineStreams } from '../StreamUtil'
 import { splitTuple } from '../Tuple'
 import { toTuple } from '../coerce'
+import { patternIsGettable } from './get'
 
 interface JoinStrategy {
     pairs: {
@@ -275,16 +276,12 @@ function joinRhsNotSearchable(cxt: QueryContext, input: Pipe, searchPattern: Tup
 export default function runJoinVerb(params: CommandParams) {
 
     const { input, output, scope } = params;
-    //let [ joinMeta, searchPattern ] = splitTuple(params.tuple, tag => tag.attr === 'join.piped_pattern');
     const searchPattern = params.tuple;
 
-    isQuerySearchable(scope, searchPattern)
-    .then(res => {
-        if (res.bodyArr()[0].hasAttr('searchable')) {
-            joinRhsSearchable(scope, input, searchPattern, output);
-        } else {
-            joinRhsNotSearchable(scope, input, searchPattern, output);
-        }
-    });
+    if (patternIsGettable(scope, searchPattern)) {
+        joinRhsSearchable(scope, input, searchPattern, output);
+    } else {
+        joinRhsNotSearchable(scope, input, searchPattern, output);
+    }
 }
 
