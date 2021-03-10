@@ -13,6 +13,7 @@ import Pipe from './Pipe'
 import { callTableHandler } from './callTableHandler'
 import Query from './Query'
 import { toTuple, TupleLike, toQuery, QueryLike } from './coerce'
+import TableMatcher from './TableMatcher'
 
 export type TupleStreamCallback = (input: Tuple, out: Stream) => void
 export type MountId = string;
@@ -107,9 +108,8 @@ interface Listener {
 export default class TableMount {
     mountId: MountId
     name: string
-    declaredSchema: Tuple
     schema: Tuple
-    requiredKeys: Tuple | null
+    matcher: TableMatcher
     watches = new Map();
 
     allEntries: VerbHandler[] = []
@@ -118,19 +118,16 @@ export default class TableMount {
     listeners = new Map<LiveQueryId, Listener>()
 
     constructor(name: string, schema: Tuple) {
+        this.matcher = new TableMatcher(schema);
         this.name = name;
         this.byVerb = new AutoInitMap(name => new HandlersByVerb() )
+        this.schema = schema;
 
-        const declaredSchema = schema;
-        let requiredKeys;
-
-        //console.log('declaredSchema = ', declaredSchema.stringify())
-        if (declaredSchema.getVerb() === 'table') {
-            //console.log('translating ', declaredSchema.stringify())
+        if (schema.getVerb() === 'table') {
             // Newer style syntax
             let translatedSchema = new Tuple([]);
 
-            for (const declaredTag of declaredSchema.tags) {
+            for (const declaredTag of schema.tags) {
                 if (declaredTag.attr === 'keys' || declaredTag.attr === 'required') {
                     for (const tag of declaredTag.value.tags) {
                         translatedSchema = translatedSchema.addTag(tag.setValue(newTuple([newSimpleTag('key')])));
@@ -149,22 +146,7 @@ export default class TableMount {
             schema = translatedSchema;
         }
 
-        const keyAttrs = schema.tags.filter(tag => (tag.isTupleValue() && tag.value.hasAttr('key')));
-        if (keyAttrs.length > 0) {
-            if (requiredKeys)
-                requiredKeys = requiredKeys.addTags(keyAttrs);
-            else
-                requiredKeys = new Tuple(keyAttrs);
-        }
-
-        // If required() is missing then all attrs are required.
-        if (!requiredKeys) {
-            requiredKeys = schema;
-        }
-
-        this.requiredKeys = requiredKeys;
         this.schema = schema;
-        this.declaredSchema = schema;
     }
 
     _addHandler(handler: VerbHandler) {
@@ -209,7 +191,7 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        callTableHandler(this.schema, handler, cxt, tuple)
+        callTableHandler(handler, cxt, tuple)
         .sendTo(out);
 
         return true;
@@ -220,7 +202,7 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        callTableHandler(this.schema, handler, cxt, tuple)
+        callTableHandler(handler, cxt, tuple)
         .sendTo(out);
 
         return true;

@@ -11,13 +11,6 @@ function patternHasAttrs(pattern: Tuple, requiredKeys: Tuple) {
     return true;
 }
 
-function patternHasValuesFor(pattern: Tuple, requiredKeys: Tuple) {
-    for (const tag of requiredKeys.tags)
-        if (!pattern.hasValue(tag.attr))
-            return false;
-    return true;
-}
-
 export function *findTablesMatchingRequiredFields(graph: Graph, pattern: Tuple) {
     let tables: TableMount[] = [];
     
@@ -28,25 +21,8 @@ export function *findTablesMatchingRequiredFields(graph: Graph, pattern: Tuple) 
     // The pattern can optionally have attributes that are non-required on the table.
     
     for (const table of graph.tables()) {
-        //console.log('looking at', table.schema.stringify())
-        if (!table.requiredKeys) {
-            throw new Error("table has no .requiredKeys?")
-            continue;
-        }
-
-        // Pattern must have the required table keys.
-        if (!patternHasAttrs(pattern, table.requiredKeys)) {
-            // console.log('  missing values: ' + table.requiredKeys.stringify())
-            continue;
-        }
-
-        // Table must have every required attribute on the pattern
-        const patternRequired = pattern.filterTags(tag => !tag.optional);
-        if (!patternHasAttrs(table.schema, patternRequired)) {
-            continue;
-        }
-
-        yield table;
+        if (table.matcher.matches(pattern))
+            yield table;
     }
 }
 

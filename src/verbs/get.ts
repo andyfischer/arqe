@@ -48,7 +48,7 @@ function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tupl
     const getHandler = table.findHandler(cxt, 'get', searchPattern);
     if (getHandler) {
         //const out = new Pipe();
-        return callTableHandler(table.schema, getHandler, cxt, searchPattern)
+        return callTableHandler(getHandler, cxt, searchPattern)
     }
 
     // Check if there is a 'find' handler
@@ -58,7 +58,7 @@ function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tupl
     const find = table.findHandler(cxt, 'find', searchPattern);
 
     if (find) {
-        return (callTableHandler(table.schema, find, cxt, searchPattern)
+        return (callTableHandler(find, cxt, searchPattern)
         .map((t:Tuple) => {
             return limitResultToSearchPattern(t, searchPattern);
         }, 'limitResultToSearchPattern'));

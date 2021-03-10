@@ -106,8 +106,7 @@ function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple)
     return injectTags;
 }
 
-export function callTableHandler(tableSchema: Tuple,
-                                 handler: VerbHandler,
+export function callTableHandler(handler: VerbHandler,
                                  scope: QueryContext,
                                  input: Tuple) {
 
