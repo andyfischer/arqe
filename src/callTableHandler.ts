@@ -1,14 +1,14 @@
 
 import Tuple from './Tuple'
 import Tag from './Tag'
-import { TupleStreamCallback } from './TableMount'
+import TableMount, { TupleStreamCallback } from './TableMount'
 import QueryContext from './QueryContext'
 import Stream from './Stream'
 import { QueryLike } from './coerce'
 import QueryEvalHelper from './QueryEvalHelper';
 import { randomHex } from './utils'
 import { emitCommandError } from './CommandUtils'
-import { VerbHandler } from './TableMount'
+import Handler from './Handler'
 import { runQuery } from './query/runQuery'
 import Pipe, { newPrefilledPipe } from './Pipe'
 import Query from './Query'
@@ -31,15 +31,17 @@ function translateQueryForAlias(input: Tuple, sourceQuery: Query) {
     });
 }
 
-function fitOutputToSchema(schema: Tuple, output: Tuple) {
-    return schema.remapTags((schemaTag: Tag) => {
-        if (schemaTag.isTupleValue())
-            schemaTag = schemaTag.dropValue();
-        const outputTag = output.getTag(schemaTag.attr);
+function fitOutputToTable(table: TableMount, output: Tuple) {
+    return table.schema.remapTags((templateTag: Tag) => {
+
+        if (templateTag.isTupleValue())
+            templateTag = templateTag.dropValue();
+
+        const outputTag = output.getTag(templateTag.attr);
         if (outputTag && outputTag.hasValue())
             return outputTag;
 
-        return schemaTag;
+        return templateTag;
     });
 }
 
@@ -106,7 +108,7 @@ function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple)
     return injectTags;
 }
 
-export function callTableHandler(handler: VerbHandler,
+export function callTableHandler(handler: Handler,
                                  scope: QueryContext,
                                  input: Tuple) {
 
@@ -126,7 +128,7 @@ export function callTableHandler(handler: VerbHandler,
         .map((t:Tuple) => {
             if (!t.isCommandMeta())
                 //t = t.filterTags(tag => input.hasAttr(tag.attr));
-                t = fitOutputToSchema(handler.mount.schema, t);
+                t = fitOutputToTable(handler.mount, t);
 
             return t;
         }, 'filter native callback');
@@ -164,8 +166,8 @@ export function callTableHandler(handler: VerbHandler,
                 return;
             }
 
-            return fitOutputToSchema(handler.mount.schema, t);
-        }, 'query fitOutputToSchema');
+            return fitOutputToTable(handler.mount, t);
+        }, 'query fitOutputToTable');
 
         return out;
     }

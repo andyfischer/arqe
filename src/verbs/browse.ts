@@ -10,7 +10,7 @@ export default function browseCommand(params: CommandExecutionParams) {
 
         let match = true;
         for (const tag of tuple.tags)
-            if (!mount.schema.hasAttr(tag.attr))
+            if (!mount.matcher.allowedAttrs.has(tag.attr))
                 match = false;
 
         if (!match)
@@ -19,7 +19,7 @@ export default function browseCommand(params: CommandExecutionParams) {
         const next = toTuple({
             id: mount.mountId,
             name: mount.name,
-            schema: mount.schema
+            schema: mount.declaredSchema
         });
 
         output.next(next);

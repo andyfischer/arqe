@@ -39,6 +39,8 @@ export default function *findTablesForPattern(graph: Graph, pattern: Tuple): Ite
     }
 
     for (const tableMount of findTablesMatchingRequiredFields(graph, pattern)) {
+        //pattern = tableMount.matcher.transformInputForStar(pattern);
+        //console.log(`found table ${tableMount.schema.stringify()}, pattern = `, pattern.stringify())
         yield [tableMount, pattern];
     }
 }

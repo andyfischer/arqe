@@ -59,7 +59,7 @@ export default class Graph {
 
     addTable(table: TableMount) {
         if (!table.name)
-            table.name = this.getDefaultTableName(table.schema);
+            table.name = this.getDefaultTableName(table.declaredSchema);
 
         if (!(table instanceof TableMount))
             throw new Error('addTable expected TableMount object');
@@ -201,7 +201,7 @@ export default class Graph {
     stringifyTables() {
         const out = ['['];
         for (const table of this.tablesByName.values())
-             out.push(`${table.mountId}: (${table.schema.stringify()})`);
+             out.push(`${table.mountId}: (${table.declaredSchema.stringify()})`);
 
         out.push(']');
         return out.join('\n');

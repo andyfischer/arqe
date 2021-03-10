@@ -1,5 +1,5 @@
 
-import Tuple, { newTuple, isTuple } from './Tuple'
+import Tuple, { newTuple, isTuple, newTupleWithVerb } from './Tuple'
 import { emitCommandError } from './CommandUtils'
 import Stream from './Stream'
 import Tag, { newTag, newSimpleTag } from './Tag';
@@ -14,6 +14,7 @@ import { callTableHandler } from './callTableHandler'
 import Query from './Query'
 import { toTuple, TupleLike, toQuery, QueryLike } from './coerce'
 import TableMatcher from './TableMatcher'
+import Handler from './Handler'
 
 export type TupleStreamCallback = (input: Tuple, out: Stream) => void
 export type MountId = string;
@@ -22,69 +23,11 @@ interface FindHandlerOptions {
     acceptAbstract?: boolean
 }
 
-function getTagsWithUnique(tuple: Tuple) {
-    return tuple.tags.filter((tag: Tag) => tag.getTupleVerb() === 'unique');
-}
-
-function getRequiredValueTags(tuple: Tuple) {
-    return tuple.tags.filter((tag: Tag) => {
-        const verb = tag.getTupleVerb();
-        if (verb === 'unique')
-            return false;
-        if (verb === 'env')
-            return false;
-        if (verb === 'subquery')
-            return false;
-        if (verb === 'scope')
-            return false;
-        return !!tag.attr;
-    })
-}
-
-export class VerbHandler {
-    verb: string
-    mountPattern: Tuple
-    requiredValues: Tag[]
-    tagsWithUnique: Tag[]
-    mount: TableMount
-
-    nativeCallback?: TupleStreamCallback
-    query?: Query
-
-    constructor(mount: TableMount, verb: string, mountPattern: Tuple) {
-        this.mount = mount;
-        this.verb = verb;
-        this.requiredValues = getRequiredValueTags(mountPattern);
-        this.tagsWithUnique = getTagsWithUnique(mountPattern);
-
-        if (mountPattern.hasAttr("evalHelper"))
-            throw new Error("internal error: CommandEntry should not see 'evalHelper' attr");
-
-        this.mountPattern = mountPattern;
-    }
-
-    setNativeCallback(nativeCallback: TupleStreamCallback) {
-        this.nativeCallback = nativeCallback;
-    }
-
-    setQuery(query: Query) {
-        this.query = query;
-    }
-
-    checkHasRequiredValues(input: Tuple) {
-        for (const tag of this.requiredValues) {
-            const matchingTag = input.getTag(tag.attr);
-            if (!matchingTag || !matchingTag.hasValue() || matchingTag.isAbstractValue())
-                return false;
-        }
-        return true;
-    }
-}
 
 class HandlersByVerb {
-    entries: VerbHandler[] = []
+    entries: Handler[] = []
 
-    add(entry: VerbHandler) {
+    add(entry: Handler) {
         this.entries.push(entry)
     }
 
@@ -105,51 +48,75 @@ interface Listener {
     type: 'queryFixed' | 'dynamic'
 }
 
+function resolveDeclaredSchema(declaredSchema: Tuple) {
+
+    let resolved = declaredSchema;
+
+    if (declaredSchema.getVerb() === 'table') {
+
+        resolved = newTuple([]);
+
+        for (const tag of declaredSchema.tags) {
+            if (tag.attr === 'table')
+                continue;
+
+            if (tag.attr === 'keys' || tag.attr === 'required') {
+                for (const keyTag of tag.value.tags) {
+                    resolved = resolved.addTag(newSimpleTag(keyTag.attr, newTupleWithVerb('key')));
+                }
+            } else if (tag.attr === 'values') {
+                for (const valueTag of tag.value.tags) {
+                    resolved = resolved.addTag(newSimpleTag(valueTag.attr, newTupleWithVerb('value')));
+                }
+
+            } else {
+                throw new Error('unexpected attr in table declaration: ' + tag.attr);
+            }
+        }
+    }
+
+    // If there are no required keys then they are all required.
+    let hasAnyKeys = false;
+    for (const tag of resolved.tags) {
+        if (tag.getTupleVerb() === 'key') {
+            hasAnyKeys = true;
+            break;
+        }
+    }
+
+    if (!hasAnyKeys) {
+        resolved = resolved.remapTags(tag => {
+            if (!tag.hasValue())
+                return tag.setValue(newTupleWithVerb('key'))
+            return tag;
+        });
+    }
+
+    return resolved;
+}
+
 export default class TableMount {
     mountId: MountId
     name: string
+    declaredSchema: Tuple
     schema: Tuple
     matcher: TableMatcher
     watches = new Map();
 
-    allEntries: VerbHandler[] = []
+    allEntries: Handler[] = []
     byVerb: AutoInitMap<string, HandlersByVerb>
 
     listeners = new Map<LiveQueryId, Listener>()
 
-    constructor(name: string, schema: Tuple) {
-        this.matcher = new TableMatcher(schema);
+    constructor(name: string, declaredSchema: Tuple) {
         this.name = name;
         this.byVerb = new AutoInitMap(name => new HandlersByVerb() )
-        this.schema = schema;
-
-        if (schema.getVerb() === 'table') {
-            // Newer style syntax
-            let translatedSchema = new Tuple([]);
-
-            for (const declaredTag of schema.tags) {
-                if (declaredTag.attr === 'keys' || declaredTag.attr === 'required') {
-                    for (const tag of declaredTag.value.tags) {
-                        translatedSchema = translatedSchema.addTag(tag.setValue(newTuple([newSimpleTag('key')])));
-                    }
-                } else if (declaredTag.attr === 'values') {
-                    for (const tag of declaredTag.value.tags) {
-                        translatedSchema = translatedSchema.addTag(tag);
-                    }
-                } else if (declaredTag.attr === 'table') {
-                    // ignore
-                } else {
-                    translatedSchema = translatedSchema.addTag(declaredTag);
-                }
-            }
-
-            schema = translatedSchema;
-        }
-
-        this.schema = schema;
+        this.declaredSchema = declaredSchema;
+        this.schema = resolveDeclaredSchema(declaredSchema);
+        this.matcher = new TableMatcher(this.schema);
     }
 
-    _addHandler(handler: VerbHandler) {
+    _addHandler(handler: Handler) {
         const commandMatches  = this.byVerb.get(handler.verb);
         commandMatches.add(handler);
         this.allEntries.push(handler);
@@ -168,14 +135,14 @@ export default class TableMount {
             throw new Error(`use 'find' instead of find-with`);
         }
 
-        const handler: VerbHandler = new VerbHandler(this, verb, tuple);
+        const handler: Handler = new Handler(this, verb, tuple);
         handler.setNativeCallback(callback);
         this._addHandler(handler);
     }
 
     addQueryHandler(verb: string, tupleLike: TupleLike, queryLike: QueryLike) {
         const tuple = toTuple(tupleLike);
-        const handler: VerbHandler = new VerbHandler(this, verb, tuple);
+        const handler: Handler = new Handler(this, verb, tuple);
         handler.setQuery(toQuery(queryLike));
         this._addHandler(handler);
     }
@@ -262,7 +229,7 @@ export default class TableMount {
         return null;
     }
 
-    handlerAllows(handler: VerbHandler, verb: string, input: Tuple, opts: FindHandlerOptions) {
+    handlerAllows(handler: Handler, verb: string, input: Tuple, opts: FindHandlerOptions) {
         if (!opts.acceptAbstract && input.hasAnyAbstractValues())
             return false;
 

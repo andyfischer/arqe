@@ -563,6 +563,10 @@ export function singleTagToTuple(attr: string, value: any) {
     return new Tuple([newSimpleTag(attr, value)])
 }
 
+export function newTupleWithVerb(verb: string) {
+    return new Tuple([newSimpleTag(verb)]);
+}
+
 export function isTuple(val: any) {
     if (!val)
         return false;

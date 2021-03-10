@@ -1,48 +1,28 @@
 
-import Tuple from './Tuple'
+import Tuple, { newTuple } from './Tuple'
 
 export default class TableMatcher {
-    declaredSchema: Tuple
+    schema: Tuple
+    matchesStar: boolean
+    starAttr: string
     requiredAttrs = new Map<string, true>()
     allowedAttrs = new Map<string, true>()
 
-    constructor(declaredSchema: Tuple) {
-        this.declaredSchema = declaredSchema;
+    constructor(schema: Tuple) {
+        this.schema = schema;
+        this.matchesStar = false;
 
-        if (declaredSchema.getVerb() === 'table') {
-            // Newer style with 'table' verb.
-            for (const tag of declaredSchema.tags) {
-                if (tag.attr === 'keys' || tag.attr === 'required') {
-                    for (const keyTag of tag.value.tags) {
-                        this.requiredAttrs.set(keyTag.attr, true);
-                        this.allowedAttrs.set(keyTag.attr, true);
-                    }
-                } else if (tag.attr === 'values') {
-                    // ???
-                } else if (tag.attr === 'table') {
-                    // ignore
-                } else {
-                    this.allowedAttrs.set(tag.attr, true);
-                }
+        for (const tag of schema.tags) {
+
+            if (tag.getTupleVerb() === 'key') {
+                this.requiredAttrs.set(tag.attr, true);
+                this.allowedAttrs.set(tag.attr, true);
+            } else if (tag.getTupleVerb() === 'star') {
+                this.matchesStar = true;
+                this.starAttr = tag.attr;
+            } else {
+                this.allowedAttrs.set(tag.attr, true);
             }
-
-
-        } else {
-            // Older style.
-            for (const tag of declaredSchema.tags) {
-                if (tag.getTupleVerb() === 'key') {
-                    this.requiredAttrs.set(tag.attr, true);
-                    this.allowedAttrs.set(tag.attr, true);
-                } else {
-                    this.allowedAttrs.set(tag.attr, true);
-                }
-            }
-        }
-
-        // If no tuples were explicitly marked required, then they are all required.
-
-        if (this.requiredAttrs.size === 0) {
-            this.requiredAttrs = this.allowedAttrs;
         }
     }
 
@@ -62,5 +42,23 @@ export default class TableMatcher {
         }
 
         return true;
+    }
+
+    transformInputForStar(input: Tuple): Tuple {
+        if (!this.matchesStar)
+            return input;
+
+        let starInput = newTuple([]);
+        input = input.filterTags(tag => {
+            if (this.allowedAttrs.get(tag.attr))
+                return true;
+
+            starInput = starInput.addTag(tag);
+            return false;
+        })
+
+        input = input.setValue(this.starAttr, starInput);
+
+        return input;
     }
 }
