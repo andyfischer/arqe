@@ -1,6 +1,6 @@
 
 import { setupGraph } from './utils'
-import { findTablesWithKeyedAccess } from '../findTablesForPattern'
+import { findTablesMatchingRequiredFields } from '../findTablesForPattern'
 import { toTuple } from '../coerce'
 
 it("picks the provider with available keys", () => {
@@ -24,13 +24,13 @@ it("picks the provider with available keys", () => {
         }
     });
 
-    const keyedTables = findTablesWithKeyedAccess(graph, toTuple('a=1 data'))
+    const keyedTables = Array.from(findTablesMatchingRequiredFields(graph, toTuple('a=1 data')));
     expect(keyedTables.length).toEqual(1)
     expect(keyedTables[0].schema.stringify()).toEqual('a(key) data')
 
     const aKeyTable = keyedTables[0];
 
-    expect(findTablesWithKeyedAccess(graph, toTuple('a data'))).toEqual([aKeyTable]);
+    expect(Array.from(findTablesMatchingRequiredFields(graph, toTuple('a data')))).toEqual([aKeyTable]);
 
     expect(run('get a=1 data').stringifyBody()).toEqual(['a/1 data/a1']);
     expect(run('get a data').stringifyBody()).toEqual(['a/1 data/a1']);

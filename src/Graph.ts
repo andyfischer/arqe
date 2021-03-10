@@ -1,7 +1,6 @@
 
 import Tuple, { jsonToTuple } from './Tuple'
 import Stream from './Stream'
-import { receiveToTupleList } from './receiveUtils'
 import IDSource from './utils/IDSource'
 import watchAndValidateCommand from './test/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
@@ -13,7 +12,7 @@ import LiveQuery from './LiveQuery'
 import QueryContext from './QueryContext'
 import { QueryLike, toQuery, TupleLike, toTuple } from './coerce'
 import parseTableDefinition, { TableSetDefinition } from './parseTableDefinition'
-import Relation, { newRelation } from './Relation'
+import Relation from './Relation'
 import Pipe, { newNullPipe } from './Pipe'
 import findTablesForPattern from './findTablesForPattern'
 import TableDefiner from './TableDefiner'
@@ -26,8 +25,6 @@ export interface GraphOptions {
 }
 
 export default class Graph {
-
-    options: GraphOptions
 
     nextUniquePerAttr: { [ typeName: string]: IDSource } = {};
 
@@ -45,7 +42,6 @@ export default class Graph {
     memoryTable = new MemoryTable()
 
     constructor(options: GraphOptions = {}) {
-        this.options = options;
         setupBuiltinTables(this);
 
         if (options.provide) {
@@ -148,8 +144,6 @@ export default class Graph {
 
         let pipe;
 
-        // console.log(`run(${queryLike}) calling runQuery`, output)
-
         const result = runQuery(cxt, query, newNullPipe())
 
         if (output)
@@ -158,44 +152,16 @@ export default class Graph {
         return result;
     }
 
-    runSync(queryLike: QueryLike): Tuple[] {
-        const query = toQuery(queryLike);
+    runSync(queryLike: QueryLike): Relation {
+        let result: Relation = null;
 
-        let rels: Tuple[] = null;
+        this.run(queryLike)
+        .then(rel => result = rel);
 
-        const receiver = receiveToTupleList(r => {
-            rels = r
-        });
+        if (result === null)
+            throw new Error("command didn't finish synchronously: " + toQuery(queryLike).stringify());
 
-        const cxt = new QueryContext(this);
-
-        runQuery(cxt, query, newNullPipe())
-        .sendTo(receiver);
-
-        if (rels === null)
-            throw new Error("command didn't finish synchronously: " + query.stringify());
-
-        return rels;
-    }
-
-    get(patternLike: TupleLike, out: Stream) {
-        const pattern = toTuple(patternLike);
-
-        const query = newRelation([pattern.setValue('verb', 'get')]);
-        const cxt = new QueryContext(this);
-
-        runQuery(cxt, query, newNullPipe())
-        .sendTo(out);
-    }
-
-    set(patternLike: TupleLike, out: Stream) {
-        let pattern = toTuple(patternLike);
-
-        const query = newRelation([pattern.setValue('verb', 'set')]);
-        const cxt = new QueryContext(this);
-
-        runQuery(cxt, query, newNullPipe())
-        .sendTo(out);
+        return result;
     }
 
     pushChangeEvent(liveQueryId: string) {

@@ -18,14 +18,14 @@ function patternHasValuesFor(pattern: Tuple, requiredKeys: Tuple) {
     return true;
 }
 
-export function findTablesWithKeyedAccess(graph: Graph, pattern: Tuple): TableMount[] {
+export function *findTablesMatchingRequiredFields(graph: Graph, pattern: Tuple) {
     let tables: TableMount[] = [];
     
-    // A table can be used for a pattern IF:
-    //  - The pattern has EVERY attribute that is a required attribute on the table.
-    //  - The pattern does not have any attributes that aren't on the table.
+    // A table can be used for a pattern IFF:
+    //  - The pattern has EVERY required table attribute.
+    //  - The pattern has NO attributes that are outside the table.
     //
-    // The pattern might or might not have attributes that are non-key attributes on the table.
+    // The pattern can optionally have attributes that are non-required on the table.
     
     for (const table of graph.tables()) {
         //console.log('looking at', table.schema.stringify())
@@ -46,10 +46,8 @@ export function findTablesWithKeyedAccess(graph: Graph, pattern: Tuple): TableMo
             continue;
         }
 
-        tables.push(table);
+        yield table;
     }
-
-    return tables;
 }
 
 export default function *findTablesForPattern(graph: Graph, pattern: Tuple): IterableIterator<[TableMount, Tuple]> {
@@ -64,13 +62,7 @@ export default function *findTablesForPattern(graph: Graph, pattern: Tuple): Ite
         return;
     }
 
-    // First look for a keyed access
-    const keyedAccess = findTablesWithKeyedAccess(graph, pattern);
-
-    if (keyedAccess.length > 0) {
-        for (const table of keyedAccess) {
-            yield [table, pattern];
-        }
-        return;
+    for (const tableMount of findTablesMatchingRequiredFields(graph, pattern)) {
+        yield [tableMount, pattern];
     }
 }

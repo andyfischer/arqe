@@ -21,33 +21,6 @@ export function receiveToTupleList(onDone: (rels: Tuple[]) => void): Stream {
     } as any as Stream;
 }
 
-export function receiveToTupleListPromise(): [ Stream, Promise<Tuple[]> ] {
-
-    let receiver;
-    const promise: Promise<Tuple[]> = new Promise((resolve, reject) => {
-        receiver = receiveToTupleList((rels: Tuple[]) => {
-            for (const rel of rels) {
-                if (rel.hasAttr('command-meta') && rel.hasAttr('error')) {
-                    reject(rel.stringify());
-                    return;
-                }
-            }
-
-            resolve(rels);
-        });
-    });
-
-    return [ receiver, promise ];
-}
-
-export async function runAsync(graph: Graph, command: string) {
-    const [ receiver, promise ] = receiveToTupleListPromise();
-    graph.run(command, receiver);
-    const rels: Tuple[] = (await promise)
-        .filter(rel => !rel.hasAttr("command-meta"));
-    return rels;
-}
-
 export function fallbackReceiver(query: Query): Stream {
     return {
         next(t: Tuple) {
@@ -69,61 +42,6 @@ export function receiveToRelation(onDone: (rel: Relation) => void) {
             onDone(new Relation(tuples));
         }
     }
-}
-
-interface SingleValueAccessor {
-    get: () => any
-    done: () => boolean
-}
-
-export function receiveToSingleValue(attrName: string): [SingleValueAccessor, Stream] {
-
-    let value = null;
-    let error = null;
-    let gotValue = false;
-
-    const accessor: SingleValueAccessor = {
-        get() {
-            if (gotValue) {
-                return value;
-            }
-
-            if (error)
-                throw error;
-
-            throw new Error("receiveToSingleValue - get() called before value was ready")
-        },
-        done() {
-            return error || gotValue;
-        }
-    }
-
-    const stream: Stream = {
-        next(t:Tuple) {
-            if (t.isCommandMeta())
-                return;
-
-            if (t.hasAttr(attrName)) {
-                if (gotValue) {
-                    if (!error) {
-                        error = new Error("receiveToSingleValue saw duplicate values")
-                    }
-                    
-                    return;
-                }
-
-                value = t.getVal(attrName);
-                gotValue = true;
-            }
-        },
-        done() {
-            if (!gotValue) {
-                error = new Error("receiveToSingleValue didn't receive the expected value")
-            }
-        }
-    }
-
-    return [ accessor, stream ]
 }
 
 export function receiveToRelationSync(): [Stream, () => Relation] {
@@ -189,18 +107,4 @@ export function receiveToRelationAsync(): [ Stream, Promise<Relation> ] {
     })
 
     return [ stream, promise ]
-}
-
-/*
-export async function getRelationAsync(query: QueryLike, run: (query: QueryLike, output: Stream) => void): Promise<Relation> {
-    const [ stream, promise ] = receiveToRelationAsync();
-    run(query, stream);
-    return await promise;
-}
-*/
-
-export async function asyncSubquery(run: (query: QueryLike, output: Stream) => void, query: QueryLike) {
-    const [ stream, promise ] = receiveToRelationAsync();
-    run(query, stream);
-    return await promise;
 }

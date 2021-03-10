@@ -118,7 +118,7 @@ function checkPatternRestringify(example: Tuple, out: Stream) {
 function runCheck(session: FuzzTestSession, queryStr: string, verifier: (session: FuzzTestSession, example: Tuple) => void) {
     const graph = session.graph;
 
-    for (const example of graph.runSync(queryStr)) {
+    for (const example of graph.runSync(queryStr).tuples) {
         if (example.isCommandMeta()) {
             if (example.isCommandError()) {
                 session.markFail(`Query returned error on ${queryStr}: ${example.stringify()}`);
@@ -152,7 +152,7 @@ function runCheck2(session: FuzzTestSession, queryStr, verifier: (example: Tuple
         }
     });
 
-    for (const example of graph.runSync(queryStr)) {
+    for (const example of graph.runSync(queryStr).tuples) {
         if (example.isCommandMeta()) {
             if (example.isCommandError()) {
                 session.markFail(`Query returned error on ${queryStr}: ${example.stringify()}`);
