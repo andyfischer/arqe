@@ -165,8 +165,14 @@ export default class Handler {
         return true;
     }
 
-    call(scope: QueryContext, input: Tuple) {
+    call(scope: QueryContext, input: Tuple): Pipe {
         let handlerInput = input;
+
+        // Pre modify input
+
+        // Wrap star inputs
+        //if (this.mount.matcher.matchesStar)
+        //    input = this.mount.matcher.transformInputForStar(input);
 
         // Insert any injected values that the mount pattern requests.
         for (const injectTag of getInjectTags(this.mountPattern, scope, input)) {
@@ -179,26 +185,20 @@ export default class Handler {
             const callbackOut = new Pipe('callTableHandler nativeCallback output');
 
             const out = callbackOut
-            .map((t:Tuple) => {
-                if (!t.isCommandMeta())
-                    //t = t.filterTags(tag => input.hasAttr(tag.attr));
-                    t = fitOutputToTable(this.mount, t);
-
-                return t;
-            }, 'filter native callback');
+            .map(t => this.postFixResult(t));
 
             try {
-                const result: any = this.nativeCallback(handlerInput, callbackOut);
+                const callbackResult: any = this.nativeCallback(handlerInput, callbackOut);
 
-                if (result && result.then) {
-                    result.catch(err => {
+                if (callbackResult && callbackResult.then) {
+                    callbackResult.catch(err => {
                         emitCommandError(out, err);
-                        out.done();
+                        callbackOut.done();
                     });
                 }
             } catch (err) {
                 emitCommandError(out, err);
-                out.done();
+                callbackOut.done();
             }
 
             return out;
@@ -212,18 +212,20 @@ export default class Handler {
             const updatedQuery = translateQueryForAlias(handlerInput, this.query);
 
             const out = runQuery(scope.newChild(), updatedQuery, newPrefilledPipe([ ]))
-            .map(t => {
-                if (t.isCommandMeta()) {
-                    if (t.isError())
-                        return t;
-
-                    return;
-                }
-
-                return fitOutputToTable(this.mount, t);
-            }, 'query fitOutputToTable');
+            .map(t => this.postFixResult(t));
 
             return out;
         }
+    }
+
+    postFixResult(t: Tuple) {
+        if (t.isCommandMeta()) {
+            if (t.isError())
+                return t;
+
+            return null;
+        }
+
+        return fitOutputToTable(this.mount, t);
     }
 }
