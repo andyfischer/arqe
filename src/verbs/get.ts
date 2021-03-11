@@ -4,7 +4,6 @@ import { newSimpleTag } from '../Tag'
 import Stream from '../Stream'
 import { emitSearchPatternMeta, asCommandMeta, tableNotFoundError, tableDoesntSupportOperation } from '../CommandUtils'
 import TableMount from '../TableMount'
-import { callTableHandler } from '../callTableHandler'
 import findTablesForPattern from '../findTablesForPattern'
 import QueryContext from '../QueryContext'
 import CommandParams from '../CommandParams'
@@ -48,7 +47,7 @@ function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tupl
     const getHandler = table.findHandler(cxt, 'get', searchPattern);
     if (getHandler) {
         //const out = new Pipe();
-        return callTableHandler(getHandler, cxt, searchPattern)
+        return getHandler.call(cxt, searchPattern)
     }
 
     // Check if there is a 'find' handler
@@ -58,7 +57,7 @@ function getOnOneTable(cxt: QueryContext, table: TableMount, searchPattern: Tupl
     const find = table.findHandler(cxt, 'find', searchPattern);
 
     if (find) {
-        return (callTableHandler(find, cxt, searchPattern)
+        return (find.call(cxt, searchPattern)
         .map((t:Tuple) => {
             return limitResultToSearchPattern(t, searchPattern);
         }, 'limitResultToSearchPattern'));

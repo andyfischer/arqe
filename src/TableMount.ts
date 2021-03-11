@@ -10,7 +10,6 @@ import AutoInitMap from "./utils/AutoInitMap"
 import { LiveQueryId } from './LiveQuery'
 import Relation from './Relation'
 import Pipe from './Pipe'
-import { callTableHandler } from './callTableHandler'
 import Query from './Query'
 import { toTuple, TupleLike, toQuery, QueryLike } from './coerce'
 import TableMatcher from './TableMatcher'
@@ -158,7 +157,7 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        callTableHandler(handler, cxt, tuple)
+        handler.call(cxt, tuple)
         .sendTo(out);
 
         return true;
@@ -169,7 +168,7 @@ export default class TableMount {
         if (!handler)
             return false;
 
-        callTableHandler(handler, cxt, tuple)
+        handler.call(cxt, tuple)
         .sendTo(out);
 
         return true;
