@@ -11,21 +11,6 @@ function patternHasAttrs(pattern: Tuple, requiredKeys: Tuple) {
     return true;
 }
 
-export function *findTablesMatchingRequiredFields(graph: Graph, pattern: Tuple) {
-    let tables: TableMount[] = [];
-    
-    // A table can be used for a pattern IFF:
-    //  - The pattern has EVERY required table attribute.
-    //  - The pattern has NO attributes that are outside the table.
-    //
-    // The pattern can optionally have attributes that are non-required on the table.
-    
-    for (const table of graph.tables()) {
-        if (table.matcher.matches(pattern))
-            yield table;
-    }
-}
-
 export default function *findTablesForPattern(graph: Graph, pattern: Tuple): IterableIterator<[TableMount, Tuple]> {
     // Check if the query specifies an exact table
     if (pattern.hasAttr('table')) {
@@ -38,9 +23,23 @@ export default function *findTablesForPattern(graph: Graph, pattern: Tuple): Ite
         return;
     }
 
-    for (const tableMount of findTablesMatchingRequiredFields(graph, pattern)) {
-        //pattern = tableMount.matcher.transformInputForStar(pattern);
-        //console.log(`found table ${tableMount.schema.stringify()}, pattern = `, pattern.stringify())
-        yield [tableMount, pattern];
+    // Check tables with star patterns. If one hits then it's the only match.
+    for (const table of graph.tables()) {
+        if (!table.matcher.matchesStar)
+            continue;
+
+        if (table.matcher.matches(pattern)) {
+            yield [table, pattern];
+            return;
+        }
+    }
+
+    // Check non-star tables.
+    for (const table of graph.tables()) {
+        if (table.matcher.matchesStar)
+            continue;
+
+        if (table.matcher.matches(pattern))
+            yield [table, pattern];
     }
 }

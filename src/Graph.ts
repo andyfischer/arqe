@@ -18,7 +18,7 @@ import findTablesForPattern from './findTablesForPattern'
 import TableDefiner from './TableDefiner'
 import { randInt } from './utils/rand'
 import { toCapitalCase } from './utils/naming'
-import MemoryTable from './MemoryTable'
+import MemoryStorage from './MemoryStorage'
 
 export interface GraphOptions {
     provide?: TableSetDefinition
@@ -39,7 +39,7 @@ export default class Graph {
     pendingChangeEvents = new Map<string, true>();
     _isFlushingChangeEvents = false;
 
-    memoryTable = new MemoryTable()
+    memoryStorage = new MemoryStorage()
 
     constructor(options: GraphOptions = {}) {
         setupBuiltinTables(this);

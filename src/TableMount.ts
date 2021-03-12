@@ -22,7 +22,6 @@ interface FindHandlerOptions {
     acceptAbstract?: boolean
 }
 
-
 class HandlersByVerb {
     entries: Handler[] = []
 

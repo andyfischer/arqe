@@ -17,5 +17,5 @@ function graphReflection(graph: Graph) {
 
 export default function setupBuiltinTables(graph: Graph) {
     graph.provide(graphReflection(graph))
-    graph.provide(graph.memoryTable.definition())
+    graph.provide(graph.memoryStorage.asTableDefinition())
 }

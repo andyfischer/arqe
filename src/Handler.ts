@@ -49,8 +49,9 @@ function translateQueryForAlias(input: Tuple, sourceQuery: Query) {
     });
 }
 
-function fitOutputToTable(table: TableMount, output: Tuple) {
-    return table.schema.remapTags((templateTag: Tag) => {
+function fitOutputToTable(table: TableMount, input: Tuple, output: Tuple) {
+
+    let fittedOutput = table.schema.remapTags((templateTag: Tag) => {
 
         if (templateTag.isTupleValue())
             templateTag = templateTag.dropValue();
@@ -61,6 +62,19 @@ function fitOutputToTable(table: TableMount, output: Tuple) {
 
         return templateTag;
     });
+
+    if (table.matcher.matchesStar) {
+        // Star match - Any arbitrary attrs that appeared in the input can appear in the output.
+        // Check if we need to add any.
+        for (const outputTag of output.tags) {
+            const attr = outputTag.attr;
+            if (!fittedOutput.has(attr) && input.hasAttr(attr)) {
+                fittedOutput = fittedOutput.addTag(outputTag);
+            }
+        }
+    }
+
+    return fittedOutput;
 }
 
 function getInjectTags(mountPattern: Tuple, cxt: QueryContext, callInput: Tuple) {
@@ -174,6 +188,19 @@ export default class Handler {
         //if (this.mount.matcher.matchesStar)
         //    input = this.mount.matcher.transformInputForStar(input);
 
+        const postFixResult = (singleOutput: Tuple) => {
+
+            if (singleOutput.isCommandMeta()) {
+                if (singleOutput.isError())
+                    return singleOutput;
+
+                return null;
+            }
+
+            singleOutput = fitOutputToTable(this.mount, input, singleOutput);
+            return singleOutput;
+        }
+
         // Insert any injected values that the mount pattern requests.
         for (const injectTag of getInjectTags(this.mountPattern, scope, input)) {
             handlerInput = handlerInput.setTag(injectTag);
@@ -185,7 +212,7 @@ export default class Handler {
             const callbackOut = new Pipe('callTableHandler nativeCallback output');
 
             const out = callbackOut
-            .map(t => this.postFixResult(t));
+            .map(postFixResult);
 
             try {
                 const callbackResult: any = this.nativeCallback(handlerInput, callbackOut);
@@ -212,20 +239,10 @@ export default class Handler {
             const updatedQuery = translateQueryForAlias(handlerInput, this.query);
 
             const out = runQuery(scope.newChild(), updatedQuery, newPrefilledPipe([ ]))
-            .map(t => this.postFixResult(t));
+            .map(postFixResult);
 
             return out;
         }
     }
 
-    postFixResult(t: Tuple) {
-        if (t.isCommandMeta()) {
-            if (t.isError())
-                return t;
-
-            return null;
-        }
-
-        return fitOutputToTable(this.mount, t);
-    }
 }

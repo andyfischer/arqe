@@ -2,12 +2,9 @@
 import Tuple, { isTuple, emptyTuple } from './Tuple'
 import { toTuple, TupleLike } from './coerce'
 
-export default class MemoryTable {
+export default class MemoryStorage {
 
     everyItem = new Map<string, { key: Tuple, value: Tuple }>()
-
-    constructor() {
-    }
 
     get(key: Tuple): Tuple | null {
         return this.everyItem.get(key.stringify()).value;
@@ -24,7 +21,7 @@ export default class MemoryTable {
         this.everyItem.set(key.stringify(), {key, value});
     }
 
-    definition() {
+    asTableDefinition() {
         return {
             'memory key value': {
                 find: (i,o) => {
