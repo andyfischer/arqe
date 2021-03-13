@@ -12,8 +12,7 @@ import Graph from '../Graph'
 import { startConsoleRepl } from './consoleRepl'
 import setupWatchedModules, { loadWatchedTableModule } from './watchedModules'
 import TableDefiner from '../TableDefiner'
-import SocketServer from '../socket/SocketServer'
-import WebSocket from '../platform/ws'
+import SocketServer from './SocketServer'
 
 let _startupLogs = [];
 
@@ -158,7 +157,7 @@ export default async function main() {
     }
 
     if (cliArgs.server) {
-        socketServer = new SocketServer(graph, WebSocket.Server);
+        socketServer = new SocketServer(graph);
     }
 
     if (cliArgs._.length > 0) {

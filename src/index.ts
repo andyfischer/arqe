@@ -23,6 +23,7 @@ export { queryToJson, jsonToQuery } from './Query'
 export { default as IDSource } from './utils/IDSource'
 export { default as parseTuple } from './parser/parseTuple'
 export { default as parseTableDefinition } from './parseTableDefinition'
+export { default as provideGraphToServer } from './socket/provideGraphToServer'
 
 export { lexer }
 export type Stream = Stream_;

@@ -1,12 +1,21 @@
 
 import Graph from '../Graph'
 import { jsonToQuery } from '../Query'
+import WebSocket from 'ws'
 
-export default class SocketClient {
+interface ServerOptions {
+    port?: number
+}
+
+export default class SocketServer {
     graph: Graph
     wss: any
 
-    constructor(graph: Graph, wss) {
+    constructor(graph: Graph, opts: ServerOptions = {}) {
+        const wss = new WebSocket.Server({
+            port: opts.port || 6321
+        });
+
         wss.on('connection', ws => {
 
             console.log('got connection ', ws)

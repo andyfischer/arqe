@@ -22,5 +22,7 @@ export default function provideGraphToServer(graph: Graph, server: ServerAddress
             ws.send(JSON.stringify({replyId, relation: relationToJson(rel)}));
         });
     });
+
+    return ws;
 }
 
