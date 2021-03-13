@@ -17,7 +17,7 @@ async function callGlob(pattern: string, options): Promise<{filename: string}[]>
 }
 
 export default (definer: TableDefiner) =>
-    definer.provide('table required(filename) file-contents mtime', {
+    definer.provide('table required(filename) values(file-contents mtime)', {
         name: 'FsFile',
         "find filename": async (input, out) => {
             const filename = input.get('filename');
@@ -46,7 +46,7 @@ export default (definer: TableDefiner) =>
             return files.map(filename => ({ filename }))
         })
     })
-    .provide('table required(glob pattern) cwd filename', {
+    .provide('table required(glob pattern) values(cwd filename)', {
         name: 'Glob',
         'find pattern cwd': async (input, out) => {
             const { pattern, cwd } = input.obj();

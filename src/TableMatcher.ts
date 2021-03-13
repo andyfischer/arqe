@@ -52,22 +52,4 @@ export default class TableMatcher {
 
         return true;
     }
-
-    xtransformInputForStar(input: Tuple): Tuple {
-        if (!this.matchesStar)
-            return input;
-
-        let starInput = newTuple([]);
-        input = input.filterTags(tag => {
-            if (this.allowedAttrs.get(tag.attr))
-                return true;
-
-            starInput = starInput.addTag(tag);
-            return false;
-        })
-
-        input = input.setValue(this.starAttr, starInput);
-
-        return input;
-    }
 }

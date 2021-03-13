@@ -6,7 +6,7 @@ import Graph from '../Graph'
 import GraphRepl, { ReplOptions } from '../console/Repl'
 import debounce from '../utils/debounce'
 
-export default function startRepl(graph: Graph, opts: ReplOptions = {}) {
+export function startConsoleRepl(graph: Graph, opts: ReplOptions = {}) {
 
     let repl;
     let lastLineIsPrompt = false;

@@ -62,7 +62,7 @@ function resolveDeclaredSchema(declaredSchema: Tuple) {
                 for (const keyTag of tag.value.tags) {
                     resolved = resolved.addTag(newSimpleTag(keyTag.attr, newTupleWithVerb('key')));
                 }
-            } else if (tag.attr === 'values') {
+            } else if (tag.attr === 'values' || tag.attr === 'optional') {
                 for (const valueTag of tag.value.tags) {
                     resolved = resolved.addTag(newSimpleTag(valueTag.attr, newTupleWithVerb('value')));
                 }

@@ -8,6 +8,9 @@ export default class SocketClient {
 
     constructor(graph: Graph, wss) {
         wss.on('connection', ws => {
+
+            console.log('got connection ', ws)
+
             ws.on('message', (messageStr: string) => {
                 const message = JSON.parse(messageStr);
                 if (!message.query) {

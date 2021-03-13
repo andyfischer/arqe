@@ -2,7 +2,6 @@
 import Tuple, { jsonToTuple } from './Tuple'
 import Stream from './Stream'
 import IDSource from './utils/IDSource'
-import watchAndValidateCommand from './test/watchAndValidateCommand'
 import setupBuiltinTables from './setupBuiltinTables'
 import TableMount, { MountId } from './TableMount'
 import parseTuple from './parser/parseTuple'
@@ -137,7 +136,6 @@ export default class Graph {
     }
 
     run = (queryLike: QueryLike, output?: Stream): Pipe|null => {
-        // output = watchAndValidateCommand(commandStr, output);
 
         const query = toQuery(queryLike);
         const cxt = new QueryContext(this);

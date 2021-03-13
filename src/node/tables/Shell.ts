@@ -4,7 +4,7 @@ import TableDefiner from '../../TableDefiner'
 import ChildProcess from 'child_process'
 
 export default (def: TableDefiner) => {
-    def.provide('table required(shell cmd) cwd stdout stderr', {
+    def.provide('table required(shell cmd) values(cwd stdout stderr)', {
         'find cmd': (input, out) => {
             const cmd = input.get('cmd');
             const args = cmd.split(' ');
@@ -46,7 +46,7 @@ export default (def: TableDefiner) => {
         }
     })
 
-    def.provide('table required(shell cmd output) cwd stderr', {
+    def.provide('table required(shell cmd output) values(cwd stderr)', {
         'find sq(subquery)'(i: Tuple, o) {
             const { sq } = i.obj();
 
@@ -59,4 +59,3 @@ export default (def: TableDefiner) => {
         }
     })
 }
-

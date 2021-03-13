@@ -9,9 +9,11 @@ import Minimist from 'minimist'
 import Tuple from '../Tuple'
 import { processGraph } from '../platformExports'
 import Graph from '../Graph'
-import startRepl from './startRepl'
+import { startConsoleRepl } from './consoleRepl'
 import setupWatchedModules, { loadWatchedTableModule } from './watchedModules'
 import TableDefiner from '../TableDefiner'
+import SocketServer from '../socket/SocketServer'
+import WebSocket from '../platform/ws'
 
 let _startupLogs = [];
 
@@ -34,7 +36,7 @@ function loadStandardTables(graph: Graph) {
 function loadDirectory(graph: Graph, dir: string) {
 
     const nearbyPatterns = [
-        'dist/tables/**/*.js',
+        'dist/node/tables/**/*.js',
         'dist/**/*.table.js',
         'dist/**/*.t.js',
         '*.table.js',
@@ -137,13 +139,10 @@ export default async function main() {
     const cliArgs = Minimist(process.argv.slice(2), {
     });
 
-    // Set up file-path and file-path-ref tables
-    // Set up 'cwd' and 'projectHome' entries
-    // Mount schema.json
-
     const graph = await getCliGraph();
 
     let runRepl = true;
+    let socketServer = null;
 
     if (cliArgs.c) {
 
@@ -158,6 +157,10 @@ export default async function main() {
         return;
     }
 
+    if (cliArgs.server) {
+        socketServer = new SocketServer(graph, WebSocket.Server);
+    }
+
     if (cliArgs._.length > 0) {
         const filename = cliArgs._[0];
         runRepl = false;
@@ -165,7 +168,7 @@ export default async function main() {
     }
 
     if (runRepl) {
-        startRepl(graph);
+        startConsoleRepl(graph);
     }
 }
 
